@@ -196,14 +196,14 @@ function App() {
 			<Subtitle>Comprehensive Input Made Easy!</Subtitle>
 
 			<InputField
-				type="text"
+				type="password"
 				placeholder="Enter your Cohere API key"
 				value={cohereApiKey}
 				onChange={(e) => setCohereApiKey(e.target.value)}
 			/>
 
 			<InputField
-				type="text"
+				type="password"
 				placeholder="Enter your Google Cloud Translation API key"
 				value={googleApiKey}
 				onChange={(e) => setGoogleApiKey(e.target.value)}
