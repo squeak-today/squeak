@@ -13,6 +13,17 @@ const StyledBox = styled.div`
 	background-color: #f7bc88; // fill color
 `;
 
+const Title = styled.h1`
+	text-align: center;
+	color: #8a1000; // Match the theme color
+`;
+
+const ButtonContainer = styled.div`
+	display: flex;
+	justify-content: center; // Center the button horizontally
+	margin-top: 0px;
+`;
+
 const GenerateButton = styled.button`
 	padding: 10px 20px;
 	margin-top: 20px;
@@ -26,6 +37,17 @@ const GenerateButton = styled.button`
 	background-color: #c98061; // Lighter shade when disabled
 	cursor: not-allowed;
 	}
+`;
+
+const StoryContainer = styled.div`
+	margin-top: 20px;
+	text-align: left; // Ensure the story text itself is left-aligned
+`;
+
+// Centered story title
+const StoryTitle = styled.h2`
+	text-align: center; // Center the story title
+	color: #8a1000; // Optional: Match the theme color
 `;
 
 const StoryText = styled.div`
@@ -51,6 +73,7 @@ const InputField = styled.input`
 	border-color: #FC4A00; // Focus state border color
 	outline: none;
 	}
+	box-sizing:border-box;
 `;
 
 // Styled select field component
@@ -67,6 +90,7 @@ const SelectField = styled.select`
 	border-color: #FC4A00; // Focus state border color
 	outline: none;
 	}
+	box-sizing:border-box;
 `;
 
 function App() {
@@ -95,7 +119,7 @@ function App() {
 
 	return (
     	<StyledBox>
-			<h1>Squeak</h1>
+			<Title>Squeak</Title>
 
 			<InputField
 				type="text"
@@ -114,6 +138,7 @@ function App() {
 			{/* Dropdown for language selection */}
 			<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
 				<option value="" disabled>Select a language</option>
+				<option value="English">English</option>
 				<option value="French">French</option>
 				<option value="Spanish">Spanish</option>
 			</SelectField>
@@ -129,15 +154,16 @@ function App() {
 				<option value="C2">C2</option>
 			</SelectField>
 
-
-			<GenerateButton onClick={handleGenerateStory} disabled={!isFormComplete || loading}>
-				{loading ? 'Generating Story...' : 'Generate Story'}
-			</GenerateButton>
+			<ButtonContainer>
+				<GenerateButton onClick={handleGenerateStory} disabled={!isFormComplete || loading}>
+					{loading ? 'Generating Story...' : 'Generate Story'}
+				</GenerateButton>
+			</ButtonContainer>
 			{story && (
-				<StoryText>
-					<h2>Today's Story</h2>
-					<p>{story}</p>
-				</StoryText>
+				<StoryContainer>
+					<StoryTitle>Generated Story</StoryTitle>
+					<StoryText>{story}</StoryText>
+				</StoryContainer>
 			)}
 		</StyledBox>
 	);
