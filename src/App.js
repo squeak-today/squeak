@@ -21,6 +21,11 @@ const Title = styled.h1`
 	color: #8a1000; // Match the theme color
 `;
 
+const Subtitle = styled.h3`
+	text-align: center;
+	color: #8a1000;
+`;
+
 const ButtonContainer = styled.div`
 	display: flex;
 	justify-content: center; // Center the button horizontally
@@ -51,6 +56,14 @@ const StoryContainer = styled.div`
 	word-break: keep-all; // Prevent words from breaking mid-way
 	overflow-wrap: normal;
 	box-sizing: border-box; // Include padding and border in the width
+`;
+
+const StoryBox = styled.div`
+	padding: 20px;
+	margin: 20px 0;
+	border: 2px solid #AB560C; // Optional: Border color matching the theme
+	border-radius: 15px; // Rounded corners
+	background-color: #fad2af; // Light fill color to differentiate it from the background
 `;
 
 // Centered story title
@@ -181,6 +194,7 @@ function App() {
 	return (
     	<StyledBox>
 			<Title>Squeak</Title>
+			<Subtitle>Comprehensive Input Made Easy!</Subtitle>
 
 			<InputField
 				type="text"
@@ -231,13 +245,15 @@ function App() {
 				<StoryContainer>
 					<StoryTitle>Generated Story</StoryTitle>
 					{/* Split the story into words and make each word clickable */}
-					<StoryText>
-						{story.split(' ').map((word, index) => (
-							<Word key={index} onClick={(e) => handleWordClick(e, word)}>
-								{word}
-							</Word>
-						))}
-					</StoryText>
+					<StoryBox>
+						<StoryText>
+							{story.split(' ').map((word, index) => (
+								<Word key={index} onClick={(e) => handleWordClick(e, word)}>
+									{word}
+								</Word>
+							))}
+						</StoryText>
+					</StoryBox>
 				</StoryContainer>
 			)}
 
