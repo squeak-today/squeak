@@ -39,16 +39,34 @@ const InputField = styled.input`
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
-	border: 1px solid #ccc;
+	border: 1px solid #AB560C;
 	border-radius: 5px;
+	background-color: #ffcfa5; // Input field background color
+	color: black;
+	font-size: 16px;
+	&::placeholder {
+	color: #AB560C;
+	}
+	&:focus {
+	border-color: #FC4A00; // Focus state border color
+	outline: none;
+	}
 `;
 
+// Styled select field component
 const SelectField = styled.select`
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
-	border: 1px solid #ccc;
+	border: 1px solid #AB560C;
 	border-radius: 5px;
+	background-color: #ffcfa5; // Select field background color
+	color: black;
+	font-size: 16px;
+	&:focus {
+	border-color: #FC4A00; // Focus state border color
+	outline: none;
+	}
 `;
 
 function App() {
