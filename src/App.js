@@ -1,6 +1,38 @@
 import './App.css';
 import { generateStory } from './cohere';
 import { useState } from 'react';
+import styled from 'styled-components';
+
+
+const StyledBox = styled.div`
+	width: 80%;
+	margin: 20px auto; // Center the box horizontally with margin
+	padding: 20px; // Add padding inside the box
+	border: 2px solid #AB560C;
+	border-radius: 15px; // Rounded corners
+	background-color: #f7bc88; // fill color
+`;
+
+const GenerateButton = styled.button`
+	padding: 10px 20px;
+	margin-top: 20px;
+	font-size: 16px;
+	cursor: pointer;
+	background-color: #ffa47d; // Button background color
+	color: black;
+	border: 1px solid #FC4A00;
+	border-radius: 5px;
+	&:disabled {
+	background-color: #c98061; // Lighter shade when disabled
+	cursor: not-allowed;
+	}
+`;
+
+const StoryText = styled.div`
+	margin-top: 20px;
+	text-align: left;
+	line-height: 1.5;
+`;
 
 function App() {
 	const [story, setStory] = useState(''); // State to store the story
@@ -22,18 +54,18 @@ function App() {
 
 
 	return (
-    	<div className="App">
-			<h1>Hello World</h1>
-			<button onClick={handleGenerateStory} disabled={loading}>
+    	<StyledBox>
+			<h1>Squeak</h1>
+			<GenerateButton onClick={handleGenerateStory} disabled={loading}>
 				{loading ? 'Generating Story...' : 'Generate Story'}
-			</button>
+			</GenerateButton>
 			{story && (
-				<div>
-					<h2>Generated Story</h2>
+				<StoryText>
+					<h2>Today's Story</h2>
 					<p>{story}</p>
-				</div>
+				</StoryText>
 			)}
-    	</div>
+		</StyledBox>
 	);
 }
 
