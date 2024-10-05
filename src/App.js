@@ -73,7 +73,6 @@ const StoryTitle = styled.h2`
 `;
 
 const StoryText = styled.div`
-	margin-top: 20px;
 	text-align: left;
 	line-height: 1.5;
 	white-space: normal; // Ensure text wraps at word boundaries
