@@ -22,12 +22,14 @@ Supporting other LLMs for story generation
 - [ ] GPT-X
 - [ ] Claude X
 - [ ] Llama X
+
 Support for other languages
 - [ ] Chinese (Traditional)
 - [ ] Chinese (Simplified)
 - [ ] Hindi
 - [ ] Japanese
 - [ ] Arabic
+
 Tauri Binaries
 - [ ] macOSX Catalina (10.15+)
 - [ ] Windows 7+
