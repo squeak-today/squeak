@@ -31,6 +31,6 @@ Support for other languages
 - [ ] Arabic
 
 Tauri Binaries
-- [ ] macOSX Catalina (10.15+)
+- [x] macOSX Catalina (10.15+)
 - [ ] Windows 7+
 - [ ] Linux
