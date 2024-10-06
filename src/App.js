@@ -219,7 +219,6 @@ function App() {
 			{/* Dropdown for language selection */}
 			<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
 				<option value="" disabled>Select a language</option>
-				<option value="English">English</option>
 				<option value="French">French</option>
 				<option value="Spanish">Spanish</option>
 			</SelectField>
