@@ -15,3 +15,16 @@ It's actually very easy, code-wise, to add more languages - so feel free to open
 
 ## How to Use
 **Squeak** uses Cohere's Aya 35B model to generate stories and Google's Cloud Translate API for definitions. We recommend getting your own trial key! Both platforms are free for non-commercial and individual use.
+
+## Roadmap
+Supporting other LLMs for story generation
+- [ ] Command-R variants
+- [ ] GPT-X
+- [ ] Claude X
+- [ ] Llama X
+Support for other languages
+- [ ] Chinese (Traditional)
+- [ ] Chinese (Simplified)
+- [ ] Hindi
+- [ ] Japanese
+- [ ] Arabic
