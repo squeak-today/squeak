@@ -28,3 +28,7 @@ Support for other languages
 - [ ] Hindi
 - [ ] Japanese
 - [ ] Arabic
+Tauri Binaries
+- [ ] macOSX Catalina (10.15+)
+- [ ] Windows 7+
+- [ ] Linux
