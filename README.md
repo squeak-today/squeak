@@ -12,3 +12,6 @@
 It's actually very easy, code-wise, to add more languages - so feel free to open a PR. It legitimately takes less than 10 minutes.
 - French
 - Spanish
+
+## How to Use
+**Squeak** uses Cohere's Aya 35B model to generate stories and Google's Cloud Translate API for definitions. We recommend getting your own trial key! Both platforms are free for non-commercial and individual use.
