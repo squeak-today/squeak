@@ -26,6 +26,7 @@ export async function generateStory(apiKey, topic, language = 'French', CEFR = '
 				],
 				message: `LANGUAGE: ${language}\nCEFR: ${CEFR}\nTOPIC: ${topic || 'a general topic'}\nUSEFUL WORDS: ${useful_words.join(', ')}`,
 				model: 'c4ai-aya-23-35b',
+				temperature: 0.7,
 				connectors: []
 			})
     	});
