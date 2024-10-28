@@ -3,3 +3,8 @@ variable "cohere_api_key" {
     type        = string
     sensitive   = true  # Ensures the value doesn't show up in logs
 }
+
+variable "s3_bucket_name" {
+    description = "S3 Bucket ID for storing stories"
+    type = string
+}

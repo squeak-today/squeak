@@ -22,10 +22,11 @@ resource "aws_iam_role" "story_gen_role" {
     })
 
     inline_policy {
-        name = "demo-lambda-policies"
+        name = "lambda-policies"
         policy = jsonencode({
             "Version" : "2012-10-17",
             "Statement" : [
+                # Cloudwatch Logs permissions
                 {
                 "Effect" : "Allow",
                 "Action" : "logs:CreateLogGroup",
@@ -40,6 +41,15 @@ resource "aws_iam_role" "story_gen_role" {
                     "Resource" : [
                         "arn:aws:logs:${data.aws_region.current.name}:${local.account_id}:log-group:/aws/lambda/*:*"
                     ]
+                },
+                # S3 Permissions for storing stories
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:PutObject",
+                        "s3:PutobjectAcl"
+                    ],
+                    "Resource": "arn:aws:s3:::${var.s3_bucket_name}/*"
                 }
             ]
         })
