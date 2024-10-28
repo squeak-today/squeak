@@ -11,10 +11,8 @@ import (
     "net/http"
     "os"
 	"log"
-	"io/ioutil"
+	"io"
 )
-
-// io/ioutil is deprecated so should update
 
 func main() {
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
@@ -58,7 +56,7 @@ func main() {
     }
     defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
     if err != nil {
         fmt.Println("Error reading response body:", err)
         return
