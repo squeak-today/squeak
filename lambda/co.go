@@ -25,7 +25,6 @@ type Response struct {
 func generateStory(language string, cefr string, topic string) (string, error) {
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	if cohereAPIKey == "" { return "", errors.New("ERR: COHERE_API_KEY environment variable not set") }
-	fmt.Println("LOG: Running with Cohere API KEY ->", cohereAPIKey)
 
 	startingMessage := fmt.Sprintf("LANGUAGE: %s\nCEFR: %s\nTOPIC: %s", language, cefr, topic)
 	coherePayload := map[string]interface{}{
