@@ -5,3 +5,7 @@ terraform.tfstate
 terraform.tfstate.backup
 *.tfvars
 *.tfvars.json
+
+
+# Go Binary for Lambda
+function.zip
