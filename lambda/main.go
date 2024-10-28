@@ -10,6 +10,7 @@ package main
 // zip function.zip bootstrap
 
 import (
+    "os"
     "context"
     "log"
     "github.com/aws/aws-lambda-go/lambda"
@@ -21,11 +22,17 @@ func handler(ctx context.Context) error {
     story, err := generateStory("French", "B2", "Stephen Curry")
     if err == nil {
         log.Println("Story:", story)
+
+        if err := uploadStoryS3(os.Getenv("STORY_BUCKET_NAME"), "stories/story.txt", story); err != nil {
+            log.Println(err)
+            return err
+        }
     } else {
         log.Println(err)
+        return err
     }
 
-    return err
+    return nil
 }
 
 func main() {
