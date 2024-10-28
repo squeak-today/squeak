@@ -14,6 +14,18 @@ import (
 	"io"
 )
 
+type ChatTurn struct {
+    Text string `json:"text"`
+}
+
+type Message struct {
+    Content []ChatTurn `json:"content"`
+}
+
+type Response struct {
+    Message Message `json:"message"`
+}
+
 func main() {
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	if cohereAPIKey == "" {
@@ -62,6 +74,19 @@ func main() {
         return
     }
 
-	fmt.Println("Response:", string(body))
+    // var result map[string]interface{}
+    var result Response
+    if err := json.Unmarshal(body, &result); err != nil {
+        fmt.Println("Error unmarshalling JSON:", err)
+        return
+    }
 
+    for i, item := range result.Message.Content {
+        fmt.Printf("Text %d: %s\n", i, item.Text)
+    }
+    
+//     var message = result["message"]
+//     content := message.(map[string]interface{})["content"]
+//     text := content.([]interface{})[0].(map[string]interface{})["text"]
+//     fmt.Println("Response:", text.(string))
 }
