@@ -13,7 +13,7 @@ resource "aws_lambda_function" "story_gen_lambda" {
     filename = "function.zip"
     source_code_hash = filebase64sha256("function.zip")
 
-    timeout = 10
+    timeout = 30
 
     # cohere env vars
     environment {
