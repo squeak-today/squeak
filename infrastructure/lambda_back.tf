@@ -1,3 +1,8 @@
+# Known issue is that regardless of dependency, possibly due to drifting, aws_cloudwatch_log_group is not able to be destroyed
+# if you specify fields like retention.
+# https://github.com/hashicorp/terraform/issues/14750
+# The obvious fix is thus to wait until Lambda creates one upon invocation, in which case you still need to manually delete it after
+# But for now this works because it defines basically nothing changeable.
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
     name = "/aws/lambda/story-gen-lambda"
 }
