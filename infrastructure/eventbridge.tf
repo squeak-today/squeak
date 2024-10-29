@@ -1,7 +1,7 @@
 resource "aws_cloudwatch_event_rule" "lambda_trigger" {
   name                = "lambda-trigger"
-  description         = "Fires every 5 minutes"
-  schedule_expression = "rate(5 minutes)"
+  description         = "Fires every 2 minutes"
+  schedule_expression = "rate(2 minutes)"
 }
 
 # Trigger lambda based on the schedule
