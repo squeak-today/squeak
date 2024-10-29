@@ -4,6 +4,7 @@ package main
 // squeak-library
 
 import (
+	"encoding/json"
 	"context"
 	"log"
 	"strings"
@@ -11,6 +12,10 @@ import (
     "github.com/aws/aws-sdk-go-v2/config"
     "github.com/aws/aws-sdk-go-v2/service/s3"
 )
+
+type Story struct {
+    Content string `json:"story"`
+}
 
 func uploadStoryS3(bucket string, key string, content string) error {
 	// unsure if config.WithRegion("us-east-2") is necessary here
@@ -21,10 +26,17 @@ func uploadStoryS3(bucket string, key string, content string) error {
 
 	client := s3.NewFromConfig(cfg)
 
+	story := Story{Content: content}
+	jsonContent, err := json.Marshal(story)
+	if err != nil {
+		log.Println("failed to marshal story: %w", err)
+		return err
+	}
+
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(bucket),
 		Key: aws.String(key),
-		Body: strings.NewReader(content),
+		Body: strings.NewReader(string(jsonContent)),
 	})
 
 	if err != nil {
