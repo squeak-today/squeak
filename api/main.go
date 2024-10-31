@@ -57,6 +57,5 @@ func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.API
 }
 
 func main() {
-	// story, err := pullStory("French", "B2")
 	lambda.Start(Handler)
 }
