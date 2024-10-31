@@ -5,15 +5,15 @@ resource "aws_api_gateway_rest_api" "story_api" {
 
 // DEFINING ALL THE PATHS
 
-resource "aws_api_gateway_resource" "ping_resource" {
+resource "aws_api_gateway_resource" "story_resource" {
     rest_api_id = aws_api_gateway_rest_api.story_api.id
     parent_id = aws_api_gateway_rest_api.story_api.root_resource_id
-    path_part = "ping"
+    path_part = "story"
 }
 
-resource "aws_api_gateway_method" "get_ping" {
+resource "aws_api_gateway_method" "get_story" {
     rest_api_id   = aws_api_gateway_rest_api.story_api.id
-    resource_id   = aws_api_gateway_resource.ping_resource.id
+    resource_id   = aws_api_gateway_resource.story_resource.id
     http_method   = "GET"
     authorization = "NONE"
 }
@@ -22,8 +22,8 @@ resource "aws_api_gateway_method" "get_ping" {
 
 resource "aws_api_gateway_integration" "lambda_integration" {
     rest_api_id = aws_api_gateway_rest_api.story_api.id
-    resource_id = aws_api_gateway_resource.ping_resource.id
-    http_method = aws_api_gateway_method.get_ping.http_method
+    resource_id = aws_api_gateway_resource.story_resource.id
+    http_method = aws_api_gateway_method.get_story.http_method
     type = "AWS_PROXY"
     integration_http_method = "POST"
     uri = aws_lambda_function.story_api_lambda.invoke_arn
