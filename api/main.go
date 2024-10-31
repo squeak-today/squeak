@@ -2,62 +2,38 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"io"
 	"log"
-	"os"
-	"strings"
-	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/awslabs/aws-lambda-go-api-proxy/gin"
+	"github.com/gin-gonic/gin"
 )
 
 // STORY_BUCKET_NAME="story-generation-bucket-dev" go run .
+// GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap .
+// zip front-function.zip bootstrap
 
-// matches struct in lambda (data.go)
-type Story struct {
-	Content string `json:"story"`
+var ginLambda *ginadapter.GinLambda
+
+func init() {
+	log.Println("Gin cold start")
+	router := gin.Default()
+	router.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
+	ginLambda = ginadapter.New(router)
 }
 
+func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	// if no name is provided in body, throw err ?
+	return ginLambda.ProxyWithContext(ctx, req)
+}
 
 func main() {
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
-	
-	if err != nil {
-		log.Fatalf("unable to load SDK config, %v", err)
-	}
-
-	client := s3.NewFromConfig(cfg)
-
-	current_time := time.Now().UTC().Format("2006-01-02")
-	key := strings.ToLower("French") + "/" + "B1" + "_" + current_time + ".json"
-
-	resp, err := client.GetObject(context.TODO(), &s3.GetObjectInput{
-    	Bucket: aws.String(os.Getenv("STORY_BUCKET_NAME")),
-    	Key:    aws.String(key),
-    })
-	if err != nil {
-		log.Println(err)
-		// return err
-	}
-	defer resp.Body.Close()
-
-	var builder strings.Builder
-	_, err = io.Copy(&builder, resp.Body)
-	if err != nil {
-		log.Println(err)
-		// return err
-	}
-
-	var story Story
-    err = json.Unmarshal([]byte(builder.String()), &story)
-    if err != nil {
-        log.Printf("failed to unmarshal JSON: %v", err)
-    }
-
-	fmt.Println("Story Content:", story.Content)
-
+	// story, err := pullStory("French", "B2")
+	lambda.Start(Handler)
 }
