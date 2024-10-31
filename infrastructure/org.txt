@@ -1,0 +1,13 @@
+Backend
+-> eventbridge.tf
+-> lambda_back.tf
+
+Frontend
+-> lambda_front.tf
+-> gateway.tf
+
+IAM
+-> iam.tf
+
+DB
+-> storage.tf
