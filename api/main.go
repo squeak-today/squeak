@@ -23,6 +23,24 @@ var ginLambda *ginadapter.GinLambda
 func init() {
 	log.Println("Gin cold start")
 	router := gin.Default()
+
+
+	router.Use(func(c *gin.Context) {
+		// * accepts all origins, change for production
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
+		c.Writer.Header().Set("Access-Control-Max-Age", "3600")
+
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
+
+		c.Next()
+	})
+
+
 	router.GET("/story", func(c *gin.Context) {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
@@ -52,7 +70,6 @@ func init() {
 }
 
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// if no name is provided in body, throw err ?
 	return ginLambda.ProxyWithContext(ctx, req)
 }
 

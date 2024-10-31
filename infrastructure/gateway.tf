@@ -18,7 +18,21 @@ resource "aws_api_gateway_method" "get_story" {
     authorization = "NONE"
 }
 
-// GATEWAY INTEGRATION
+resource "aws_api_gateway_method_response" "get_method_response" {
+    rest_api_id = aws_api_gateway_rest_api.story_api.id
+    resource_id = aws_api_gateway_resource.story_resource.id
+    http_method = aws_api_gateway_method.get_story.http_method
+    status_code = "200"
+
+    response_parameters = {
+        "method.response.header.Access-Control-Allow-Origin" = true,
+        "method.response.header.Access-Control-Allow-Methods" = true,
+        "method.response.header.Access-Control-Allow-Headers" = true,
+        "method.response.header.Access-Control-Max-Age" = true
+    }
+}
+
+// GATEWAY INTEGRATION TO LAMBDA
 
 resource "aws_api_gateway_integration" "lambda_integration" {
     rest_api_id = aws_api_gateway_rest_api.story_api.id
