@@ -1,5 +1,5 @@
 import './App.css';
-import { generateStory } from './cohere';
+// import { generateStory } from './cohere';
 import { generateDefinition } from './defns';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -145,9 +145,7 @@ const Tooltip = styled.div`
 `;
 
 function App() {
-	const [cohereApiKey, setCohereApiKey] = useState('');
 	const [googleApiKey, setGoogleApiKey] = useState('');
-	const [topic, setTopic] = useState('');
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
 	const [story, setStory] = useState(''); // State to store the story
@@ -155,17 +153,32 @@ function App() {
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
-	const isFormComplete = cohereApiKey && topic && language && CEFRLevel;
+	const isFormComplete = googleApiKey && language && CEFRLevel;
+	const apiUrl = "https://8n12fa5v11.execute-api.us-east-2.amazonaws.com/dev/story";
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
-		try {
-			const newStory = await generateStory(cohereApiKey, topic, language, CEFRLevel, []);
-			setStory(newStory); // Store the fetched story in the state
-		} catch (error) {
+		let url = `${apiUrl}?language=${encodeURIComponent(language)}&cefr=${encodeURIComponent(CEFRLevel)}`;
+		fetch(url).then(response => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		}).then(data => {
+			setStory(data["content"]);
+		}).catch(error => {
 			console.error("Error generating story:", error);
 			setStory("Failed to generate story. Please try again.");
-		}
+		})
+		
+		// try {
+		// 	const newStory = await generateStory("", "", language, CEFRLevel, []);
+		// 	setStory(newStory); // Store the fetched story in the state
+		// } catch (error) {
+		// 	console.error("Error generating story:", error);
+		// 	setStory("Failed to generate story. Please try again.");
+		// }
+
 		setLoading(false); // Set loading state to false when finished
 	};
 
@@ -197,23 +210,9 @@ function App() {
 
 			<InputField
 				type="password"
-				placeholder="Enter your Cohere API key"
-				value={cohereApiKey}
-				onChange={(e) => setCohereApiKey(e.target.value)}
-			/>
-
-			<InputField
-				type="password"
 				placeholder="Enter your Google Cloud Translation API key"
 				value={googleApiKey}
 				onChange={(e) => setGoogleApiKey(e.target.value)}
-			/>
-
-			<InputField
-				type="text"
-				placeholder="Enter a topic"
-				value={topic}
-				onChange={(e) => setTopic(e.target.value)}
 			/>
 
 			{/* Dropdown for language selection */}
