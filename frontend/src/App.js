@@ -219,18 +219,13 @@ function App() {
 			<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
 				<option value="" disabled>Select a language</option>
 				<option value="French">French</option>
-				<option value="Spanish">Spanish</option>
 			</SelectField>
 
 			{/* Dropdown for CEFR level selection */}
 			<SelectField value={CEFRLevel} onChange={(e) => setCEFRLevel(e.target.value)}>
 				<option value="" disabled>Select a CEFR level</option>
-				<option value="A1">A1</option>
-				<option value="A2">A2</option>
 				<option value="B1">B1</option>
 				<option value="B2">B2</option>
-				<option value="C1">C1</option>
-				<option value="C2">C2</option>
 			</SelectField>
 
 			<ButtonContainer>
