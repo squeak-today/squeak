@@ -2,7 +2,7 @@
 
 ## 🌍📚 What is Squeak?
 **Squeak** is the most convenient and easy-to-use source of "comprehensive input" for language learners! 
-Unlike solutions like Duolingo or Babbel, comprehensive input is the a [proven way to actually learn a language](https://sdkrashen.com/content/articles/case_for_comprehensible_input.pdf). As fun as these apps can be sometimes, nothing replaces REAL exposure to a language - its how babies, immigrants, etc. learn so fast.
+Unlike solutions like Duolingo or Babbel, comprehensive input is the [proven way to actually learn a language](https://sdkrashen.com/content/articles/case_for_comprehensible_input.pdf). As fun as these apps can be sometimes, nothing replaces REAL exposure to a language - its how babies, immigrants, etc. learn so fast.
 
 *So what is **Squeak**?* Squeak uses the most powerful LLM in the world designed for writing in multiple languages to generate daily stories to read.
 Squeak stories are:
