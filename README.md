@@ -7,7 +7,7 @@ Unlike solutions like Duolingo or Babbel, comprehensive input is the [proven way
 
 *So what is **Squeak**?*
 
-Squeak is a platform for with daily stories built for language learning, powered by the most powerful multi-language model in the industry.
+Squeak is a platform for daily stories built for language learning, powered by the most powerful multi-language model in the industry.
 Squeak stories are:
 - **Tailored**: Pick a specific difficulty level ([CEFR](https://danteinlinea.com/blog/en/the-cefr-levels/)) for YOUR proficiency. No need to read frustratingly simple stories or things with way too many big words.
 - **Fascinating**: Read fiction, today's news, or even a fascinating recounting of the 2016 NBA Finals...
