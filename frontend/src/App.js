@@ -154,7 +154,7 @@ function App() {
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
 	const isFormComplete = googleApiKey && language && CEFRLevel;
-	const apiUrl = "https://8n12fa5v11.execute-api.us-east-2.amazonaws.com/dev/story";
+	const apiUrl = "https://vqk86i7b5a.execute-api.us-east-2.amazonaws.com/dev/story"; // current API url (changes on each application)
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
