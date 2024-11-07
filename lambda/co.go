@@ -8,18 +8,16 @@ import (
 	"io"
 	"errors"
 	"bytes"
+	"log"
 )
 
-type ChatTurn struct {
-    Text string `json:"text"`
-}
-
-type Message struct {
-    Content []ChatTurn `json:"content"`
-}
-
-type Response struct {
-    Message Message `json:"message"`
+type v2Response struct {
+	Message struct {
+		Content []struct {
+			Text string `json:"text"`
+			Type string `json:"type"`
+		} `json:"content"`
+	} `json:"message"`
 }
 
 func generateStory(language string, cefr string, topic string) (string, error) {
@@ -65,8 +63,11 @@ func generateStory(language string, cefr string, topic string) (string, error) {
     if err != nil { return "", err }
 
     // var result map[string]interface{}
-    var result Response
-    if err := json.Unmarshal(body, &result); err != nil { return "", err }
+    var result v2Response
+    if err := json.Unmarshal(body, &result); err != nil { 
+		log.Println(string(body)) // e.g improper model id - should add better reaction
+		return "", err
+	}
 
 	story := result.Message.Content[0].Text
 	return story, nil
