@@ -166,11 +166,11 @@ function App() {
 			return response.json();
 		}).then(data => {
 			setStory(data["content"]);
+			setLoading(false); // Set loading state to false when finished
 		}).catch(error => {
 			console.error("Error generating story:", error);
 			setStory("Failed to generate story. Please try again.");
 		})
-		setLoading(false); // Set loading state to false when finished
 	};
 
 	const fetchWordDefinition = async (word) => {
