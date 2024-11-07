@@ -28,7 +28,7 @@ func generateStory(language string, cefr string, topic string) (string, error) {
 
 	startingMessage := fmt.Sprintf("LANGUAGE: %s\nCEFR: %s\nTOPIC: %s", language, cefr, topic)
 	coherePayload := map[string]interface{}{
-        "model": "c4ai-aya-23-35b",
+        "model": "c4ai-aya-expanse-32b",
         "messages": []map[string]string{
             {
                 "role": "system",
