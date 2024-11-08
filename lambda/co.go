@@ -64,8 +64,8 @@ func generateStory(language string, cefr string, topic string) (string, error) {
 
     // var result map[string]interface{}
     var result v2Response
-    if err := json.Unmarshal(body, &result); err != nil { 
-		log.Println(string(body)) // e.g improper model id - should add better reaction
+    if err := json.Unmarshal(body, &result); err != nil {
+		log.Println(string(body)) // e.g improper model id (should add better reaction)
 		return "", err
 	}
 
