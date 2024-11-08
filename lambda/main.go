@@ -37,6 +37,11 @@ func handler(ctx context.Context) error {
     
             if err == nil {
                 log.Println("Story:", story)
+
+				// words := strings.Split(story, " ")
+				// sentences := strings.Split(story, ".").
+				// take words and get json for definitions here
+				// take sentences and get json for definitions here
         
                 current_time := time.Now().UTC().Format("2006-01-02")
         
