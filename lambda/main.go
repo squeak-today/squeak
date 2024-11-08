@@ -2,7 +2,7 @@ package main
 
 // https://github.com/cohere-ai/cohere-go
 // https://docs.cohere.com/v2/docs/cohere-works-everywhere#cohere-platform
-// COHERE_API_KEY="api-key" STORY_BUCKET_NAME="story-generation-bucket-dev" go run .
+// GOOGLE_API_KEY = "api-key" COHERE_API_KEY="api-key" STORY_BUCKET_NAME="story-generation-bucket-dev" go run .
 
 // compile to binary
 // GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap .
