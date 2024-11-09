@@ -22,6 +22,7 @@ resource "aws_lambda_function" "story_gen_lambda" {
     # cohere env vars
     environment {
         variables = {
+			GOOGLE_API_KEY = var.google_api_key
             COHERE_API_KEY = var.cohere_api_key
             STORY_BUCKET_NAME = aws_s3_bucket.story_gen_bucket.bucket
         }
