@@ -13,11 +13,32 @@ import (
     "github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-type Story struct {
-    Content string `json:"story"`
+type StoryData struct {
+	Story string `json:"story"`
+	Translations StoryDictionary `json:"dictionary"`
 }
 
-func uploadStoryS3(bucket string, key string, content string) error {
+// create []byte to pass as Body into uploadStoryS3 from story content and the StoryDictionary
+func buildStoryBody(story string, dictionary StoryDictionary) ([]byte, error) {
+	storyData := StoryData{
+		Story: story,
+		Translations: dictionary,
+	}
+	log.Println("Length of Translations.Words: ", len(dictionary.Translations.Words))
+	log.Println("Length of Translations.Sentences: ", len(dictionary.Translations.Sentences))
+	log.Printf("%+v\n", dictionary)
+	
+	jsonContent, err := json.Marshal(storyData)
+	if err != nil {
+		log.Println("failed to marshal story: %w", err)
+		emptyBytes := make([]byte, 0)
+		return emptyBytes, err
+	}
+
+	return jsonContent, nil
+}
+
+func uploadStoryS3(bucket string, key string, content []byte) error {
 	// unsure if config.WithRegion("us-east-2") is necessary here
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	if err != nil {
@@ -25,18 +46,10 @@ func uploadStoryS3(bucket string, key string, content string) error {
 	}
 
 	client := s3.NewFromConfig(cfg)
-
-	story := Story{Content: content}
-	jsonContent, err := json.Marshal(story)
-	if err != nil {
-		log.Println("failed to marshal story: %w", err)
-		return err
-	}
-
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(bucket),
 		Key: aws.String(key),
-		Body: strings.NewReader(string(jsonContent)),
+		Body: strings.NewReader(string(content)),
 	})
 
 	if err != nil {
