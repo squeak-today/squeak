@@ -30,7 +30,7 @@ func generateStory(language string, cefr string, topic string) (string, error) {
         "messages": []map[string]string{
             {
                 "role": "system",
-                "content": 
+                "content": // we don't use "USEFUL WORDS" so maybe remove for now?
 					`You are Squeak, an LLM designed to write short stories or news stories. 
 					The nature of the story is dependent on CEFR, LANGUAGE, TOPIC, and USEFUL WORDS.
 					You must write your story in the LANGUAGE on TOPIC using at least one of the USEFUL WORDS translated without sacrificing story quality.
