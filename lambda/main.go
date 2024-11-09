@@ -24,6 +24,9 @@ func handler(ctx context.Context) error {
     log.Println("Executing Aya Story Generation...")
 
     languages := []string{"French"}
+	language_ids := map[string]string{
+		"French": "fr",
+	}
     cefrLevels := []string{"B1", "B2"}
     subjects := []string{"Basketball", "Acting", "Olympics", "Painting"}
 
@@ -38,16 +41,15 @@ func handler(ctx context.Context) error {
             if err == nil {
                 log.Println("Story:", story)
 
-				// words := strings.Split(story, " ")
-				// sentences := strings.Split(story, ".").
-				// take words and get json for definitions here
-				// take sentences and get json for definitions here
-        
+				words, sentences := getWordsAndSentences(story)
+				dictionary, _ := generateTranslations(words, sentences, language_ids[languages[i]])
+				body, _ := buildStoryBody(story, dictionary)
+
                 current_time := time.Now().UTC().Format("2006-01-02")
         
                 if err := uploadStoryS3(
                     os.Getenv("STORY_BUCKET_NAME"),
-                    strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "_" + current_time + ".json", story,
+                    strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "_" + current_time + ".json", body,
                 ); err != nil {
                     log.Println(err)
                     return err
