@@ -36,20 +36,29 @@ func getWordsAndSentences(story string) ([]string, []string) {
 	return words, sentences
 }
 
+// limited to languages using , and . and space as separators, so this needs to be modified for e.g Chinese
 func batchTranslate(source []string, language string) (map[string]string, error) {
 	dict := make(map[string]string)
 
 	googleAPIKey := os.Getenv("GOOGLE_API_KEY")
 	if googleAPIKey == "" { return dict, errors.New("ERR: GOOGLE_API_KEY environment variable not set") }
 
-
+	// o(n*m)???
+	var new_source []string
+	for _, word := range source {
+		trimmedWord := strings.Trim(word, " .\n,")
+		splitWords := strings.Split(trimmedWord, "\n")
+		for _, splitWord := range splitWords {
+			new_source = append(new_source, strings.Trim(splitWord, " .\n,"))
+		}
+	}
 
 	pointer := 0
-	for (pointer < len(source)) {
-		end_pointer := min(pointer + GCP_API_BATCH_SIZE, len(source))
+	for (pointer < len(new_source)) {
+		end_pointer := min(pointer + GCP_API_BATCH_SIZE, len(new_source))
 
 		translatePayload := map[string]interface{}{
-			"q": source[pointer:end_pointer],
+			"q": new_source[pointer:end_pointer],
 			"source": language,
 			"target": "en",
 			"format": "text",
@@ -80,7 +89,7 @@ func batchTranslate(source []string, language string) (map[string]string, error)
 
 		if len(result.Data.Translations) > 0 {
 			for i := range len(result.Data.Translations) {
-				dict[source[pointer + i]] = result.Data.Translations[i].TranslatedText
+				dict[new_source[pointer + i]] = result.Data.Translations[i].TranslatedText
 			}
 		} else {
 			log.Println("No translations found in the response")
