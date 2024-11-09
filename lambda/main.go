@@ -36,9 +36,10 @@ func handler(ctx context.Context) error {
     // o(n2), so maybe considering increasing lambda timeout
     for i := 0; i < len(languages); i++ {
         for j := 0; j < len(cefrLevels); j++ {
-            story, err := generateStory(languages[i], cefrLevels[j], randomSubject)
+            storyResponse, err := generateStory(languages[i], cefrLevels[j], randomSubject)
     
             if err == nil {
+				story := storyResponse.Message.Content[0].Text
                 log.Println("Story:", story)
 
 				words, sentences := getWordsAndSentences(story)
