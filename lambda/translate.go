@@ -78,7 +78,6 @@ func batchTranslate(source []string, language string) (map[string]string, error)
 		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
-		log.Println(string(body))
 		if err != nil { return dict, err }
 
 		var result TranslateResponse
