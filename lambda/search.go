@@ -8,6 +8,9 @@ import (
 	"errors"
 	"bytes"
 	"log"
+
+	"strings"
+	"strconv"
 )
 
 type Result struct {
@@ -19,7 +22,7 @@ type Result struct {
 
 type TavilyResponse struct {
 	Query string `json:"query"`
-	Results []Result
+	Results []Result `json:"results"`
 }
 
 // EXAMPLE: webSearch("today investing news", 20)
@@ -56,7 +59,7 @@ func webSearch(query string, info_depth int) (TavilyResponse, error) {
     resp, err := client.Do(req)
     if err != nil { return emptyResponse, err }
     defer resp.Body.Close()
-	log.Println("RECEIVE RESPONSE")
+	log.Println("RECEIVE RESPONSE FOR REQ")
 
 	body, err := io.ReadAll(resp.Body)
     if err != nil { return emptyResponse, err }
@@ -66,8 +69,19 @@ func webSearch(query string, info_depth int) (TavilyResponse, error) {
 		log.Println(string(body))
 		return emptyResponse, err
 	}
-	log.Println("Result")
-	log.Println(string(body))
-	return result, nil
 
+	return result, nil
+}
+
+func buildInfoBlockFromTavilyResponse(resp TavilyResponse) string {
+	var sb strings.Builder
+
+	for i := range len(resp.Results) {
+		source := resp.Results[i]
+		sb.WriteString("SOURCE " + strconv.Itoa(i) + ": " + source.URL + "\n")
+		sb.WriteString("TITLE: " + source.Title + "\n")
+		sb.WriteString("CONTENT: " + source.Content + "\n")
+	}
+
+	return sb.String()
 }

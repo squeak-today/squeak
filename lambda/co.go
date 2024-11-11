@@ -10,7 +10,6 @@ import (
 	"bytes"
 	"log"
 
-	"math/rand"
 	"strings"
 )
 
@@ -32,6 +31,8 @@ type Document struct {
 // https://docs.cohere.com/v1/reference/chat
 type v1Response struct {
 	Text string `json:"text"`
+
+	// This only is needed if we modify for citations and tool input.
 	Citations []Citation `json:"citations"`
 	Documents []Document `json:"documents"`
 }
@@ -98,54 +99,37 @@ func generateStory(language string, cefr string, topic string) (v2Response, erro
 	return result, nil
 }
 
-var sources = []string{
-	"https://www.wsj.com/politics",
-	"https://www.theglobeandmail.com",
-}
-
-// Not ready for production.
-// -> Runaway responses
-// -> Even with prompt experimentation, no difference between A1 and C2 output.
-// -> Still uses v1 API
-// EXAMPLE USAGE: generateNewsArticle("French", "B1", "today politics news")
-func generateNewsArticle(language string, cefr string, query string) (v1Response, error) {
+// still needs testing, but has reliable output with Latin-based languages (and usually with all supported, but still should be tested.)
+// EXAMPLE USAGE: generateNewsArticle("French", "B1", "today politics news", "SOURCE 0...")
+func generateNewsArticle(language string, cefr string, query string, web_results string) (v1Response, error) {
+	cefrPrompts := map[string]string{
+		"C2": "Your article must employ very complex vocabulary, nuanced expressions, and detailed phrasing with 1400-1900 words",
+	}
+	
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	emptyResponse := v1Response{}
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
+	
+	var sb strings.Builder
+	sb.WriteString("You are an LLM designed to write " + language + " news articles. ")
+	sb.WriteString("Below this, you are given the results of a search query for \"" + query + "\". ")
+	sb.WriteString("Using this information, write a news article that matches the writing complexity of " + cefr + " on the CEFR scale. ")
+	sb.WriteString(cefrPrompts[cefr] + " ")
+	sb.WriteString("Your article must include a title styled like a newspaper headline.\n")
+	sb.WriteString("Provide the article without preamble or other comment.\n\n")
+	sb.WriteString(web_results)
 
-	startingMessage := fmt.Sprintf("LANGUAGE: %s\nCEFR: %s\nSEARCH QUERY: %s", language, cefr, query)
-	randomIndex := rand.Intn(len(sources))
-    randomSource := sources[randomIndex]
+	startingMessage := sb.String()
+
 	coherePayload := map[string]interface{}{
 		"chat_history": []map[string]string{
 			{
 				"role": "system",
-				"message": strings.TrimSpace(`
-					You are Squeak, an LLM designed to write news articles in certain languages as language learning content.
-
-					You will be provided a language, CEFR level, and search query. 
-
-					First, search the web for news stories. DO NOT MODIFY THE SEARCH QUERY FROM WHAT WAS PROVIDED.
-					To write the article, you can only use sources that are from today's date.
-
-					Then, with the found information, you must write a news article in the provided language. The requirements for the news article are as follows:
-					- The news article MUST cover a specific event or story relevant to today and use sources only dated to today.
-					- The news article must be written in the provided LANGUAGE.
-					- The article must be written and formatted as a news article.
-					- Write a story that matches the reading difficulty of the provided CEFR level.
-
-					You should provide the story without preamble or other comment.`),
+				"message": "You are Command R+, a large language model trained to have polite, helpful, inclusive conversations with people.",
 		  	},
 		},
 		"message": startingMessage,
-		"connectors": []map[string]interface{}{
-			{
-				"id": "web-search",
-				"options": map[string]string{
-					"site": randomSource,
-				},
-			},
-		},
+		"model": "command-r-plus-08-2024",
 	}
 
 	log.Println("Marshalling Cohere Payload")
@@ -175,11 +159,5 @@ func generateNewsArticle(language string, cefr string, query string) (v1Response
 		return emptyResponse, err
 	}
 	log.Println("Result")
-
-	// log.Println(string(body))
-	log.Println(result.Text)
-	for i := range len(result.Documents) {
-		log.Println(result.Documents[i].URL)
-	}
 	return result, nil
 }
