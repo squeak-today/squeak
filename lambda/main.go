@@ -16,7 +16,6 @@ import (
     "github.com/aws/aws-lambda-go/lambda"
 
     "time"
-    "math/rand"
     "strings"
 )
 
@@ -41,35 +40,47 @@ func handler(ctx context.Context) error {
     cefrLevels := []string{"B1", "B2"}
     subjects := []string{"Basketball", "Acting", "Olympics", "Painting"}
 
-    randomIndex := rand.Intn(len(subjects))
-    randomSubject := subjects[randomIndex]
+    // generate web results
+	webResults := make(map[string]string)
+	for i := 0; i < len(subjects); i++ {
+		subject := subjects[i]
+		resp, _ := webSearch("today " + subject + " news", 20)
+		webResults[subject] = buildInfoBlockFromTavilyResponse(resp)
+	}
 
-    // o(n2), so maybe considering increasing lambda timeout
+    // o(a*6*b*3), so maybe considering increasing lambda timeout
     for i := 0; i < len(languages); i++ {
         for j := 0; j < len(cefrLevels); j++ {
-            storyResponse, err := generateStory(languages[i], cefrLevels[j], randomSubject)
+			for k := 0; k < len(subjects); k++ {
+				
+				// Story Generation
+				storyResponse, err := generateStory(languages[i], cefrLevels[j], subjects[k])
     
-            if err == nil {
-				story := storyResponse.Message.Content[0].Text
-                log.Println("Story:", story)
+				if err == nil {
+					story := storyResponse.Message.Content[0].Text
+					log.Println("Story:", story)
 
-				words, sentences := getWordsAndSentences(story)
-				dictionary, _ := generateTranslations(words, sentences, language_ids[languages[i]])
-				body, _ := buildStoryBody(story, dictionary)
+					words, sentences := getWordsAndSentences(story)
+					dictionary, _ := generateTranslations(words, sentences, language_ids[languages[i]])
+					body, _ := buildStoryBody(story, dictionary)
 
-                current_time := time.Now().UTC().Format("2006-01-02")
-        
-                if err := uploadStoryS3(
-                    os.Getenv("STORY_BUCKET_NAME"),
-                    strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "_" + current_time + ".json", body,
-                ); err != nil {
-                    log.Println(err)
-                    return err
-                }
-            } else {
-                log.Println(err)
-                return err
-            }
+					current_time := time.Now().UTC().Format("2006-01-02")
+
+					path := strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "/" + subjects[k] + "/" + "Story/"
+					push_path := path + cefrLevels[j] + "_Story_" + subjects[k] + "_" + current_time + ".json"
+			
+					if err := uploadStoryS3(
+						os.Getenv("STORY_BUCKET_NAME"),
+						push_path, body,
+					); err != nil {
+						log.Println(err)
+						return err
+					}
+				} else {
+					log.Println(err)
+					return err
+				}
+			}
         }
     }
 
