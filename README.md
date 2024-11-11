@@ -1,4 +1,4 @@
-# Squeak - Comprehensive Input Made Easy! 🐭
+# Squeak - Comprehensible Input Made Easy! 🐭
 
 ## 🌍📚 What is Squeak?
 **Squeak** is the most convenient and easy-to-use source of "comprehensive input" for language learners! 
