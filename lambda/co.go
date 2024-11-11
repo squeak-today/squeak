@@ -103,9 +103,10 @@ var sources = []string{
 	"https://www.theglobeandmail.com",
 }
 
-// known problem with runaway responses when Command-R+ is expected to web search, generate, and translate.
-// fixed if prompt and message are in the proper language
-// THIS FUNCTION SHOULD NOT BE USED (the output is not very good when handling different CEFR levels, also can runaway)
+// Not ready for production.
+// -> Runaway responses
+// -> Even with prompt experimentation, no difference between A1 and C2 output.
+// -> Still uses v1 API
 // EXAMPLE USAGE: generateNewsArticle("French", "B1", "today politics news")
 func generateNewsArticle(language string, cefr string, query string) (v1Response, error) {
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
