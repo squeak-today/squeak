@@ -46,10 +46,10 @@ func batchTranslate(source []string, language string) (map[string]string, error)
 	// o(n*m)???
 	var new_source []string
 	for _, word := range source {
-		trimmedWord := strings.Trim(word, " .\n,")
+		trimmedWord := strings.Trim(word, " .\n,#")
 		splitWords := strings.Split(trimmedWord, "\n")
 		for _, splitWord := range splitWords {
-			new_source = append(new_source, strings.Trim(splitWord, " .\n,"))
+			new_source = append(new_source, strings.Trim(splitWord, " .\n,#"))
 		}
 	}
 
