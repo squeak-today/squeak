@@ -22,7 +22,8 @@ type TavilyResponse struct {
 	Results []Result
 }
 
-func webSearch(query string) (TavilyResponse, error) {
+// EXAMPLE: webSearch("today investing news", 20)
+func webSearch(query string, info_depth int) (TavilyResponse, error) {
 	tavilyAPIKey := os.Getenv("TAVILY_API_KEY")
 	emptyResponse := TavilyResponse{}
 
@@ -37,7 +38,7 @@ func webSearch(query string) (TavilyResponse, error) {
 		"include_images": false,
 		"include_image_descriptions": false,
 		"include_raw_content": false,
-		"max_results": 3,
+		"max_results": info_depth,
 		"include_domains": make([]string, 0),
 		"exclude_domains": make([]string, 0),
 	}
