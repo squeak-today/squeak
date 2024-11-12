@@ -81,6 +81,7 @@ func buildInfoBlockFromTavilyResponse(resp TavilyResponse) string {
 		sb.WriteString("SOURCE " + strconv.Itoa(i) + ": " + source.URL + "\n")
 		sb.WriteString("TITLE: " + source.Title + "\n")
 		sb.WriteString("CONTENT: " + source.Content + "\n")
+		sb.WriteString("RELEVANCE: " + strconv.FormatFloat(source.Score * 100.0, 'f', -1, 64) + "%\n")
 	}
 
 	return sb.String()

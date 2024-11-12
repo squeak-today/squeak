@@ -38,6 +38,33 @@ func buildStoryBody(story string, dictionary StoryDictionary) ([]byte, error) {
 	return jsonContent, nil
 }
 
+type NewsData struct {
+	Article string `json:"article"`
+	Translations StoryDictionary `json:"dictionary"`
+	Sources []Result `json:"sources"`
+}
+
+func buildNewsBody(article string, dictionary StoryDictionary, sources []Result) ([]byte, error) {
+	newsData := NewsData{
+		Article: article,
+		Translations: dictionary,
+		Sources: sources,
+	}
+	log.Println("Length of Translations.Words: ", len(dictionary.Translations.Words))
+	log.Println("Length of Translations.Sentences: ", len(dictionary.Translations.Sentences))
+	log.Printf("%+v\n", dictionary)
+	log.Println("Length of Sources: ", len(sources))
+
+	jsonContent, err := json.Marshal(newsData)
+	if err != nil {
+		log.Println("failed to marshal article data: %w", err)
+		emptyBytes := make([]byte, 0)
+		return emptyBytes, err
+	}
+
+	return jsonContent, nil
+}
+
 func uploadStoryS3(bucket string, key string, content []byte) error {
 	// unsure if config.WithRegion("us-east-2") is necessary here
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))

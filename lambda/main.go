@@ -42,9 +42,11 @@ func handler(ctx context.Context) error {
 
     // generate web results
 	webResults := make(map[string]string)
+	webSources := make(map[string][]Result)
 	for i := 0; i < len(subjects); i++ {
 		subject := subjects[i]
 		resp, _ := webSearch("today " + subject + " news", 20)
+		webSources[subject] = resp.Results
 		webResults[subject] = buildInfoBlockFromTavilyResponse(resp)
 	}
 
@@ -69,6 +71,31 @@ func handler(ctx context.Context) error {
 					path := strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "/" + subjects[k] + "/" + "Story/"
 					push_path := path + cefrLevels[j] + "_Story_" + subjects[k] + "_" + current_time + ".json"
 			
+					if err := uploadStoryS3(
+						os.Getenv("STORY_BUCKET_NAME"),
+						push_path, body,
+					); err != nil {
+						log.Println(err)
+						return err
+					}
+				} else {
+					log.Println(err)
+					return err
+				}
+
+				// News Generation
+				newsResp, err := generateNewsArticle(languages[i], cefrLevels[j], "today " + subjects[k] + " news", webResults[subjects[k]])
+
+				if err == nil {
+					words, sentences := getWordsAndSentences(newsResp.Text)
+					dictionary, _ := generateTranslations(words, sentences, language_ids[languages[i]])
+					body, _ := buildNewsBody(newsResp.Text, dictionary, webSources[subjects[k]])
+
+					current_time := time.Now().UTC().Format("2006-01-02")
+
+					path := strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "/" + subjects[k] + "/" + "News/"
+					push_path := path + cefrLevels[j] + "_News_" + subjects[k] + "_" + current_time + ".json"
+
 					if err := uploadStoryS3(
 						os.Getenv("STORY_BUCKET_NAME"),
 						push_path, body,
