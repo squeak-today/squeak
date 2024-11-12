@@ -47,12 +47,12 @@ type v2Response struct {
 }
 
 var cefrPrompts = map[string]string{
-	"A1": "must use basic, everyday vocabulary and short sentences and must be 60-120 words.",
+	"A1": "must use extremely basic, everyday vocabulary and short sentences and must be 60-120 words.",
 	"A2": "must use simple vocabulary and clear sentences with some basic connectors. You must aim for 120-160 words.",
 	"B1": "must include semi-complex sentences, specific terms, and connectors. Target 200-300 words.",
 	"B2": "must include clear sentences with somewhat advanced vocabulary and some complex ideas. Use a variety of connectors to link your points. Target 300-400 words.",
 	"C1": "must employ complex vocabulary, some nuanced expressions, and detailed phrasing with 700-1000 words.",
-	"C2": "must employ very complex vocabulary, nuanced expressions, detailed phrasing, and very complex ideas with 1400-1900 words.",
+	"C2": "must employ very complex vocabulary, nuanced expressions, detailed phrasing, and very complex ideas. Target 1400-1900 words.",
 }
 
 func generateStory(language string, cefr string, topic string) (v2Response, error) {
