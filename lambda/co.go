@@ -103,7 +103,12 @@ func generateStory(language string, cefr string, topic string) (v2Response, erro
 // EXAMPLE USAGE: generateNewsArticle("French", "B1", "today politics news", "SOURCE 0...")
 func generateNewsArticle(language string, cefr string, query string, web_results string) (v1Response, error) {
 	cefrPrompts := map[string]string{
-		"C2": "Your article must employ very complex vocabulary, nuanced expressions, and detailed phrasing with 1400-1900 words",
+		"A1": "Your article must use basic, everyday vocabulary and short sentences and must be 60-120 words.",
+		"A2": "Your article must use simple vocabulary and clear sentences with some basic connectors. You must aim for 120-160 words.",
+		"B1": "Your article must include semi-complex sentences, specific terms, and connectors. Target 200-300 words.",
+		"B2": "Your article must include clear sentences with somewhat advanced vocabulary and some complex ideas. Use a variety of connectors to link your points. Target 300-400 words.",
+		"C1": "Your article must employ complex vocabulary, some nuanced expressions, and detailed phrasing with 700-1000 words.",
+		"C2": "Your article must employ very complex vocabulary, nuanced expressions, detailed phrasing, and very complex ideas with 1400-1900 words",
 	}
 	
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")

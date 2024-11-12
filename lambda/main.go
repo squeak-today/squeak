@@ -28,7 +28,7 @@ func handler(ctx context.Context) error {
 	language_ids := map[string]string{
 		"French": "fr",
 	}
-    cefrLevels := []string{"B1", "B2"}
+    cefrLevels := []string{"A1", "A2", "B1", "B2", "C1", "C2"}
     subjects := []string{"Canada", "World", "Business", "Investing", "Politics", "Sports", "Arts"}
 
     // generate web results
