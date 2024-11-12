@@ -29,7 +29,7 @@ func handler(ctx context.Context) error {
 		"French": "fr",
 	}
     cefrLevels := []string{"B1", "B2"}
-    subjects := []string{"Basketball", "Acting", "Olympics", "Painting"}
+    subjects := []string{"Canada", "World", "Business", "Investing", "Politics", "Sports", "Arts"}
 
     // generate web results
 	webResults := make(map[string]string)
