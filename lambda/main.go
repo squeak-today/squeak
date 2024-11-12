@@ -19,7 +19,8 @@ import (
     "strings"
 )
 
-
+// on current lambda specs
+// -> 1 language, 2 cefr, 4 subjects took ~120 seconds (B1, B2)
 func handler(ctx context.Context) error {
     log.Println("Executing Aya Story Generation...")
 
