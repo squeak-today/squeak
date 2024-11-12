@@ -20,16 +20,6 @@ import (
 )
 
 
-/*
-News Articles haven't been added.
-But functionality is like this:
-
-query := "today investing news"
-resp, _ := webSearch(query, 20)
-web_results := buildInfoBlockFromTavilyResponse(resp)
-newsResp, _ := generateNewsArticle("French", "C2", query, web_results)
-log.Println(newsResp.Text)
-*/
 func handler(ctx context.Context) error {
     log.Println("Executing Aya Story Generation...")
 
