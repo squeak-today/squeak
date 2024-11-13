@@ -72,7 +72,7 @@ func generateStory(language string, cefr string, topic string) (v2Response, erro
         "messages": []map[string]string{
             {
 				"role": "system",
-				"message": "You are Command R+, a large language model trained to have polite, helpful, inclusive conversations with people.",
+				"content": "You are Command R+, a large language model trained to have polite, helpful, inclusive conversations with people.",
 		  	},
 			{
 				"role": "user",
