@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 	"encoding/json"
 	"net/http"
 	"io"
