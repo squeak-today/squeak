@@ -44,17 +44,20 @@ func init() {
 	router.GET("/story", func(c *gin.Context) {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
+		subject := c.Query("subject")
+		contentType := c.Query("contentType")
+		
 
-		if language == "" || cefr == "" {
+		if language == "" || cefr == "" || contentType == "" || subject == ""{
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "language and cefr parameter is required!",
+				"error": "language, cefr, contentType and subject parameter is required!",
 			})
 			return
 		}
 
 		// theres no check for valid language or cefr yet
 
-		story, err := pullStory(language, cefr)
+		story, err := pullStory(language, cefr, contentType, subject)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "story retrieval failed!",

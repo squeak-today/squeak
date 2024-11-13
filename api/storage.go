@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -18,7 +19,20 @@ type Story struct {
 	Content string `json:"story"`
 }
 
-func pullStory(language string, cefrLevel string) (string, error) {
+func buildS3Key(language string, cefr string, subject string, contentType string, date string) (string){
+	return fmt.Sprintf("%s/%s/%s/%s/%s_%s_%s_%s.json",
+		strings.ToLower(language),
+		strings.ToUpper(cefr),
+		strings.Title(subject),
+		strings.Title(contentType),
+		strings.ToUpper(cefr),
+		strings.Title(contentType),
+		strings.Title(subject),
+		date,
+	)
+}
+
+func pullStory(language string, cefrLevel string, subject string, contentType string) (string, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	
 	if err != nil {
@@ -32,7 +46,7 @@ func pullStory(language string, cefrLevel string) (string, error) {
 	// should probably check if current day files don't exist, then access iteratively yesterday's
 	// yesterday := time.Now().UTC().AddDate(0, 0, -1).Format("2006-01-02")
 
-	key := strings.ToLower(language) + "/" + cefrLevel + "_" + current_time + ".json"
+	key := buildS3Key(language, cefrLevel, subject, contentType, current_time)
 
 	resp, err := client.GetObject(context.TODO(), &s3.GetObjectInput{
     	Bucket: aws.String(os.Getenv("STORY_BUCKET_NAME")),
