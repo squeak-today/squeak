@@ -57,7 +57,7 @@ func init() {
 
 		// theres no check for valid language or cefr yet
 
-		content, err := pullConent(language, cefr, subject, contentType)
+		content, err := pullContent(language, cefr, subject, contentType)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "content retrieval failed!",

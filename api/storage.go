@@ -60,7 +60,7 @@ func buildS3Key(language string, cefr string, subject string, contentType string
 	)
 }
 
-func pullConent(language string, cefrLevel string, subject string, contentType string) (string, error) {
+func pullContent(language string, cefrLevel string, subject string, contentType string) (string, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	
 	if err != nil {
