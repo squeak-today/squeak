@@ -62,11 +62,10 @@ func init() {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "content retrieval failed!",
 			})
+			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"content": content,
-		})
+		c.JSON(http.StatusOK, content.ToMap())
 	})
 
 	ginLambda = ginadapter.New(router)

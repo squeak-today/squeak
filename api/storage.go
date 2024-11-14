@@ -13,7 +13,28 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+
+	"github.com/gin-gonic/gin"
 )
+
+type Content interface {
+    ToMap() gin.H
+}
+
+func (s Story) ToMap() gin.H {
+    return gin.H{
+        "content":    s.Content,
+        "dictionary": s.Dictionary,
+    }
+}
+
+func (n News) ToMap() gin.H {
+    return gin.H{
+        "content":    n.Content,
+        "dictionary": n.Dictionary,
+        "sources":    n.Sources,
+    }
+}
 
 type Dictionary struct {
 	Translations struct {
@@ -60,12 +81,12 @@ func buildS3Key(language string, cefr string, subject string, contentType string
 	)
 }
 
-func pullContent(language string, cefrLevel string, subject string, contentType string) (string, error) {
+func pullContent(language string, cefrLevel string, subject string, contentType string) (Content, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	
 	if err != nil {
 		log.Printf("unable to load SDK config, %v", err)
-		return "", err
+		return nil, err
 	}
 
 	client := s3.NewFromConfig(cfg)
@@ -82,7 +103,7 @@ func pullContent(language string, cefrLevel string, subject string, contentType 
     })
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -90,7 +111,7 @@ func pullContent(language string, cefrLevel string, subject string, contentType 
 	_, err = io.Copy(&builder, resp.Body)
 	if err != nil {
 		log.Println(err)
-		return "", nil
+		return nil, err
 	}
 
 	jsonData := builder.String()
@@ -101,20 +122,19 @@ func pullContent(language string, cefrLevel string, subject string, contentType 
 			err = json.Unmarshal([]byte(jsonData), &story)
 			if err != nil {
 				log.Printf("failed to unmarshal Story JSON: %v", err)
-				return "", err
+				return nil, err
 			}
-			return story.Content, nil
+			return story, nil
 
 		case "news":
 			var news News
 			err = json.Unmarshal([]byte(jsonData), &news)
 			if err != nil {
 				log.Printf("failed to unmarshal News JSON: %v", err)
-				return "", err
+				return nil, err
 			}
-			return news.Content, nil
-
+			return news, nil
 		default:
-			return "", fmt.Errorf("unsupported content type: %s", contentType)
+			return nil, fmt.Errorf("unsupported content type: %s", contentType)
     }
 }
