@@ -29,7 +29,9 @@ func handler(ctx context.Context) error {
 		"French": "fr",
 	}
     cefrLevels := []string{"A1", "B2", "C2"} // keep minimal for testing (currently lambda times out)
-    subjects := []string{"World", "Investing", "Politics", "Sports", "Arts"}
+	
+    // subjects := []string{"World", "Investing", "Politics", "Sports", "Arts"}
+	subjects := []string{"Politics"}
 
     // generate web results
 	webResults := make(map[string]string)

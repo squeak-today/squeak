@@ -101,6 +101,7 @@ func generateStory(language string, cefr string, topic string) (v2Response, erro
 
     // var result map[string]interface{}
     var result v2Response
+	log.Println(string(body))
     if err := json.Unmarshal(body, &result); err != nil {
 		log.Println(string(body)) // e.g improper model id (should add better reaction)
 		return emptyResponse, err

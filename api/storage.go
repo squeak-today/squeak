@@ -15,9 +15,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-type Story struct {
-	Content string `json:"story"`
+type Dictionary struct {
+	Translations struct {
+		Words     map[string]string `json:"words"`
+		Sentences map[string]string `json:"sentences"`
+	} `json:"translations"`
 }
+
+type Story struct {
+	Content    string     `json:"story"`
+	Dictionary Dictionary `json:"dictionary"`
+}
+
 
 func buildS3Key(language string, cefr string, subject string, contentType string, date string) (string){
 	return fmt.Sprintf("%s/%s/%s/%s/%s_%s_%s_%s.json",
