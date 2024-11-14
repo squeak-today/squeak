@@ -27,6 +27,25 @@ type Story struct {
 	Dictionary Dictionary `json:"dictionary"`
 }
 
+type Source struct {
+    Title   string  `json:"title"`
+    URL     string  `json:"url"`
+    Content string  `json:"content"`
+    Score   float64 `json:"score"`
+}
+
+type News struct {
+    Content    string     `json:"article"`
+    Dictionary Dictionary `json:"dictionary"`
+    Sources    []Source   `json:"sources"`
+}
+
+type ContentType string
+
+const (
+    StoryType   ContentType = "Story"
+    ArticleType ContentType = "Article"
+)
 
 func buildS3Key(language string, cefr string, subject string, contentType string, date string) (string){
 	return fmt.Sprintf("%s/%s/%s/%s/%s_%s_%s_%s.json",
@@ -41,7 +60,7 @@ func buildS3Key(language string, cefr string, subject string, contentType string
 	)
 }
 
-func pullStory(language string, cefrLevel string, subject string, contentType string) (string, error) {
+func pullConent(language string, cefrLevel string, subject string, contentType string) (string, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	
 	if err != nil {
@@ -74,12 +93,28 @@ func pullStory(language string, cefrLevel string, subject string, contentType st
 		return "", nil
 	}
 
-	var story Story
-    err = json.Unmarshal([]byte(builder.String()), &story)
-    if err != nil {
-        log.Printf("failed to unmarshal JSON: %v", err)
-		return "", err
-    }
+	jsonData := builder.String()
 
-	return story.Content, nil
+    switch strings.ToLower(contentType) {
+		case "story":
+			var story Story
+			err = json.Unmarshal([]byte(jsonData), &story)
+			if err != nil {
+				log.Printf("failed to unmarshal Story JSON: %v", err)
+				return "", err
+			}
+			return story.Content, nil
+
+		case "news":
+			var news News
+			err = json.Unmarshal([]byte(jsonData), &news)
+			if err != nil {
+				log.Printf("failed to unmarshal News JSON: %v", err)
+				return "", err
+			}
+			return news.Content, nil
+
+		default:
+			return "", fmt.Errorf("unsupported content type: %s", contentType)
+    }
 }
