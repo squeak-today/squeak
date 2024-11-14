@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"fmt"
 	"encoding/json"
 	"net/http"
 	"io"
@@ -10,7 +9,6 @@ import (
 	"bytes"
 	"log"
 
-	"math/rand"
 	"strings"
 )
 
@@ -32,6 +30,8 @@ type Document struct {
 // https://docs.cohere.com/v1/reference/chat
 type v1Response struct {
 	Text string `json:"text"`
+
+	// This only is needed if we modify for citations and tool input.
 	Citations []Citation `json:"citations"`
 	Documents []Document `json:"documents"`
 }
@@ -45,24 +45,35 @@ type v2Response struct {
 	} `json:"message"`
 }
 
+var cefrPrompts = map[string]string{
+	"A1": "must use extremely basic, everyday vocabulary and short sentences and must be 60-120 words.",
+	"A2": "must use simple vocabulary and clear sentences with some basic connectors. You must aim for 120-160 words.",
+	"B1": "must include semi-complex sentences, specific terms, and connectors. Target 200-300 words.",
+	"B2": "must include clear sentences with somewhat advanced vocabulary and some complex ideas. Use a variety of connectors to link your points. Target 300-400 words.",
+	"C1": "must employ complex vocabulary, some nuanced expressions, and detailed phrasing with 700-1000 words.",
+	"C2": "must employ very complex vocabulary, nuanced expressions, detailed phrasing, and very complex ideas. Target 1400-1900 words.",
+}
+
 func generateStory(language string, cefr string, topic string) (v2Response, error) {
 	emptyResponse := v2Response{}
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
 
-	startingMessage := fmt.Sprintf("LANGUAGE: %s\nCEFR: %s\nTOPIC: %s", language, cefr, topic)
+	
+	var sb strings.Builder
+	sb.WriteString("You are an LLM designed to write " + language + " fiction stories. ")
+	sb.WriteString("Using the topic of " + topic + ", write a fictional story that matches the writing complexity of " + cefr + " on the CEFR scale.")
+	sb.WriteString("Your story " + cefrPrompts[cefr] + " ")
+	sb.WriteString("Provide the story without preamble or other comment.\n\n")
+
+	startingMessage := sb.String()
 	coherePayload := map[string]interface{}{
         "model": "c4ai-aya-expanse-32b",
         "messages": []map[string]string{
             {
-                "role": "system",
-                "content": // we don't use "USEFUL WORDS" so maybe remove for now?
-					`You are Squeak, an LLM designed to write short stories or news stories. 
-					The nature of the story is dependent on CEFR, LANGUAGE, TOPIC, and USEFUL WORDS.
-					You must write your story in the LANGUAGE on TOPIC using at least one of the USEFUL WORDS translated without sacrificing story quality.
-					The difficulty of the story MUST be understandable to the CEFR provided.
-					You should provide the story without preamble or other comment.`,
-            },
+				"role": "system",
+				"content": "You are Command R+, a large language model trained to have polite, helpful, inclusive conversations with people.",
+		  	},
 			{
 				"role": "user",
 				"content": startingMessage,
@@ -90,6 +101,7 @@ func generateStory(language string, cefr string, topic string) (v2Response, erro
 
     // var result map[string]interface{}
     var result v2Response
+	log.Println(string(body))
     if err := json.Unmarshal(body, &result); err != nil {
 		log.Println(string(body)) // e.g improper model id (should add better reaction)
 		return emptyResponse, err
@@ -98,54 +110,33 @@ func generateStory(language string, cefr string, topic string) (v2Response, erro
 	return result, nil
 }
 
-var sources = []string{
-	"https://www.wsj.com/politics",
-	"https://www.theglobeandmail.com",
-}
-
-// Not ready for production.
-// -> Runaway responses
-// -> Even with prompt experimentation, no difference between A1 and C2 output.
-// -> Still uses v1 API
-// EXAMPLE USAGE: generateNewsArticle("French", "B1", "today politics news")
-func generateNewsArticle(language string, cefr string, query string) (v1Response, error) {
+// still needs testing, but has reliable output with Latin-based languages (and usually with all supported, but still should be tested.)
+// EXAMPLE USAGE: generateNewsArticle("French", "B1", "today politics news", "SOURCE 0...")
+func generateNewsArticle(language string, cefr string, query string, web_results string) (v1Response, error) {
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	emptyResponse := v1Response{}
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
+	
+	var sb strings.Builder
+	sb.WriteString("You are an LLM designed to write " + language + " news articles. ")
+	sb.WriteString("Below this, you are given the results of a search query for \"" + query + "\". ")
+	sb.WriteString("Using this information, write a news article that matches the writing complexity of " + cefr + " on the CEFR scale. ")
+	sb.WriteString("Your article " + cefrPrompts[cefr] + " ")
+	sb.WriteString("Your article must include a title styled like a newspaper headline.\n")
+	sb.WriteString("Provide the article without preamble or other comment.\n\n")
+	sb.WriteString(web_results)
 
-	startingMessage := fmt.Sprintf("LANGUAGE: %s\nCEFR: %s\nSEARCH QUERY: %s", language, cefr, query)
-	randomIndex := rand.Intn(len(sources))
-    randomSource := sources[randomIndex]
+	startingMessage := sb.String()
+
 	coherePayload := map[string]interface{}{
 		"chat_history": []map[string]string{
 			{
 				"role": "system",
-				"message": strings.TrimSpace(`
-					You are Squeak, an LLM designed to write news articles in certain languages as language learning content.
-
-					You will be provided a language, CEFR level, and search query. 
-
-					First, search the web for news stories. DO NOT MODIFY THE SEARCH QUERY FROM WHAT WAS PROVIDED.
-					To write the article, you can only use sources that are from today's date.
-
-					Then, with the found information, you must write a news article in the provided language. The requirements for the news article are as follows:
-					- The news article MUST cover a specific event or story relevant to today and use sources only dated to today.
-					- The news article must be written in the provided LANGUAGE.
-					- The article must be written and formatted as a news article.
-					- Write a story that matches the reading difficulty of the provided CEFR level.
-
-					You should provide the story without preamble or other comment.`),
+				"message": "You are Command R+, a large language model trained to have polite, helpful, inclusive conversations with people.",
 		  	},
 		},
 		"message": startingMessage,
-		"connectors": []map[string]interface{}{
-			{
-				"id": "web-search",
-				"options": map[string]string{
-					"site": randomSource,
-				},
-			},
-		},
+		"model": "command-r-plus-08-2024",
 	}
 
 	log.Println("Marshalling Cohere Payload")
@@ -175,11 +166,5 @@ func generateNewsArticle(language string, cefr string, query string) (v1Response
 		return emptyResponse, err
 	}
 	log.Println("Result")
-
-	// log.Println(string(body))
-	log.Println(result.Text)
-	for i := range len(result.Documents) {
-		log.Println(result.Documents[i].URL)
-	}
 	return result, nil
 }

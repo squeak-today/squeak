@@ -10,6 +10,12 @@ variable "google_api_key" {
 	sensitive = true
 }
 
+variable "tavily_api_key" {
+	description = "Tavily API Key for Web Search API"
+	type = string
+	sensitive = true
+}
+
 variable "s3_bucket_name" {
     description = "S3 Bucket ID for storing stories"
     type = string
