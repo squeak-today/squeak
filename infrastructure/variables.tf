@@ -15,8 +15,3 @@ variable "tavily_api_key" {
 	type = string
 	sensitive = true
 }
-
-variable "s3_bucket_name" {
-    description = "S3 Bucket ID for storing stories"
-    type = string
-}
