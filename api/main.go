@@ -16,7 +16,7 @@ import (
 // zip front-function.zip bootstrap
 
 // AFTER TERRAFORM RUN TEST WITH
-// curl "https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2"
+// curl "https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics&contentType=News"
 
 var ginLambda *ginadapter.GinLambda
 
