@@ -1,13 +1,9 @@
+data "aws_region" "current" {}
 resource "aws_amplify_app" "squeak_app" {
     name         = "squeak"
     repository   = "https://github.com/squeak-today/squeak"
     access_token = var.github_access_token
 
-    # Enable auto branch creation
-    enable_auto_branch_creation = true
-
-    # Enable branch auto-build and deploy
-    enable_branch_auto_build = true
 
     # Build settings
     build_spec = <<-EOT
@@ -43,4 +39,25 @@ resource "aws_amplify_branch" "main" {
     enable_auto_build = true
 }
 
+// the auto build feature of the TF provider is not working, https://github.com/hashicorp/terraform-provider-aws/issues/19870
+// so we need to trigger a deployment manually
+resource "null_resource" "trigger_amplify_deployment" {
+  depends_on = [aws_amplify_branch.main]
 
+  # Force this command to be triggered every time this terraform file is ran
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  # The command to be ran
+  provisioner "local-exec" {
+    command = "aws amplify start-job --app-id ${aws_amplify_app.squeak_app.id} --branch-name ${aws_amplify_branch.main.branch_name} --job-type RELEASE --region ${data.aws_region.current.name}"
+    }
+}
+
+
+# Default domain output
+output "default_domain" {
+    description = "The default domain of the Amplify app"
+    value       = "https://${aws_amplify_branch.main.branch_name}.${aws_amplify_app.squeak_app.default_domain}"
+}
