@@ -50,7 +50,7 @@ resource "aws_iam_role" "story_gen_role" {
                         "s3:PutObject",
                         "s3:PutobjectAcl"
                     ],
-                    "Resource": "arn:aws:s3:::${var.s3_bucket_name}/*"
+                    "Resource": "arn:aws:s3:::${aws_s3_bucket.story_gen_bucket.bucket}/*"
                 }
             ]
         })
@@ -103,8 +103,8 @@ resource "aws_iam_role" "story_api_role" {
                         "s3:ListBucket"
                     ],
                     "Resource": [
-                        "arn:aws:s3:::${var.s3_bucket_name}",
-                        "arn:aws:s3:::${var.s3_bucket_name}/*"
+                        "arn:aws:s3:::${aws_s3_bucket.story_gen_bucket.id}",
+                        "arn:aws:s3:::${aws_s3_bucket.story_gen_bucket.id}/*"
                     ]
                 }
             ]
