@@ -97,7 +97,7 @@ Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
 				"beaucoup": "a lot"
 			},
 			"sentences": {
-				"J'aime Squeak beaucoup": "I like Squeak a lot"
+				"Donald Trump aime Squeak beaucoup": "Donald Trump likes Squeak a lot"
 			}
 		}
 	},
