@@ -15,9 +15,6 @@ import (
 // GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap .
 // zip front-function.zip bootstrap
 
-// AFTER TERRAFORM RUN TEST WITH
-// curl "https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics&contentType=News"
-
 var ginLambda *ginadapter.GinLambda
 
 func init() {
@@ -45,19 +42,43 @@ func init() {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
-		contentType := c.Query("contentType")
 		
 
-		if language == "" || cefr == "" || contentType == "" || subject == ""{
+		if language == "" || cefr == "" || subject == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "language, cefr, contentType and subject parameter is required!",
+				"error": "language, cefr, and subject parameter is required!",
 			})
 			return
 		}
 
 		// theres no check for valid language or cefr yet
 
-		content, err := pullContent(language, cefr, subject, contentType)
+		content, err := pullContent(language, cefr, subject, "Story")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "content retrieval failed!",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, content.ToMap())
+	})
+
+	router.GET("/news", func(c *gin.Context) {
+		language := c.Query("language")
+		cefr := c.Query("cefr")
+		subject := c.Query("subject")
+
+		if language == "" || cefr == "" || subject == ""{
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "language, cefr, and subject parameter is required!",
+			})
+			return
+		}
+
+		// theres no check for valid language or cefr yet
+
+		content, err := pullContent(language, cefr, subject, "News")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "content retrieval failed!",
