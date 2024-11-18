@@ -17,7 +17,97 @@ terraform destroy
 ```
 4. Either wait for S3 to be populated after the story generation lambda is invoked or invoke manually. The REST API endpoint should be ready for use.
 
-## **POST** `/story`
-`https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics&contentType=News`
-**Description:**
-Pulls generated story as JSON. Pass `language`, `cefr`, `subject`, and `contentType` as fields.
+## **GET** `/story`
+```
+https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics
+```
+Pulls generated story data as JSON. Pass `language`, `cefr`, and `subject` as fields.
+
+### Path Parameters
+
+**language** `string` (*required*)
+
+Current supported languages are `French`.
+
+---
+
+**cefr** `string` (*required*)
+
+Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
+
+---
+
+**subject** `string` (*required*)
+
+### Response
+`200 Successful`
+```json
+{
+	"content": "J'aime Squeak beaucoup.",
+	"dictionary": {
+		"translations": {
+			"words": {
+				"J'aime": "I like",
+				"Squeak": "Squeak",
+				"beaucoup": "a lot"
+			},
+			"sentences": {
+				"J'aime Squeak beaucoup": "I like Squeak a lot"
+			}
+		}
+	}
+}
+```
+
+
+## **GET** `/news`
+```
+https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/news?language=French&cefr=B2&subject=Politics
+```
+Pulls generated news article data as JSON. Pass `language`, `cefr`, and `subject` as fields.
+
+### Path Parameters
+
+**language** `string` (*required*)
+
+Current supported languages are `French`.
+
+---
+
+**cefr** `string` (*required*)
+
+Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
+
+---
+
+**subject** `string` (*required*)
+
+### Response
+`200 Successful`
+```json
+{
+	"content": "Donald Trump aime Squeak beaucoup.",
+	"dictionary": {
+		"translations": {
+			"words": {
+				"Donald": "Donald",
+				"Trump": "Trump",
+				"aime": "like",
+				"Squeak": "Squeak",
+				"beaucoup": "a lot"
+			},
+			"sentences": {
+				"J'aime Squeak beaucoup": "I like Squeak a lot"
+			}
+		}
+	},
+	"sources": [
+		{
+			"title": "Donald Trump thinks Squeak is the best!",
+			"url": "https://www.super-weird-news.com/donald-trump-squeak",
+			"content": "In a very fake interview with Donald Trump, Squeak representative Joe Biden asked Donald Trump if he liked Squeak. He said yes!",
+			"score": 0.9865718
+		}
+	]
+}
+```
