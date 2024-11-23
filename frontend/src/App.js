@@ -1,10 +1,10 @@
 import './App.css';
-// import { generateStory } from './cohere';
 import { useState } from 'react';
 import styled from 'styled-components';
 
 import UserPool from "./UserPool";
 
+import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
 
 const StyledBox = styled.div`
 	width: 80%;
@@ -154,7 +154,7 @@ const SignUp = () => {
 
 		UserPool.signUp(email, password, [], null, (err, data) => {
 			if (err) {
-				console.log(err);
+				console.error(err);
 			}
 			console.log(data);
 		});
@@ -178,6 +178,60 @@ const SignUp = () => {
 						onChange={(event) => setPassword(event.target.value)}>
 					</InputField>
 					<GenerateButton type="submit">Signup</GenerateButton>
+				</form>
+			</div>
+		</StyledBox>
+	)
+}
+
+const Login = () => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
+	const onSubmit = (event) => {
+		event.preventDefault();
+
+		const user = new CognitoUser({
+			Username: email,
+			Pool: UserPool,
+		});
+
+		const authDetails = new AuthenticationDetails({
+			Username: email,
+			Password: password
+		});
+
+		user.authenticateUser(authDetails, {
+			onSuccess: (data) => {
+				console.log("onSuccess: ", data);
+			},
+			onFailure: (err) => {
+				console.error("onFailure: ", err);
+			},
+			newPasswordRequired: (data) => {
+				console.log("newPasswordRequired: ", data);
+			}
+		});
+	}
+
+	return (
+		<StyledBox>
+			<Subtitle>Login</Subtitle>
+			{/* ugly sign-in */}
+			<div>
+				<form onSubmit={onSubmit}>
+					<InputField
+						value={email}
+						placeholder="Email"
+						onChange={(event) => setEmail(event.target.value)}>
+					</InputField>
+					<InputField
+						value={password}
+						type="password"
+						placeholder="Password"
+						onChange={(event) => setPassword(event.target.value)}>
+					</InputField>
+					<GenerateButton type="submit">Login</GenerateButton>
 				</form>
 			</div>
 		</StyledBox>
@@ -230,7 +284,8 @@ function App() {
 		<div>
 			
 			<SignUp />
-			
+			<Login />
+
 			<StyledBox>
 				<Title>Squeak</Title>
 				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
