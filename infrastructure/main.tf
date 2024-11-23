@@ -32,13 +32,18 @@ resource "aws_cognito_user_pool_client" "app_client" {
 	name = "squeak_app_client"
 	user_pool_id = aws_cognito_user_pool.user_pool.id
 
-	explicit_auth_flows = [
-		"ALLOW_USER_PASSWORD_AUTH",
-		"ALLOW_CUSTOM_AUTH", //unused for now
-		"ALLOW_USER_SRP_AUTH" //unused for now
+	explicit_auth_flows = [ // defaults
+		"ALLOW_CUSTOM_AUTH",
+		"ALLOW_USER_SRP_AUTH",
+		"ALLOW_REFRESH_TOKEN_AUTH",
 	]
 
 	generate_secret = false
+}
+
+resource "aws_cognito_user_pool_domain" "user_pool_domain" {
+	domain = "squeak-auth"
+	user_pool_id = aws_cognito_user_pool.user_pool.id
 }
 
 output "user_pool_id" {
