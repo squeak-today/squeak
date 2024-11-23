@@ -145,6 +145,45 @@ const Tooltip = styled.div`
 	z-index: 1000;
 `;
 
+const SignUp = () => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
+	const onSubmit = (event) => {
+		event.preventDefault();
+
+		UserPool.signUp(email, password, [], null, (err, data) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log(data);
+		});
+	}
+
+	return (
+		<StyledBox>
+			<Subtitle>Create Account</Subtitle>
+			{/* ugly sign-in */}
+			<div>
+				<form onSubmit={onSubmit}>
+					<InputField
+						value={email}
+						placeholder="Email"
+						onChange={(event) => setEmail(event.target.value)}>
+					</InputField>
+					<InputField
+						value={password}
+						type="password"
+						placeholder="Password"
+						onChange={(event) => setPassword(event.target.value)}>
+					</InputField>
+					<GenerateButton type="submit">Signup</GenerateButton>
+				</form>
+			</div>
+		</StyledBox>
+	)
+}
+
 function App() {
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
@@ -155,9 +194,6 @@ function App() {
 
 	const isFormComplete = language && CEFRLevel;
 	const apiUrl = "https://vqk86i7b5a.execute-api.us-east-2.amazonaws.com/dev/story"; // current API url (changes on each application)
-
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
@@ -190,40 +226,11 @@ function App() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
-	const onSubmit = (event) => {
-		event.preventDefault();
-
-		UserPool.signUp(email, password, [], null, (err, data) => {
-			if (err) {
-				console.log(err);
-			}
-			console.log(data);
-		});
-	}
-
 	return (
 		<div>
-			<StyledBox>
-				<Subtitle>Create Account</Subtitle>
-				{/* ugly sign-in */}
-				<div>
-					<form onSubmit={onSubmit}>
-						<InputField
-							value={email}
-							placeholder="Email"
-							onChange={(event) => setEmail(event.target.value)}>
-						</InputField>
-						<InputField
-							value={password}
-							type="password"
-							placeholder="Password"
-							onChange={(event) => setPassword(event.target.value)}>
-						</InputField>
-						<GenerateButton type="submit">Signup</GenerateButton>
-					</form>
-				</div>
-			</StyledBox>
-
+			
+			<SignUp />
+			
 			<StyledBox>
 				<Title>Squeak</Title>
 				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
