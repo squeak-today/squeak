@@ -1,8 +1,9 @@
 import './App.css';
 // import { generateStory } from './cohere';
-import { generateDefinition } from './defns';
 import { useState } from 'react';
 import styled from 'styled-components';
+
+import UserPool from "./UserPool";
 
 
 const StyledBox = styled.div`
@@ -145,7 +146,6 @@ const Tooltip = styled.div`
 `;
 
 function App() {
-	const [googleApiKey, setGoogleApiKey] = useState('');
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
 	const [story, setStory] = useState(''); // State to store the story
@@ -153,8 +153,11 @@ function App() {
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
-	const isFormComplete = googleApiKey && language && CEFRLevel;
+	const isFormComplete = language && CEFRLevel;
 	const apiUrl = "https://vqk86i7b5a.execute-api.us-east-2.amazonaws.com/dev/story"; // current API url (changes on each application)
+
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
@@ -174,13 +177,7 @@ function App() {
 	};
 
 	const fetchWordDefinition = async (word) => {
-		try {
-			const newDefinition = await generateDefinition(googleApiKey, word, language);
-			return newDefinition;
-		} catch (error) {
-			console.error("Error generating story:", error);
-			return `Failed to generate definition for ${word}.`
-		}
+		return "";
 	};
 
 	const handleWordClick = async (e, word) => {
@@ -193,60 +190,86 @@ function App() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
+	const onSubmit = (event) => {
+		event.preventDefault();
+
+		UserPool.signUp(email, password, [], null, (err, data) => {
+			if (err) {
+				console.log(err);
+			}
+			console.log(data);
+		});
+	}
 
 	return (
-    	<StyledBox>
-			<Title>Squeak</Title>
-			<Subtitle>Comprehensive Input Made Easy!</Subtitle>
+		<div>
+			<StyledBox>
+				<Subtitle>Create Account</Subtitle>
+				{/* ugly sign-in */}
+				<div>
+					<form onSubmit={onSubmit}>
+						<InputField
+							value={email}
+							placeholder="Email"
+							onChange={(event) => setEmail(event.target.value)}>
+						</InputField>
+						<InputField
+							value={password}
+							type="password"
+							placeholder="Password"
+							onChange={(event) => setPassword(event.target.value)}>
+						</InputField>
+						<GenerateButton type="submit">Signup</GenerateButton>
+					</form>
+				</div>
+			</StyledBox>
 
-			<InputField
-				type="password"
-				placeholder="Enter your Google Cloud Translation API key"
-				value={googleApiKey}
-				onChange={(e) => setGoogleApiKey(e.target.value)}
-			/>
+			<StyledBox>
+				<Title>Squeak</Title>
+				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
 
-			{/* Dropdown for language selection */}
-			<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
-				<option value="" disabled>Select a language</option>
-				<option value="French">French</option>
-			</SelectField>
+				{/* Dropdown for language selection */}
+				<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
+					<option value="" disabled>Select a language</option>
+					<option value="French">French</option>
+				</SelectField>
 
-			{/* Dropdown for CEFR level selection */}
-			<SelectField value={CEFRLevel} onChange={(e) => setCEFRLevel(e.target.value)}>
-				<option value="" disabled>Select a CEFR level</option>
-				<option value="B1">B1</option>
-				<option value="B2">B2</option>
-			</SelectField>
+				{/* Dropdown for CEFR level selection */}
+				<SelectField value={CEFRLevel} onChange={(e) => setCEFRLevel(e.target.value)}>
+					<option value="" disabled>Select a CEFR level</option>
+					<option value="B1">B1</option>
+					<option value="B2">B2</option>
+				</SelectField>
 
-			<ButtonContainer>
-				<GenerateButton onClick={handleGenerateStory} disabled={!isFormComplete || loading}>
-					{loading ? 'Generating Story...' : 'Generate Story'}
-				</GenerateButton>
-			</ButtonContainer>
-			{story && (
-				<StoryContainer>
-					<StoryTitle>Generated Story</StoryTitle>
-					{/* Split the story into words and make each word clickable */}
-					<StoryBox>
-						<StoryText>
-							{story.split(' ').map((word, index) => (
-								<Word key={index} onClick={(e) => handleWordClick(e, word)}>
-									{word}
-								</Word>
-							))}
-						</StoryText>
-					</StoryBox>
-				</StoryContainer>
-			)}
+				<ButtonContainer>
+					<GenerateButton onClick={handleGenerateStory} disabled={!isFormComplete || loading}>
+						{loading ? 'Generating Story...' : 'Generate Story'}
+					</GenerateButton>
+				</ButtonContainer>
+				{story && (
+					<StoryContainer>
+						<StoryTitle>Generated Story</StoryTitle>
+						{/* Split the story into words and make each word clickable */}
+						<StoryBox>
+							<StoryText>
+								{story.split(' ').map((word, index) => (
+									<Word key={index} onClick={(e) => handleWordClick(e, word)}>
+										{word}
+									</Word>
+								))}
+							</StoryText>
+						</StoryBox>
+					</StoryContainer>
+				)}
 
-			{/* displaying the word definition */}
-			{tooltip.visible && (
-				<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
-				<strong>{tooltip.word}</strong>: {tooltip.definition}
-				</Tooltip>
-			)}
-		</StyledBox>
+				{/* displaying the word definition */}
+				{tooltip.visible && (
+					<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
+					<strong>{tooltip.word}</strong>: {tooltip.definition}
+					</Tooltip>
+				)}
+			</StyledBox>
+		</div>
 	);
 }
 
