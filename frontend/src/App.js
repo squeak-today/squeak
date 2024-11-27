@@ -257,23 +257,25 @@ const Login = () => {
 function App() {
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
+	const [subject, setSubject] = useState('');
 	const [story, setStory] = useState(''); // State to store the story
 	const [loading, setLoading] = useState(false); // State to manage loading state
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
 	const isFormComplete = language && CEFRLevel;
-	const apiUrl = "https://vqk86i7b5a.execute-api.us-east-2.amazonaws.com/dev/story"; // current API url (changes on each application)
+	const apiUrl = "https://api.squeak.today/story";
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
-		let url = `${apiUrl}?language=${encodeURIComponent(language)}&cefr=${encodeURIComponent(CEFRLevel)}`;
+		let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
 		fetch(url).then(response => {
 			if (!response.ok) {
 				throw new Error("Network response was not ok");
 			}
 			return response.json();
 		}).then(data => {
+			console.log("Pulled Story!", data["content"]);
 			setStory(data["content"]);
 			setLoading(false); // Set loading state to false when finished
 		}).catch(error => {
@@ -316,8 +318,15 @@ function App() {
 				{/* Dropdown for CEFR level selection */}
 				<SelectField value={CEFRLevel} onChange={(e) => setCEFRLevel(e.target.value)}>
 					<option value="" disabled>Select a CEFR level</option>
-					<option value="B1">B1</option>
+					{/* <option value="B1">B1</option> */}
+					<option value="A1">A1</option>
 					<option value="B2">B2</option>
+				</SelectField>
+
+				{/* Dropdown for subject selection */}
+				<SelectField value={subject} onChange={(e) => setSubject(e.target.value)}>
+					<option value="" disabled>Select a subject</option>
+					<option value="Politics">Politics</option>
 				</SelectField>
 
 				<ButtonContainer>
@@ -331,11 +340,15 @@ function App() {
 						{/* Split the story into words and make each word clickable */}
 						<StoryBox>
 							<StoryText>
+								<p>{story}</p>
+								{/*
 								{story.split(' ').map((word, index) => (
 									<Word key={index} onClick={(e) => handleWordClick(e, word)}>
 										{word}
 									</Word>
 								))}
+								*/}
+
 							</StoryText>
 						</StoryBox>
 					</StoryContainer>
