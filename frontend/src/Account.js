@@ -45,6 +45,20 @@ const Account = (props) => {
 		});
 	};
 
+	const confirmUser = async (Username, code) => {
+		return await new Promise((resolve, reject) => {
+			const cognitoUser = new CognitoUser({ Username, Pool });
+			cognitoUser.confirmRegistration(code, true, (err, result) => {
+				if (err) {
+					console.error('Error confirming sign-up', err);
+					reject(err);
+				}
+				console.log('User confirmed:', result);
+				resolve(result);
+			});
+		});
+	};
+
 	const logout = () => {
 		const user = Pool.getCurrentUser();
 		if (user) {
@@ -53,7 +67,7 @@ const Account = (props) => {
 		}
 	};
 	return (
-		<AccountContext.Provider value={{ authenticate, getSession, logout }}>
+		<AccountContext.Provider value={{ authenticate, getSession, logout, confirmUser }}>
 			{props.children}
 		</AccountContext.Provider>
 	)

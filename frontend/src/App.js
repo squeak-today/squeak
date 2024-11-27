@@ -149,6 +149,9 @@ const SignUp = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
+	const [authCode, setAuthCode] = useState("");
+	const { confirmUser } = useContext(AccountContext);
+
 	const onSubmit = (event) => {
 		event.preventDefault();
 
@@ -160,11 +163,23 @@ const SignUp = () => {
 		});
 	}
 
+	const onConfirmSubmit = (event) => {
+		event.preventDefault();
+		console.log(email);
+		console.log(authCode);
+		confirmUser(email, authCode).then(data => {
+			console.log("Confirmed!", data);
+		})
+		.catch((err) => {
+			console.error("Failed to confirm!", err);
+		})
+	};
+
 	return (
 		<StyledBox>
-			<Subtitle>Create Account</Subtitle>
 			{/* ugly sign-in */}
 			<div>
+				<Subtitle>Create Account</Subtitle>
 				<form onSubmit={onSubmit}>
 					<InputField
 						value={email}
@@ -178,6 +193,21 @@ const SignUp = () => {
 						onChange={(event) => setPassword(event.target.value)}>
 					</InputField>
 					<GenerateButton type="submit">Signup</GenerateButton>
+				</form>
+				
+				<Subtitle>Confirm User</Subtitle>
+				<form onSubmit={onConfirmSubmit}>
+					<InputField
+						value={email}
+						placeholder="Email"
+						onChange={(event) => setEmail(event.target.value)}>
+					</InputField>
+					<InputField
+						value={authCode}
+						placeholder="Authentication Code"
+						onChange={(event) => setAuthCode(event.target.value)}>
+					</InputField>
+					<GenerateButton type="submit">Submit</GenerateButton>
 				</form>
 			</div>
 		</StyledBox>
