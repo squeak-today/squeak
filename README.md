@@ -11,15 +11,16 @@ tavily_api_key = "tvly-key-here"
 ```
 terraform init
 terraform apply
-
-// and later:
+```
+and later:
+```
 terraform destroy
 ```
 4. Either wait for S3 to be populated after the story generation lambda is invoked or invoke manually. The REST API endpoint should be ready for use.
 
 ## **GET** `/story`
 ```
-https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics
+https://api.squeak.today/story
 ```
 Pulls generated story data as JSON. Pass `language`, `cefr`, and `subject` as fields.
 
@@ -62,7 +63,7 @@ Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
 
 ## **GET** `/news`
 ```
-https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/news?language=French&cefr=B2&subject=Politics
+https://api.squeak.today/news
 ```
 Pulls generated news article data as JSON. Pass `language`, `cefr`, and `subject` as fields.
 
@@ -110,4 +111,18 @@ Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
 		}
 	]
 }
+```
+
+## Examples: `api.squeak.today`
+```
+https://api.squeak.today/news?language=French&cefr=B2&subject=Politics
+
+https://api.squeak.today/story?language=French&cefr=B2&subject=Politics
+```
+
+Or, equivalently:
+```
+https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/news?language=French&cefr=B2&subject=Politics
+
+https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics
 ```
