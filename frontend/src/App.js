@@ -258,29 +258,31 @@ function App() {
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
 	const [subject, setSubject] = useState('');
+	const [contentType, setContentType] = useState('');
 	const [story, setStory] = useState(''); // State to store the story
 	const [loading, setLoading] = useState(false); // State to manage loading state
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
 	const isFormComplete = language && CEFRLevel;
-	const apiUrl = "https://api.squeak.today/story";
+	const apiUrl = "https://api.squeak.today/" + contentType;
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
 		let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
 		fetch(url).then(response => {
 			if (!response.ok) {
+				setStory("Failed to generate story");
 				throw new Error("Network response was not ok");
 			}
 			return response.json();
 		}).then(data => {
-			console.log("Pulled Story!", data["content"]);
+			console.log("Pulled story successfully!");
 			setStory(data["content"]);
 			setLoading(false); // Set loading state to false when finished
 		}).catch(error => {
 			console.error("Error generating story:", error);
-			setStory("Failed to generate story. Please try again.");
+			setStory("Failed to generate story");
 		})
 	};
 
@@ -327,6 +329,13 @@ function App() {
 				<SelectField value={subject} onChange={(e) => setSubject(e.target.value)}>
 					<option value="" disabled>Select a subject</option>
 					<option value="Politics">Politics</option>
+				</SelectField>
+
+				{/* Dropdown for contentType selection */}
+				<SelectField value={contentType} onChange={(e) => setContentType(e.target.value)}>
+					<option value="" disabled>Select a type</option>
+					<option value="news">News</option>
+					<option value="story">Story</option>
 				</SelectField>
 
 				<ButtonContainer>
