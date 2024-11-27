@@ -126,3 +126,21 @@ https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/news?language=French&ce
 
 https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics
 ```
+
+### Javascript
+```javascript
+const apiUrl = "https://api.squeak.today/story";
+let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
+fetch(url).then(response => {
+	if (!response.ok) {
+		throw new Error("Network response was not ok");
+	}
+	return response.json();
+}).then(data => {
+	setStory(data["content"]);
+	setLoading(false); // Set loading state to false when finished
+}).catch(error => {
+	console.error("Error generating story:", error);
+	setStory("Failed to generate story. Please try again.");
+})
+```
