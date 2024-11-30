@@ -7,6 +7,7 @@ resource "aws_cloudwatch_log_group" "lambda_log_group" {
     name = "/aws/lambda/story-gen-lambda"
 }
 
+// standard
 resource "aws_lambda_function" "story_gen_lambda" {
     function_name = "story-gen-lambda"
     role = aws_iam_role.story_gen_role.arn
