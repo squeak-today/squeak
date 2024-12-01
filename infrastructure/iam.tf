@@ -30,18 +30,15 @@ resource "aws_iam_role" "story_gen_role" {
                 # Cloudwatch Logs permissions
                 {
                     "Effect" : "Allow",
-                    "Action" : "logs:CreateLogGroup",
-                    "Resource" : "arn:aws:logs:${data.aws_region.current.name}:${local.account_id}:*"
-                },
-                {
-                    "Effect" : "Allow",
                     "Action" : [
+						"logs:CreateLogGroup",
                         "logs:CreateLogStream",
                         "logs:PutLogEvents"
                     ],
-                    "Resource" : [
-                        "arn:aws:logs:${data.aws_region.current.name}:${local.account_id}:log-group:/aws/lambda/*:*"
-                    ]
+                    "Resource": [
+						"${aws_cloudwatch_log_group.lambda_log_group.arn}",
+						"${aws_cloudwatch_log_group.lambda_log_group.arn}:*"
+					]
                 },
                 # S3 Permissions for storing stories
                 {
@@ -50,8 +47,19 @@ resource "aws_iam_role" "story_gen_role" {
                         "s3:PutObject",
                         "s3:PutobjectAcl"
                     ],
-                    "Resource": "arn:aws:s3:::${aws_s3_bucket.story_gen_bucket.bucket}/*"
-                }
+                    "Resource": "${aws_s3_bucket.story_gen_bucket.arn}/*"
+                },
+				# SQS Permissions for pulling and reading queue
+				{
+					"Effect": "Allow",
+					"Action": [
+						"sqs:ReceiveMessage",
+						"sqs:DeleteMessage",
+						"sqs:GetQueueAttributes"
+					],
+					# this ARN is untested
+					"Resource": "${aws_sqs_queue.story_gen_queue.arn}"
+				}
             ]
         })
     }
