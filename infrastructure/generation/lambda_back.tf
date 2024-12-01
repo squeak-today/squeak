@@ -7,14 +7,6 @@ resource "aws_cloudwatch_log_group" "lambda_log_group" {
     name = "/aws/lambda/story-gen-lambda"
 }
 
-# no dead letter queue assigned?
-resource "aws_sqs_queue" "story_gen_queue" {
-	name = "story-gen-queue"
-	delay_seconds = 0
-	max_message_size = 262144  # 256kb
-	message_retention_seconds = 345600  # 4 days
-	receive_wait_time_seconds = 10
-}
 
 // standard
 resource "aws_lambda_function" "story_gen_lambda" {
@@ -35,14 +27,14 @@ resource "aws_lambda_function" "story_gen_lambda" {
 			GOOGLE_API_KEY = var.google_api_key
             COHERE_API_KEY = var.cohere_api_key
 			TAVILY_API_KEY = var.tavily_api_key
-            STORY_BUCKET_NAME = aws_s3_bucket.story_gen_bucket.bucket
+            STORY_BUCKET_NAME = var.story_gen_bucket_bucket
 			SQS_QUEUE_URL = aws_sqs_queue.story_gen_queue.name
         }
     }
 
     depends_on = [
         aws_iam_role.story_gen_role,
-        aws_s3_bucket.story_gen_bucket,
+        var.story_gen_bucket_arn, # ensure story gen bucket is made
         aws_cloudwatch_log_group.lambda_log_group
     ]
 

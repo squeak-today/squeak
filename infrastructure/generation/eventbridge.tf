@@ -6,7 +6,7 @@ resource "aws_cloudwatch_event_rule" "lambda_trigger" {
 
 # Trigger lambda based on the schedule
 resource "aws_cloudwatch_event_target" "trigger_lambda_on_schedule" {
-  rule      = aws_cloudwatch_event_rule.lambda_trigger.name
+  rule = aws_cloudwatch_event_rule.lambda_trigger.name
   target_id = "lambda"
-  arn       = aws_lambda_function.story_gen_lambda.arn
+  arn = aws_lambda_function.story_gen_lambda.arn
 }
