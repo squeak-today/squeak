@@ -5,7 +5,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -32,41 +31,42 @@ func main() {
 	}))
 	sqsSvc := sqs.New(sess)
 
-	rand.Seed(60) // this is deprecated? doesn't matter anyways.
-
-	languages := []string{"French", "Spanish"}
+	languages := []string{"French"}
 	cefrLevels := []string{"A1", "A2", "B1", "B2", "C1", "C2"}
 	subjects := []string{"Politics", "Sports", "Arts"}
 	contentTypes := []string{"News", "Story"}
 
-	numMessages := 100
-	for i := 0; i < numMessages; i++ {
-		// Generate a random message
-		message := GenerationRequest{
-			Language:    languages[rand.Intn(len(languages))],
-			CEFRLevel:   cefrLevels[rand.Intn(len(cefrLevels))],
-			Subject:     subjects[rand.Intn(len(subjects))],
-			ContentType: contentTypes[rand.Intn(len(contentTypes))],
-		}
+	for _, language := range languages {
+		for _, cefrLevel := range cefrLevels {
+			for _, subject := range subjects {
+				for _, contentType := range contentTypes {
+					message := GenerationRequest{
+						Language: language,
+						CEFRLevel: cefrLevel,
+						Subject: subject,
+						ContentType: contentType,
+					}
 
-		// Marshal the message into JSON
-		messageBody, err := json.Marshal(message)
-		if err != nil {
-			fmt.Printf("Failed to marshal message: %v\n", err)
-			continue
-		}
+					// Marshal the message into JSON
+					messageBody, err := json.Marshal(message)
+					if err != nil {
+						fmt.Printf("Failed to marshal generation request: %v\n", err)
+						continue
+					}
 
-		// Send the message to SQS
-		_, err = sqsSvc.SendMessage(&sqs.SendMessageInput{
-			QueueUrl:    aws.String(queueURL),
-			MessageBody: aws.String(string(messageBody)),
-		})
-		if err != nil {
-			fmt.Printf("Failed to send message: %v\n", err)
-		} else {
-			fmt.Printf("Message sent: %s\n", string(messageBody))
+					// Send the message to SQS
+					_, err = sqsSvc.SendMessage(&sqs.SendMessageInput{
+						QueueUrl:    aws.String(queueURL),
+						MessageBody: aws.String(string(messageBody)),
+					})
+					if err != nil {
+						fmt.Printf("Failed to send message: %v\n", err)
+					} else {
+						fmt.Printf("Message sent: %s\n", string(messageBody))
+					}
+				}
+			}
 		}
 	}
-
 	fmt.Println("Finished sending messages to SQS")
 }
