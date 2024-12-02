@@ -4,9 +4,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
+	"context"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
@@ -19,12 +21,8 @@ type GenerationRequest struct {
 	ContentType string `json:"contentType"`
 }
 
-func main() {
+func handler(ctx context.Context) error {
 	queueURL := os.Getenv("SQS_QUEUE_URL")
-	if queueURL == "" {
-		fmt.Println("Error: SQS_QUEUE_URL environment variable is not set")
-		os.Exit(1)
-	}
 
 	sess := session.Must(session.NewSession(&aws.Config{
 		Region: aws.String("us-east-2"),
@@ -32,8 +30,8 @@ func main() {
 	sqsSvc := sqs.New(sess)
 
 	languages := []string{"French"}
-	cefrLevels := []string{"A1", "A2", "B1", "B2", "C1", "C2"}
-	subjects := []string{"Politics", "Sports", "Arts"}
+	cefrLevels := []string{"A1", "B1", "C2"}
+	subjects := []string{"Politics"}
 	contentTypes := []string{"News", "Story"}
 
 	for _, language := range languages {
@@ -50,8 +48,8 @@ func main() {
 					// Marshal the message into JSON
 					messageBody, err := json.Marshal(message)
 					if err != nil {
-						fmt.Printf("Failed to marshal generation request: %v\n", err)
-						continue
+						log.Printf("Failed to marshal generation request: %v\n", err)
+						return err
 					}
 
 					// Send the message to SQS
@@ -60,13 +58,20 @@ func main() {
 						MessageBody: aws.String(string(messageBody)),
 					})
 					if err != nil {
-						fmt.Printf("Failed to send message: %v\n", err)
+						log.Printf("Failed to send message: %v\n", err)
+						return err
 					} else {
-						fmt.Printf("Message sent: %s\n", string(messageBody))
+						log.Printf("Message sent: %s\n", string(messageBody))
 					}
 				}
 			}
 		}
 	}
-	fmt.Println("Finished sending messages to SQS")
+	log.Println("Finished sending messages to SQS")
+
+	return nil
+}
+
+func main() {
+    lambda.Start(handler)
 }

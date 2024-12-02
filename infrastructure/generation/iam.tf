@@ -57,3 +57,48 @@ resource "aws_iam_role" "story_gen_role" {
         })
     }
 }
+
+resource "aws_iam_role" "queue_filler_role" {
+	name = "queue-filler-role"
+
+	assume_role_policy = jsonencode({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Action": "sts:AssumeRole",
+                "Principal": {
+                    "Service": "lambda.amazonaws.com"
+                },
+                "Effect": "Allow"
+            }
+        ]
+    })
+
+	inline_policy {
+		name = "lambda_policies"
+		policy= jsonencode({
+			"Version" : "2012-10-17",
+			"Statement": [
+				{
+					"Effect" : "Allow",
+					"Action" : [
+						"logs:CreateLogGroup",
+						"logs:CreateLogStream",
+						"logs:PutLogEvents"
+					],
+					"Resource": [
+						"${aws_cloudwatch_log_group.filler_log_group.arn}",
+						"${aws_cloudwatch_log_group.filler_log_group.arn}:*"
+					]
+            	},
+				{
+					"Effect" : "Allow"
+					"Action" : [
+						"sqs:SendMessage"
+					],
+					"Resource" : aws_sqs_queue.story_gen_queue.arn
+				}
+			]
+		})
+	}
+}
