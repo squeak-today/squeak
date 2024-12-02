@@ -11,3 +11,4 @@ terraform.tfstate.backup
 # Go Binary for Lambda
 function.zip
 front-function.zip
+filler-function.zip
