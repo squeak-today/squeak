@@ -17,6 +17,7 @@ resource "aws_lambda_function" "story_api_lambda" {
     environment {
         variables = {
             STORY_BUCKET_NAME = aws_s3_bucket.story_gen_bucket.bucket
+			GOOGLE_API_KEY = var.google_api_key
         }
     }
 
