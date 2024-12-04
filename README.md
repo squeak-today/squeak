@@ -113,6 +113,44 @@ Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
 }
 ```
 
+## **POST** `/translate`
+```
+https://api.squeak.today/translate
+```
+Translates a given sentence to English and returns the result.
+
+### Headers
+
+**Content-Type** `application/json`
+
+**Accept** `appliction/json`
+
+### Body
+
+**sentence** `string` (*required*)
+
+Sentence to translate.
+
+---
+
+**source** `string` (*required*)
+
+Source language. e.g `fr`
+
+---
+
+**target** `string` (*required*)
+
+Language to translate to. e.g `en`
+
+### Response
+`200 Successful`
+```json
+{
+	"sentence": "the translated sentence."
+}
+```
+
 ## Examples: `api.squeak.today`
 ```
 https://api.squeak.today/news?language=French&cefr=B2&subject=Politics

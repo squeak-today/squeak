@@ -13,96 +13,131 @@ import (
     "os"
     "context"
     "log"
-    "github.com/aws/aws-lambda-go/lambda"
+	"encoding/json"
+	"github.com/aws/aws-lambda-go/lambda"
+    "github.com/aws/aws-lambda-go/events"
 
     "time"
     "strings"
 )
 
-// on current lambda specs
-// -> 1 language, 2 cefr, 4 subjects took ~120 seconds (B1, B2)
-func handler(ctx context.Context) error {
+type GenerationRequest struct {
+	Language string `json:"language"`
+	CEFRLevel string `json:"cefrLevel"`
+	Subject string `json:"subject"`
+	ContentType string `json:"contentType"`
+}
+
+func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
     log.Println("Executing Aya Story Generation...")
 
-    languages := []string{"French"}
 	language_ids := map[string]string{
 		"French": "fr",
 	}
-    cefrLevels := []string{"A1", "B2", "C2"} // keep minimal for testing (currently lambda times out)
-	
-    // subjects := []string{"World", "Investing", "Politics", "Sports", "Arts"}
-	subjects := []string{"Politics"}
 
-    // generate web results
+	providingTranslations := false
+	blankStoryDictionary := StoryDictionary{
+		Translations: struct {
+			Words     map[string]string `json:"words"`
+			Sentences map[string]string `json:"sentences"`
+		}{
+			Words:     make(map[string]string),
+			Sentences: make(map[string]string),
+		},
+	}
+
+	generationRequests := []GenerationRequest{}
+	seenSubjects := make(map[string]bool)
+	for _, message := range sqsEvent.Records {
+		var request GenerationRequest
+		err := json.Unmarshal([]byte(message.Body), &request)
+		if err != nil {
+			log.Println("Failed to parse message: ", err)
+			continue
+		}
+		if !seenSubjects[request.Subject] {
+			seenSubjects[request.Subject] = true
+			generationRequests = append(generationRequests, request)
+		}
+	}
+
+	// generate web results
 	webResults := make(map[string]string)
 	webSources := make(map[string][]Result)
-	for i := 0; i < len(subjects); i++ {
-		subject := subjects[i]
+	for i := 0; i < len(generationRequests); i++ {
+		subject := generationRequests[i].Subject
 		resp, _ := webSearch("today " + subject + " news", 20)
 		webSources[subject] = resp.Results
 		webResults[subject] = buildInfoBlockFromTavilyResponse(resp)
 	}
 
-    // o(a*6*b*3), so maybe considering increasing lambda timeout
-    for i := 0; i < len(languages); i++ {
-        for j := 0; j < len(cefrLevels); j++ {
-			for k := 0; k < len(subjects); k++ {
-				
-				// Story Generation
-				storyResponse, err := generateStory(languages[i], cefrLevels[j], subjects[k])
-    
-				if err == nil {
-					story := storyResponse.Message.Content[0].Text
-					log.Println("Story:", story)
+	for _, genRequest := range generationRequests {
+		language := genRequest.Language
+		CEFRLevel := genRequest.CEFRLevel
+		subject := genRequest.Subject
+		contentType := genRequest.ContentType
+					
+		// Story Generation
+		if (contentType == "Story") {
+			storyResponse, err := generateStory(language, CEFRLevel, subject)
 
-					words, sentences := getWordsAndSentences(story)
-					dictionary, _ := generateTranslations(words, sentences, language_ids[languages[i]])
-					body, _ := buildStoryBody(story, dictionary)
+			if err == nil {
+				story := storyResponse.Message.Content[0].Text
+				log.Println("Story:", story)
 
-					current_time := time.Now().UTC().Format("2006-01-02")
+				words, sentences := getWordsAndSentences(story)
+				dictionary := blankStoryDictionary
+				if providingTranslations {
+					dictionary, _ = generateTranslations(words, sentences, language_ids[language])
+				}
+				body, _ := buildStoryBody(story, dictionary)
 
-					path := strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "/" + subjects[k] + "/" + "Story/"
-					push_path := path + cefrLevels[j] + "_Story_" + subjects[k] + "_" + current_time + ".json"
-			
-					if err := uploadStoryS3(
-						os.Getenv("STORY_BUCKET_NAME"),
-						push_path, body,
-					); err != nil {
-						log.Println(err)
-						return err
-					}
-				} else {
+				current_time := time.Now().UTC().Format("2006-01-02")
+
+				path := strings.ToLower(language) + "/" + CEFRLevel + "/" + subject + "/" + "Story/"
+				push_path := path + CEFRLevel + "_Story_" + subject + "_" + current_time + ".json"
+
+				if err := uploadStoryS3(
+					os.Getenv("STORY_BUCKET_NAME"),
+					push_path, body,
+				); err != nil {
 					log.Println(err)
 					return err
 				}
-
-				// News Generation
-				newsResp, err := generateNewsArticle(languages[i], cefrLevels[j], "today " + subjects[k] + " news", webResults[subjects[k]])
-
-				if err == nil {
-					words, sentences := getWordsAndSentences(newsResp.Text)
-					dictionary, _ := generateTranslations(words, sentences, language_ids[languages[i]])
-					body, _ := buildNewsBody(newsResp.Text, dictionary, webSources[subjects[k]])
-
-					current_time := time.Now().UTC().Format("2006-01-02")
-
-					path := strings.ToLower(languages[i]) + "/" + cefrLevels[j] + "/" + subjects[k] + "/" + "News/"
-					push_path := path + cefrLevels[j] + "_News_" + subjects[k] + "_" + current_time + ".json"
-
-					if err := uploadStoryS3(
-						os.Getenv("STORY_BUCKET_NAME"),
-						push_path, body,
-					); err != nil {
-						log.Println(err)
-						return err
-					}
-				} else {
-					log.Println(err)
-					return err
-				}
+			} else {
+				log.Println(err)
+				return err
 			}
-        }
-    }
+		} else if (contentType == "News") {
+			// News Generation
+			newsResp, err := generateNewsArticle(language, CEFRLevel, "today " + subject + " news", webResults[subject])
+
+			if err == nil {
+				words, sentences := getWordsAndSentences(newsResp.Text)
+				dictionary := blankStoryDictionary
+				if providingTranslations {
+					dictionary, _ = generateTranslations(words, sentences, language_ids[language])
+				}
+				body, _ := buildNewsBody(newsResp.Text, dictionary, webSources[subject])
+
+				current_time := time.Now().UTC().Format("2006-01-02")
+
+				path := strings.ToLower(language) + "/" + CEFRLevel + "/" + subject + "/" + "News/"
+				push_path := path + CEFRLevel + "_News_" + subject + "_" + current_time + ".json"
+
+				if err := uploadStoryS3(
+					os.Getenv("STORY_BUCKET_NAME"),
+					push_path, body,
+				); err != nil {
+					log.Println(err)
+					return err
+				}
+			} else {
+				log.Println(err)
+				return err
+			}
+		}
+	}
 
     return nil
 }

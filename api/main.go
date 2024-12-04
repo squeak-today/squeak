@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"log"
+	"encoding/json"
+	"io"
+	"os"
+	"bytes"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -10,6 +14,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
+
+type TranslateResponse struct {
+	Data struct {
+		Translations []struct {
+			TranslatedText string `json:"translatedText"`
+		} `json:"translations"`
+	} `json:"data"`
+}
 
 // STORY_BUCKET_NAME="story-generation-bucket-dev" go run .
 // GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap .
@@ -25,7 +37,7 @@ func init() {
 	router.Use(func(c *gin.Context) {
 		// * accepts all origins, change for production
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
 		c.Writer.Header().Set("Access-Control-Max-Age", "3600")
 
@@ -87,6 +99,78 @@ func init() {
 		}
 
 		c.JSON(http.StatusOK, content.ToMap())
+	})
+
+	router.POST("/translate", func(c *gin.Context) {
+		var infoBody struct {
+			Sentence string `json:"sentence"`
+			Source string `json:"source"`
+			Target string `json:"target"`
+		}
+
+		if err := c.ShouldBindJSON(&infoBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		googleAPIKey := os.Getenv("GOOGLE_API_KEY")
+		query := []string{infoBody.Sentence}
+		translatePayload := map[string]interface{}{
+			"q": query,
+			"source": infoBody.Source,
+			"target": infoBody.Target,
+			"format": "text",
+		}
+
+		jsonData, err := json.Marshal(translatePayload)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Translate payload marshalling failed!",
+			})
+			return
+		}
+
+		req, err := http.NewRequest("POST", "https://translation.googleapis.com/language/translate/v2?key=" + googleAPIKey, bytes.NewBuffer(jsonData))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Request to GCP failed!",
+			})
+			return
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Request to GCP failed!",
+			})
+			return
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Request to GCP failed!",
+			})
+			return
+		}
+
+		var result TranslateResponse
+		if err := json.Unmarshal(body, &result); err != nil {
+			log.Println(string(body))
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "TranslateResponse unmarshalling failed!",
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"sentence": result.Data.Translations[0].TranslatedText,
+		})
 	})
 
 	ginLambda = ginadapter.New(router)
