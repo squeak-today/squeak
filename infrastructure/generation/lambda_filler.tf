@@ -9,7 +9,7 @@ resource "aws_lambda_function" "queue_filler_lambda" {
     handler = "queuefill"
     runtime = "provided.al2"
 
-	filename = "filler_function.zip"
+	filename = "filler-function.zip"
     source_code_hash = filebase64sha256("filler_function.zip")
 
 	timeout = 900
