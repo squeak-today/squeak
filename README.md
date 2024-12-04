@@ -131,11 +131,23 @@ Translates a given sentence to English and returns the result.
 
 Sentence to translate.
 
+---
+
+**source** `string` (*required*)
+
+Source language. e.g `fr`
+
+---
+
+**target** `string` (*required*)
+
+Language to translate to. e.g `en`
+
 ### Response
 `200 Successful`
 ```json
 {
-	"message": "Successful /translate call: ..."
+	"sentence": "the translated sentence."
 }
 ```
 
