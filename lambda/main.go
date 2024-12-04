@@ -35,6 +35,17 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 		"French": "fr",
 	}
 
+	providingTranslations := false
+	blankStoryDictionary := StoryDictionary{
+		Translations: struct {
+			Words     map[string]string `json:"words"`
+			Sentences map[string]string `json:"sentences"`
+		}{
+			Words:     make(map[string]string),
+			Sentences: make(map[string]string),
+		},
+	}
+
 	generationRequests := []GenerationRequest{}
 	seenSubjects := make(map[string]bool)
 	for _, message := range sqsEvent.Records {
@@ -75,7 +86,10 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 				log.Println("Story:", story)
 
 				words, sentences := getWordsAndSentences(story)
-				dictionary, _ := generateTranslations(words, sentences, language_ids[language])
+				dictionary := blankStoryDictionary
+				if providingTranslations {
+					dictionary, _ = generateTranslations(words, sentences, language_ids[language])
+				}
 				body, _ := buildStoryBody(story, dictionary)
 
 				current_time := time.Now().UTC().Format("2006-01-02")
@@ -100,7 +114,10 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 
 			if err == nil {
 				words, sentences := getWordsAndSentences(newsResp.Text)
-				dictionary, _ := generateTranslations(words, sentences, language_ids[language])
+				dictionary := blankStoryDictionary
+				if providingTranslations {
+					dictionary, _ = generateTranslations(words, sentences, language_ids[language])
+				}
 				body, _ := buildNewsBody(newsResp.Text, dictionary, webSources[subject])
 
 				current_time := time.Now().UTC().Format("2006-01-02")
