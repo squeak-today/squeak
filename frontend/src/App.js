@@ -265,7 +265,8 @@ function App() {
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
 	const isFormComplete = language && CEFRLevel;
-	const apiUrl = "https://api.squeak.today/" + contentType;
+	const apiBase = "https://api.squeak.today/";
+	const apiUrl = apiBase + contentType;
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
@@ -287,7 +288,28 @@ function App() {
 	};
 
 	const fetchWordDefinition = async (word) => {
-		return "";
+		let url = `${apiBase}translate`;
+		let translation = "";
+		const data = {
+			sentence: word,
+			source: 'fr',
+			target: 'en'
+		};
+		await fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
+			body: JSON.stringify(data)
+		}).then(response => response.json())
+		.then(result => {
+			console.log('Successful word translation!');
+			console.log(result);
+			translation = result["sentence"].toString();
+		})
+		.catch(error => {console.error('ERROR: ', error)})
+		return translation;
 	};
 
 	const handleWordClick = async (e, word) => {
@@ -318,7 +340,7 @@ function App() {
 				</SelectField>
 
 				{/* Dropdown for CEFR level selection */}
-				<SelectField value={CEFRLevel} onChange={(e) => setCEFRLevel(e.target.value)}>
+				<SelectField value={CEFRLevel} onChange={(e) => {setCEFRLevel(e.target.value); setStory("Je suis un pomme.")}}>
 					<option value="" disabled>Select a CEFR level</option>
 					{/* <option value="B1">B1</option> */}
 					<option value="A1">A1</option>
@@ -349,14 +371,11 @@ function App() {
 						{/* Split the story into words and make each word clickable */}
 						<StoryBox>
 							<StoryText>
-								<p>{story}</p>
-								{/*
 								{story.split(' ').map((word, index) => (
 									<Word key={index} onClick={(e) => handleWordClick(e, word)}>
 										{word}
 									</Word>
 								))}
-								*/}
 
 							</StoryText>
 						</StoryBox>
