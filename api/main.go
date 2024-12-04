@@ -37,7 +37,7 @@ func init() {
 	router.Use(func(c *gin.Context) {
 		// * accepts all origins, change for production
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
 		c.Writer.Header().Set("Access-Control-Max-Age", "3600")
 
@@ -170,6 +170,9 @@ func init() {
 
 		c.JSON(http.StatusOK, gin.H{
 			"sentence": result.Data.Translations[0].TranslatedText,
+			"Access-Control-Allow-Origin":  "*",
+			"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+			"Access-Control-Allow-Headers": "Content-Type, Authorization",
 		})
 	})
 
