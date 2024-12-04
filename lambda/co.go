@@ -58,6 +58,9 @@ var cefrPrompts = map[string]string{
 
 func generateStory(language string, cefr string, topic string, max_retries int) (v2Response, error) {
 	emptyResponse := v2Response{}
+	if (max_retries == 0) {
+		return emptyResponse, errors.New("MULTIPLE RUNAWAYS ON THIS STORY")
+	}
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
 
@@ -121,6 +124,9 @@ func generateStory(language string, cefr string, topic string, max_retries int) 
 func generateNewsArticle(language string, cefr string, query string, web_results string, max_retries int) (v1Response, error) {
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	emptyResponse := v1Response{}
+	if (max_retries == 0) {
+		return emptyResponse, errors.New("MULTIPLE RUNAWAYS ON THIS ARTICLE")
+	}
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
 	
 	var sb strings.Builder
