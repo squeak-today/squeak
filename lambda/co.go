@@ -34,6 +34,7 @@ type v1Response struct {
 	// This only is needed if we modify for citations and tool input.
 	Citations []Citation `json:"citations"`
 	Documents []Document `json:"documents"`
+	FinishReason string `json:"finish_reason"`
 }
 
 type v2Response struct {
@@ -43,6 +44,7 @@ type v2Response struct {
 			Type string `json:"type"`
 		} `json:"content"`
 	} `json:"message"`
+	FinishReason string `json:"finish_reason"`
 }
 
 var cefrPrompts = map[string]string{
@@ -54,7 +56,7 @@ var cefrPrompts = map[string]string{
 	"C2": "must employ very complex vocabulary, nuanced expressions, detailed phrasing, and very complex ideas. Target 1400-1900 words.",
 }
 
-func generateStory(language string, cefr string, topic string) (v2Response, error) {
+func generateStory(language string, cefr string, topic string, max_retries int) (v2Response, error) {
 	emptyResponse := v2Response{}
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
@@ -107,12 +109,16 @@ func generateStory(language string, cefr string, topic string) (v2Response, erro
 		return emptyResponse, err
 	}
 
+	if (result.FinishReason == "MAX_TOKENS") {
+		return generateStory(language, cefr, topic, max_retries - 1)
+	}
+
 	return result, nil
 }
 
 // still needs testing, but has reliable output with Latin-based languages (and usually with all supported, but still should be tested.)
 // EXAMPLE USAGE: generateNewsArticle("French", "B1", "today politics news", "SOURCE 0...")
-func generateNewsArticle(language string, cefr string, query string, web_results string) (v1Response, error) {
+func generateNewsArticle(language string, cefr string, query string, web_results string, max_retries int) (v1Response, error) {
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	emptyResponse := v1Response{}
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
@@ -165,6 +171,11 @@ func generateNewsArticle(language string, cefr string, query string, web_results
 		log.Println(string(body)) // e.g improper model id (should add better reaction)
 		return emptyResponse, err
 	}
+
+	if (result.FinishReason == "MAX_TOKENS") {
+		return generateNewsArticle(language, cefr, query, web_results, max_retries - 1)
+	}
+
 	log.Println("Result")
 	return result, nil
 }

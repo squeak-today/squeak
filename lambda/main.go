@@ -79,7 +79,7 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 					
 		// Story Generation
 		if (contentType == "Story") {
-			storyResponse, err := generateStory(language, CEFRLevel, subject)
+			storyResponse, err := generateStory(language, CEFRLevel, subject, 3)
 
 			if err == nil {
 				story := storyResponse.Message.Content[0].Text
@@ -110,7 +110,7 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 			}
 		} else if (contentType == "News") {
 			// News Generation
-			newsResp, err := generateNewsArticle(language, CEFRLevel, "today " + subject + " news", webResults[subject])
+			newsResp, err := generateNewsArticle(language, CEFRLevel, "today " + subject + " news", webResults[subject], 3)
 
 			if err == nil {
 				words, sentences := getWordsAndSentences(newsResp.Text)
