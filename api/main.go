@@ -89,6 +89,21 @@ func init() {
 		c.JSON(http.StatusOK, content.ToMap())
 	})
 
+	router.POST("/translate", func(c *gin.Context) {
+		var infoBody struct {
+			Sentence string `json:"sentence"`
+		}
+
+		if err := c.ShouldBindJSON(&infoBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Successful /translate call: " + infoBody.Sentence,
+		})
+	})
+
 	ginLambda = ginadapter.New(router)
 }
 
