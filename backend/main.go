@@ -9,10 +9,9 @@ import (
     "github.com/rs/cors"
 )
 
-var jwksURL = "https://cognito-idp.us-east-2.amazonaws.com/us-east-2_G2iCM2gu1/.well-known/jwks.json"
+var jwksURL = "https://cognito-idp.us-east-2.amazonaws.com/us-east-2_eF9Q12Lbf/.well-known/jwks.json"
 
 func verifyToken(tokenString string) (*jwt.Token, error) {
-	fmt.Println("Verifying token:", tokenString) // Debug log
 
     jwks, err := keyfunc.Get(jwksURL, keyfunc.Options{})
     if err != nil {
@@ -53,7 +52,7 @@ func protectedHandler(w http.ResponseWriter, r *http.Request) {
 
     username, ok := claims["cognito:username"].(string)
     if !ok {
-        http.Error(w, "Username claim missing", http.StatusInternalServerError)
+        http.Error(w, "username claim missing", http.StatusInternalServerError)
         return
     }
 
