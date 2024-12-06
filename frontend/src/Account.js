@@ -27,10 +27,34 @@ const Account = (props) => {
 		return await new Promise((resolve, reject) => {
 			const user = new CognitoUser({ Username, Pool });
 			const authDetails = new AuthenticationDetails({ Username, Password });
-
+	
 			user.authenticateUser(authDetails, {
 				onSuccess: (data) => {
 					console.log("onSuccess: ", data);
+	
+					// Extract the idToken
+					const token = data.idToken.jwtToken;
+	
+					// Send token to backend for validation (example API call)
+					fetch("http://localhost:8080/protected", {
+						method: "GET",
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					})
+						.then((response) => {
+							if (!response.ok) {
+								throw new Error("Failed to authenticate");
+							}
+							return response.text();
+						})
+						.then((message) => {
+							console.log("Backend response:", message);
+						})
+						.catch((err) => {
+							console.error("Error:", err);
+						});
+	
 					resolve(data);
 				},
 				onFailure: (err) => {
@@ -40,10 +64,10 @@ const Account = (props) => {
 				newPasswordRequired: (data) => {
 					console.log("newPasswordRequired: ", data);
 					resolve(data);
-				}
+				},
 			});
 		});
-	};
+	};	
 
 	const confirmUser = async (Username, code) => {
 		return await new Promise((resolve, reject) => {
