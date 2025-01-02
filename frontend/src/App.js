@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import UserPool from "./UserPool";
 import Status from "./Status";
 
+import StoryReader from './components/StoryReader';
+
 const StyledBox = styled.div`
 	width: 80%;
 	margin: 20px auto; // Center the box horizontally with margin
@@ -57,30 +59,19 @@ const StoryContainer = styled.div`
 	word-break: keep-all; // Prevent words from breaking mid-way
 	overflow-wrap: normal;
 	box-sizing: border-box; // Include padding and border in the width
-`;
 
-const StoryBox = styled.div`
-	padding: 20px;
-	margin: 20px 0;
-	border: 2px solid #AB560C; // Optional: Border color matching the theme
-	border-radius: 15px; // Rounded corners
-	background-color: #fad2af; // Light fill color to differentiate it from the background
+	padding: 10px;
+	border-radius: 15px;
+	
+	// Fonts
+	font-family: 'Noto Serif', serif;
+	background-color: #f0f0f0;
 `;
 
 // Centered story title
 const StoryTitle = styled.h2`
 	text-align: center; // Center the story title
-	color: #8a1000; // Optional: Match the theme color
-`;
-
-const StoryText = styled.div`
-	text-align: left;
-	line-height: 1.5;
-	white-space: normal; // Ensure text wraps at word boundaries
-	word-break: keep-all; // Prevent breaking words in the middle
-	overflow-wrap: normal; // Prevent breaking words unnecessarily
-	display: flex; // Use flex display to keep all words in a line and wrap naturally
-	flex-wrap: wrap; // Enable wrapping within the flex container
+	color: #333; // Optional: Match the theme color
 `;
 
 
@@ -118,16 +109,6 @@ const SelectField = styled.select`
 	outline: none;
 	}
 	box-sizing:border-box;
-`;
-
-// Styled word component with hover and cursor pointer
-const Word = styled.span`
-	display: inline;
-	margin-right: 5px;
-	cursor: pointer;
-	&:hover {
-	text-decoration: underline;
-	}
 `;
 
 // Tooltip styled-component for displaying word definitions
@@ -254,6 +235,8 @@ const Login = () => {
 	)
 }
 
+const LoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
 function App() {
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
@@ -270,6 +253,10 @@ function App() {
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
+		setStory(LoremIpsum + LoremIpsum + LoremIpsum);
+		setLoading(false);
+		return;
+
 		let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
 		fetch(url).then(response => {
 			if (!response.ok) {
@@ -340,7 +327,7 @@ function App() {
 				</SelectField>
 
 				{/* Dropdown for CEFR level selection */}
-				<SelectField value={CEFRLevel} onChange={(e) => {setCEFRLevel(e.target.value); setStory("Je suis un pomme.")}}>
+				<SelectField value={CEFRLevel} onChange={(e) => setCEFRLevel(e.target.value)}>
 					<option value="" disabled>Select a CEFR level</option>
 					{/* <option value="B1">B1</option> */}
 					<option value="A1">A1</option>
@@ -369,16 +356,7 @@ function App() {
 					<StoryContainer>
 						<StoryTitle>Generated Story</StoryTitle>
 						{/* Split the story into words and make each word clickable */}
-						<StoryBox>
-							<StoryText>
-								{story.split(' ').map((word, index) => (
-									<Word key={index} onClick={(e) => handleWordClick(e, word)}>
-										{word}
-									</Word>
-								))}
-
-							</StoryText>
-						</StoryBox>
+						<StoryReader data={story} handleWordClick={handleWordClick} />
 					</StoryContainer>
 				)}
 
