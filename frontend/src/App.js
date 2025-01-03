@@ -253,9 +253,6 @@ function App() {
 
 	const handleGenerateStory = async () => {
 		setLoading(true); // Set loading state to true when fetching story
-		setStory(LoremIpsum + LoremIpsum + LoremIpsum);
-		setLoading(false);
-		return;
 
 		let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
 		fetch(url).then(response => {
