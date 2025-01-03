@@ -332,7 +332,7 @@ function App() {
 	const handleListStories = async (e, word) => {
 		const tempStories = [];
 		let difficulties = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-		let storyTypes = ['News', 'Story'];
+		let storyTypes = ['News'];
 		let topics = ['Politics'];
 		let languages = ['French'];
 		for (let i=0; i<difficulties.length; i++) {

@@ -60,7 +60,7 @@ const StoryBrowser = ({ stories }) => {
 	const [filterLevel, setFilterLevel] = useState('Any');
 	const [filterTopic, setFilterTopic] = useState('Any');
 	const [currentPage, setCurrentPage] = useState(1);
-	const storiesPerPage = 5;
+	const storiesPerPage = 6;
 
 	const formatDate = () => {
 		const date = new Date();
