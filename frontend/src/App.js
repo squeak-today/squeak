@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import UserPool from "./UserPool";
 import Status from "./Status";
 
+import StoryList from './components/StoryList';
+
 const StyledBox = styled.div`
 	width: 80%;
 	margin: 20px auto; // Center the box horizontally with margin
@@ -254,6 +256,33 @@ const Login = () => {
 	)
 }
 
+
+const LoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+const sampleStories = [
+	{
+		type: 'News',
+		title: 'Donald Trump gana las elecciones de 2024',
+		preview: 'En un histórico regreso político, Donald Trump aseguró la presidencia en las elecciones de 2024, derrotando a la Vicepresidenta Kamala Harris...',
+		tags: ['Spanish', 'Politics'],
+		difficulty: 'C2'
+	},
+	{
+		type: 'Story',
+		title: 'Una historia muy interesante sobre el baloncesto',
+		preview: LoremIpsum,
+		tags: ['Spanish', 'Basketball'],
+		difficulty: 'B1'
+	},
+	{
+		type: 'News',
+		title: '¡Squeak es tan genial!',
+		preview: LoremIpsum,
+		tags: ['Spanish', 'Finance'],
+		difficulty: 'A2'
+	}
+];
+
 function App() {
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
@@ -332,6 +361,8 @@ function App() {
 			<StyledBox>
 				<Title>Squeak</Title>
 				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
+
+				<StoryList stories={sampleStories} />
 
 				{/* Dropdown for language selection */}
 				<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
