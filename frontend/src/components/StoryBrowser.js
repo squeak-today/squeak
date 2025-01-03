@@ -34,10 +34,33 @@ const FilterSelect = styled.select`
 	cursor: pointer;
 `;
 
+const PaginationContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	gap: 0.5em;
+	margin-top: 0.5em;
+`;
+
+const PageButton = styled.button`
+	padding: 0.5em 1em;
+	border: 1px solid white;
+	border-radius: 10px;
+	background: white;
+	cursor: pointer;
+	font-family: 'Noto Serif', serif;
+
+	&:disabled {
+		background: #eee;
+		cursor: not-allowed;
+	}
+`;
+
 const StoryBrowser = ({ stories }) => {
 	const [filterLanguage, setFilterLanguage] = useState('Any');
 	const [filterLevel, setFilterLevel] = useState('Any');
 	const [filterTopic, setFilterTopic] = useState('Any');
+	const [currentPage, setCurrentPage] = useState(1);
+	const storiesPerPage = 5;
 
 	const formatDate = () => {
 		const date = new Date();
@@ -65,6 +88,17 @@ const StoryBrowser = ({ stories }) => {
 		if (filterTopic !== 'Any' && !story.tags.includes(filterTopic)) return false;
 		return true;
 	});
+
+	// Then paginate the filtered stories
+	const totalPages = Math.ceil(filteredStories.length / storiesPerPage);
+	const paginatedStories = filteredStories.slice(
+		(currentPage - 1) * storiesPerPage,
+		currentPage * storiesPerPage
+	);
+
+	const handlePageChange = (page) => {
+		setCurrentPage(page);
+	};
 
 	return (
 		<div>
@@ -112,7 +146,38 @@ const StoryBrowser = ({ stories }) => {
 				</div>
 			</FilterContainer>
 
-			<StoryList stories={filteredStories} />
+			<StoryList stories={paginatedStories} />
+
+			<PaginationContainer>
+				<PageButton 
+					onClick={() => handlePageChange(1)} 
+					disabled={currentPage === 1}
+				>
+					First
+				</PageButton>
+				<PageButton 
+					onClick={() => handlePageChange(currentPage - 1)} 
+					disabled={currentPage === 1}
+				>
+					Previous
+				</PageButton>
+				{/* Show current page and total pages */}
+				<PageButton disabled>
+					{currentPage} of {totalPages}
+				</PageButton>
+				<PageButton 
+					onClick={() => handlePageChange(currentPage + 1)} 
+					disabled={currentPage === totalPages}
+				>
+					Next
+				</PageButton>
+				<PageButton 
+					onClick={() => handlePageChange(totalPages)} 
+					disabled={currentPage === totalPages}
+				>
+					Last
+				</PageButton>
+			</PaginationContainer>
 		</div>
 	);
 };

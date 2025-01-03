@@ -1,12 +1,12 @@
 import './App.css';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Account, AccountContext } from './Account';
 import styled from 'styled-components';
 
 import UserPool from "./UserPool";
 import Status from "./Status";
 
-import StoryList from './components/StoryList';
+import StoryBrowser from './components/StoryBrowser';
 
 const StyledBox = styled.div`
 	width: 80%;
@@ -259,30 +259,6 @@ const Login = () => {
 
 const LoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-const sampleStories = [
-	{
-		type: 'News',
-		title: 'Donald Trump gana las elecciones de 2024',
-		preview: 'En un histórico regreso político, Donald Trump aseguró la presidencia en las elecciones de 2024, derrotando a la Vicepresidenta Kamala Harris...',
-		tags: ['Spanish', 'Politics'],
-		difficulty: 'C2'
-	},
-	{
-		type: 'Story',
-		title: 'Una historia muy interesante sobre el baloncesto',
-		preview: LoremIpsum,
-		tags: ['Spanish', 'Basketball'],
-		difficulty: 'B1'
-	},
-	{
-		type: 'News',
-		title: '¡Squeak es tan genial!',
-		preview: LoremIpsum,
-		tags: ['Spanish', 'Finance'],
-		difficulty: 'A2'
-	}
-];
-
 function App() {
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
@@ -292,6 +268,8 @@ function App() {
 	const [loading, setLoading] = useState(false); // State to manage loading state
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
+
+	const [allStories, setAllStories] = useState([]);
 
 	const isFormComplete = language && CEFRLevel;
 	const apiBase = "https://api.squeak.today/";
@@ -351,6 +329,38 @@ function App() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
+	const handleListStories = async (e, word) => {
+		const tempStories = [];
+		let difficulties = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+		let storyTypes = ['News', 'Story'];
+		let topics = ['Politics'];
+		let languages = ['French'];
+		for (let i=0; i<difficulties.length; i++) {
+			for (let j=0; j<storyTypes.length; j++) {
+				for (let k=0; k<topics.length; k++) {
+					for (let l=0; l<languages.length; l++) {
+						let randomPercent = Math.random();
+						let lengthToTake = Math.floor(LoremIpsum.length * randomPercent);
+						let mockPreview = LoremIpsum.substring(0, lengthToTake);
+						let storyTemp = {
+							type: storyTypes[j],
+							title: "A " + storyTypes[j] + " piece about " + topics[k],
+							preview: mockPreview,
+							tags: [languages[l], topics[k]],
+							difficulty: difficulties[i]
+						}
+						tempStories.push(storyTemp);
+					}	
+				}
+			}
+		}
+		setAllStories(tempStories);
+	};
+
+	useEffect(() => {
+		handleListStories();
+	}, []); // Empty dependency array means this runs once on mount
+
 	return (
 		<Account>
 			
@@ -362,7 +372,7 @@ function App() {
 				<Title>Squeak</Title>
 				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
 
-				<StoryList stories={sampleStories} />
+				<StoryBrowser stories={allStories} />
 
 				{/* Dropdown for language selection */}
 				<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
