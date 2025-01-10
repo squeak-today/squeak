@@ -51,7 +51,7 @@ func main() {
 	// insertNews(db, "France Wins World Cup", "french", "sports", "A1")
 
     // Example values - replace with your desired filters
-    language := "french"
+    language := "French"
     cefr := "any"
     subject := "any"
 

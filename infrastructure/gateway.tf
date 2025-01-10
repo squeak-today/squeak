@@ -28,6 +28,14 @@ module "translate" {
 	lambda_arn        = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "news_query" {
+	source            = "./api_gateway"
+	rest_api_id       = aws_api_gateway_rest_api.story_api.id
+	parent_id         = aws_api_gateway_rest_api.story_api.root_resource_id
+	path_part         = "query"
+	lambda_arn        = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 // Define Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
     statement_id  = "AllowExecutionFromAPIGateway"
@@ -44,6 +52,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
 
     depends_on = [
         module.story,
-		module.news
+		module.news,
+		module.translate,
+		module.news_query
     ]
 }

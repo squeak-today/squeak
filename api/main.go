@@ -7,12 +7,17 @@ import (
 	"io"
 	"os"
 	"bytes"
+	"time"
+	"fmt"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"database/sql"
+	_ "github.com/lib/pq"
 )
 
 type TranslateResponse struct {
@@ -101,6 +106,82 @@ func init() {
 		}
 
 		c.JSON(http.StatusOK, content.ToMap())
+	})
+
+	router.GET("/query", func (c *gin.Context) {
+		language := c.Query("language")
+		cefr := c.Query("cefr")
+		subject := c.Query("subject")
+
+		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
+			os.Getenv("SUPABASE_HOST"),
+			os.Getenv("SUPABASE_PORT"),
+			os.Getenv("SUPABASE_USER"),
+			os.Getenv("SUPABASE_PASSWORD"),
+			os.Getenv("SUPABASE_DATABASE"),
+		)
+
+		db, err := sql.Open("postgres", connStr)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+			return
+		}
+		defer db.Close()
+
+		// Build query dynamically
+		query := "SELECT id, title, language, topic, cefr_level, created_at FROM news WHERE 1=1"
+		var params []interface{}
+		paramCount := 1
+
+		if language != "" && language != "any" {
+			query += fmt.Sprintf(" AND language = $%d", paramCount)
+			params = append(params, language)
+			paramCount++
+		}
+
+		if cefr != "" && cefr != "any" {
+			query += fmt.Sprintf(" AND cefr_level = $%d", paramCount)
+			params = append(params, cefr)
+			paramCount++
+		}
+
+		if subject != "" && subject != "any" {
+			query += fmt.Sprintf(" AND topic = $%d", paramCount)
+			params = append(params, subject)
+		}
+
+		log.Printf("Executing query: %s with params: %v", query, params)
+
+		rows, err := db.Query(query, params...)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
+			return
+		}
+		defer rows.Close()
+
+		var results []map[string]interface{}
+		for rows.Next() {
+			var id, title, language, topic, cefrLevel string
+			var createdAt time.Time
+			
+			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &createdAt)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
+				return
+			}
+
+			result := map[string]interface{}{
+				"id":         id,
+				"title":      title,
+				"language":   language,
+				"topic":      topic,
+				"cefr_level": cefrLevel,
+				"created_at": createdAt,
+			}
+			results = append(results, result)
+		}
+
+		c.JSON(http.StatusOK, results)
 	})
 
 	router.POST("/translate", func(c *gin.Context) {

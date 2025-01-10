@@ -18,6 +18,12 @@ resource "aws_lambda_function" "story_api_lambda" {
         variables = {
             STORY_BUCKET_NAME = aws_s3_bucket.story_gen_bucket.bucket
 			GOOGLE_API_KEY = var.google_api_key
+
+            SUPABASE_HOST = var.supabase_host
+            SUPABASE_PORT = var.supabase_port
+            SUPABASE_USER = var.supabase_user
+            SUPABASE_PASSWORD = var.supabase_password
+            SUPABASE_DATABASE = var.supabase_database
         }
     }
 
