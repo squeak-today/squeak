@@ -32,16 +32,17 @@ type GenerationRequest struct {
 	ContentType string `json:"contentType"`
 }
 
-func supabaseInsertNews(db *sql.DB, title, language, topic, cefrLevel string) error {
+func supabaseInsertNews(db *sql.DB, title, language, topic, cefrLevel, previewText string) error {
     query := `
-        INSERT INTO news (title, language, topic, cefr_level, created_at)
-        VALUES ($1, $2, $3, $4, NOW())
+        INSERT INTO news (title, language, topic, cefr_level, preview_text, created_at)
+        VALUES ($1, $2, $3, $4, $5, NOW())
         ON CONFLICT ON CONSTRAINT unique_news_entry
         DO UPDATE SET
             title = EXCLUDED.title,
+            preview_text = EXCLUDED.preview_text,
             created_at = NOW()
     `
-    _, err := db.Exec(query, title, language, topic, cefrLevel)
+    _, err := db.Exec(query, title, language, topic, cefrLevel, previewText)
     if err != nil {
         return err
     }
@@ -50,7 +51,8 @@ func supabaseInsertNews(db *sql.DB, title, language, topic, cefrLevel string) er
 }
 
 func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
-    log.Println("Executing Aya Story Generation...")
+    log.Println("IX 5: Executing Aya Story Generation...")
+	log.Println("Processing SQS Events of length ", len(sqsEvent.Records))
 
     connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
         os.Getenv("SUPABASE_HOST"),
@@ -62,7 +64,8 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 
     db, err := sql.Open("postgres", connStr)
     if err != nil {
-        log.Fatal("Database connection failed:", err)
+        log.Println("Database connection failed:", err)
+		return err
     }
     log.Println("Supabase connection success!")
     defer db.Close()
@@ -83,7 +86,6 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 	}
 
 	generationRequests := []GenerationRequest{}
-	seenSubjects := make(map[string]bool)
 	for _, message := range sqsEvent.Records {
 		var request GenerationRequest
 		err := json.Unmarshal([]byte(message.Body), &request)
@@ -91,11 +93,9 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 			log.Println("Failed to parse message: ", err)
 			continue
 		}
-		if !seenSubjects[request.Subject] {
-			seenSubjects[request.Subject] = true
-			generationRequests = append(generationRequests, request)
-		}
+		generationRequests = append(generationRequests, request)
 	}
+	log.Printf("Finished processing SQS Events of length %d with a final length of %d", len(sqsEvent.Records), len(generationRequests))
 
 	// generate web results
 	webResults := make(map[string]string)
@@ -108,6 +108,7 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 	}
 
 	for _, genRequest := range generationRequests {
+		log.Println("Generating story for", genRequest.CEFRLevel)
 		language := genRequest.Language
 		CEFRLevel := genRequest.CEFRLevel
 		subject := genRequest.Subject
@@ -174,11 +175,12 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
                 // and it'll be updated for actual titles at some point.)
                 runes := []rune(newsResp.Text)
                 first30 := newsResp.Text
-                if len(runes) > 30 {
-                    first30 = string(runes[:40])
-                }
+				previewText := newsResp.Text
+                if len(runes) > 30 { first30 = string(runes[:40]) }
+				if len(runes) > 500 { previewText = string(runes[:500]) }
                 first30 = first30 + "..."
-                err := supabaseInsertNews(db, first30, language, subject, CEFRLevel)
+				previewText = previewText + "..."
+                err := supabaseInsertNews(db, first30, language, subject, CEFRLevel, previewText)
                 if err != nil {
                     log.Println(err)
                     return err
