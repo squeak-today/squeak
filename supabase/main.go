@@ -12,8 +12,13 @@ import (
 
 func insertNews(db *sql.DB, title, language, topic, cefrLevel string) error {
     query := `
-        INSERT INTO news (title, language, topic, cefr_level, created_at)
-        VALUES ($1, $2, $3, $4, NOW())
+        INSERT INTO news (title, language, topic, cefr_level, preview_text, created_at)
+        VALUES ($1, $2, $3, $4, $5, NOW())
+        ON CONFLICT ON CONSTRAINT unique_news_entry
+        DO UPDATE SET
+            title = EXCLUDED.title,
+            preview_text = EXCLUDED.preview_text,
+            created_at = NOW()
     `
     
     _, err := db.Exec(query, title, language, topic, cefrLevel)
@@ -56,7 +61,7 @@ func main() {
     subject := "any"
 
     // Build query dynamically
-    query := "SELECT id, title, language, topic, cefr_level, created_at FROM news WHERE 1=1"
+    query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at FROM news WHERE 1=1"
     var params []interface{}
     paramCount := 1
 

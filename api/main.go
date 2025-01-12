@@ -129,7 +129,7 @@ func init() {
 		defer db.Close()
 
 		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, created_at FROM news WHERE 1=1"
+		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at FROM news WHERE 1=1"
 		var params []interface{}
 		paramCount := 1
 
@@ -161,10 +161,10 @@ func init() {
 
 		var results []map[string]interface{}
 		for rows.Next() {
-			var id, title, language, topic, cefrLevel string
+			var id, title, language, topic, cefrLevel, previewText string
 			var createdAt time.Time
 			
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &createdAt)
+			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
 				return
@@ -176,6 +176,7 @@ func init() {
 				"language":   language,
 				"topic":      topic,
 				"cefr_level": cefrLevel,
+				"preview_text": previewText,
 				"created_at": createdAt,
 			}
 			results = append(results, result)
