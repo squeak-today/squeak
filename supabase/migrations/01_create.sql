@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS news (
     language TEXT DEFAULT NULL,
     topic TEXT DEFAULT NULL,
     cefr_level TEXT DEFAULT NULL,
+    preview_text TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -13,6 +14,7 @@ CREATE TABLE IF NOT EXISTS stories (
     language TEXT DEFAULT NULL,
     topic TEXT DEFAULT NULL,
     cefr_level TEXT DEFAULT NULL,
+    preview_text TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
