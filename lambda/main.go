@@ -13,12 +13,16 @@ import (
     "os"
     "context"
     "log"
+    "fmt"
 	"encoding/json"
 	"github.com/aws/aws-lambda-go/lambda"
     "github.com/aws/aws-lambda-go/events"
 
     "time"
     "strings"
+
+    "database/sql"
+    _ "github.com/lib/pq"
 )
 
 type GenerationRequest struct {
@@ -28,8 +32,40 @@ type GenerationRequest struct {
 	ContentType string `json:"contentType"`
 }
 
+func supabaseInsertNews(db *sql.DB, title, language, topic, cefrLevel string) error {
+    query := `
+        INSERT INTO news (title, language, topic, cefr_level, created_at)
+        VALUES ($1, $2, $3, $4, NOW())
+        ON CONFLICT ON CONSTRAINT unique_news_entry
+        DO UPDATE SET
+            title = EXCLUDED.title,
+            created_at = NOW()
+    `
+    _, err := db.Exec(query, title, language, topic, cefrLevel)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
 func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
     log.Println("Executing Aya Story Generation...")
+
+    connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
+        os.Getenv("SUPABASE_HOST"),
+		os.Getenv("SUPABASE_PORT"),
+        os.Getenv("SUPABASE_USER"),
+        os.Getenv("SUPABASE_PASSWORD"),
+        os.Getenv("SUPABASE_DATABASE"),
+    )
+
+    db, err := sql.Open("postgres", connStr)
+    if err != nil {
+        log.Fatal("Database connection failed:", err)
+    }
+    log.Println("Supabase connection success!")
+    defer db.Close()
 
 	language_ids := map[string]string{
 		"French": "fr",
@@ -132,6 +168,21 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 					log.Println(err)
 					return err
 				}
+
+                // use runes instead of string slicing, since some characters are multi-byte
+                // such as Chinese characters (though this is a temporary solution anyway,
+                // and it'll be updated for actual titles at some point.)
+                runes := []rune(newsResp.Text)
+                first30 := newsResp.Text
+                if len(runes) > 30 {
+                    first30 = string(runes[:40])
+                }
+                first30 = first30 + "..."
+                err := supabaseInsertNews(db, first30, language, subject, CEFRLevel)
+                if err != nil {
+                    log.Println(err)
+                    return err
+                }
 			} else {
 				log.Println(err)
 				return err
