@@ -346,7 +346,7 @@ function App() {
 				let storyTemp = {
 					type: 'News',
 					title: story['title'],
-					preview: LoremIpsum,
+					preview: story['preview_text'],
 					tags: [story['language'], story['topic']],
 					difficulty: story['cefr_level']
 				}
