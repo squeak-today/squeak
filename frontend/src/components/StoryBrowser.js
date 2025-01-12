@@ -55,10 +55,10 @@ const PageButton = styled.button`
 	}
 `;
 
-const StoryBrowser = ({ stories }) => {
-	const [filterLanguage, setFilterLanguage] = useState('Any');
-	const [filterLevel, setFilterLevel] = useState('Any');
-	const [filterTopic, setFilterTopic] = useState('Any');
+const StoryBrowser = ({ stories, onParamsSelect }) => {
+	const [filterLanguage, setFilterLanguage] = useState('any');
+	const [filterLevel, setFilterLevel] = useState('any');
+	const [filterTopic, setFilterTopic] = useState('any');
 	const [currentPage, setCurrentPage] = useState(1);
 	const storiesPerPage = 6;
 
@@ -82,16 +82,9 @@ const StoryBrowser = ({ stories }) => {
 		return `${month} ${day}${getOrdinal(day)}, ${year}`;
 	};
 
-	const filteredStories = stories.filter(story => {
-		if (filterLanguage !== 'Any' && !story.tags.includes(filterLanguage)) return false;
-		if (filterLevel !== 'Any' && story.difficulty !== filterLevel) return false;
-		if (filterTopic !== 'Any' && !story.tags.includes(filterTopic)) return false;
-		return true;
-	});
-
 	// Then paginate the filtered stories
-	const totalPages = Math.ceil(filteredStories.length / storiesPerPage);
-	const paginatedStories = filteredStories.slice(
+	const totalPages = Math.ceil(stories.length / storiesPerPage);
+	const paginatedStories = stories.slice(
 		(currentPage - 1) * storiesPerPage,
 		currentPage * storiesPerPage
 	);
@@ -108,9 +101,9 @@ const StoryBrowser = ({ stories }) => {
 					<FilterLabel>Language</FilterLabel>
 					<FilterSelect 
 						value={filterLanguage} 
-						onChange={(e) => setFilterLanguage(e.target.value)}
+						onChange={(e) => { setFilterLanguage(e.target.value); onParamsSelect(e.target.value, filterLevel, filterTopic); }}
 					>
-						<option value="Any">Any Language</option>
+						<option value="any">Any Language</option>
 						<option value="Spanish">Spanish</option>
 						<option value="French">French</option>
 					</FilterSelect>
@@ -120,9 +113,9 @@ const StoryBrowser = ({ stories }) => {
 					<FilterLabel>Reading Level</FilterLabel>
 					<FilterSelect 
 						value={filterLevel} 
-						onChange={(e) => setFilterLevel(e.target.value)}
+						onChange={(e) => { setFilterLevel(e.target.value); onParamsSelect(filterLanguage, e.target.value, filterTopic); }}
 					>
-						<option value="Any">Any Level</option>
+						<option value="any">Any Level</option>
 						<option value="A1">A1</option>
 						<option value="A2">A2</option>
 						<option value="B1">B1</option>
@@ -136,16 +129,16 @@ const StoryBrowser = ({ stories }) => {
 					<FilterLabel>Topic</FilterLabel>
 					<FilterSelect 
 						value={filterTopic} 
-						onChange={(e) => setFilterTopic(e.target.value)}
+						onChange={(e) => { setFilterTopic(e.target.value); onParamsSelect(filterLanguage, filterLevel, e.target.value); }}
 					>
-						<option value="Any">Any Topic</option>
+						<option value="any">Any Topic</option>
 						<option value="Politics">Politics</option>
 						<option value="Basketball">Basketball</option>
 						<option value="Finance">Finance</option>
 					</FilterSelect>
 				</div>
 			</FilterContainer>
-
+			
 			<StoryList stories={paginatedStories} />
 
 			<PaginationContainer>

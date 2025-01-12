@@ -329,36 +329,37 @@ function App() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
-	const handleListStories = async (e, word) => {
+	const handleListStories = async (language, cefrLevel, subject) => {
 		const tempStories = [];
-		let difficulties = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-		let storyTypes = ['News'];
-		let topics = ['Politics'];
-		let languages = ['French'];
-		for (let i=0; i<difficulties.length; i++) {
-			for (let j=0; j<storyTypes.length; j++) {
-				for (let k=0; k<topics.length; k++) {
-					for (let l=0; l<languages.length; l++) {
-						let randomPercent = Math.random();
-						let lengthToTake = Math.floor(LoremIpsum.length * randomPercent);
-						let mockPreview = LoremIpsum.substring(0, lengthToTake);
-						let storyTemp = {
-							type: storyTypes[j],
-							title: "A " + storyTypes[j] + " piece about " + topics[k],
-							preview: mockPreview,
-							tags: [languages[l], topics[k]],
-							difficulty: difficulties[i]
-						}
-						tempStories.push(storyTemp);
-					}	
-				}
+		let url = `${apiBase}query?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
+		console.log(url);
+		await fetch(url).then(response => {
+			if (!response.ok) {
+				throw new Error("Failed to fetch stories");
 			}
-		}
+			return response.json();
+		}).then(data => {
+			console.log("Fetched stories successfully!");
+			for (const i in data) {
+				const story = data[i];
+				console.log(story);
+				let storyTemp = {
+					type: 'News',
+					title: story['title'],
+					preview: LoremIpsum,
+					tags: [story['language'], story['topic']],
+					difficulty: story['cefr_level']
+				}
+				tempStories.push(storyTemp);
+			}
+		}).catch(error => {
+			console.error("Failed to fetch stories:", error);
+		})
 		setAllStories(tempStories);
 	};
 
 	useEffect(() => {
-		handleListStories();
+		handleListStories('any', 'any', 'any');
 	}, []); // Empty dependency array means this runs once on mount
 
 	return (
@@ -372,7 +373,10 @@ function App() {
 				<Title>Squeak</Title>
 				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
 
-				<StoryBrowser stories={allStories} />
+				<StoryBrowser 
+					stories={allStories} 
+					onParamsSelect={handleListStories} 
+				/>
 
 				{/* Dropdown for language selection */}
 				<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
