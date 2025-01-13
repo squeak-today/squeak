@@ -11,32 +11,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Check out the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up Terraform
+    - name: Build API Lambda ZIP
+      run: ./api/build-for-lambda.sh
+
+    - name: Build Lambda Lambda ZIP
+      run: ./lambda/build-for-lambda.sh
+
+    - name: Build Queue Filler Lambda ZIP
+      run: ./queue_filler/build-for-lambda.sh
+
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.4.0
 
-    # Step 3: Terraform Initialization
     - name: Terraform Init
       run: terraform init
       working-directory: infrastructure
 
-    # Step 4: Terraform Format Check
     - name: Terraform Format
       run: terraform fmt -check -recursive
       working-directory: infrastructure
 
-    # Step 5: Terraform Validation
     - name: Terraform Validate
       run: terraform validate
       working-directory: infrastructure
 
-    # Step 6: Terraform Plan
     - name: Terraform Plan
       run: terraform plan -out=tfplan
       working-directory: infrastructure
