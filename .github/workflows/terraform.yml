@@ -1,4 +1,4 @@
-name: Terraform CI/CD
+name: Terraform Linting and Validation
 
 on:
   push:
@@ -24,15 +24,19 @@ jobs:
     # Step 3: Terraform Initialization
     - name: Terraform Init
       run: terraform init
+      working-directory: ./terraform
 
     # Step 4: Terraform Format Check
     - name: Terraform Format
       run: terraform fmt -check
+      working-directory: ./terraform
 
     # Step 5: Terraform Validation
     - name: Terraform Validate
       run: terraform validate
+      working-directory: ./terraform
 
     # Step 6: Terraform Plan
     - name: Terraform Plan
       run: terraform plan -out=tfplan
+      working-directory: ./terraform
