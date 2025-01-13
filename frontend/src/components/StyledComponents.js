@@ -183,7 +183,7 @@ export const NavHeader = styled.header`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0 2rem;
+	padding: 0 5%;
 	z-index: 1000;
 	box-sizing: border-box;
 `;

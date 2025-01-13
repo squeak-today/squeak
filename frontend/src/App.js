@@ -173,7 +173,7 @@ function App() {
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					Give Us Feedback! ❤️
+					Tell Us Something! ❤️
 				</MiscButton>
 			</NavHeader>
 			

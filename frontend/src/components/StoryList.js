@@ -7,6 +7,9 @@ const ListContainer = styled.div`
     margin: 0 auto;
     padding: 20px;
     font-family: 'Noto Serif', serif;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
 `;
 
 const StoryList = ({ stories, onStoryBlockClick }) => {
