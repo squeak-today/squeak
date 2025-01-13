@@ -10,18 +10,18 @@ import (
     _ "github.com/lib/pq"
 )
 
-func insertNews(db *sql.DB, title, language, topic, cefrLevel string) error {
-    query := `
-        INSERT INTO news (title, language, topic, cefr_level, preview_text, created_at)
+func insertContent(db *sql.DB, table string, title, language, topic, cefrLevel, preview_text string) error {
+    query := fmt.Sprintf(`
+        INSERT INTO %s (title, language, topic, cefr_level, preview_text, created_at)
         VALUES ($1, $2, $3, $4, $5, NOW())
-        ON CONFLICT ON CONSTRAINT unique_news_entry
+        ON CONFLICT ON CONSTRAINT unique_%s_entry
         DO UPDATE SET
             title = EXCLUDED.title,
             preview_text = EXCLUDED.preview_text,
             created_at = NOW()
-    `
+    `, table, table)
     
-    _, err := db.Exec(query, title, language, topic, cefrLevel)
+    _, err := db.Exec(query, title, language, topic, cefrLevel, preview_text)
     if err != nil {
         return fmt.Errorf("failed to insert news: %v", err)
     }
@@ -51,11 +51,10 @@ func main() {
     defer db.Close()
 
 
-	// insertNews(db, "Global Warming Effects", "english", "science", "B1")
-	// insertNews(db, "Donald Trump Wins Election", "french", "science", "C2")
-	// insertNews(db, "France Wins World Cup", "french", "sports", "A1")
-
-    // Example values - replace with your desired filters
+	// insertContent(db, "news", "Global Warming Effects", "english", "science", "B1", "This is a news article of Global Warming Effects")
+	// insertContent(db, "stories", "Global Warming Effects", "english", "science", "B1", "This is a story of Global Warming Effects")
+    
+	// Example values - replace with your desired filters
     language := "French"
     cefr := "any"
     subject := "any"
