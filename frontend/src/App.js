@@ -327,33 +327,41 @@ function App() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
+	const fetchContent = async (endpoint, language, cefrLevel, subject) => {
+		const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
+		const response = await fetch(url);
+		if (!response.ok) { throw new Error(`Failed to fetch from ${endpoint}`); }
+		return response.json();
+	};
+
 	const handleListStories = async (language, cefrLevel, subject) => {
 		const tempStories = [];
-		let url = `${apiBase}query?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
-		console.log(url);
-		await fetch(url).then(response => {
-			if (!response.ok) {
-				throw new Error("Failed to fetch stories");
-			}
-			return response.json();
-		}).then(data => {
-			console.log("Fetched stories successfully!");
-			for (const i in data) {
-				const story = data[i];
-				console.log(story);
-				let storyTemp = {
+		try {
+			const newsData = await fetchContent('news-query', language, cefrLevel, subject);
+			const storiesData = await fetchContent('story-query', language, cefrLevel, subject);
+			console.log('Fetched content successfully!')
+			for (const story of newsData) {
+				tempStories.push({
 					type: 'News',
 					title: story['title'],
 					preview: story['preview_text'],
 					tags: [story['language'], story['topic']],
 					difficulty: story['cefr_level']
-				}
-				tempStories.push(storyTemp);
+				});
 			}
-		}).catch(error => {
-			console.error("Failed to fetch stories:", error);
-		})
-		setAllStories(tempStories);
+			for (const story of storiesData) {
+				tempStories.push({
+					type: 'Story',
+					title: story['title'],
+					preview: story['preview_text'],
+					tags: [story['language'], story['topic']],
+					difficulty: story['cefr_level']
+				});
+			}
+			setAllStories(tempStories);
+		} catch (error) {
+			console.error("Failed to fetch content:", error);
+		}
 	};
 
 	useEffect(() => {
