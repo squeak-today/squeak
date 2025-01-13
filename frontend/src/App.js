@@ -151,15 +151,15 @@ function App() {
 	};
 
 	useEffect(() => {
-		// Check if user has seen welcome message
-		const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+		// Check if user has seen welcome message in this session
+		const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
 		if (hasSeenWelcome) {
 			setShowWelcome(false);
 		}
 	}, []);
 
 	const handleCloseWelcome = () => {
-		localStorage.setItem('hasSeenWelcome', 'true');
+		sessionStorage.setItem('hasSeenWelcome', 'true');
 		setShowWelcome(false);
 	};
 
