@@ -7,10 +7,11 @@ import { StyledBox,
 	Tooltip,
 	ModalContainer,
 	CloseModalButton} from './components/StyledComponents';
-import AuthBlocks from './components/AuthBlocks';
-
 import StoryReader from './components/StoryReader';
 import StoryBrowser from './components/StoryBrowser';
+
+// not used right now
+// import AuthBlocks from './components/AuthBlocks';
 
 const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
@@ -159,7 +160,6 @@ function App() {
 					</Tooltip>
 				)}
 			</StyledBox>
-			<AuthBlocks />
 		</div>
 	);
 }
