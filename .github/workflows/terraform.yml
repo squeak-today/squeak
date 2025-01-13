@@ -28,7 +28,7 @@ jobs:
 
     # Step 4: Terraform Format Check
     - name: Terraform Format
-      run: terraform fmt -check
+      run: terraform fmt -check -recursive
       working-directory: infrastructure
 
     # Step 5: Terraform Validation

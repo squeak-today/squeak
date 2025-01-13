@@ -1,15 +1,15 @@
 
 resource "random_string" "bucket_name" {
-    length  = 12
-    upper   = false
-    special = false
+  length  = 12
+  upper   = false
+  special = false
 }
 resource "aws_s3_bucket" "story_gen_bucket" {
-    bucket = random_string.bucket_name.result
+  bucket = random_string.bucket_name.result
 
-    tags = {
-        Name = "Story Generation Bucket"
-    }
+  tags = {
+    Name = "Story Generation Bucket"
+  }
 
-    force_destroy = true
+  force_destroy = true
 }
