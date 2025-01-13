@@ -1,6 +1,0 @@
-Create `terraform.tfvars` in this form:
-```
-cohere_api_key = "key"
-google_api_key = "key"
-tavily_api_key = "key"
-```

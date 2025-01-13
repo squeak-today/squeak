@@ -1,7 +1,5 @@
 package main
 
-// SQS_QUEUE_URL="https://sqs.<region>.amazonaws.com/<account-id>/<queue-name>" go run .
-
 import (
 	"context"
 	"encoding/json"

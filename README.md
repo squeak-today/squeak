@@ -1,47 +1,68 @@
 # Squeak Story Generation and REST API Backend
 
-1. Build Go binaries with `./build-for-lambda.sh` which compiles, zips, and places in `infrastructure/`.
-2. Create `terraform.tfvars` with the following format:
+## Developer Setup
+
+### `/supabase`
+Contains migrations and code to interact with Supabase via code if needed.
+Needs a `.env` file with the following format:
+```shell
+SUPABASE_HOST = "..."
+SUPABASE_PORT = "..."
+SUPABASE_USER = "..."
+SUPABASE_PASSWORD = "..."
+SUPABASE_DATABASE = "..."
 ```
+
+### Deploy API
+These instructions are for deployment using Squeak's official domain and already existing Supabase.
+If you are viewing this as an open source user, some of these may not apply. You will need to create your own Supabase instance and, if desired, a domain for the API.
+
+1. Build Go binaries with `./build-for-lambda.sh` in all lambda directories which compiles, zips, and places in `infrastructure/`.
+
+2. Create `infrastructure/terraform.tfvars` with the following format:
+```shell
 cohere_api_key = "cohere-key-here"
 google_api_key = "google-key-here"
 tavily_api_key = "tvly-key-here"
+supabase_host = "..."
+supabase_port = "..."
+supabase_user = "..."
+supabase_password = "..."
+supabase_database = "..."
 ```
+
 3. `cd infrastructure`, call:
-```
+```shell
 terraform init
 terraform apply
 ```
 and later:
-```
+```shell
 terraform destroy
 ```
-4. Either wait for S3 to be populated after the story generation lambda is invoked or invoke manually. The REST API endpoint should be ready for use.
+4. The `queue_filler` lambda will be invoked automatically at regular intervals, but you may invoke it early for testing story generation-tied features.
 
-## **GET** `/story`
-```
-https://api.squeak.today/story
-```
+## Backend API
+| Endpoint | Type | Description | 
+| --- | --- | --- |
+| `/story` | `GET` | Pull a generated story. |
+| `/news` | `GET` | Pull a generated news article. |
+| `/translate` | `POST` | Translation of given sentence to source language. |
+| `/news-query` | `GET` | Query Supabase for news articles. |
+| `/story-query` | `GET` | Query Supabase for stories. |
+
+### **GET** `/story`
+> https://api.squeak.today/story
+
 Pulls generated story data as JSON. Pass `language`, `cefr`, and `subject` as fields.
-
-### Path Parameters
-
-**language** `string` (*required*)
-
-Current supported languages are `French`.
-
----
-
-**cefr** `string` (*required*)
-
-Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
-
----
-
-**subject** `string` (*required*)
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | Yes | Current supported languages are `French`. |
+| `cefr` | `string` | Yes | Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`. |
+| `subject` | `string` | Yes | e.g `Politics`. |
 
 ### Response
-`200 Successful`
+> `200 Successful`
 ```json
 {
 	"content": "J'aime Squeak beaucoup.",
@@ -60,31 +81,18 @@ Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
 }
 ```
 
+### **GET** `/news`
+> https://api.squeak.today/news
 
-## **GET** `/news`
-```
-https://api.squeak.today/news
-```
 Pulls generated news article data as JSON. Pass `language`, `cefr`, and `subject` as fields.
-
-### Path Parameters
-
-**language** `string` (*required*)
-
-Current supported languages are `French`.
-
----
-
-**cefr** `string` (*required*)
-
-Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
-
----
-
-**subject** `string` (*required*)
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | Yes | Current supported languages are `French`. |
+| `cefr` | `string` | Yes | Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`. |
+| `subject` | `string` | Yes | e.g `Politics`. |
 
 ### Response
-`200 Successful`
+> `200 Successful`
 ```json
 {
 	"content": "Donald Trump aime Squeak beaucoup.",
@@ -113,72 +121,97 @@ Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`.
 }
 ```
 
-## **POST** `/translate`
-```
-https://api.squeak.today/translate
-```
+### **POST** `/translate`
+> https://api.squeak.today/translate
+
 Translates a given sentence to English and returns the result.
 
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `sentence` | `string` | Yes | Sentence to translate. |
+| `source` | `string` | Yes | Source language. e.g `fr` |
+| `target` | `string` | Yes | Language to translate to. e.g `en` |
+
 ### Headers
-
-**Content-Type** `application/json`
-
-**Accept** `appliction/json`
-
-### Body
-
-**sentence** `string` (*required*)
-
-Sentence to translate.
-
----
-
-**source** `string` (*required*)
-
-Source language. e.g `fr`
-
----
-
-**target** `string` (*required*)
-
-Language to translate to. e.g `en`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
 
 ### Response
-`200 Successful`
+> `200 Successful`
 ```json
 {
 	"sentence": "the translated sentence."
 }
 ```
 
-## Examples: `api.squeak.today`
-```
-https://api.squeak.today/news?language=French&cefr=B2&subject=Politics
+### **GET** `/news-query`
+> https://api.squeak.today/news-query
 
-https://api.squeak.today/story?language=French&cefr=B2&subject=Politics
+Query Supabase for news articles.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | Yes | Can be set to `any` to return all languages. e.g `French` |
+| `cefr` | `string` | Yes | Can be set to `any` to return all CEFR levels. e.g `B2` |
+| `subject` | `string` | Yes | Can be set to `any` to return all subjects. e.g `Politics` |
+
+### Response
+> `200 Successful`
+```json
+[
+    {
+        "cefr_level": "A1",
+        "created_at": "2025-01-13T04:03:12.846956Z",
+        "id": "32",
+        "language": "French",
+        "preview_text": "The first part of the news article...",
+        "title": "A very cool title",
+        "topic": "Politics"
+    },
+    {
+        "cefr_level": "A1",
+        "created_at": "2025-01-13T04:03:34.499384Z",
+        "id": "34",
+        "language": "French",
+        "preview_text": "Albanese contre Dutton, un duel politique intense\n\nL'Australie est en pleine effervescence politique alors que les élections approchent à grands pas. Le Premier ministre Anthony Albanese et le chef de l'opposition Peter Dutton s'affrontent dans une bataille politique acharnée, chacun cherchant à séduire les électeurs avec des promesses et des critiques acerbes.\n\n## Un paysage politique en évolution\n\nL'Australie, connue pour son paysage politique dynamique, est act...",
+        "title": "Les élections australiennes",
+        "topic": "Politics"
+    }
+]
 ```
+
+### **GET** `/story-query`
+> https://api.squeak.today/story-query
+
+Query Supabase for stories.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | Yes | e.g `French` |
+| `cefr` | `string` | Yes | e.g `B2` |
+| `subject` | `string` | Yes | e.g `Politics` |
+
+### Response
+> `200 Successful`
+
+See `news-query` response.
+
+## Examples: `api.squeak.today`
+> https://api.squeak.today/news?language=French&cefr=B2&subject=Politics
+>https://api.squeak.today/story?language=French&cefr=B2&subject=Politics
 
 Or, equivalently:
-```
-https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/news?language=French&cefr=B2&subject=Politics
+> https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/news?language=French&cefr=B2&subject=Politics
 
-https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics
-```
+> https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics
 
 ### Javascript
 ```javascript
 const apiUrl = "https://api.squeak.today/story";
 let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
-fetch(url).then(response => {
-	if (!response.ok) {
-		throw new Error("Network response was not ok");
-	}
-	return response.json();
-}).then(data => {
-	setStory(data["content"]);
-	setLoading(false); // Set loading state to false when finished
-}).catch(error => {
-	console.error("Error generating story:", error);
-	setStory("Failed to generate story. Please try again.");
-})
+
+let response = await fetch(url);
+let data = await response.json();
+
+console.log(data);
 ```

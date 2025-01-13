@@ -15,3 +15,36 @@ variable "tavily_api_key" {
 	type = string
 	sensitive = true
 }
+
+
+// SUPABASE VARIABLES, TRANSACTION POOLER PSQL
+variable "supabase_host" {
+	description = "Supabase Host"
+	type = string
+	sensitive = true
+}
+
+variable "supabase_port" {
+	description = "Supabase Port"
+	type = string
+	sensitive = true
+}
+
+variable "supabase_user" {
+	description = "Supabase User"
+	type = string
+	sensitive = true
+}
+
+variable "supabase_password" {
+	description = "Supabase Password"
+	type = string
+	sensitive = true
+}
+
+variable "supabase_database" {
+	description = "Supabase Database Name"
+	type = string
+	sensitive = true
+}
+

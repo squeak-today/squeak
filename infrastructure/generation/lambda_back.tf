@@ -29,6 +29,12 @@ resource "aws_lambda_function" "story_gen_lambda" {
 			TAVILY_API_KEY = var.tavily_api_key
             STORY_BUCKET_NAME = var.story_gen_bucket_bucket
 			SQS_QUEUE_URL = aws_sqs_queue.story_gen_queue.name
+
+            SUPABASE_HOST = var.supabase_host
+            SUPABASE_PORT = var.supabase_port
+            SUPABASE_USER = var.supabase_user
+            SUPABASE_PASSWORD = var.supabase_password
+            SUPABASE_DATABASE = var.supabase_database
         }
     }
 
