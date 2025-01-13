@@ -8,9 +8,10 @@ import { BrowserBox,
 	Tooltip,
 	ModalContainer,
 	Footer,
-	FeedbackButton} from './components/StyledComponents';
+	MiscButton} from './components/StyledComponents';
 import StoryReader from './components/StoryReader';
 import StoryBrowser from './components/StoryBrowser';
+import WelcomeModal from './components/WelcomeModal';
 
 // not used right now
 // import AuthBlocks from './components/AuthBlocks';
@@ -33,6 +34,8 @@ function App() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const [isClosing, setIsClosing] = useState(false);
+
+	const [showWelcome, setShowWelcome] = useState(true);
 
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
@@ -147,17 +150,31 @@ function App() {
 		}
 	};
 
+	useEffect(() => {
+		// Check if user has seen welcome message
+		const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+		if (hasSeenWelcome) {
+			setShowWelcome(false);
+		}
+	}, []);
+
+	const handleCloseWelcome = () => {
+		localStorage.setItem('hasSeenWelcome', 'true');
+		setShowWelcome(false);
+	};
+
 	return (
 		<div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
+			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<NavHeader>
 				<HeaderLogo src={logo} alt="Squeak" />
-				<FeedbackButton 
+				<MiscButton 
 					href="https://forms.gle/LumHWSYaqLKV4KMa8"
 					target="_blank"
 					rel="noopener noreferrer"
 				>
 					Give Us Feedback! ❤️
-				</FeedbackButton>
+				</MiscButton>
 			</NavHeader>
 			
 			<BrowserBox>

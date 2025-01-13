@@ -194,7 +194,7 @@ export const HeaderLogo = styled.img`
 	cursor: pointer;
 `;
 
-export const FeedbackButton = styled.a`
+export const MiscButton = styled.a`
 	padding: 0.8em 1.5em;
 	border: 1px solid #e0e0e0;
 	border-radius: 10px;
