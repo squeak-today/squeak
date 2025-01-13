@@ -1,6 +1,6 @@
 import { Account, AccountContext } from '../Account';
 import { useState, useContext } from 'react';
-import { StyledBox, Subtitle, InputField, GenerateButton } from './StyledComponents';
+import { BrowserBox, Subtitle, InputField, GenerateButton } from './StyledComponents';
 
 import UserPool from "../UserPool";
 import Status from "./Status";
@@ -36,7 +36,7 @@ const SignUp = () => {
 	};
 
 	return (
-		<StyledBox>
+		<BrowserBox>
 			{/* ugly sign-in */}
 			<div>
 				<Subtitle>Create Account</Subtitle>
@@ -70,7 +70,7 @@ const SignUp = () => {
 					<GenerateButton type="submit">Submit</GenerateButton>
 				</form>
 			</div>
-		</StyledBox>
+		</BrowserBox>
 	)
 }
 
@@ -91,7 +91,7 @@ const Login = () => {
 	}
 
 	return (
-		<StyledBox>
+		<BrowserBox>
 			<Subtitle>Login</Subtitle>
 			{/* ugly sign-in */}
 			<div>
@@ -110,7 +110,7 @@ const Login = () => {
 					<GenerateButton type="submit">Login</GenerateButton>
 				</form>
 			</div>
-		</StyledBox>
+		</BrowserBox>
 	)
 }
 

@@ -1,12 +1,15 @@
 import './App.css';
 import { useState, useEffect, useCallback } from 'react';
-import { StyledBox, 
-	Title,
-	Subtitle,
+import logo from './assets/logo.png';
+import { BrowserBox, 
+	NavHeader,
+	HeaderLogo,
 	StoryContainer,
 	Tooltip,
 	ModalContainer,
-	CloseModalButton} from './components/StyledComponents';
+	CloseModalButton,
+	Footer,
+	FeedbackButton} from './components/StyledComponents';
 import StoryReader from './components/StoryReader';
 import StoryBrowser from './components/StoryBrowser';
 
@@ -133,11 +136,17 @@ function App() {
 	}
 
 	return (
-		<div>
-			<StyledBox>
-				<Title>Squeak</Title>
-				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
-
+		<div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
+			<NavHeader>
+				<HeaderLogo src={logo} alt="Squeak" />
+				<FeedbackButton 
+					href="mailto:squeak.today@gmail.com?subject=Squeak%20Feedback"
+				>
+					Give Us Feedback! ❤️
+				</FeedbackButton>
+			</NavHeader>
+			
+			<BrowserBox>
 				<StoryBrowser 
 					stories={allStories} 
 					onParamsSelect={handleListStories} 
@@ -159,7 +168,10 @@ function App() {
 					<strong>{tooltip.word}</strong>: {tooltip.definition}
 					</Tooltip>
 				)}
-			</StyledBox>
+			</BrowserBox>
+			<Footer>
+				© 2024 Squeak. All rights reserved.
+			</Footer>
 		</div>
 	);
 }

@@ -26,12 +26,13 @@ const FilterLabel = styled.label`
 
 const FilterSelect = styled.select`
 	padding: 0.5em;
-	border: 1px solid white;
+	border: 1px solid #e0e0e0;
 	border-radius: 5px;
 	font-family: 'Noto Serif', serif;
 	width: 100%;
 	background: white;
 	cursor: pointer;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const PaginationContainer = styled.div`
@@ -43,7 +44,7 @@ const PaginationContainer = styled.div`
 
 const PageButton = styled.button`
 	padding: 0.5em 1em;
-	border: 1px solid white;
+	border: 1px solid #e0e0e0;
 	border-radius: 10px;
 	background: white;
 	cursor: pointer;

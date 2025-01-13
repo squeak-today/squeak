@@ -9,6 +9,8 @@ const StoryBlockContainer = styled.div`
 	transition: transform 0.2s;
 	font-family: 'Noto Serif', serif;
 	position: relative;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border: 1px solid #e0e0e0;
 
 	&:hover {
 		transform: translateY(-2px);

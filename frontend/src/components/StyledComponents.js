@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 
-const StyledBox = styled.div`
-	width: 80%;
-	margin: 20px auto;
+const BrowserBox = styled.div`
+	width: 100%;
+	height: 100%;
+	margin: 80px auto 0 auto;
 	padding: 20px;
-	border: 2px solid #000000;
-	border-radius: 15px;
-	background-color: #e0e0e0;
+	background-color: #ffffff;
 	box-sizing: border-box;
 	overflow: hidden;
 `;
@@ -137,4 +136,66 @@ const CloseModalButton = styled.button`
 	}
 `;
 
-export { StyledBox, Title, Subtitle, GenerateButton, StoryContainer, StoryTitle, InputField, Tooltip, ModalContainer, CloseModalButton };
+export const HeaderTitle = styled.h1`
+	font-size: 2.5rem;
+	color: #333;
+	margin-bottom: 2rem;
+	text-align: center;
+`;
+
+export const Footer = styled.footer`
+	position: relative;
+	width: 100%;
+	background-color: #ffffff;
+	padding: 2rem;
+	text-align: center;
+	border-top: 1px solid #e0e0e0;
+	margin-top: 0;
+	height: 80px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'Noto Serif', serif;
+`;
+
+export const NavHeader = styled.header`
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	max-width: 100%;
+	height: 80px;
+	background-color: #ffffff;
+	border-bottom: 1px solid #e0e0e0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 2rem;
+	z-index: 1000;
+	box-sizing: border-box;
+`;
+
+export const HeaderLogo = styled.img`
+	height: 50px;
+	margin: 0;
+	cursor: pointer;
+`;
+
+export const FeedbackButton = styled.a`
+	padding: 0.8em 1.5em;
+	border: 1px solid #e0e0e0;
+	border-radius: 10px;
+	background: white;
+	cursor: pointer;
+	font-family: 'Noto Serif', serif;
+	font-weight: bold;
+	text-decoration: none;
+	color: #000000;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	
+	&:hover {
+		background: #f5f5f5;
+	}
+`;
+
+export { BrowserBox, Title, Subtitle, GenerateButton, StoryContainer, StoryTitle, InputField, Tooltip, ModalContainer, CloseModalButton };
