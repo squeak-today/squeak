@@ -7,7 +7,6 @@ import { BrowserBox,
 	StoryContainer,
 	Tooltip,
 	ModalContainer,
-	CloseModalButton,
 	Footer,
 	FeedbackButton} from './components/StyledComponents';
 import StoryReader from './components/StoryReader';
@@ -32,6 +31,8 @@ function App() {
 	const [allStories, setAllStories] = useState([]);
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const [isClosing, setIsClosing] = useState(false);
 
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
@@ -131,9 +132,20 @@ function App() {
 	}
 
 	const handleCloseModal = () => {
-		setIsModalOpen(false);
-		setStory('');
-	}
+		setIsClosing(true);
+		// wait for anim to complete before removing from DOM
+		setTimeout(() => {
+			setIsModalOpen(false);
+			setStory('');
+			setIsClosing(false);
+		}, 300); // Match animation duration
+	};
+
+	const handleModalClick = (e) => {
+		if (e.target === e.currentTarget) { // not triggering on children
+			handleCloseModal();
+		}
+	};
 
 	return (
 		<div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
@@ -156,9 +168,8 @@ function App() {
 				/>
 				
 				{story && isModalOpen && (
-					<ModalContainer>
-						<StoryContainer>
-							<CloseModalButton onClick={handleCloseModal}>X</CloseModalButton>
+					<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
+						<StoryContainer $isClosing={isClosing}>
 							<StoryReader data={story} handleWordClick={handleWordClick} />
 						</StoryContainer>
 					</ModalContainer>

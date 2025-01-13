@@ -7,7 +7,7 @@ import leftArrow from '../assets/vectors/leftArrow.svg';
 
 const StoryBox = styled.div`
 	padding: 20px;
-	margin: 20px 0;
+	margin: 0px 0;
 	border-radius: 15px; // Rounded corners
 	background-color: white;
 `;

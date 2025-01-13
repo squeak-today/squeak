@@ -44,7 +44,7 @@ const GenerateButton = styled.button`
 const StoryContainer = styled.div`
 	position: relative;
 	background-color: white;
-	padding: 40px 30px;
+	padding: 5px 30px;
 	border-radius: 15px;
 	font-family: 'Noto Serif', serif;
 	
@@ -56,6 +56,23 @@ const StoryContainer = styled.div`
 	box-sizing: border-box;
 
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	animation: ${props => props.$isClosing ? 'slideOut' : 'slideIn'} 0.3s ease forwards;
+	transform: ${props => props.$isClosing ? 'translateY(0)' : 'translateY(20px)'};
+	opacity: ${props => props.$isClosing ? 1 : 0};
+
+	@keyframes slideIn {
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	@keyframes slideOut {
+		to {
+			transform: translateY(20px);
+			opacity: 0;
+		}
+	}
 `;
 
 // Centered story title
@@ -105,34 +122,30 @@ const ModalContainer = styled.div`
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: rgba(0, 0, 0, 0);
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	z-index: 1000;
 	padding: 40px;
-`;
+	animation: ${props => props.$isClosing ? 'fadeOut' : 'fadeIn'} 0.3s ease forwards;
 
-const CloseModalButton = styled.button`
-	position: absolute;
-	right: 20px;
-	top: 20px;
-	width: 40px;
-	height: 40px;
-	cursor: pointer;
-	background-color: #ffffff;
-	color: black;
-	border: 1.25px solid #000000;
-	border-radius: 8px;
-	font-size: 28px;
-	font-family: 'Noto Serif', serif;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	
-	&:hover {
-		background-color: #BBBBBB;
-		color: black;
+	@keyframes fadeIn {
+		from {
+			background-color: rgba(0, 0, 0, 0);
+		}
+		to {
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+	}
+
+	@keyframes fadeOut {
+		from {
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+		to {
+			background-color: rgba(0, 0, 0, 0);
+		}
 	}
 `;
 
@@ -198,4 +211,4 @@ export const FeedbackButton = styled.a`
 	}
 `;
 
-export { BrowserBox, Title, Subtitle, GenerateButton, StoryContainer, StoryTitle, InputField, Tooltip, ModalContainer, CloseModalButton };
+export { BrowserBox, Title, Subtitle, GenerateButton, StoryContainer, StoryTitle, InputField, Tooltip, ModalContainer };
