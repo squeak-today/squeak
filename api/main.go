@@ -152,6 +152,8 @@ func init() {
 
 		log.Printf("Executing query: %s with params: %v", query, params)
 
+		results := make([]map[string]interface{}, 0)
+
 		rows, err := db.Query(query, params...)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
@@ -159,7 +161,6 @@ func init() {
 		}
 		defer rows.Close()
 
-		var results []map[string]interface{}
 		for rows.Next() {
 			var id, title, language, topic, cefrLevel, previewText string
 			var createdAt time.Time
@@ -229,6 +230,8 @@ func init() {
 
 		log.Printf("Executing query: %s with params: %v", query, params)
 
+		results := make([]map[string]interface{}, 0)
+
 		rows, err := db.Query(query, params...)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
@@ -236,7 +239,6 @@ func init() {
 		}
 		defer rows.Close()
 
-		var results []map[string]interface{}
 		for rows.Next() {
 			var id, title, language, topic, cefrLevel, previewText string
 			var createdAt time.Time
