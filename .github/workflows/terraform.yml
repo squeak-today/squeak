@@ -14,14 +14,34 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.2'
+
     - name: Build API Lambda ZIP
-      run: ./api/build-for-lambda.sh
+      run: |
+        cd api
+        go mod download
+        chmod +x build-for-lambda.sh
+        ./build-for-lambda.sh
+      working-directory: .
 
     - name: Build Lambda Lambda ZIP
-      run: ./lambda/build-for-lambda.sh
+      run: |
+        cd lambda
+        go mod download
+        chmod +x build-for-lambda.sh
+        ./build-for-lambda.sh
+      working-directory: .
 
     - name: Build Queue Filler Lambda ZIP
-      run: ./queue_filler/build-for-lambda.sh
+      run: |
+        cd queue_filler
+        go mod download
+        chmod +x build-for-lambda.sh
+        ./build-for-lambda.sh
+      working-directory: .
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
