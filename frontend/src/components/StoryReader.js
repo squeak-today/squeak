@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 
@@ -101,17 +101,28 @@ const ClickableText = ({ children, handleWordClick }) => {
 const StoryReader = ({data, handleWordClick}) => {
     const [sectionIndex, setSectionIndex] = useState(0);
     const textSections = data.match(/(?:\s*\S+){1,500}/g) || [];
+    
+    // Add ref for the story box
+    const storyBoxRef = useRef(null);
+
+    const scrollToTop = () => { storyBoxRef.current?.scrollIntoView({ behavior: 'smooth' }); };
 
     const handleNext = () => {
-        if (sectionIndex + 1 < textSections.length) { setSectionIndex(sectionIndex + 1); }
+        if (sectionIndex + 1 < textSections.length) { 
+            setSectionIndex(sectionIndex + 1);
+            scrollToTop();
+        }
     }
 
     const handlePrevious = () => {
-        if (sectionIndex > 0) { setSectionIndex(sectionIndex - 1); }
+        if (sectionIndex > 0) { 
+            setSectionIndex(sectionIndex - 1);
+            scrollToTop();
+        }
     };
 
     return (
-        <StoryBox>
+        <StoryBox ref={storyBoxRef}>
             <StoryText>
                 <ReactMarkdown
                     components={{
@@ -123,7 +134,6 @@ const StoryReader = ({data, handleWordClick}) => {
                 <PageButton isNext={false} onClick={handlePrevious}/>
                 <PageButton isNext={true} onClick={handleNext}/> 
             </ButtonBox>
-            
         </StoryBox>
     )
 };
