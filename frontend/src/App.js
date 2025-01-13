@@ -11,23 +11,29 @@ import StoryBrowser from './components/StoryBrowser';
 
 const StyledBox = styled.div`
 	width: 80%;
-	margin: 20px auto; // Center the box horizontally with margin
-	padding: 20px; // Add padding inside the box
-	border: 2px solid #AB560C;
-	border-radius: 15px; // Rounded corners
-	background-color: #f7bc88; // fill color
+	margin: 20px auto;
+	padding: 20px;
+	border: 2px solid #000000;
+	border-radius: 15px;
+	background-color: #e0e0e0;
 	box-sizing: border-box;
 	overflow: hidden;
 `;
 
 const Title = styled.h1`
 	text-align: center;
-	color: #8a1000; // Match the theme color
+	color: #000000;
+	font-family: 'Noto Serif', serif;
+	font-size: 3.5rem;
+	margin-bottom: 10px;
 `;
 
 const Subtitle = styled.h3`
 	text-align: center;
-	color: #8a1000;
+	color: #000000;
+	font-family: 'Noto Serif', serif;
+	font-size: 1.8rem;
+	margin-top: 0;
 `;
 
 const GenerateButton = styled.button`
@@ -225,7 +231,7 @@ function App() {
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
 	const [allStories, setAllStories] = useState([]);
-	
+
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
 
@@ -337,11 +343,6 @@ function App() {
 
 	return (
 		<Account>
-			
-			<Status />
-			<SignUp />
-			<Login />
-
 			<StyledBox>
 				<Title>Squeak</Title>
 				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
@@ -366,6 +367,10 @@ function App() {
 					</Tooltip>
 				)}
 			</StyledBox>
+
+			<Status />
+			<SignUp />
+			<Login />
 		</Account>
 	);
 }
