@@ -1,12 +1,11 @@
 import './App.css';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import { Account, AccountContext } from './Account';
 import { StyledBox, 
 	Title,
 	Subtitle,
 	GenerateButton,
 	StoryContainer,
-	StoryTitle,
 	InputField,
 	Tooltip } from './components/StyledComponents';
 
@@ -125,14 +124,16 @@ const Login = () => {
 	)
 }
 
+const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
+	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
+	const response = await fetch(url);
+	if (!response.ok) { throw new Error(`Failed to fetch from ${endpoint}`); }
+	return response.json();
+};
+
 function App() {
-	const [language, setLanguage] = useState('');
-	const [CEFRLevel, setCEFRLevel] = useState('');
-	const [subject, setSubject] = useState('');
 	const [contentType, setContentType] = useState('');
 	const [story, setStory] = useState(''); // State to store the story
-	const [loading, setLoading] = useState(false); // State to manage loading state
-	const [title, setTitle] = useState('');
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
@@ -142,7 +143,6 @@ function App() {
 	let apiUrl = apiBase + contentType;
 
 	const pullStory = async (contentType, language, cefrLevel, subject) => {
-		setLoading(true);
 		apiUrl = apiBase + contentType;
 
 		let url = `${apiUrl}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
@@ -155,7 +155,6 @@ function App() {
 		}).then(data => {
 			console.log("Pulled story successfully!");
 			setStory(data["content"]);
-			setLoading(false); // Set loading state to false when finished
 		}).catch(error => {
 			console.error("Error generating story:", error);
 			setStory("Failed to generate story");
@@ -197,18 +196,11 @@ function App() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
-	const fetchContent = async (endpoint, language, cefrLevel, subject) => {
-		const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
-		const response = await fetch(url);
-		if (!response.ok) { throw new Error(`Failed to fetch from ${endpoint}`); }
-		return response.json();
-	};
-
-	const handleListStories = async (language, cefrLevel, subject) => {
+	const handleListStories = useCallback(async (language, cefrLevel, subject) => {
 		const tempStories = [];
 		try {
-			const newsData = await fetchContent('news-query', language, cefrLevel, subject);
-			const storiesData = await fetchContent('story-query', language, cefrLevel, subject);
+			const newsData = await fetchContent(apiBase, 'news-query', language, cefrLevel, subject);
+			const storiesData = await fetchContent(apiBase, 'story-query', language, cefrLevel, subject);
 			console.log('Fetched content successfully!')
 			for (const story of newsData) {
 				tempStories.push({
@@ -232,20 +224,16 @@ function App() {
 		} catch (error) {
 			console.error("Failed to fetch content:", error);
 		}
-	};
-
-	const handleStoryBlockClick = async (story) => {
-		setContentType((story.type).toLowerCase());
-		setCEFRLevel(story.difficulty);
-		setSubject(story.tags[1]);
-		setLanguage(story.tags[0]);
-		setTitle(story.title);
-		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1]);
-	}
+	}, [apiBase]); // apiBase is the only dependency
 
 	useEffect(() => {
 		handleListStories('any', 'any', 'any');
-	}, []); // Empty dependency array means this runs once on mount
+	}, [handleListStories]); // Now we can safely add handleListStories as a dependency
+
+	const handleStoryBlockClick = async (story) => {
+		setContentType((story.type).toLowerCase());
+		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1]);
+	}
 
 	return (
 		<Account>
@@ -260,7 +248,6 @@ function App() {
 				/>
 				{story && (
 					<StoryContainer>
-						<StoryTitle>{(title === '' ? 'Story' : title)}</StoryTitle>
 						{/* Split the story into words and make each word clickable */}
 						<StoryReader data={story} handleWordClick={handleWordClick} />
 					</StoryContainer>

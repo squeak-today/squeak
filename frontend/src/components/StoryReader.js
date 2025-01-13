@@ -28,15 +28,6 @@ const StoryText = styled.div`
 	flex-wrap: wrap; // Enable wrapping within the flex container
 `;
 
-const Word = styled.span`
-	display: inline;
-	margin-right: 5px;
-	cursor: pointer;
-	&:hover {
-	text-decoration: underline;
-	}
-`;
-
 const SectionButton = styled.button`
     background-color: #2C2C2C;
     color: #FFFFFF;
