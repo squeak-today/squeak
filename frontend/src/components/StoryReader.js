@@ -70,7 +70,7 @@ const PageButton = ({isNext, onClick}) => {
 const StoryReader = ({data, handleWordClick}) => {
     const [sectionIndex, setSectionIndex] = useState(0);
     // https://stackoverflow.com/questions/6259515/how-can-i-split-a-string-into-segments-of-n-characters
-    const textSections = data.match(/.{1,500}/g);
+    const textSections = data.match(/(?:\s*\S+){1,1000}/g) || []; // very crude splitting without taking into account markdown formatting or newlines...
 
     const handleNext = () => {
         if (sectionIndex + 1 < textSections.length) { setSectionIndex(sectionIndex + 1); }
