@@ -140,7 +140,9 @@ function App() {
 			<NavHeader>
 				<HeaderLogo src={logo} alt="Squeak" />
 				<FeedbackButton 
-					href="mailto:squeak.today@gmail.com?subject=Squeak%20Feedback"
+					href="https://forms.gle/LumHWSYaqLKV4KMa8"
+					target="_blank"
+					rel="noopener noreferrer"
 				>
 					Give Us Feedback! ❤️
 				</FeedbackButton>
