@@ -9,7 +9,7 @@ const StoryBlockContainer = styled.div`
 	transition: transform 0.2s;
 	font-family: 'Noto Serif', serif;
 	position: relative;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 	border: 1px solid #e0e0e0;
 
 	&:hover {
@@ -39,6 +39,7 @@ const StoryType = styled.div`
 	position: absolute;
 	top: -0.75em;
 	left: 1.25em;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 `;
 
 const Title = styled.h2`
