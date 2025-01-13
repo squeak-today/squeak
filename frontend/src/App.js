@@ -1,10 +1,12 @@
 import './App.css';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Account, AccountContext } from './Account';
 import styled from 'styled-components';
 
 import UserPool from "./UserPool";
 import Status from "./Status";
+
+import StoryBrowser from './components/StoryBrowser';
 
 const StyledBox = styled.div`
 	width: 80%;
@@ -254,6 +256,7 @@ const Login = () => {
 	)
 }
 
+
 function App() {
 	const [language, setLanguage] = useState('');
 	const [CEFRLevel, setCEFRLevel] = useState('');
@@ -263,6 +266,8 @@ function App() {
 	const [loading, setLoading] = useState(false); // State to manage loading state
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
+
+	const [allStories, setAllStories] = useState([]);
 
 	const isFormComplete = language && CEFRLevel;
 	const apiBase = "https://api.squeak.today/";
@@ -322,6 +327,47 @@ function App() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
+	const fetchContent = async (endpoint, language, cefrLevel, subject) => {
+		const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
+		const response = await fetch(url);
+		if (!response.ok) { throw new Error(`Failed to fetch from ${endpoint}`); }
+		return response.json();
+	};
+
+	const handleListStories = async (language, cefrLevel, subject) => {
+		const tempStories = [];
+		try {
+			const newsData = await fetchContent('news-query', language, cefrLevel, subject);
+			const storiesData = await fetchContent('story-query', language, cefrLevel, subject);
+			console.log('Fetched content successfully!')
+			for (const story of newsData) {
+				tempStories.push({
+					type: 'News',
+					title: story['title'],
+					preview: story['preview_text'],
+					tags: [story['language'], story['topic']],
+					difficulty: story['cefr_level']
+				});
+			}
+			for (const story of storiesData) {
+				tempStories.push({
+					type: 'Story',
+					title: story['title'],
+					preview: story['preview_text'],
+					tags: [story['language'], story['topic']],
+					difficulty: story['cefr_level']
+				});
+			}
+			setAllStories(tempStories);
+		} catch (error) {
+			console.error("Failed to fetch content:", error);
+		}
+	};
+
+	useEffect(() => {
+		handleListStories('any', 'any', 'any');
+	}, []); // Empty dependency array means this runs once on mount
+
 	return (
 		<Account>
 			
@@ -332,6 +378,11 @@ function App() {
 			<StyledBox>
 				<Title>Squeak</Title>
 				<Subtitle>Comprehensive Input Made Easy!</Subtitle>
+
+				<StoryBrowser 
+					stories={allStories} 
+					onParamsSelect={handleListStories} 
+				/>
 
 				{/* Dropdown for language selection */}
 				<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
