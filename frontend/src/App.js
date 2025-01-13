@@ -30,12 +30,6 @@ const Subtitle = styled.h3`
 	color: #8a1000;
 `;
 
-const ButtonContainer = styled.div`
-	display: flex;
-	justify-content: center; // Center the button horizontally
-	margin-top: 0px;
-`;
-
 const GenerateButton = styled.button`
 	padding: 10px 20px;
 	margin-top: 20px;
@@ -66,13 +60,13 @@ const StoryContainer = styled.div`
 	
 	// Fonts
 	font-family: 'Noto Serif', serif;
-	background-color: #f0f0f0;
+	background-color: white;
 `;
 
 // Centered story title
 const StoryTitle = styled.h2`
-	text-align: center; // Center the story title
-	color: #333; // Optional: Match the theme color
+	text-align: center;
+	color: black;
 `;
 
 
@@ -88,23 +82,6 @@ const InputField = styled.input`
 	&::placeholder {
 	color: #AB560C;
 	}
-	&:focus {
-	border-color: #FC4A00; // Focus state border color
-	outline: none;
-	}
-	box-sizing:border-box;
-`;
-
-// Styled select field component
-const SelectField = styled.select`
-	width: 100%;
-	padding: 10px;
-	margin: 10px 0;
-	border: 1px solid #AB560C;
-	border-radius: 5px;
-	background-color: #ffcfa5; // Select field background color
-	color: black;
-	font-size: 16px;
 	&:focus {
 	border-color: #FC4A00; // Focus state border color
 	outline: none;
@@ -248,8 +225,7 @@ function App() {
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
 	const [allStories, setAllStories] = useState([]);
-
-	const isFormComplete = language && CEFRLevel;
+	
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
 
