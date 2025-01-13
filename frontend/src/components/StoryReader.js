@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import ReactMarkdown from 'react-markdown';
 
 import rightArrow from '../assets/vectors/rightArrow.svg';
 import leftArrow from '../assets/vectors/leftArrow.svg';
@@ -55,6 +56,14 @@ const RightArrow = styled.img`
     margin-left: 8px;
 `;
 
+const MarkdownWord = styled.span`
+    display: inline;
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
+`;
+
 const PageButton = ({isNext, onClick}) => {
     const label = isNext ? 'Next' : 'Previous';
     const icon = isNext ? rightArrow : leftArrow;
@@ -67,10 +76,31 @@ const PageButton = ({isNext, onClick}) => {
     )
 };
 
+const ClickableText = ({ children, handleWordClick }) => {
+    const words = children.toString().split(/(\s+)/);
+    
+    return (
+        <p>
+            {words.map((word, index) => {
+                if (word.trim() === '') {
+                    return word;
+                }
+                return (
+                    <MarkdownWord
+                        key={index}
+                        onClick={(e) => handleWordClick(e, word.trim())}
+                    >
+                        {word}
+                    </MarkdownWord>
+                );
+            })}
+        </p>
+    );
+};
+
 const StoryReader = ({data, handleWordClick}) => {
     const [sectionIndex, setSectionIndex] = useState(0);
-    // https://stackoverflow.com/questions/6259515/how-can-i-split-a-string-into-segments-of-n-characters
-    const textSections = data.match(/(?:\s*\S+){1,1000}/g) || []; // very crude splitting without taking into account markdown formatting or newlines...
+    const textSections = data.match(/(?:\s*\S+){1,500}/g) || [];
 
     const handleNext = () => {
         if (sectionIndex + 1 < textSections.length) { setSectionIndex(sectionIndex + 1); }
@@ -83,11 +113,11 @@ const StoryReader = ({data, handleWordClick}) => {
     return (
         <StoryBox>
             <StoryText>
-                {textSections[sectionIndex].split(' ').map((word, index) => (
-                    <Word key={index} onClick={(e) => handleWordClick(e, word)}>
-                        {word}
-                    </Word>
-                ))}
+                <ReactMarkdown
+                    components={{
+                        p(props) { return <ClickableText handleWordClick={handleWordClick} {...props} />; }
+                    }}
+                >{textSections[sectionIndex]}</ReactMarkdown>
             </StoryText>
             <ButtonBox>
                 <PageButton isNext={false} onClick={handlePrevious}/>
