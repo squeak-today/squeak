@@ -43,21 +43,20 @@ const GenerateButton = styled.button`
 `;
 
 const StoryContainer = styled.div`
-	margin-top: 20px;
-	text-align: left;
 	position: relative;
-	max-width: 100%; // Prevent container from exceeding 100% width
-	word-wrap: normal; // Reset word-wrap to prevent breaking words
-	word-break: keep-all; // Prevent words from breaking mid-way
-	overflow-wrap: normal;
-	box-sizing: border-box; // Include padding and border in the width
-
-	padding: 10px;
-	border-radius: 15px;
-	
-	// Fonts
-	font-family: 'Noto Serif', serif;
 	background-color: white;
+	padding: 40px 30px;
+	border-radius: 15px;
+	font-family: 'Noto Serif', serif;
+	
+	max-width: 90vw;
+	max-height: 80vh;
+	overflow-y: auto;
+
+	padding-top: 10px;
+	box-sizing: border-box;
+
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 `;
 
 // Centered story title
@@ -101,4 +100,41 @@ const Tooltip = styled.div`
 	z-index: 1000;
 `;
 
-export { StyledBox, Title, Subtitle, GenerateButton, StoryContainer, StoryTitle, InputField, Tooltip };
+const ModalContainer = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	padding: 40px;
+`;
+
+const CloseModalButton = styled.button`
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	background-color: #ffffff;
+	color: black;
+	border: 1.25px solid #000000;
+	border-radius: 8px;
+	font-size: 28px;
+	font-family: 'Noto Serif', serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	
+	&:hover {
+		background-color: #BBBBBB;
+		color: black;
+	}
+`;
+
+export { StyledBox, Title, Subtitle, GenerateButton, StoryContainer, StoryTitle, InputField, Tooltip, ModalContainer, CloseModalButton };

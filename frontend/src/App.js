@@ -7,7 +7,9 @@ import { StyledBox,
 	GenerateButton,
 	StoryContainer,
 	InputField,
-	Tooltip } from './components/StyledComponents';
+	Tooltip,
+	ModalContainer,
+	CloseModalButton} from './components/StyledComponents';
 
 import UserPool from "./UserPool";
 import Status from "./Status";
@@ -139,6 +141,8 @@ function App() {
 
 	const [allStories, setAllStories] = useState([]);
 
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
 
@@ -233,6 +237,12 @@ function App() {
 	const handleStoryBlockClick = async (story) => {
 		setContentType((story.type).toLowerCase());
 		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1]);
+		setIsModalOpen(true);
+	}
+
+	const handleCloseModal = () => {
+		setIsModalOpen(false);
+		setStory('');
 	}
 
 	return (
@@ -246,11 +256,14 @@ function App() {
 					onParamsSelect={handleListStories} 
 					onStoryBlockClick={(story) => { handleStoryBlockClick(story) }}
 				/>
-				{story && (
-					<StoryContainer>
-						{/* Split the story into words and make each word clickable */}
-						<StoryReader data={story} handleWordClick={handleWordClick} />
-					</StoryContainer>
+				
+				{story && isModalOpen && (
+					<ModalContainer>
+						<StoryContainer>
+							<CloseModalButton onClick={handleCloseModal}>X</CloseModalButton>
+							<StoryReader data={story} handleWordClick={handleWordClick} />
+						</StoryContainer>
+					</ModalContainer>
 				)}
 
 				{/* displaying the word definition */}
