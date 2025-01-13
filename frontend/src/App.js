@@ -243,6 +243,7 @@ function App() {
 	const [contentType, setContentType] = useState('');
 	const [story, setStory] = useState(''); // State to store the story
 	const [loading, setLoading] = useState(false); // State to manage loading state
+	const [title, setTitle] = useState('');
 
 	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
 
@@ -250,12 +251,13 @@ function App() {
 
 	const isFormComplete = language && CEFRLevel;
 	const apiBase = "https://api.squeak.today/";
-	const apiUrl = apiBase + contentType;
+	let apiUrl = apiBase + contentType;
 
-	const handleGenerateStory = async () => {
-		setLoading(true); // Set loading state to true when fetching story
+	const pullStory = async (contentType, language, cefrLevel, subject) => {
+		setLoading(true);
+		apiUrl = apiBase + contentType;
 
-		let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
+		let url = `${apiUrl}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
 		fetch(url).then(response => {
 			if (!response.ok) {
 				setStory("Failed to generate story");
@@ -344,12 +346,13 @@ function App() {
 		}
 	};
 
-	const handleStoryBlockClick = (story) => {
+	const handleStoryBlockClick = async (story) => {
 		setContentType((story.type).toLowerCase());
 		setCEFRLevel(story.difficulty);
 		setSubject(story.tags[1]);
 		setLanguage(story.tags[0]);
-		handleGenerateStory();
+		setTitle(story.title);
+		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1]);
 	}
 
 	useEffect(() => {
@@ -374,7 +377,7 @@ function App() {
 				/>
 				{story && (
 					<StoryContainer>
-						<StoryTitle>Story</StoryTitle>
+						<StoryTitle>{(title === '' ? 'Story' : title)}</StoryTitle>
 						{/* Split the story into words and make each word clickable */}
 						<StoryReader data={story} handleWordClick={handleWordClick} />
 					</StoryContainer>
