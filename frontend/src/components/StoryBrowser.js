@@ -55,7 +55,7 @@ const PageButton = styled.button`
 	}
 `;
 
-const StoryBrowser = ({ stories, onParamsSelect }) => {
+const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 	const [filterLanguage, setFilterLanguage] = useState('any');
 	const [filterLevel, setFilterLevel] = useState('any');
 	const [filterTopic, setFilterTopic] = useState('any');
@@ -139,7 +139,7 @@ const StoryBrowser = ({ stories, onParamsSelect }) => {
 				</div>
 			</FilterContainer>
 			
-			<StoryList stories={paginatedStories} />
+			<StoryList stories={paginatedStories} onStoryBlockClick={(story) => { onStoryBlockClick(story) }} />
 
 			<PaginationContainer>
 				<PageButton 

@@ -100,9 +100,9 @@ const CEFRLevel = styled.div`
 	font-family: 'Noto Serif', serif;
 `;
 
-const StoryBlock = ({ type, title, preview, tags, difficulty }) => {
+const StoryBlock = ({ type, title, preview, tags, difficulty, onStoryBlockClick }) => {
 	return (
-		<StoryBlockContainer>
+		<StoryBlockContainer onClick={onStoryBlockClick}>
 			<StoryType type={type}>{type}</StoryType>
 			<Title>{title}</Title>
 			<ContentWrapper>

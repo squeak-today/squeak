@@ -344,6 +344,14 @@ function App() {
 		}
 	};
 
+	const handleStoryBlockClick = (story) => {
+		setContentType((story.type).toLowerCase());
+		setCEFRLevel(story.difficulty);
+		setSubject(story.tags[1]);
+		setLanguage(story.tags[0]);
+		handleGenerateStory();
+	}
+
 	useEffect(() => {
 		handleListStories('any', 'any', 'any');
 	}, []); // Empty dependency array means this runs once on mount
@@ -362,40 +370,8 @@ function App() {
 				<StoryBrowser 
 					stories={allStories} 
 					onParamsSelect={handleListStories} 
+					onStoryBlockClick={(story) => { handleStoryBlockClick(story) }}
 				/>
-
-				{/* Dropdown for language selection */}
-				<SelectField value={language} onChange={(e) => setLanguage(e.target.value)}>
-					<option value="" disabled>Select a language</option>
-					<option value="French">French</option>
-				</SelectField>
-
-				{/* Dropdown for CEFR level selection */}
-				<SelectField value={CEFRLevel} onChange={(e) => setCEFRLevel(e.target.value)}>
-					<option value="" disabled>Select a CEFR level</option>
-					{/* <option value="B1">B1</option> */}
-					<option value="A1">A1</option>
-					<option value="B2">B2</option>
-				</SelectField>
-
-				{/* Dropdown for subject selection */}
-				<SelectField value={subject} onChange={(e) => setSubject(e.target.value)}>
-					<option value="" disabled>Select a subject</option>
-					<option value="Politics">Politics</option>
-				</SelectField>
-
-				{/* Dropdown for contentType selection */}
-				<SelectField value={contentType} onChange={(e) => setContentType(e.target.value)}>
-					<option value="" disabled>Select a type</option>
-					<option value="news">News</option>
-					<option value="story">Story</option>
-				</SelectField>
-
-				<ButtonContainer>
-					<GenerateButton onClick={handleGenerateStory} disabled={!isFormComplete || loading}>
-						{loading ? 'Finding Story...' : 'Find Story'}
-					</GenerateButton>
-				</ButtonContainer>
 				{story && (
 					<StoryContainer>
 						<StoryTitle>Story</StoryTitle>

@@ -9,7 +9,7 @@ const ListContainer = styled.div`
     font-family: 'Noto Serif', serif;
 `;
 
-const StoryList = ({ stories }) => {
+const StoryList = ({ stories, onStoryBlockClick }) => {
     return (
         <ListContainer>
             {stories.map((story, index) => (
@@ -20,6 +20,7 @@ const StoryList = ({ stories }) => {
                     preview={story.preview}
                     tags={story.tags}
                     difficulty={story.difficulty}
+                    onStoryBlockClick={() => { onStoryBlockClick(story) }}
                 />
             ))}
         </ListContainer>
