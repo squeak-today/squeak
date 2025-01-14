@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import logo from '../assets/logo.png';
+import headerLogo from '../assets/drawing_400.png';
 import { BrowserBox, 
     NavHeader,
     HeaderLogo,
@@ -8,7 +9,7 @@ import { BrowserBox,
     ModalContainer,
     Footer,
     MiscButton,
-    EmojiLogo} from '../components/StyledComponents';
+    PictureLogo} from '../components/StyledComponents';
 import StoryReader from '../components/StoryReader';
 import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
@@ -165,7 +166,7 @@ function Learn() {
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<NavHeader>
 				<HeaderLogo src={logo} alt="Squeak" />
-				<EmojiLogo>🐭</EmojiLogo>
+				<PictureLogo src={headerLogo} alt="Squeak Mouse" />
 				<MiscButton 
 					href="https://forms.gle/LumHWSYaqLKV4KMa8"
 					target="_blank"

@@ -160,15 +160,14 @@ export const Footer = styled.footer`
 	position: relative;
 	width: 100%;
 	background-color: #ffffff;
-	padding: 2rem;
+	padding: 3.0rem 0;
 	text-align: center;
 	border-top: 1px solid #e0e0e0;
-	margin-top: 0;
-	height: 80px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-family: 'Noto Serif', serif;
+	box-sizing: border-box;
 `;
 
 export const NavHeader = styled.header`
@@ -211,8 +210,8 @@ export const MiscButton = styled.a`
 	}
 `;
 
-export const EmojiLogo = styled.div`
-	font-size: 3rem;
+export const PictureLogo = styled.img`
+	height: 60px;
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
