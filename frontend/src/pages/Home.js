@@ -9,6 +9,9 @@ import logo from '../assets/logo.png';
 import landingDrawing from '../assets/mouse_reading.png';
 import headerLogo from '../assets/drawing_400.png';
 
+import { TransitionWrapper } from '../components/PageTransition';
+import { useState } from 'react';
+
 const HomeContent = styled.div`
     display: flex;
     align-items: center;
@@ -46,41 +49,55 @@ const LandingImage = styled.img`
 
 function Home() {
     const navigate = useNavigate();
+    const [isLeaving, setIsLeaving] = useState(false);
+
+    const handleGetStarted = () => {
+        setIsLeaving(true);
+        setTimeout(() => {
+            navigate('/learn');
+        }, 300); // Match animation duration
+    };
 
     return (
-        <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-            <NavHeader>
-                <HeaderLogo src={logo} alt="Squeak" />
-                <PictureLogo src={headerLogo} alt="Squeak Mouse" />
-                <MiscButton 
-                    href="https://forms.gle/LumHWSYaqLKV4KMa8"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Tell Us Anything! ❤️
-                </MiscButton>
-            </NavHeader>
+        <TransitionWrapper $isLeaving={isLeaving}>
+            <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
+                <NavHeader>
+                    <HeaderLogo 
+                        src={logo} 
+                        alt="Squeak" 
+                        onClick={() => navigate('/')} 
+                    />
+                    <PictureLogo src={headerLogo} alt="Squeak Mouse" />
+                    <MiscButton 
+                        href="https://forms.gle/LumHWSYaqLKV4KMa8"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Tell Us Anything! ❤️
+                    </MiscButton>
+                </NavHeader>
 
-			<HomeContent>
-				<LandingImage src={landingDrawing} alt="Squeak Mouse Drawing" />
-				<TextContent>
-					<MainHeading>
-						Learn Languages Through Stories You Love
-					</MainHeading>
-					<MiscButton 
-						as="button"
-						onClick={() => navigate('/learn')}
-						style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
-					>
-						Get Started
-					</MiscButton>
-				</TextContent>
-			</HomeContent>
+                <HomeContent>
+                    <LandingImage src={landingDrawing} alt="Squeak Mouse Drawing" />
+                    <TextContent>
+                        <MainHeading>
+                            Learn Languages Through Stories You Love
+                        </MainHeading>
+                        <MiscButton 
+                            as="button"
+                            onClick={handleGetStarted}
+                            style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
+                        >
+                            Get Started
+                        </MiscButton>
+                    </TextContent>
+                </HomeContent>
 
-            <Footer>
-                © 2024 Squeak. All rights reserved.
-            </Footer>
-        </div>
+                <Footer>
+                    © 2024 Squeak. All rights reserved.
+                </Footer>
+            </div>
+        </TransitionWrapper>
     );
 }
 

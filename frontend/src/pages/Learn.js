@@ -13,6 +13,8 @@ import { BrowserBox,
 import StoryReader from '../components/StoryReader';
 import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
+import { TransitionWrapper } from '../components/PageTransition';
+import { useNavigate } from 'react-router-dom';
 
 const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
     const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
@@ -37,6 +39,8 @@ function Learn() {
 
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
+
+	const navigate = useNavigate();
 
 	const pullStory = async (contentType, language, cefrLevel, subject) => {
 		apiUrl = apiBase + contentType;
@@ -162,46 +166,52 @@ function Learn() {
 	};
 
 	return (
-		<div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
-			<NavHeader>
-				<HeaderLogo src={logo} alt="Squeak" />
-				<PictureLogo src={headerLogo} alt="Squeak Mouse" />
-				<MiscButton 
-					href="https://forms.gle/LumHWSYaqLKV4KMa8"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Tell Us Anything! ❤️
-				</MiscButton>
-			</NavHeader>
-			
-			<BrowserBox>
-				<StoryBrowser 
-					stories={allStories} 
-					onParamsSelect={handleListStories} 
-					onStoryBlockClick={(story) => { handleStoryBlockClick(story) }}
-				/>
+		<TransitionWrapper>
+			<div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
+				{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
+				<NavHeader>
+					<HeaderLogo 
+						src={logo} 
+						alt="Squeak" 
+						onClick={() => navigate('/')} 
+					/>
+					<PictureLogo src={headerLogo} alt="Squeak Mouse" />
+					<MiscButton 
+						href="https://forms.gle/LumHWSYaqLKV4KMa8"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Tell Us Anything! ❤️
+					</MiscButton>
+				</NavHeader>
 				
-				{story && isModalOpen && (
-					<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
-						<StoryContainer $isClosing={isClosing}>
-							<StoryReader data={story} handleWordClick={handleWordClick} />
-						</StoryContainer>
-					</ModalContainer>
-				)}
+				<BrowserBox>
+					<StoryBrowser 
+						stories={allStories} 
+						onParamsSelect={handleListStories} 
+						onStoryBlockClick={(story) => { handleStoryBlockClick(story) }}
+					/>
+					
+					{story && isModalOpen && (
+						<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
+							<StoryContainer $isClosing={isClosing}>
+								<StoryReader data={story} handleWordClick={handleWordClick} />
+							</StoryContainer>
+						</ModalContainer>
+					)}
 
-				{/* displaying the word definition */}
-				{tooltip.visible && (
-					<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
-					<strong>{tooltip.word}</strong>: {tooltip.definition}
-					</Tooltip>
-				)}
-			</BrowserBox>
-			<Footer>
-				© 2024 Squeak. All rights reserved.
-			</Footer>
-		</div>
+					{/* displaying the word definition */}
+					{tooltip.visible && (
+						<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
+						<strong>{tooltip.word}</strong>: {tooltip.definition}
+						</Tooltip>
+					)}
+				</BrowserBox>
+				<Footer>
+					© 2024 Squeak. All rights reserved.
+				</Footer>
+			</div>
+		</TransitionWrapper>
 	);
 }
 
