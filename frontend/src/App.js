@@ -8,7 +8,8 @@ import { BrowserBox,
 	Tooltip,
 	ModalContainer,
 	Footer,
-	MiscButton} from './components/StyledComponents';
+	MiscButton,
+	EmojiLogo} from './components/StyledComponents';
 import StoryReader from './components/StoryReader';
 import StoryBrowser from './components/StoryBrowser';
 import WelcomeModal from './components/WelcomeModal';
@@ -168,6 +169,7 @@ function App() {
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<NavHeader>
 				<HeaderLogo src={logo} alt="Squeak" />
+				<EmojiLogo>🐭</EmojiLogo>
 				<MiscButton 
 					href="https://forms.gle/LumHWSYaqLKV4KMa8"
 					target="_blank"

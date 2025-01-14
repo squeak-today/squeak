@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const BrowserBox = styled.div`
+export const BrowserBox = styled.div`
 	width: 100%;
 	height: 100%;
 	margin: 80px auto 0 auto;
@@ -10,7 +10,7 @@ const BrowserBox = styled.div`
 	overflow: hidden;
 `;
 
-const Title = styled.h1`
+export const Title = styled.h1`
 	text-align: center;
 	color: #000000;
 	font-family: 'Noto Serif', serif;
@@ -18,7 +18,7 @@ const Title = styled.h1`
 	margin-bottom: 10px;
 `;
 
-const Subtitle = styled.h3`
+export const Subtitle = styled.h3`
 	text-align: center;
 	color: #000000;
 	font-family: 'Noto Serif', serif;
@@ -26,7 +26,7 @@ const Subtitle = styled.h3`
 	margin-top: 0;
 `;
 
-const GenerateButton = styled.button`
+export const GenerateButton = styled.button`
 	padding: 10px 20px;
 	margin-top: 20px;
 	font-size: 16px;
@@ -41,7 +41,7 @@ const GenerateButton = styled.button`
 	}
 `;
 
-const StoryContainer = styled.div`
+export const StoryContainer = styled.div`
 	position: relative;
 	background-color: white;
 	padding: 5px 30px;
@@ -76,13 +76,13 @@ const StoryContainer = styled.div`
 `;
 
 // Centered story title
-const StoryTitle = styled.h2`
+export const StoryTitle = styled.h2`
 	text-align: center;
 	color: black;
 `;
 
 
-const InputField = styled.input`
+export const InputField = styled.input`
 	width: 100%;
 	padding: 10px;
 	margin: 10px 0;
@@ -102,7 +102,7 @@ const InputField = styled.input`
 `;
 
 // Tooltip styled-component for displaying word definitions
-const Tooltip = styled.div`
+export const Tooltip = styled.div`
 	position: absolute;
 	top: ${(props) => props.top || 0}px;
 	left: ${(props) => props.left || 0}px;
@@ -116,7 +116,7 @@ const Tooltip = styled.div`
 	z-index: 1000;
 `;
 
-const ModalContainer = styled.div`
+export const ModalContainer = styled.div`
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -211,4 +211,10 @@ export const MiscButton = styled.a`
 	}
 `;
 
-export { BrowserBox, Title, Subtitle, GenerateButton, StoryContainer, StoryTitle, InputField, Tooltip, ModalContainer };
+export const EmojiLogo = styled.div`
+	font-size: 3rem;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	cursor: default;
+`;
