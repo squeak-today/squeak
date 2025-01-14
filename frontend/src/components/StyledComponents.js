@@ -107,8 +107,8 @@ export const Tooltip = styled.div`
 	top: ${(props) => props.top || 0}px;
 	left: ${(props) => props.left || 0}px;
 	padding: 10px;
-	background-color: #ffcfa5;
-	border: 1px solid #AB560C;
+	background-color: #ffffff;
+	border: 1px solid #000000;
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 	font-size: 14px;
