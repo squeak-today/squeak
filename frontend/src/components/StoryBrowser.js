@@ -96,7 +96,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 
 	return (
 		<div>
-			<DateHeader>Today is {formatDate()}.</DateHeader>
+			<DateHeader>Today is {formatDate()}...</DateHeader>
 			<FilterContainer>
 				<div style={{ flex: 1 }}>
 					<FilterLabel>Language</FilterLabel>
