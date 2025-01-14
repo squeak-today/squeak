@@ -55,6 +55,23 @@ const MarkdownWord = styled.span`
     }
 `;
 
+const ProgressBarContainer = styled.div`
+    width: 100%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+`;
+
+const ProgressBarFill = styled.div`
+    height: 100%;
+    background-color: #2C2C2C;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+    width: ${props => props.progress}%;
+`;
+
 const PageButton = ({isNext, onClick}) => {
     const label = isNext ? 'Next' : 'Previous';
     const icon = isNext ? rightArrow : leftArrow;
@@ -91,9 +108,8 @@ const ClickableText = ({ children, handleWordClick }) => {
 
 const StoryReader = ({data, handleWordClick}) => {
     const [sectionIndex, setSectionIndex] = useState(0);
-    const textSections = data.match(/(?:\s*\S+){1,500}/g) || [];
+    const textSections = data.match(/(?:\s*\S+){1,200}/g) || [];
     
-    // Add ref for the story box
     const storyBoxRef = useRef(null);
 
     const scrollToTop = () => { storyBoxRef.current?.scrollIntoView({ behavior: 'smooth' }); };
@@ -112,8 +128,13 @@ const StoryReader = ({data, handleWordClick}) => {
         }
     };
 
+    const progress = ((sectionIndex + 1) / textSections.length) * 100;
+
     return (
         <StoryBox ref={storyBoxRef}>
+            <ProgressBarContainer>
+                <ProgressBarFill progress={progress} />
+            </ProgressBarContainer>
             <StoryText>
                 <ReactMarkdown
                     components={{
