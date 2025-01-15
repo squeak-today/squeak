@@ -218,6 +218,27 @@ func init() {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
+		page := c.Query("page")
+		pagesize := c.Query("pagesize")
+
+		if page == "" {
+			page = "1"
+		}
+		if pagesize == "" {
+			pagesize = "10"
+		}
+
+		pageNum, err := strconv.Atoi(page)
+		if err != nil || pageNum < 1 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+			return
+		}
+
+		pageSizeNum, err := strconv.Atoi(pagesize)
+		if err != nil || pageSizeNum < 1 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+			return
+		}
 
 		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 			os.Getenv("SUPABASE_HOST"),
@@ -235,7 +256,7 @@ func init() {
 		defer db.Close()
 
 		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at FROM stories WHERE 1=1"
+		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM stories WHERE 1=1"
 		var params []interface{}
 		paramCount := 1
 
@@ -256,6 +277,10 @@ func init() {
 			params = append(params, subject)
 		}
 
+		query += " ORDER BY date_created DESC"
+		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
+		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
+
 		log.Printf("Executing query: %s with params: %v", query, params)
 
 		results := make([]map[string]interface{}, 0)
@@ -270,8 +295,9 @@ func init() {
 		for rows.Next() {
 			var id, title, language, topic, cefrLevel, previewText string
 			var createdAt time.Time
+			var dateCreated sql.NullTime
 
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt)
+			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
 				return
@@ -285,6 +311,7 @@ func init() {
 				"cefr_level":   cefrLevel,
 				"preview_text": previewText,
 				"created_at":   createdAt,
+				"date_created": dateCreated.Time.Format("2006-01-02"),
 			}
 			results = append(results, result)
 		}
