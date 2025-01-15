@@ -154,6 +154,8 @@ Query Supabase for news articles.
 | `language` | `string` | Yes | Can be set to `any` to return all languages. e.g `French` |
 | `cefr` | `string` | Yes | Can be set to `any` to return all CEFR levels. e.g `B2` |
 | `subject` | `string` | Yes | Can be set to `any` to return all subjects. e.g `Politics` |
+| `page` | `int` | No | Get a certain page of results. Default `1`. |
+| `pagesize` | `int` | No | Get a certain number of results per page. Default `10`. |
 
 ### Response
 > `200 Successful`
@@ -161,6 +163,7 @@ Query Supabase for news articles.
 [
     {
         "cefr_level": "A1",
+		"date_created": "2024-12-15",
         "created_at": "2025-01-13T04:03:12.846956Z",
         "id": "32",
         "language": "French",
@@ -170,6 +173,7 @@ Query Supabase for news articles.
     },
     {
         "cefr_level": "A1",
+		"date_created": "2024-12-15",
         "created_at": "2025-01-13T04:03:34.499384Z",
         "id": "34",
         "language": "French",
@@ -190,6 +194,8 @@ Query Supabase for stories.
 | `language` | `string` | Yes | e.g `French` |
 | `cefr` | `string` | Yes | e.g `B2` |
 | `subject` | `string` | Yes | e.g `Politics` |
+| `page` | `int` | No | Get a certain page of results. Default `1`. |
+| `pagesize` | `int` | No | Get a certain number of results per page. Default `10`. |
 
 ### Response
 > `200 Successful`
@@ -197,21 +203,5 @@ Query Supabase for stories.
 See `news-query` response.
 
 ## Examples: `api.squeak.today`
-> https://api.squeak.today/news?language=French&cefr=B2&subject=Politics
->https://api.squeak.today/story?language=French&cefr=B2&subject=Politics
-
-Or, equivalently:
-> https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/news?language=French&cefr=B2&subject=Politics
-
-> https://<api-id>.execute-api.us-east-2.amazonaws.com/dev/story?language=French&cefr=B2&subject=Politics
-
-### Javascript
-```javascript
-const apiUrl = "https://api.squeak.today/story";
-let url = `${apiUrl}?language=${language}&cefr=${CEFRLevel}&subject=${subject}`;
-
-let response = await fetch(url);
-let data = await response.json();
-
-console.log(data);
-```
+> https://api.squeak.today/news?language=French&cefr=B2&subject=Politics&page=1&pagesize=10
+>https://api.squeak.today/story?language=French&cefr=B2&subject=Politics&page=1&pagesize=10
