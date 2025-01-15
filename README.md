@@ -215,3 +215,6 @@ let data = await response.json();
 
 console.log(data);
 ```
+
+## Adding New Languages
+1. Add language to `queue_filler/main.go` as part of the `languages` array.
