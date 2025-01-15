@@ -88,6 +88,7 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 
 	language_ids := map[string]string{
 		"French": "fr",
+		"Spanish": "es",
 	}
 
 	providingTranslations := false
