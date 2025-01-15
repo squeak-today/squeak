@@ -1,5 +1,5 @@
 resource "aws_api_gateway_rest_api" "story_api" {
-  name        = "StoryAPI"
+  name        = "${terraform.workspace}-StoryAPI"
   description = "Simple API for Front Lambda function"
 }
 
@@ -46,7 +46,7 @@ module "story_query" {
 
 // Define Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
-  statement_id  = "AllowExecutionFromAPIGateway"
+  statement_id  = "${terraform.workspace}-AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.story_api_lambda.function_name
   principal     = "apigateway.amazonaws.com"
@@ -56,7 +56,7 @@ resource "aws_lambda_permission" "allow_apigateway" {
 # DEPLOY
 resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
-  stage_name  = "dev"
+  stage_name  = terraform.workspace
 
   depends_on = [
     module.story,

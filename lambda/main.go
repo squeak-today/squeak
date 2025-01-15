@@ -1,28 +1,21 @@
 package main
 
-// https://github.com/cohere-ai/cohere-go
-// https://docs.cohere.com/v2/docs/cohere-works-everywhere#cohere-platform
-// GOOGLE_API_KEY = "api-key" COHERE_API_KEY="api-key" STORY_BUCKET_NAME="story-generation-bucket-dev" go run .
-
-// compile to binary
-// GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap .
-// MUST BE NAMED BOOSTRAP FOR THE NEW provided.al2 RUNTIME
-// zip function.zip bootstrap
-
 import (
-    "os"
-    "context"
-    "log"
-    "fmt"
+	"context"
 	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-    "github.com/aws/aws-lambda-go/events"
 
-    "time"
-    "strings"
+	"strings"
+	"time"
 
-    "database/sql"
-    _ "github.com/lib/pq"
+	"database/sql"
+
+	_ "github.com/lib/pq"
 )
 
 type GenerationRequest struct {
@@ -33,16 +26,16 @@ type GenerationRequest struct {
 }
 
 func supabaseInsertContent(db *sql.DB, table string, title, language, topic, cefrLevel, preview_text string) error {
-    query := fmt.Sprintf(`
-        INSERT INTO %s (title, language, topic, cefr_level, preview_text, created_at)
-        VALUES ($1, $2, $3, $4, $5, NOW())
+	query := fmt.Sprintf(`
+        INSERT INTO %s (title, language, topic, cefr_level, preview_text, created_at, date_created)
+        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
         ON CONFLICT ON CONSTRAINT unique_%s_entry
         DO UPDATE SET
             title = EXCLUDED.title,
             preview_text = EXCLUDED.preview_text,
             created_at = NOW()
     `, table, table)
-    
+
     _, err := db.Exec(query, title, language, topic, cefrLevel, preview_text)
     if err != nil {
         return fmt.Errorf("failed to insert news: %v", err)

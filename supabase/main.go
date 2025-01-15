@@ -99,12 +99,16 @@ func main() {
 	}
 	defer db.Close()
 
-	if err := generateTestData(db); err != nil {
-		log.Fatal("Failed to generate test data:", err)
-	}
+	// if err := generateTestData(db); err != nil {
+	// 	log.Fatal("Failed to generate test data:", err)
+	// }
 
-	// insertContent(db, "news", "Global Warming Effects", "english", "science", "B1", "This is a news article of Global Warming Effects")
-	// insertContent(db, "stories", "Global Warming Effects", "english", "science", "B1", "This is a story of Global Warming Effects")
+	if err := insertContent(db, "news", "Global Warming Effects", "english", "science", "B1", "This is a news article of Global Warming Effects"); err != nil {
+		log.Fatal("Failed to insert news:", err)
+	}
+	if err := insertContent(db, "news", "Global Warming Effects", "english", "science", "B2", "This is a news article of Global Warming Effects"); err != nil {
+		log.Fatal("Failed to insert news:", err)
+	}
 
 	// Example values - replace with your desired filters
 	language := "French"
