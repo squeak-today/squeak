@@ -1,22 +1,25 @@
 package main
 
 import (
-	"context"
-	"log"
-	"encoding/json"
-	"io"
-	"os"
 	"bytes"
-	"time"
+	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"strconv"
+	"time"
+
+	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/awslabs/aws-lambda-go-api-proxy/gin"
+	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
-	"net/http"
 
 	"database/sql"
+
 	_ "github.com/lib/pq"
 )
 
@@ -40,7 +43,6 @@ func init() {
 
 	AllowOrigin := "*"
 
-
 	router.Use(func(c *gin.Context) {
 		// * accepts all origins, change for production
 		c.Writer.Header().Set("Access-Control-Allow-Origin", AllowOrigin)
@@ -56,12 +58,10 @@ func init() {
 		c.Next()
 	})
 
-
 	router.GET("/story", func(c *gin.Context) {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
-		
 
 		if language == "" || cefr == "" || subject == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -88,7 +88,7 @@ func init() {
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
 
-		if language == "" || cefr == "" || subject == ""{
+		if language == "" || cefr == "" || subject == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "language, cefr, and subject parameter is required!",
 			})
@@ -108,10 +108,31 @@ func init() {
 		c.JSON(http.StatusOK, content.ToMap())
 	})
 
-	router.GET("/news-query", func (c *gin.Context) {
+	router.GET("/news-query", func(c *gin.Context) {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
+		page := c.Query("page")
+		pagesize := c.Query("pagesize")
+
+		if page == "" {
+			page = "1"
+		}
+		if pagesize == "" {
+			pagesize = "10"
+		}
+
+		pageNum, err := strconv.Atoi(page)
+		if err != nil || pageNum < 1 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+			return
+		}
+
+		pageSizeNum, err := strconv.Atoi(pagesize)
+		if err != nil || pageSizeNum < 1 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+			return
+		}
 
 		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 			os.Getenv("SUPABASE_HOST"),
@@ -129,7 +150,7 @@ func init() {
 		defer db.Close()
 
 		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at FROM news WHERE 1=1"
+		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1"
 		var params []interface{}
 		paramCount := 1
 
@@ -148,7 +169,12 @@ func init() {
 		if subject != "" && subject != "any" {
 			query += fmt.Sprintf(" AND topic = $%d", paramCount)
 			params = append(params, subject)
+			paramCount++
 		}
+
+		query += " ORDER BY date_created DESC"
+		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
+		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
 
 		log.Printf("Executing query: %s with params: %v", query, params)
 
@@ -164,21 +190,23 @@ func init() {
 		for rows.Next() {
 			var id, title, language, topic, cefrLevel, previewText string
 			var createdAt time.Time
-			
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt)
+			var dateCreated sql.NullTime
+
+			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
 				return
 			}
 
 			result := map[string]interface{}{
-				"id":         id,
-				"title":      title,
-				"language":   language,
-				"topic":      topic,
-				"cefr_level": cefrLevel,
+				"id":           id,
+				"title":        title,
+				"language":     language,
+				"topic":        topic,
+				"cefr_level":   cefrLevel,
 				"preview_text": previewText,
-				"created_at": createdAt,
+				"created_at":   createdAt,
+				"date_created": dateCreated.Time.Format("2006-01-02"),
 			}
 			results = append(results, result)
 		}
@@ -186,10 +214,31 @@ func init() {
 		c.JSON(http.StatusOK, results)
 	})
 
-	router.GET("/story-query", func (c *gin.Context) {
+	router.GET("/story-query", func(c *gin.Context) {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
+		page := c.Query("page")
+		pagesize := c.Query("pagesize")
+
+		if page == "" {
+			page = "1"
+		}
+		if pagesize == "" {
+			pagesize = "10"
+		}
+
+		pageNum, err := strconv.Atoi(page)
+		if err != nil || pageNum < 1 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+			return
+		}
+
+		pageSizeNum, err := strconv.Atoi(pagesize)
+		if err != nil || pageSizeNum < 1 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+			return
+		}
 
 		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 			os.Getenv("SUPABASE_HOST"),
@@ -207,7 +256,7 @@ func init() {
 		defer db.Close()
 
 		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at FROM stories WHERE 1=1"
+		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM stories WHERE 1=1"
 		var params []interface{}
 		paramCount := 1
 
@@ -228,6 +277,10 @@ func init() {
 			params = append(params, subject)
 		}
 
+		query += " ORDER BY date_created DESC"
+		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
+		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
+
 		log.Printf("Executing query: %s with params: %v", query, params)
 
 		results := make([]map[string]interface{}, 0)
@@ -242,21 +295,23 @@ func init() {
 		for rows.Next() {
 			var id, title, language, topic, cefrLevel, previewText string
 			var createdAt time.Time
-			
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt)
+			var dateCreated sql.NullTime
+
+			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
 				return
 			}
 
 			result := map[string]interface{}{
-				"id":         id,
-				"title":      title,
-				"language":   language,
-				"topic":      topic,
-				"cefr_level": cefrLevel,
+				"id":           id,
+				"title":        title,
+				"language":     language,
+				"topic":        topic,
+				"cefr_level":   cefrLevel,
 				"preview_text": previewText,
-				"created_at": createdAt,
+				"created_at":   createdAt,
+				"date_created": dateCreated.Time.Format("2006-01-02"),
 			}
 			results = append(results, result)
 		}
@@ -267,8 +322,8 @@ func init() {
 	router.POST("/translate", func(c *gin.Context) {
 		var infoBody struct {
 			Sentence string `json:"sentence"`
-			Source string `json:"source"`
-			Target string `json:"target"`
+			Source   string `json:"source"`
+			Target   string `json:"target"`
 		}
 
 		if err := c.ShouldBindJSON(&infoBody); err != nil {
@@ -279,7 +334,7 @@ func init() {
 		googleAPIKey := os.Getenv("GOOGLE_API_KEY")
 		query := []string{infoBody.Sentence}
 		translatePayload := map[string]interface{}{
-			"q": query,
+			"q":      query,
 			"source": infoBody.Source,
 			"target": infoBody.Target,
 			"format": "text",
@@ -293,7 +348,7 @@ func init() {
 			return
 		}
 
-		req, err := http.NewRequest("POST", "https://translation.googleapis.com/language/translate/v2?key=" + googleAPIKey, bytes.NewBuffer(jsonData))
+		req, err := http.NewRequest("POST", "https://translation.googleapis.com/language/translate/v2?key="+googleAPIKey, bytes.NewBuffer(jsonData))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "Request to GCP failed!",
@@ -302,7 +357,6 @@ func init() {
 		}
 
 		req.Header.Set("Content-Type", "application/json")
-
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
