@@ -150,7 +150,7 @@ func init() {
 		defer db.Close()
 
 		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at FROM news WHERE 1=1"
+		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1"
 		var params []interface{}
 		paramCount := 1
 
@@ -172,7 +172,7 @@ func init() {
 			paramCount++
 		}
 
-		query += " ORDER BY created_at DESC"
+		query += " ORDER BY date_created DESC"
 		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
 		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
 
@@ -190,8 +190,9 @@ func init() {
 		for rows.Next() {
 			var id, title, language, topic, cefrLevel, previewText string
 			var createdAt time.Time
+			var dateCreated sql.NullTime
 
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt)
+			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
 				return
@@ -205,6 +206,7 @@ func init() {
 				"cefr_level":   cefrLevel,
 				"preview_text": previewText,
 				"created_at":   createdAt,
+				"date_created": dateCreated.Time.Format("2006-01-02"),
 			}
 			results = append(results, result)
 		}
