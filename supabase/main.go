@@ -13,8 +13,8 @@ import (
 
 func insertContent(db *sql.DB, table string, title, language, topic, cefrLevel, preview_text string) error {
 	query := fmt.Sprintf(`
-        INSERT INTO %s (title, language, topic, cefr_level, preview_text, created_at)
-        VALUES ($1, $2, $3, $4, $5, NOW())
+        INSERT INTO %s (title, language, topic, cefr_level, preview_text, created_at, date_created)
+        VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
         ON CONFLICT ON CONSTRAINT unique_%s_entry
         DO UPDATE SET
             title = EXCLUDED.title,
@@ -41,11 +41,11 @@ func generateTestData(db *sql.DB) error {
 	cefrLevels := []string{"A1", "A2", "B1", "B2", "C1", "C2"}
 	topics := []string{"Sports", "Politics", "Finance"}
 
-	// create 7 dates, one week apart
-	dates := make([]time.Time, 7)
-	baseDate := time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC)
+	// create 6 consecutive dates from Dec 10-15, 2024
+	dates := make([]time.Time, 6)
+	baseDate := time.Date(2024, 12, 10, 12, 0, 0, 0, time.UTC)
 	for i := range dates {
-		dates[i] = baseDate.AddDate(0, 0, -i*7)
+		dates[i] = baseDate.AddDate(0, 0, i) // add i days instead of subtracting weeks
 	}
 
 	for _, lang := range languages {
@@ -60,16 +60,19 @@ func generateTestData(db *sql.DB) error {
 							lang, topic, cefr, date.Format("2006-01-02"))
 
 						query := `
-                            INSERT INTO news (title, language, topic, cefr_level, preview_text, created_at)
-                            VALUES ($1, $2, $3, $4, $5, $6)
+                            INSERT INTO news (title, language, topic, cefr_level, preview_text, created_at, date_created)
+                            VALUES ($1, $2, $3, $4, $5, NOW(), $6)
                             ON CONFLICT ON CONSTRAINT unique_news_entry
                             DO UPDATE SET
                                 title = EXCLUDED.title,
                                 preview_text = EXCLUDED.preview_text,
-                                created_at = EXCLUDED.created_at`
+                                created_at = EXCLUDED.created_at,
+                                date_created = EXCLUDED.date_created`
 
 						_, err := db.Exec(query, title, lang, topic, cefr, preview, date)
 						if err != nil {
+							log.Printf("Failed to insert row: lang=%s, topic=%s, cefr=%s, date=%s, error: %v",
+								lang, topic, cefr, date.Format("2006-01-02"), err)
 							return fmt.Errorf("failed to insert test data: %v", err)
 						}
 					}
@@ -109,7 +112,7 @@ func main() {
 	subject := "any"
 
 	// Build query dynamically
-	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at FROM news WHERE 1=1"
+	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1"
 	var params []interface{}
 	paramCount := 1
 
@@ -138,14 +141,15 @@ func main() {
 
 	// Print results
 	for rows.Next() {
-		var id, title, language, topic, cefrLevel string
+		var id, title, language, topic, cefrLevel, previewText string
 		var createdAt time.Time
+		var dateCreated sql.NullTime
 
-		if err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &createdAt); err != nil {
+		if err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated); err != nil {
 			log.Fatal("Data scanning failed:", err)
 		}
 
-		fmt.Printf("ID: %s, Title: %s, Language: %s, Topic: %s, CEFR: %s, Created: %s\n",
-			id, title, language, topic, cefrLevel, createdAt)
+		fmt.Printf("ID: %s, Title: %s, Language: %s, Topic: %s, CEFR: %s, Created: %s, Date: %s\n",
+			id, title, language, topic, cefrLevel, createdAt, dateCreated.Time.Format("2006-01-02"))
 	}
 }
