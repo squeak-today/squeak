@@ -218,3 +218,5 @@ console.log(data);
 
 ## Adding New Languages
 1. Add language to `queue_filler/main.go` as part of the `languages` array.
+2. Add language to `lambda/main.go` as part of the `language_ids` map. Note that the language ID is the language code used by Google Translate API, e.g "fr" for French.
+3. Update LLMs to fine-tuning on the new language.
