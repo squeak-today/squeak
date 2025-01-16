@@ -52,6 +52,8 @@ jobs:
     - name: Terraform Init
       run: terraform init
       working-directory: infrastructure
+      env:
+        TF_WORKSPACE: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
     - name: Terraform Format
       run: terraform fmt -check -recursive
