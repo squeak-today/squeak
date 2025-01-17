@@ -1,126 +1,48 @@
-import { Account, AccountContext } from '../Account';
-import { useState, useContext } from 'react';
-import { BrowserBox, Subtitle, InputField, GenerateButton } from './StyledComponents';
+import { useState, useEffect } from 'react';
+import { GenerateButton } from './StyledComponents';
 
-import UserPool from "../UserPool";
-import Status from "./Status";
+import { createClient } from '@supabase/supabase-js'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
 
-const SignUp = () => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+const supabase = createClient(
+	process.env.REACT_APP_SUPABASE_URL,
+	process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
-	const [authCode, setAuthCode] = useState("");
-	const { confirmUser } = useContext(AccountContext);
+function SupabaseAuth() {
+    const [session, setSession] = useState(null)
 
-	const onSubmit = (event) => {
-		event.preventDefault();
+    useEffect(() => {
+    	supabase.auth.getSession().then(({ data: { session } }) => { setSession(session) });
 
-		UserPool.signUp(email, password, [], null, (err, data) => {
-			if (err) {
-				console.error(err);
-			}
-			console.log(data);
+    	const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+			setSession(session)
 		});
-	}
 
-	const onConfirmSubmit = (event) => {
-		event.preventDefault();
-		console.log(email);
-		console.log(authCode);
-		confirmUser(email, authCode).then(data => {
-			console.log("Confirmed!", data);
-		})
-		.catch((err) => {
-			console.error("Failed to confirm!", err);
-		})
-	};
+		return () => subscription.unsubscribe()
+	}, [])
 
-	return (
-		<BrowserBox>
-			{/* ugly sign-in */}
+    if (!session) {
+      	return (
 			<div>
-				<Subtitle>Create Account</Subtitle>
-				<form onSubmit={onSubmit}>
-					<InputField
-						value={email}
-						placeholder="Email"
-						onChange={(event) => setEmail(event.target.value)}>
-					</InputField>
-					<InputField
-						value={password}
-						type="password"
-						placeholder="Password"
-						onChange={(event) => setPassword(event.target.value)}>
-					</InputField>
-					<GenerateButton type="submit">Signup</GenerateButton>
-				</form>
-				
-				<Subtitle>Confirm User</Subtitle>
-				<form onSubmit={onConfirmSubmit}>
-					<InputField
-						value={email}
-						placeholder="Email"
-						onChange={(event) => setEmail(event.target.value)}>
-					</InputField>
-					<InputField
-						value={authCode}
-						placeholder="Authentication Code"
-						onChange={(event) => setAuthCode(event.target.value)}>
-					</InputField>
-					<GenerateButton type="submit">Submit</GenerateButton>
-				</form>
+				<Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
 			</div>
-		</BrowserBox>
-	)
-}
-
-const Login = () => {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-
-	const { authenticate } = useContext(AccountContext); 
-
-	const onSubmit = (event) => {
-		event.preventDefault();
-		authenticate(email, password).then(data => {
-			console.log("Logged in!", data);
-		})
-		.catch((err) => {
-			console.error("Failed to log in!", err);
-		})
-	}
-
-	return (
-		<BrowserBox>
-			<Subtitle>Login</Subtitle>
-			{/* ugly sign-in */}
+		)
+    } else {
+      	return (
 			<div>
-				<form onSubmit={onSubmit}>
-					<InputField
-						value={email}
-						placeholder="Email"
-						onChange={(event) => setEmail(event.target.value)}>
-					</InputField>
-					<InputField
-						value={password}
-						type="password"
-						placeholder="Password"
-						onChange={(event) => setPassword(event.target.value)}>
-					</InputField>
-					<GenerateButton type="submit">Login</GenerateButton>
-				</form>
+				<GenerateButton onClick={async () => {await supabase.auth.signOut();}}>
+					Logout
+				</GenerateButton>
 			</div>
-		</BrowserBox>
-	)
+	  	)
+	}
 }
 
 function AuthBlocks() {
     return (
-        <Account>
-            <Status />
-			<SignUp />
-			<Login />
-        </Account>
+		<SupabaseAuth />
     )
 }
 
