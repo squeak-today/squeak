@@ -159,15 +159,15 @@ export const HeaderTitle = styled.h1`
 export const Footer = styled.footer`
 	position: relative;
 	width: 100%;
+	height: 10vh;
 	background-color: #ffffff;
-	padding: 3.0rem 0;
-	text-align: center;
 	border-top: 1px solid #e0e0e0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-family: 'Noto Serif', serif;
 	box-sizing: border-box;
+	margin-top: auto;
 `;
 
 export const NavHeader = styled.header`

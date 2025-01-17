@@ -9,7 +9,13 @@ function BasicPage({ children, showLogout, onLogout }) {
 
     return (
         <TransitionWrapper>
-            <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
+            <div style={{ 
+                maxWidth: '100vw', 
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden' 
+            }}>
                 <NavHeader>
                     <HeaderLogo 
                         src={logo} 

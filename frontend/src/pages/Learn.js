@@ -46,26 +46,24 @@ function Learn() {
 
 	const navigate = useNavigate();
 
-	const [hasShownError, setHasShownError] = useState(false);
-
 	const pullStory = async (contentType, language, cefrLevel, subject) => {
 		apiUrl = apiBase + contentType;
-
 		let url = `${apiUrl}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
-		fetch(url).then(response => {
+		
+		try {
+			const response = await fetch(url);
 			if (!response.ok) {
 				setStory("Failed to generate story");
 				throw new Error("Network response was not ok");
 			}
-			return response.json();
-		}).then(data => {
+			const data = await response.json();
 			console.log("Pulled story successfully!");
 			setStory(data["content"]);
-		}).catch(error => {
+		} catch (error) {
 			console.error("Error generating story:", error);
 			setStory("");
 			showNotification("Couldn't find that story. Please try again or come back later!", 'error');
-		})
+		}
 	};
 
 	const fetchWordDefinition = async (word) => {
@@ -112,6 +110,7 @@ function Learn() {
 			const newsData = await fetchContent(apiBase, 'news-query', language, cefrLevel, subject);
 			const storiesData = await fetchContent(apiBase, 'story-query', language, cefrLevel, subject);
 			console.log('Fetched content successfully!')
+
 			for (const story of newsData) {
 				tempStories.push({
 					type: 'News',
@@ -131,19 +130,26 @@ function Learn() {
 				});
 			}
 			setAllStories(tempStories);
-			setHasShownError(false);
 		} catch (error) {
 			console.error("Failed to fetch content:", error);
-			if (!hasShownError) {
-				showNotification("Couldn't get Squeak's content. Please try again or come back later!", 'error');
-				setHasShownError(true);
-			}
+			showNotification("Couldn't get Squeak's content. Please try again or come back later!", 'error');
 		}
-	}, [apiBase, showNotification, hasShownError]);
+	}, [apiBase, showNotification]);
 
 	useEffect(() => {
-		handleListStories('any', 'any', 'any');
-	}, [handleListStories]);
+		// using an "IIFE" to handle the handleListStories call,
+		// basically only running on mount and ignoring any changes to handleListStories
+		// this prevents a cyclical loop of errors if the fetch fails (and thus this would run infinitely)
+		(async () => {
+			try {
+				await handleListStories('any', 'any', 'any');
+			} catch (error) {
+				console.error('Failed to fetch initial stories:', error);
+			}
+		})();
+		// we're intentionally only running this on mount and accepting that handleListStories may change
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const handleStoryBlockClick = async (story) => {
 		setContentType((story.type).toLowerCase());
