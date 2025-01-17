@@ -1,13 +1,23 @@
 import styled from 'styled-components';
 
-const AuthContainer = styled.div`
+export const AuthBox = styled.div`
+	width: 100%;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	margin: 80px auto 0 auto;
+	box-sizing: border-box;
+`;
+
+export const AuthContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 2rem;
 	width: 90%;
 	max-width: 24rem;
-	margin: 0 auto;
 	padding: 2rem;
 	background: white;
 	border-radius: 10px;
@@ -15,7 +25,7 @@ const AuthContainer = styled.div`
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const AuthForm = styled.form`
+export const AuthForm = styled.form`
 	width: 100%;
 	display: flex;
 	flex-direction: column;
@@ -23,7 +33,7 @@ const AuthForm = styled.form`
 	align-items: center;
 `;
 
-const AuthInput = styled.input`
+export const AuthInput = styled.input`
 	width: 100%;
 	padding: 0.5em;
 	border: 1px solid #e0e0e0;
@@ -45,7 +55,7 @@ const AuthInput = styled.input`
 	}
 `;
 
-const AuthButton = styled.button`
+export const AuthButton = styled.button`
 	width: 100%;
 	padding: 0.5em 1em;
 	border: 1px solid #e0e0e0;
@@ -70,7 +80,7 @@ const AuthButton = styled.button`
 	}
 `;
 
-const AuthToggle = styled.button`
+export const AuthToggle = styled.button`
 	background: none;
 	border: none;
 	color: #333;
@@ -86,5 +96,3 @@ const AuthToggle = styled.button`
 		color: #666;
 	}
 `;
-
-export { AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle };

@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
-import { BrowserBox, Subtitle } from '../components/StyledComponents';
-import { AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle } from '../styles/AuthPageStyles';
+import { Subtitle } from '../components/StyledComponents';
+import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle } from '../styles/AuthPageStyles';
 import { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
@@ -67,7 +67,7 @@ function Auth() {
     if (signupSuccess) {
         return (
             <BasicPage>
-                <BrowserBox>
+                <AuthBox>
                     <AuthContainer>
                         <Subtitle>Check Your Email!</Subtitle>
                         <p style={{ textAlign: 'center', fontFamily: 'Noto Serif, serif' }}>
@@ -78,15 +78,14 @@ function Auth() {
                             Return Home
                         </AuthButton>
                     </AuthContainer>
-                </BrowserBox>
+                </AuthBox>
             </BasicPage>
         );
     }
 
     return (
         <BasicPage>
-
-            <BrowserBox>
+            <AuthBox>
                 <AuthContainer>
                     <Subtitle>
                         {isLogin ? 'Welcome Back!' : 'Create Account'}
@@ -114,8 +113,7 @@ function Auth() {
                         {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
                     </AuthToggle>
                 </AuthContainer>
-            </BrowserBox>
-
+            </AuthBox>
         </BasicPage>
     );
 }

@@ -37,7 +37,7 @@ function Learn() {
 
 	const [isClosing, setIsClosing] = useState(false);
 
-	const [showWelcome, setShowWelcome] = useState(true);
+	const [showWelcome, setShowWelcome] = useState(false);
 
 	const { showNotification } = useNotification();
 
@@ -174,15 +174,35 @@ function Learn() {
 	};
 
 	useEffect(() => {
-		const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
-		if (hasSeenWelcome) {
-			setShowWelcome(false);
-		}
+		// Check if user has seen welcome message in their metadata
+		const checkWelcomeStatus = async () => {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (session) {
+				const { data: { user } } = await supabase.auth.getUser();
+				const hasSeenWelcome = user?.user_metadata?.has_seen_welcome;
+				
+				if (!hasSeenWelcome) {
+					setShowWelcome(true);
+				}
+			}
+		};
+
+		checkWelcomeStatus();
 	}, []);
 
-	const handleCloseWelcome = () => {
-		sessionStorage.setItem('hasSeenWelcome', 'true');
-		setShowWelcome(false);
+	const handleCloseWelcome = async () => {
+		try {
+			// Update user metadata to record that they've seen the welcome message
+			const { error } = await supabase.auth.updateUser({
+				data: { has_seen_welcome: true }
+			});
+
+			if (error) throw error;
+			setShowWelcome(false);
+		} catch (error) {
+			console.error('Error updating user metadata:', error);
+			setShowWelcome(false); // Still close the modal even if update fails
+		}
 	};
 
 	const handleLogout = async () => {
