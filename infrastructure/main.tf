@@ -36,4 +36,6 @@ module "generation" {
   supabase_user     = var.supabase_user
   supabase_password = var.supabase_password
   supabase_database = var.supabase_database
+
+  content_generation_interval = var.content_generation_interval
 }

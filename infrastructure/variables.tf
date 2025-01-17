@@ -48,3 +48,8 @@ variable "supabase_database" {
   sensitive   = true
 }
 
+variable "content_generation_interval" {
+  description = "Content Generation Interval"
+  type        = string
+  default     = "rate(30 minutes)"
+}
