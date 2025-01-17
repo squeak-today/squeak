@@ -193,7 +193,7 @@ export const HeaderLogo = styled.img`
 	cursor: pointer;
 `;
 
-export const MiscButton = styled.a`
+export const MiscButton = styled.button`
 	padding: 0.8em 1.5em;
 	border: 1px solid #e0e0e0;
 	border-radius: 10px;
@@ -201,13 +201,17 @@ export const MiscButton = styled.a`
 	cursor: pointer;
 	font-family: 'Noto Serif', serif;
 	font-weight: bold;
-	text-decoration: none;
+	font-size: 1rem;
 	color: #000000;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	
 	&:hover {
 		background: #f5f5f5;
 	}
+
+	${props => props.as === 'a' && `
+		text-decoration: none;
+	`}
 `;
 
 export const PictureLogo = styled.img`

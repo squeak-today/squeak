@@ -8,9 +8,15 @@ import styled from 'styled-components';
 import logo from '../assets/logo.png';
 import landingDrawing from '../assets/mouse_reading.png';
 import headerLogo from '../assets/drawing_400.png';
-
 import { TransitionWrapper } from '../components/PageTransition';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+    process.env.REACT_APP_SUPABASE_URL,
+    process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 const HomeContent = styled.div`
     display: flex;
@@ -33,6 +39,12 @@ const TextContent = styled.div`
     text-align: center;
 `;
 
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`;
+
 const MainHeading = styled.h1`
     font-family: 'Noto Serif', serif;
     font-size: 2rem;
@@ -51,10 +63,19 @@ function Home() {
     const navigate = useNavigate();
     const [isLeaving, setIsLeaving] = useState(false);
 
+    useEffect(() => {
+        // check for existing session on load
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                navigate('/learn');
+            }
+        });
+    }, [navigate]);
+
     const handleGetStarted = () => {
         setIsLeaving(true);
         setTimeout(() => {
-            navigate('/learn');
+            navigate('/auth/signup');
         }, 300); // Match animation duration
     };
 
@@ -83,13 +104,22 @@ function Home() {
                         <MainHeading>
                             Learn Languages Through Stories You Love
                         </MainHeading>
-                        <MiscButton 
-                            as="button"
-                            onClick={handleGetStarted}
-                            style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
-                        >
-                            Get Started
-                        </MiscButton>
+                        <ButtonContainer>
+                            <MiscButton 
+                                as="button"
+                                onClick={handleGetStarted}
+                                style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
+                            >
+                                Get Started
+                            </MiscButton>
+                            <MiscButton 
+                                as="button"
+                                onClick={() => navigate('/auth/login')}
+                                style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
+                            >
+                                I'm Back To Learn!
+                            </MiscButton>
+                        </ButtonContainer>
                     </TextContent>
                 </HomeContent>
 

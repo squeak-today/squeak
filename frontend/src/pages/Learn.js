@@ -15,14 +15,21 @@ import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
 import { TransitionWrapper } from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
-
 import { useNotification } from '../context/NotificationContext';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+	process.env.REACT_APP_SUPABASE_URL,
+	process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
 const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
-    const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
-    const response = await fetch(url);
-    if (!response.ok) { throw new Error(`Failed to fetch from ${endpoint}`); }
-    return response.json();
+	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
+	const response = await fetch(url);
+	if (!response.ok) {
+		console.error(`Failed to fetch from ${endpoint}`);
+	}
+	return response.json();
 };
 
 function Learn() {
@@ -143,7 +150,7 @@ function Learn() {
 
 	useEffect(() => {
 		handleListStories('any', 'any', 'any');
-	}, [handleListStories]); // Now we can safely add handleListStories as a dependency
+	}, [handleListStories]);
 
 	const handleStoryBlockClick = async (story) => {
 		setContentType((story.type).toLowerCase());
@@ -168,7 +175,6 @@ function Learn() {
 	};
 
 	useEffect(() => {
-		// Check if user has seen welcome message in this session
 		const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
 		if (hasSeenWelcome) {
 			setShowWelcome(false);
@@ -178,6 +184,16 @@ function Learn() {
 	const handleCloseWelcome = () => {
 		sessionStorage.setItem('hasSeenWelcome', 'true');
 		setShowWelcome(false);
+	};
+
+	const handleLogout = async () => {
+		try {
+			await supabase.auth.signOut();
+			navigate('/');
+		} catch (error) {
+			console.error('Error signing out:', error);
+			showNotification('Error signing out. Please try again.');
+		}
 	};
 
 	return (
@@ -191,13 +207,21 @@ function Learn() {
 						onClick={() => navigate('/')} 
 					/>
 					<PictureLogo src={headerLogo} alt="Squeak Mouse" />
-					<MiscButton 
-						href="https://forms.gle/LumHWSYaqLKV4KMa8"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Tell Us Anything! ❤️
-					</MiscButton>
+					<div style={{ display: 'flex', gap: '1rem' }}>
+						<MiscButton 
+							href="https://forms.gle/LumHWSYaqLKV4KMa8"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							Tell Us Anything! ❤️
+						</MiscButton>
+						<MiscButton 
+							as="button"
+							onClick={handleLogout}
+						>
+							Logout
+						</MiscButton>
+					</div>
 				</NavHeader>
 				
 				<BrowserBox>

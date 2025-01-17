@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { NotificationContainer, NotificationsWrapper } from './ContextStyles';
+import { NotificationContainer, NotificationsWrapper } from '../styles/ContextStyles';
 
 const NotificationContext = createContext();
 
