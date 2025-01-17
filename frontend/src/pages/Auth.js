@@ -48,7 +48,7 @@ function Auth() {
                     email,
                     password,
                 });
-                if (error) throw error;
+                if (error) { showNotification(error.message, 'error'); throw error; }
                 setSignupSuccess(true);
             }
         } catch (error) {
