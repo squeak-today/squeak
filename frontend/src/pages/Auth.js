@@ -1,13 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
-import { BrowserBox, Subtitle, NavHeader, HeaderLogo, PictureLogo, Footer, MiscButton } from '../components/StyledComponents';
+import { BrowserBox, Subtitle } from '../components/StyledComponents';
 import { AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle } from '../styles/AuthPageStyles';
-import { TransitionWrapper } from '../components/PageTransition';
 import { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
-import logo from '../assets/logo.png';
-import headerLogo from '../assets/drawing_400.png';
+import BasicPage from '../components/BasicPage';
 
 const supabase = createClient(
     process.env.REACT_APP_SUPABASE_URL,
@@ -55,6 +53,7 @@ function Auth() {
                     email,
                     password,
                 });
+                if (error) throw error;
                 setSignupSuccess(true);
             }
         } catch (error) {
@@ -67,101 +66,57 @@ function Auth() {
 
     if (signupSuccess) {
         return (
-            <TransitionWrapper>
-                <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-                    <NavHeader>
-                        <HeaderLogo 
-                            src={logo} 
-                            alt="Squeak" 
-                            onClick={() => navigate('/')} 
-                        />
-                        <PictureLogo src={headerLogo} alt="Squeak Mouse" />
-                        <MiscButton 
-                            as="a"
-                            href="https://forms.gle/LumHWSYaqLKV4KMa8"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Tell Us Anything! ❤️
-                        </MiscButton>
-                    </NavHeader>
-
-                    <BrowserBox>
-                        <AuthContainer>
-                            <Subtitle>Check Your Email!</Subtitle>
-                            <p style={{ textAlign: 'center', fontFamily: 'Noto Serif, serif' }}>
-                                We've sent you a verification link to {email}.<br/>
-                                Please verify your email to start learning with Squeak!
-                            </p>
-                            <AuthButton onClick={() => navigate('/')}>
-                                Return Home
-                            </AuthButton>
-                        </AuthContainer>
-                    </BrowserBox>
-
-                    <Footer>
-                        © 2024 Squeak. All rights reserved.
-                    </Footer>
-                </div>
-            </TransitionWrapper>
+            <BasicPage>
+                <BrowserBox>
+                    <AuthContainer>
+                        <Subtitle>Check Your Email!</Subtitle>
+                        <p style={{ textAlign: 'center', fontFamily: 'Noto Serif, serif' }}>
+                            We've sent you a verification link to {email}.<br/>
+                            Please verify your email to start learning with Squeak!
+                        </p>
+                        <AuthButton onClick={() => navigate('/')}>
+                            Return Home
+                        </AuthButton>
+                    </AuthContainer>
+                </BrowserBox>
+            </BasicPage>
         );
     }
 
     return (
-        <TransitionWrapper>
-            <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-                <NavHeader>
-                    <HeaderLogo 
-                        src={logo} 
-                        alt="Squeak" 
-                        onClick={() => navigate('/')} 
-                    />
-                    <PictureLogo src={headerLogo} alt="Squeak Mouse" />
-                    <MiscButton 
-                        as="a"
-                        href="https://forms.gle/LumHWSYaqLKV4KMa8"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Tell Us Anything! ❤️
-                    </MiscButton>
-                </NavHeader>
+        <BasicPage>
 
-                <BrowserBox>
-                    <AuthContainer>
-                        <Subtitle>
-                            {isLogin ? 'Welcome Back!' : 'Create Account'}
-                        </Subtitle>
-                        <AuthForm onSubmit={handleSubmit}>
-                            <AuthInput
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                            <AuthInput
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            <AuthButton type="submit" disabled={loading}>
-                                {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
-                            </AuthButton>
-                        </AuthForm>
-                        <AuthToggle onClick={() => navigate(isLogin ? '/auth/signup' : '/auth/login')}>
-                            {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-                        </AuthToggle>
-                    </AuthContainer>
-                </BrowserBox>
+            <BrowserBox>
+                <AuthContainer>
+                    <Subtitle>
+                        {isLogin ? 'Welcome Back!' : 'Create Account'}
+                    </Subtitle>
+                    <AuthForm onSubmit={handleSubmit}>
+                        <AuthInput
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                        <AuthInput
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                        <AuthButton type="submit" disabled={loading}>
+                            {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                        </AuthButton>
+                    </AuthForm>
+                    <AuthToggle onClick={() => navigate(isLogin ? '/auth/signup' : '/auth/login')}>
+                        {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                    </AuthToggle>
+                </AuthContainer>
+            </BrowserBox>
 
-                <Footer>
-                    © 2024 Squeak. All rights reserved.
-                </Footer>
-            </div>
-        </TransitionWrapper>
+        </BasicPage>
     );
 }
 

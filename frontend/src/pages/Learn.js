@@ -1,22 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import logo from '../assets/logo.png';
-import headerLogo from '../assets/drawing_400.png';
-import { BrowserBox, 
-    NavHeader,
-    HeaderLogo,
+import { BrowserBox,
     StoryContainer,
     Tooltip,
-    ModalContainer,
-    Footer,
-    MiscButton,
-    PictureLogo} from '../components/StyledComponents';
+    ModalContainer} from '../components/StyledComponents';
 import StoryReader from '../components/StoryReader';
 import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
-import { TransitionWrapper } from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import { createClient } from '@supabase/supabase-js';
+import BasicPage from '../components/BasicPage';
 
 const supabase = createClient(
 	process.env.REACT_APP_SUPABASE_URL,
@@ -197,60 +190,33 @@ function Learn() {
 	};
 
 	return (
-		<TransitionWrapper>
-			<div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-				{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
-				<NavHeader>
-					<HeaderLogo 
-						src={logo} 
-						alt="Squeak" 
-						onClick={() => navigate('/')} 
-					/>
-					<PictureLogo src={headerLogo} alt="Squeak Mouse" />
-					<div style={{ display: 'flex', gap: '1rem' }}>
-						<MiscButton 
-							href="https://forms.gle/LumHWSYaqLKV4KMa8"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							Tell Us Anything! ❤️
-						</MiscButton>
-						<MiscButton 
-							as="button"
-							onClick={handleLogout}
-						>
-							Logout
-						</MiscButton>
-					</div>
-				</NavHeader>
-				
-				<BrowserBox>
-					<StoryBrowser 
-						stories={allStories} 
-						onParamsSelect={handleListStories} 
-						onStoryBlockClick={(story) => { handleStoryBlockClick(story) }}
-					/>
-					
-					{story && isModalOpen && (
-						<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
-							<StoryContainer $isClosing={isClosing}>
-								<StoryReader data={story} handleWordClick={handleWordClick} />
-							</StoryContainer>
-						</ModalContainer>
-					)}
+		<BasicPage showLogout onLogout={handleLogout}>
 
-					{/* displaying the word definition */}
-					{tooltip.visible && (
-						<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
-						<strong>{tooltip.word}</strong>: {tooltip.definition}
-						</Tooltip>
-					)}
-				</BrowserBox>
-				<Footer>
-					© 2024 Squeak. All rights reserved.
-				</Footer>
-			</div>
-		</TransitionWrapper>
+			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
+			<BrowserBox>
+				<StoryBrowser 
+					stories={allStories} 
+					onParamsSelect={handleListStories} 
+					onStoryBlockClick={handleStoryBlockClick}
+				/>
+				
+				{story && isModalOpen && (
+					<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
+						<StoryContainer $isClosing={isClosing}>
+							<StoryReader data={story} handleWordClick={handleWordClick} />
+						</StoryContainer>
+					</ModalContainer>
+				)}
+
+				{/* displaying the word definition */}
+				{tooltip.visible && (
+					<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
+					<strong>{tooltip.word}</strong>: {tooltip.definition}
+					</Tooltip>
+				)}
+			</BrowserBox>
+
+		</BasicPage>
 	);
 }
 
