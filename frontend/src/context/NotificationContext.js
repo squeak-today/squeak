@@ -15,22 +15,25 @@ export function NotificationProvider({ children }) {
     const [notifications, setNotifications] = useState([]);
 
     const showNotification = (message, type = 'error') => {
-        const id = Date.now(); // unique id for each notification
+        const id = Date.now();
         setNotifications(prev => [...prev, { id, message, type }]);
         
         const timeout = type === 'error' ? 10000 : 3000;
         setTimeout(() => {
-            setNotifications(prev => 
-                prev.map(notif => 
-                    notif.id === id ? { ...notif, isLeaving: true } : notif
-                )
-            );
-            
-            // delay for fadeout anim
-            setTimeout(() => {
-                setNotifications(prev => prev.filter(notif => notif.id !== id));
-            }, 300);
+            handleNotificationDismiss(id);
         }, timeout);
+    };
+
+    const handleNotificationDismiss = (id) => {
+        setNotifications(prev => 
+            prev.map(notif => 
+                notif.id === id ? { ...notif, isLeaving: true } : notif
+            )
+        );
+        
+        setTimeout(() => {
+            setNotifications(prev => prev.filter(notif => notif.id !== id));
+        }, 300);
     };
 
     return (
@@ -42,6 +45,8 @@ export function NotificationProvider({ children }) {
                         key={notification.id}
                         $type={notification.type}
                         $isLeaving={notification.isLeaving}
+                        onClick={() => handleNotificationDismiss(notification.id)}
+                        style={{ cursor: 'pointer' }}
                     >
                         {notification.message}
                     </NotificationContainer>
