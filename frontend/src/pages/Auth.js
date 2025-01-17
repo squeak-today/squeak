@@ -15,10 +15,10 @@ function Auth() {
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [signupSuccess, setSignupSuccess] = useState(false);
+    const [showResetForm, setShowResetForm] = useState(false);
     const { showNotification } = useNotification();
 
     useEffect(() => {
-        // Check for existing session
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
                 navigate('/learn');
@@ -28,7 +28,7 @@ function Auth() {
 
     useEffect(() => {
         setIsLogin(mode === 'login');
-        setSignupSuccess(false); // reset success state when switching modes
+        setSignupSuccess(false);
     }, [mode]);
 
     const handleSubmit = async (e) => {
@@ -59,6 +59,45 @@ function Auth() {
         }
     };
 
+    const handleResetRequest = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/auth/login`,
+            });
+            if (error) throw error;
+            showNotification('Check your email for password reset instructions!', 'success');
+            setShowResetForm(false);
+            setEmail('');
+        } catch (error) {
+            showNotification(error.message || 'Failed to send reset email', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePasswordUpdate = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const { error } = await supabase.auth.updateUser({ 
+                password: password 
+            });
+            if (error) { showNotification(error.message, 'error'); throw error; };
+            showNotification('Password updated successfully!', 'success');
+            setShowResetForm(false);
+            setPassword('');
+            navigate('/auth/login');
+        } catch (error) {
+            showNotification(error.message || 'Failed to update password', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (signupSuccess) {
         return (
             <BasicPage>
@@ -72,6 +111,58 @@ function Auth() {
                         <AuthButton onClick={() => navigate('/')}>
                             Return Home
                         </AuthButton>
+                    </AuthContainer>
+                </AuthBox>
+            </BasicPage>
+        );
+    }
+
+    // since password reset redirects to /, which redirects to /auth/reset if the event is PASSWORD_RECOVERY.
+    if (mode === 'reset') {
+        return (
+            <BasicPage>
+                <AuthBox>
+                    <AuthContainer>
+                        <Subtitle>Set New Password</Subtitle>
+                        <AuthForm onSubmit={handlePasswordUpdate}>
+                            <AuthInput
+                                type="password"
+                                placeholder="New Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <AuthButton type="submit" disabled={loading}>
+                                {loading ? 'Updating...' : 'Update Password'}
+                            </AuthButton>
+                        </AuthForm>
+                    </AuthContainer>
+                </AuthBox>
+            </BasicPage>
+        );
+    }
+
+    if (showResetForm === 'request') {
+        return (
+            <BasicPage>
+                <AuthBox>
+                    <AuthContainer>
+                        <Subtitle>Reset Password</Subtitle>
+                        <AuthForm onSubmit={handleResetRequest}>
+                            <AuthInput
+                                type="email"
+                                placeholder="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                            <AuthButton type="submit" disabled={loading}>
+                                {loading ? 'Sending...' : 'Send Reset Link'}
+                            </AuthButton>
+                        </AuthForm>
+                        <AuthToggle onClick={() => setShowResetForm(false)}>
+                            Back to Login
+                        </AuthToggle>
                     </AuthContainer>
                 </AuthBox>
             </BasicPage>
@@ -100,6 +191,11 @@ function Auth() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
+                        {isLogin && (
+                            <AuthToggle onClick={() => setShowResetForm('request')}>
+                                Forgot Password?
+                            </AuthToggle>
+                        )}
                         <AuthButton type="submit" disabled={loading}>
                             {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
                         </AuthButton>

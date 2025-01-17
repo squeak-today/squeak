@@ -51,6 +51,11 @@ function Home() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === "PASSWORD_RECOVERY") {
+                navigate('/auth/reset');
+            }
+        });
         // check for existing session on load
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
