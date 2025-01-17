@@ -16,6 +16,8 @@ import WelcomeModal from '../components/WelcomeModal';
 import { TransitionWrapper } from '../components/PageTransition';
 import { useNavigate } from 'react-router-dom';
 
+import { useNotification } from '../context/NotificationContext';
+
 const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
     const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
     const response = await fetch(url);
@@ -37,10 +39,14 @@ function Learn() {
 
 	const [showWelcome, setShowWelcome] = useState(true);
 
+	const { showNotification } = useNotification();
+
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
 
 	const navigate = useNavigate();
+
+	const [hasShownError, setHasShownError] = useState(false);
 
 	const pullStory = async (contentType, language, cefrLevel, subject) => {
 		apiUrl = apiBase + contentType;
@@ -57,7 +63,8 @@ function Learn() {
 			setStory(data["content"]);
 		}).catch(error => {
 			console.error("Error generating story:", error);
-			setStory("Failed to generate story");
+			setStory("");
+			showNotification("Couldn't find that story. Please try again or come back later!", 'error');
 		})
 	};
 
@@ -82,7 +89,10 @@ function Learn() {
 			console.log(result);
 			translation = result["sentence"].toString();
 		})
-		.catch(error => {console.error('ERROR: ', error)})
+		.catch(error => {
+			console.error('ERROR: ', error);
+			showNotification("Couldn't find that word. Please try again or come back later!", 'error');
+		})
 		return translation;
 	};
 
@@ -121,10 +131,15 @@ function Learn() {
 				});
 			}
 			setAllStories(tempStories);
+			setHasShownError(false);
 		} catch (error) {
 			console.error("Failed to fetch content:", error);
+			if (!hasShownError) {
+				showNotification("Couldn't get Squeak's content. Please try again or come back later!", 'error');
+				setHasShownError(true);
+			}
 		}
-	}, [apiBase]); // apiBase is the only dependency
+	}, [apiBase, showNotification, hasShownError]);
 
 	useEffect(() => {
 		handleListStories('any', 'any', 'any');
