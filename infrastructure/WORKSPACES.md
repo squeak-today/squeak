@@ -36,6 +36,8 @@ terraform plan -var-file="environments/prod.tfvars"
 terraform apply -var-file="environments/prod.tfvars"
 ```
 
+**IMPORTANT:** PLEASE USE PROD VARIABLES IN `prod.tfvars` FOR PRODUCTION. (or incur billing to yourself, I guess)
+
 If ever needed, `terraform destroy -var-file="environments/dev.tfvars"`.
 Please don't do this without quintuple checking (...especially prod.)
 
