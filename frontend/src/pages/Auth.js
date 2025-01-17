@@ -1,16 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import supabase from '../lib/supabase';
 import { Subtitle } from '../components/StyledComponents';
 import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle } from '../styles/AuthPageStyles';
 import { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
-
-const supabase = createClient(
-    process.env.REACT_APP_SUPABASE_URL,
-    process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 function Auth() {
     const { mode } = useParams();

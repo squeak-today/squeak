@@ -8,13 +8,8 @@ import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
-import { createClient } from '@supabase/supabase-js';
+import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
-
-const supabase = createClient(
-	process.env.REACT_APP_SUPABASE_URL,
-	process.env.REACT_APP_SUPABASE_ANON_KEY
-);
 
 const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
