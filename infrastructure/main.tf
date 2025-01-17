@@ -6,7 +6,19 @@ terraform {
     }
   }
 
+  cloud {
+    organization = "squeak_team"
+    workspaces {
+      tags = ["shared"]
+    }
+  }
+
   required_version = ">= 1.2.0"
+}
+
+locals {
+  environment = terraform.workspace
+  prefix      = "${terraform.workspace}-"
 }
 
 module "generation" {

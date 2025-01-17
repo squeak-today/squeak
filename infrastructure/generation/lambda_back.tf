@@ -4,13 +4,13 @@
 # The obvious fix is thus to wait until Lambda creates one upon invocation, in which case you still need to manually delete it after
 # But for now this works because it defines basically nothing changeable.
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name = "/aws/lambda/story-gen-lambda"
+  name = "/aws/lambda/${terraform.workspace}-story-gen-lambda"
 }
 
 
 // standard
 resource "aws_lambda_function" "story_gen_lambda" {
-  function_name = "story-gen-lambda"
+  function_name = "${terraform.workspace}-story-gen-lambda"
   role          = aws_iam_role.story_gen_role.arn
   package_type  = "Zip"
   handler       = "storygen"
@@ -46,6 +46,6 @@ resource "aws_lambda_function" "story_gen_lambda" {
   ]
 
   tags = {
-    Name = "Story Generation Lambda"
+    Name = "${terraform.workspace} Story Generation Lambda"
   }
 }

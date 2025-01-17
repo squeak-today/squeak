@@ -1,9 +1,9 @@
 resource "aws_cloudwatch_log_group" "lambda_log_group2" {
-  name = "/aws/lambda/story-api-lambda"
+  name = "/aws/lambda/${terraform.workspace}-story-api-lambda"
 }
 
 resource "aws_lambda_function" "story_api_lambda" {
-  function_name = "story-api-lambda"
+  function_name = "${terraform.workspace}-story-api-lambda"
   role          = aws_iam_role.story_api_role.arn
   package_type  = "Zip"
   handler       = "storyapi"
@@ -34,6 +34,6 @@ resource "aws_lambda_function" "story_api_lambda" {
   ]
 
   tags = {
-    Name = "Story API Lambda"
+    Name = "${terraform.workspace} Story API Lambda"
   }
 }

@@ -1,16 +1,15 @@
 
 ####### TRIGGERING LAMBDA ON TIMED INTERVALS (for the SQS filler) #######
 resource "aws_cloudwatch_event_rule" "lambda_trigger" {
-  name                = "lambda-trigger"
+  name                = "${terraform.workspace}-lambda-trigger"
   description         = "Fires every 30 minutes"
   schedule_expression = "rate(30 minutes)"
 }
 
 # Trigger lambda based on the schedule
 resource "aws_cloudwatch_event_target" "trigger_lambda_on_schedule" {
-  rule      = aws_cloudwatch_event_rule.lambda_trigger.name
-  target_id = "lambda"
-  arn       = aws_lambda_function.queue_filler_lambda.arn
+  rule = aws_cloudwatch_event_rule.lambda_trigger.name
+  arn  = aws_lambda_function.queue_filler_lambda.arn
 }
 
 ####### TRIGGERING LAMBDA VIA SQS QUEUE (for the story generators) #######

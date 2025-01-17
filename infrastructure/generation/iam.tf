@@ -1,6 +1,6 @@
 # Story Generation IAM (back lambda)
 resource "aws_iam_role" "story_gen_role" {
-  name = "story-gen-role"
+  name = "${terraform.workspace}-story-gen-role"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -16,7 +16,7 @@ resource "aws_iam_role" "story_gen_role" {
   })
 
   inline_policy {
-    name = "lambda-policies"
+    name = "${terraform.workspace}-lambda-policies"
     policy = jsonencode({
       "Version" : "2012-10-17",
       "Statement" : [
@@ -59,7 +59,7 @@ resource "aws_iam_role" "story_gen_role" {
 }
 
 resource "aws_iam_role" "queue_filler_role" {
-  name = "queue-filler-role"
+  name = "${terraform.workspace}-queue-filler-role"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -75,7 +75,7 @@ resource "aws_iam_role" "queue_filler_role" {
   })
 
   inline_policy {
-    name = "lambda_policies"
+    name = "${terraform.workspace}-lambda_policies"
     policy = jsonencode({
       "Version" : "2012-10-17",
       "Statement" : [

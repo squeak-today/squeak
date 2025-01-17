@@ -31,10 +31,6 @@ type TranslateResponse struct {
 	} `json:"data"`
 }
 
-// STORY_BUCKET_NAME="story-generation-bucket-dev" go run .
-// GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap .
-// zip front-function.zip bootstrap
-
 var ginLambda *ginadapter.GinLambda
 
 func init() {

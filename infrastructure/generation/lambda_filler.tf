@@ -1,9 +1,9 @@
 resource "aws_cloudwatch_log_group" "filler_log_group" {
-  name = "/aws/lambda/queue-filler-lambda"
+  name = "/aws/lambda/${terraform.workspace}-queue-filler-lambda"
 }
 
 resource "aws_lambda_function" "queue_filler_lambda" {
-  function_name = "queue-filler-lambda"
+  function_name = "${terraform.workspace}-queue-filler-lambda"
   role          = aws_iam_role.queue_filler_role.arn
   package_type  = "Zip"
   handler       = "queuefill"
@@ -27,12 +27,12 @@ resource "aws_lambda_function" "queue_filler_lambda" {
   ]
 
   tags = {
-    Name = "Queue Filler Lambda"
+    Name = "${terraform.workspace} Queue Filler Lambda"
   }
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_split_lambda" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id  = "${terraform.workspace}-AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.queue_filler_lambda.function_name
   principal     = "events.amazonaws.com"

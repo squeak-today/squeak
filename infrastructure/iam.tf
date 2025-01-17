@@ -7,7 +7,7 @@ locals {
 
 # Story API IAM (frontend lambda)
 resource "aws_iam_role" "story_api_role" {
-  name = "story-api-role"
+  name = "${terraform.workspace}-story-api-role"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -23,7 +23,7 @@ resource "aws_iam_role" "story_api_role" {
   })
 
   inline_policy {
-    name = "lambda-policies"
+    name = "${terraform.workspace}-lambda-policies"
     policy = jsonencode({
       "Version" : "2012-10-17",
       "Statement" : [
