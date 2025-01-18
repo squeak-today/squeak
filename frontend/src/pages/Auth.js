@@ -19,12 +19,22 @@ function Auth() {
     const { showNotification } = useNotification();
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                navigate('/learn');
+		supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === "PASSWORD_RECOVERY") {
+				console.log("PASSWORD_RECOVERY " + mode);
+				navigate('/auth/reset');
+				return;
             }
         });
-    }, [navigate]);
+
+		if (mode !== 'reset') {
+			supabase.auth.getSession().then(({ data: { session } }) => {
+				if (session) {
+					navigate('/learn');
+				}
+			});
+		}
+    }, [navigate, mode]);
 
     useEffect(() => {
         setIsLogin(mode === 'login');
@@ -65,7 +75,7 @@ function Auth() {
 
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/auth/login`,
+                redirectTo: `${window.location.origin}/auth/reset`,
             });
             if (error) throw error;
             showNotification('Check your email for password reset instructions!', 'success');
@@ -191,14 +201,14 @@ function Auth() {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
-                        {isLogin && (
+                        <AuthButton type="submit" disabled={loading}>
+                            {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                        </AuthButton>
+						{isLogin && (
                             <AuthToggle onClick={() => setShowResetForm('request')}>
                                 Forgot Password?
                             </AuthToggle>
                         )}
-                        <AuthButton type="submit" disabled={loading}>
-                            {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
-                        </AuthButton>
                     </AuthForm>
                     <AuthToggle onClick={() => navigate(isLogin ? '/auth/signup' : '/auth/login')}>
                         {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
