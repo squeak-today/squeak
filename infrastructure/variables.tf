@@ -55,7 +55,7 @@ variable "content_generation_interval" {
 }
 
 variable "supabase_jwt_secret" {
-	description = "Supabase JWT Secret"
-	type        = string
-	sensitive   = true
+  description = "Supabase JWT Secret"
+  type        = string
+  sensitive   = true
 }
