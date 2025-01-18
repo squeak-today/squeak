@@ -53,3 +53,9 @@ variable "content_generation_interval" {
   type        = string
   default     = "rate(30 minutes)"
 }
+
+variable "supabase_jwt_secret" {
+	description = "Supabase JWT Secret"
+	type        = string
+	sensitive   = true
+}
