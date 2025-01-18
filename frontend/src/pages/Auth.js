@@ -21,7 +21,6 @@ function Auth() {
     useEffect(() => {
 		supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === "PASSWORD_RECOVERY") {
-				console.log("PASSWORD_RECOVERY " + mode);
 				navigate('/auth/reset');
 				return;
             }

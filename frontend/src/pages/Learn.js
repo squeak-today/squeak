@@ -13,7 +13,13 @@ import BasicPage from '../components/BasicPage';
 
 const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
-	const response = await fetch(url);
+	const { data: { session } } = await supabase.auth.getSession();
+	const jwt = session?.access_token
+	const response = await fetch(url, {
+		headers: {
+			'Authorization': `Bearer ${jwt}`
+		}
+	});
 	if (!response.ok) {
 		console.error(`Failed to fetch from ${endpoint}`);
 	}
@@ -46,7 +52,13 @@ function Learn() {
 		let url = `${apiUrl}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
 		
 		try {
-			const response = await fetch(url);
+			const { data: { session } } = await supabase.auth.getSession();
+			const jwt = session?.access_token
+			const response = await fetch(url, {
+				headers: {
+					'Authorization': `Bearer ${jwt}`
+				}
+			});
 			if (!response.ok) {
 				setStory("Failed to generate story");
 				throw new Error("Network response was not ok");
@@ -69,17 +81,19 @@ function Learn() {
 			source: 'fr',
 			target: 'en'
 		};
+		const { data: { session } } = await supabase.auth.getSession();
+		const jwt = session?.access_token;
 		await fetch(url, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json'
+				'Accept': 'application/json',
+				'Authorization': `Bearer ${jwt}`
 			},
 			body: JSON.stringify(data)
 		}).then(response => response.json())
 		.then(result => {
 			console.log('Successful word translation!');
-			console.log(result);
 			translation = result["sentence"].toString();
 		})
 		.catch(error => {
