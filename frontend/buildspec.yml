@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - cd frontend
+      - npm install  # Install dependencies for the frontend
+
+  build:
+    commands:
+      - npm run build  # Build the frontend application
+
+artifacts:
+  baseDirectory: frontend/build  # Directory containing the build output
+  files:
+    - '**/*'  # Include all files from the build directory
