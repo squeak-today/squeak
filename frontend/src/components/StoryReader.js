@@ -84,7 +84,7 @@ const PageButton = ({isNext, onClick}) => {
     )
 };
 
-const ClickableText = ({ children, handleWordClick }) => {
+const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
     const words = children.toString().split(/(\s+)/);
     
     return (
@@ -96,7 +96,7 @@ const ClickableText = ({ children, handleWordClick }) => {
                 return (
                     <MarkdownWord
                         key={index}
-                        onClick={(e) => handleWordClick(e, word.trim())}
+                        onClick={(e) => handleWordClick(e, word.trim(), sourceLanguage)}
                     >
                         {word}
                     </MarkdownWord>
@@ -106,7 +106,7 @@ const ClickableText = ({ children, handleWordClick }) => {
     );
 };
 
-const StoryReader = ({data, handleWordClick}) => {
+const StoryReader = ({data, handleWordClick, sourceLanguage }) => {
     const [sectionIndex, setSectionIndex] = useState(0);
     const textSections = data.match(/(?:\s*\S+){1,200}/g) || [];
     
@@ -138,7 +138,7 @@ const StoryReader = ({data, handleWordClick}) => {
             <StoryText>
                 <ReactMarkdown
                     components={{
-                        p(props) { return <ClickableText handleWordClick={handleWordClick} {...props} />; }
+                        p(props) { return <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />; }
                     }}
                 >{textSections[sectionIndex]}</ReactMarkdown>
             </StoryText>
