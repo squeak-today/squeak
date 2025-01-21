@@ -24,6 +24,8 @@ resource "aws_lambda_function" "story_api_lambda" {
       SUPABASE_USER     = var.supabase_user
       SUPABASE_PASSWORD = var.supabase_password
       SUPABASE_DATABASE = var.supabase_database
+
+      JWT_SECRET = var.supabase_jwt_secret
     }
   }
 

@@ -19,6 +19,7 @@ supabase_user     = "postgres.xxxxx..."
 supabase_password = "xxxxx..."
 supabase_database = "postgres"
 content_generation_interval = "rate(30 minutes)" # or cron(0 13 * * ? *) for prod
+supabase_jwt_secret = "xxxxx..."
 ```
 
 ```sh
