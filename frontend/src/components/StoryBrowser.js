@@ -60,6 +60,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 	const [filterLanguage, setFilterLanguage] = useState('any');
 	const [filterLevel, setFilterLevel] = useState('any');
 	const [filterTopic, setFilterTopic] = useState('any');
+	const [filterType, setFilterType] = useState('News');
 	const [currentPage, setCurrentPage] = useState(1);
 	const storiesPerPage = 6;
 
@@ -85,7 +86,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 
 	const handlePageChange = (newPage) => {
 		setCurrentPage(newPage);
-		onParamsSelect(filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
+		onParamsSelect(filterType, filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
 	};
 
 	return (
@@ -93,13 +94,28 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 			<DateHeader>Today is {formatDate()}...</DateHeader>
 			<FilterContainer>
 				<div style={{ flex: 1 }}>
+					<FilterLabel>Type</FilterLabel>
+					<FilterSelect 
+						value={filterType} 
+						onChange={(e) => { 
+							setFilterType(e.target.value); 
+							setCurrentPage(1);
+							onParamsSelect(e.target.value, filterLanguage, filterLevel, filterTopic, 1, storiesPerPage); 
+						}}
+					>
+						<option value="News">News</option>
+						<option value="Story">Story</option>
+					</FilterSelect>
+				</div>
+
+				<div style={{ flex: 1 }}>
 					<FilterLabel>Language</FilterLabel>
 					<FilterSelect 
 						value={filterLanguage} 
 						onChange={(e) => { 
 							setFilterLanguage(e.target.value); 
-							setCurrentPage(1); // Reset to first page on filter change
-							onParamsSelect(e.target.value, filterLevel, filterTopic, 1, storiesPerPage); 
+							setCurrentPage(1);
+							onParamsSelect(filterType, e.target.value, filterLevel, filterTopic, 1, storiesPerPage); 
 						}}
 					>
 						<option value="any">Any Language</option>
@@ -115,7 +131,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 						onChange={(e) => { 
 							setFilterLevel(e.target.value); 
 							setCurrentPage(1);
-							onParamsSelect(filterLanguage, e.target.value, filterTopic, 1, storiesPerPage); 
+							onParamsSelect(filterType, filterLanguage, e.target.value, filterTopic, 1, storiesPerPage); 
 						}}
 					>
 						<option value="any">Any Level</option>
@@ -135,7 +151,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 						onChange={(e) => { 
 							setFilterTopic(e.target.value); 
 							setCurrentPage(1);
-							onParamsSelect(filterLanguage, filterLevel, e.target.value, 1, storiesPerPage); 
+							onParamsSelect(filterType, filterLanguage, filterLevel, e.target.value, 1, storiesPerPage); 
 						}}
 					>
 						<option value="any">Any Topic</option>

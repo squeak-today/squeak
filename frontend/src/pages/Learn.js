@@ -11,21 +11,6 @@ import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 
-const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => {
-	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
-	const { data: { session } } = await supabase.auth.getSession();
-	const jwt = session?.access_token
-	const response = await fetch(url, {
-		headers: {
-			'Authorization': `Bearer ${jwt}`
-		}
-	});
-	if (!response.ok) {
-		console.error(`Failed to fetch from ${endpoint}`);
-	}
-	return response.json();
-};
-
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
 	const { data: { session } } = await supabase.auth.getSession();
@@ -125,12 +110,13 @@ function Learn() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
-	const handleListStories = useCallback(async (language, cefrLevel, subject, page, pagesize) => {
+	const handleListStories = useCallback(async (type, language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
 		try {
-			let initialSize = Math.ceil(pagesize / 2); // doesn't work, needs access to offset to properly pull from both...
-			const newsData = await fetchContentList(apiBase, 'news-query', language, cefrLevel, subject, page, initialSize);
-			const storiesData = await fetchContentList(apiBase, 'story-query', language, cefrLevel, subject, page, initialSize);
+			let newsData = [], storiesData = [];
+			if (type === 'News') { newsData = await fetchContentList(apiBase, 'news-query', language, cefrLevel, subject, page, pagesize); }
+			if (type === 'Story') { storiesData = await fetchContentList(apiBase, 'story-query', language, cefrLevel, subject, page, pagesize); }
+			
 			console.log('Fetched content successfully!')
 
 			for (const story of newsData) {
@@ -164,7 +150,7 @@ function Learn() {
 		// this prevents a cyclical loop of errors if the fetch fails (and thus this would run infinitely)
 		(async () => {
 			try {
-				await handleListStories('any', 'any', 'any', 1, 6);
+				await handleListStories('News','any', 'any', 'any', 1, 6);
 			} catch (error) {
 				console.error('Failed to fetch initial stories:', error);
 			}
