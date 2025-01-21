@@ -2,7 +2,7 @@ import styled, { keyframes } from 'styled-components';
 
 const slideIn = keyframes`
 	from {
-		transform: translateY(-100%);
+		transform: translateY(100%);
 		opacity: 0;
 	}
 	to {
@@ -22,15 +22,14 @@ const fadeOut = keyframes`
 
 export const NotificationsWrapper = styled.div`
 	position: fixed;
-	top: 20px;
-	left: 50%;
-	transform: translate(-50%, 0);
+	bottom: 20px;
+	right: 20px;
 	z-index: 1000;
 	display: flex;
-	flex-direction: column;
+	flex-direction: column-reverse;
 	gap: 10px;
 	pointer-events: none;
-	align-items: center;
+	align-items: flex-end;
 `;
 
 export const NotificationContainer = styled.div`

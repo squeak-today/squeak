@@ -1,16 +1,10 @@
-import {NavHeader,
-    HeaderLogo,
-    Footer,
-    MiscButton,
-    PictureLogo} from '../components/StyledComponents';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import logo from '../assets/logo.png';
 import landingDrawing from '../assets/mouse_reading.png';
-import headerLogo from '../assets/drawing_400.png';
-
-import { TransitionWrapper } from '../components/PageTransition';
-import { useState } from 'react';
+import { MiscButton } from '../components/StyledComponents';
+import { useEffect } from 'react';
+import supabase from '../lib/supabase';
+import BasicPage from '../components/BasicPage';
 
 const HomeContent = styled.div`
     display: flex;
@@ -33,6 +27,12 @@ const TextContent = styled.div`
     text-align: center;
 `;
 
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+`;
+
 const MainHeading = styled.h1`
     font-family: 'Noto Serif', serif;
     font-size: 2rem;
@@ -49,55 +49,44 @@ const LandingImage = styled.img`
 
 function Home() {
     const navigate = useNavigate();
-    const [isLeaving, setIsLeaving] = useState(false);
+
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                navigate('/learn');
+            }
+        });
+    }, [navigate]);
 
     const handleGetStarted = () => {
-        setIsLeaving(true);
-        setTimeout(() => {
-            navigate('/learn');
-        }, 300); // Match animation duration
+        navigate('/auth/signup');
     };
 
     return (
-        <TransitionWrapper $isLeaving={isLeaving}>
-            <div style={{ maxWidth: '100vw', overflow: 'hidden' }}>
-                <NavHeader>
-                    <HeaderLogo 
-                        src={logo} 
-                        alt="Squeak" 
-                        onClick={() => navigate('/')} 
-                    />
-                    <PictureLogo src={headerLogo} alt="Squeak Mouse" />
-                    <MiscButton 
-                        href="https://forms.gle/LumHWSYaqLKV4KMa8"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Tell Us Anything! ❤️
-                    </MiscButton>
-                </NavHeader>
-
-                <HomeContent>
-                    <LandingImage src={landingDrawing} alt="Squeak Mouse Drawing" />
-                    <TextContent>
-                        <MainHeading>
-                            Learn Languages Through Stories You Love
-                        </MainHeading>
+        <BasicPage>
+            <HomeContent>
+                <LandingImage src={landingDrawing} alt="Squeak Mouse Drawing" />
+                <TextContent>
+                    <MainHeading>
+                        Learn Languages Through Stories You Love
+                    </MainHeading>
+                    <ButtonContainer>
                         <MiscButton 
-                            as="button"
                             onClick={handleGetStarted}
                             style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
                         >
                             Get Started
                         </MiscButton>
-                    </TextContent>
-                </HomeContent>
-
-                <Footer>
-                    © 2024 Squeak. All rights reserved.
-                </Footer>
-            </div>
-        </TransitionWrapper>
+                        <MiscButton 
+                            onClick={() => navigate('/auth/login')}
+                            style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
+                        >
+                            I'm Back To Learn!
+                        </MiscButton>
+                    </ButtonContainer>
+                </TextContent>
+            </HomeContent>
+        </BasicPage>
     );
 }
 

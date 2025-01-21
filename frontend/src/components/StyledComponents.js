@@ -159,15 +159,15 @@ export const HeaderTitle = styled.h1`
 export const Footer = styled.footer`
 	position: relative;
 	width: 100%;
+	height: 10vh;
 	background-color: #ffffff;
-	padding: 3.0rem 0;
-	text-align: center;
 	border-top: 1px solid #e0e0e0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-family: 'Noto Serif', serif;
 	box-sizing: border-box;
+	margin-top: auto;
 `;
 
 export const NavHeader = styled.header`
@@ -193,7 +193,7 @@ export const HeaderLogo = styled.img`
 	cursor: pointer;
 `;
 
-export const MiscButton = styled.a`
+export const MiscButton = styled.button`
 	padding: 0.8em 1.5em;
 	border: 1px solid #e0e0e0;
 	border-radius: 10px;
@@ -201,13 +201,17 @@ export const MiscButton = styled.a`
 	cursor: pointer;
 	font-family: 'Noto Serif', serif;
 	font-weight: bold;
-	text-decoration: none;
+	font-size: 1rem;
 	color: #000000;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	
 	&:hover {
 		background: #f5f5f5;
 	}
+
+	${props => props.as === 'a' && `
+		text-decoration: none;
+	`}
 `;
 
 export const PictureLogo = styled.img`
