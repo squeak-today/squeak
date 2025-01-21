@@ -11,6 +11,8 @@ import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 
+import { LANGUAGE_CODES_REVERSE } from '../lib/lang_codes';
+
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
 	const { data: { session } } = await supabase.auth.getSession();
@@ -38,6 +40,8 @@ function Learn() {
 	const [showWelcome, setShowWelcome] = useState(false);
 
 	const { showNotification } = useNotification();
+
+	const [sourceLanguage, setSourceLanguage] = useState('fr');
 
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
@@ -70,12 +74,12 @@ function Learn() {
 		}
 	};
 
-	const fetchWordDefinition = async (word) => {
+	const fetchWordDefinition = async (word, source) => {
 		let url = `${apiBase}translate`;
 		let translation = "";
 		const data = {
 			sentence: word,
-			source: 'fr',
+			source: source,
 			target: 'en'
 		};
 		const { data: { session } } = await supabase.auth.getSession();
@@ -100,8 +104,8 @@ function Learn() {
 		return translation;
 	};
 
-	const handleWordClick = async (e, word) => {
-		const definition = await fetchWordDefinition(word);
+	const handleWordClick = async (e, word, sourceLanguage) => {
+		const definition = await fetchWordDefinition(word, sourceLanguage);
 		const { top, left } = e.target.getBoundingClientRect();
 		setTooltip({ visible: true, word, top: top + window.scrollY + 20, left: left + window.scrollX, definition });
 	};
@@ -161,6 +165,7 @@ function Learn() {
 
 	const handleStoryBlockClick = async (story) => {
 		setContentType((story.type).toLowerCase());
+		setSourceLanguage(LANGUAGE_CODES_REVERSE[story.tags[0]]);
 		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1]);
 		setIsModalOpen(true);
 	}
@@ -237,7 +242,7 @@ function Learn() {
 				{story && isModalOpen && (
 					<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
 						<StoryContainer $isClosing={isClosing}>
-							<StoryReader data={story} handleWordClick={handleWordClick} />
+							<StoryReader data={story} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} />
 						</StoryContainer>
 					</ModalContainer>
 				)}
