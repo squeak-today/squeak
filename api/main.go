@@ -220,7 +220,7 @@ func init() {
 			paramCount++
 		}
 
-		query += " ORDER BY date_created DESC"
+		query += " ORDER BY created_at DESC"
 		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
 		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
 
@@ -323,6 +323,7 @@ func init() {
 		if subject != "" && subject != "any" {
 			query += fmt.Sprintf(" AND topic = $%d", paramCount)
 			params = append(params, subject)
+			paramCount++
 		}
 
 		query += " ORDER BY date_created DESC"
