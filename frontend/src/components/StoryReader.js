@@ -24,7 +24,6 @@ const StoryText = styled.div`
 	white-space: normal; // Ensure text wraps at word boundaries
 	word-break: keep-all; // Prevent breaking words in the middle
 	overflow-wrap: normal; // Prevent breaking words unnecessarily
-	display: flex; // Use flex display to keep all words in a line and wrap naturally
 	flex-wrap: wrap; // Enable wrapping within the flex container
 `;
 
