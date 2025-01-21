@@ -26,6 +26,19 @@ const fetchContent = async (apiBase, endpoint, language, cefrLevel, subject) => 
 	return response.json();
 };
 
+const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
+	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
+	const { data: { session } } = await supabase.auth.getSession();
+	const jwt = session?.access_token
+	console.log(jwt);
+	const response = await fetch(url, {
+		headers: {
+			'Authorization': `Bearer ${jwt}`
+		}
+	});
+	return response.json();
+};
+
 function Learn() {
 	const [contentType, setContentType] = useState('');
 	const [story, setStory] = useState(''); // State to store the story
@@ -113,11 +126,12 @@ function Learn() {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
 	};
 
-	const handleListStories = useCallback(async (language, cefrLevel, subject) => {
+	const handleListStories = useCallback(async (language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
 		try {
-			const newsData = await fetchContent(apiBase, 'news-query', language, cefrLevel, subject);
-			const storiesData = await fetchContent(apiBase, 'story-query', language, cefrLevel, subject);
+			let initialSize = Math.ceil(pagesize / 2); // doesn't work, needs access to offset to properly pull from both...
+			const newsData = await fetchContentList(apiBase, 'news-query', language, cefrLevel, subject, page, initialSize);
+			const storiesData = await fetchContentList(apiBase, 'story-query', language, cefrLevel, subject, page, initialSize);
 			console.log('Fetched content successfully!')
 
 			for (const story of newsData) {
@@ -151,7 +165,7 @@ function Learn() {
 		// this prevents a cyclical loop of errors if the fetch fails (and thus this would run infinitely)
 		(async () => {
 			try {
-				await handleListStories('any', 'any', 'any');
+				await handleListStories('any', 'any', 'any', 1, 6);
 			} catch (error) {
 				console.error('Failed to fetch initial stories:', error);
 			}
