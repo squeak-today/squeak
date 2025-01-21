@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"net/http"
@@ -20,6 +21,7 @@ import (
 
 	"database/sql"
 
+	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
 )
 
@@ -32,6 +34,50 @@ type TranslateResponse struct {
 }
 
 var ginLambda *ginadapter.GinLambda
+
+func authMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+			c.Abort()
+			return
+		}
+
+		bearerToken := strings.Split(authHeader, " ")
+		if len(bearerToken) != 2 || strings.ToLower(bearerToken[0]) != "bearer" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header format"})
+			c.Abort()
+			return
+		}
+
+		tokenString := bearerToken[1]
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			}
+			return []byte(os.Getenv("JWT_SECRET")), nil
+		})
+
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
+		}
+
+		if !token.Valid {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
+		}
+
+		// if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		// 	c.Set("user_claims", claims)
+		// }
+
+		c.Next()
+	}
+}
 
 func init() {
 	log.Println("Gin cold start")
@@ -52,6 +98,12 @@ func init() {
 		}
 
 		c.Next()
+	})
+
+	router.Use(func(c *gin.Context) {
+		if c.Request.Method != http.MethodOptions {
+			authMiddleware()(c)
+		}
 	})
 
 	router.GET("/story", func(c *gin.Context) {

@@ -19,28 +19,11 @@ If you are viewing this as an open source user, some of these may not apply. You
 
 1. Build Go binaries with `./build-for-lambda.sh` in all lambda directories which compiles, zips, and places in `infrastructure/`.
 
-2. Create `infrastructure/terraform.tfvars` with the following format:
-```shell
-cohere_api_key = "cohere-key-here"
-google_api_key = "google-key-here"
-tavily_api_key = "tvly-key-here"
-supabase_host = "..."
-supabase_port = "..."
-supabase_user = "..."
-supabase_password = "..."
-supabase_database = "..."
-```
-
-3. `cd infrastructure`, call:
-```shell
-terraform init
-terraform apply
-```
-and later:
-```shell
-terraform destroy
+2. See `infrastructure/WORKSPACES.md` for instructions on how to deploy/update the infrastructure.
 ```
 4. The `queue_filler` lambda will be invoked automatically at regular intervals, but you may invoke it early for testing story generation-tied features.
+
+5. **IMPORTANT**: All API endpoints need to be called with a `Authorization: Bearer <JWT Token>` header.
 
 ## Backend API
 | Endpoint | Type | Description | 
