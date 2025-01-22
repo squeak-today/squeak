@@ -164,7 +164,7 @@ function Learn() {
 
 	const handleStoryBlockClick = async (story) => {
 		setContentType((story.type).toLowerCase());
-		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1]);
+		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1], story.date_created);
 		setIsModalOpen(true);
 	}
 
