@@ -60,6 +60,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 	const [filterLanguage, setFilterLanguage] = useState('any');
 	const [filterLevel, setFilterLevel] = useState('any');
 	const [filterTopic, setFilterTopic] = useState('any');
+	const [filterType, setFilterType] = useState('News');
 	const [currentPage, setCurrentPage] = useState(1);
 	const storiesPerPage = 6;
 
@@ -83,15 +84,9 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 		return `${month} ${day}${getOrdinal(day)}, ${year}`;
 	};
 
-	// Then paginate the filtered stories
-	const totalPages = Math.ceil(stories.length / storiesPerPage);
-	const paginatedStories = stories.slice(
-		(currentPage - 1) * storiesPerPage,
-		currentPage * storiesPerPage
-	);
-
-	const handlePageChange = (page) => {
-		setCurrentPage(page);
+	const handlePageChange = (newPage) => {
+		setCurrentPage(newPage);
+		onParamsSelect(filterType, filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
 	};
 
 	return (
@@ -99,10 +94,29 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 			<DateHeader>Today is {formatDate()}...</DateHeader>
 			<FilterContainer>
 				<div style={{ flex: 1 }}>
+					<FilterLabel>Type</FilterLabel>
+					<FilterSelect 
+						value={filterType} 
+						onChange={(e) => { 
+							setFilterType(e.target.value); 
+							setCurrentPage(1);
+							onParamsSelect(e.target.value, filterLanguage, filterLevel, filterTopic, 1, storiesPerPage); 
+						}}
+					>
+						<option value="News">News</option>
+						<option value="Story">Story</option>
+					</FilterSelect>
+				</div>
+
+				<div style={{ flex: 1 }}>
 					<FilterLabel>Language</FilterLabel>
 					<FilterSelect 
 						value={filterLanguage} 
-						onChange={(e) => { setFilterLanguage(e.target.value); onParamsSelect(e.target.value, filterLevel, filterTopic); }}
+						onChange={(e) => { 
+							setFilterLanguage(e.target.value); 
+							setCurrentPage(1);
+							onParamsSelect(filterType, e.target.value, filterLevel, filterTopic, 1, storiesPerPage); 
+						}}
 					>
 						<option value="any">Any Language</option>
 						<option value="Spanish">Spanish</option>
@@ -114,7 +128,11 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 					<FilterLabel>Reading Level</FilterLabel>
 					<FilterSelect 
 						value={filterLevel} 
-						onChange={(e) => { setFilterLevel(e.target.value); onParamsSelect(filterLanguage, e.target.value, filterTopic); }}
+						onChange={(e) => { 
+							setFilterLevel(e.target.value); 
+							setCurrentPage(1);
+							onParamsSelect(filterType, filterLanguage, e.target.value, filterTopic, 1, storiesPerPage); 
+						}}
 					>
 						<option value="any">Any Level</option>
 						<option value="A1">A1</option>
@@ -130,46 +148,38 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 					<FilterLabel>Topic</FilterLabel>
 					<FilterSelect 
 						value={filterTopic} 
-						onChange={(e) => { setFilterTopic(e.target.value); onParamsSelect(filterLanguage, filterLevel, e.target.value); }}
+						onChange={(e) => { 
+							setFilterTopic(e.target.value); 
+							setCurrentPage(1);
+							onParamsSelect(filterType, filterLanguage, filterLevel, e.target.value, 1, storiesPerPage); 
+						}}
 					>
 						<option value="any">Any Topic</option>
 						<option value="Politics">Politics</option>
-						<option value="Basketball">Basketball</option>
-						<option value="Finance">Finance</option>
+						<option value="Business">Business</option>
+						<option value="Technology">Technology</option>
+						<option value="Sports">Sports</option>
 					</FilterSelect>
 				</div>
 			</FilterContainer>
 			
-			<StoryList stories={paginatedStories} onStoryBlockClick={(story) => { onStoryBlockClick(story) }} />
+			<StoryList stories={stories} onStoryBlockClick={onStoryBlockClick} />
 
 			<PaginationContainer>
-				<PageButton 
-					onClick={() => handlePageChange(1)} 
-					disabled={currentPage === 1}
-				>
-					First
-				</PageButton>
 				<PageButton 
 					onClick={() => handlePageChange(currentPage - 1)} 
 					disabled={currentPage === 1}
 				>
 					Previous
 				</PageButton>
-				{/* Show current page and total pages */}
 				<PageButton disabled>
-					{currentPage} of {totalPages}
+					Page {currentPage}
 				</PageButton>
 				<PageButton 
 					onClick={() => handlePageChange(currentPage + 1)} 
-					disabled={currentPage === totalPages}
+					disabled={stories.length < storiesPerPage} // if we got fewer stories than the page size, we're on the last page
 				>
 					Next
-				</PageButton>
-				<PageButton 
-					onClick={() => handlePageChange(totalPages)} 
-					disabled={currentPage === totalPages}
-				>
-					Last
 				</PageButton>
 			</PaginationContainer>
 		</div>
