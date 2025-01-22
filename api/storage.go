@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -81,7 +80,7 @@ func buildS3Key(language string, cefr string, subject string, contentType string
 	)
 }
 
-func pullContent(language string, cefrLevel string, subject string, contentType string) (Content, error) {
+func pullContent(language string, cefrLevel string, subject string, contentType string, dateCreated string) (Content, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	
 	if err != nil {
@@ -90,12 +89,7 @@ func pullContent(language string, cefrLevel string, subject string, contentType 
 	}
 
 	client := s3.NewFromConfig(cfg)
-	current_time := time.Now().UTC().Format("2006-01-02")
-
-	// should probably check if current day files don't exist, then access iteratively yesterday's
-	// yesterday := time.Now().UTC().AddDate(0, 0, -1).Format("2006-01-02")
-
-	key := buildS3Key(language, cefrLevel, subject, contentType, current_time)
+	key := buildS3Key(language, cefrLevel, subject, contentType, dateCreated)
 
 	resp, err := client.GetObject(context.TODO(), &s3.GetObjectInput{
     	Bucket: aws.String(os.Getenv("STORY_BUCKET_NAME")),

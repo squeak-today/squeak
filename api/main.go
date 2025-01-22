@@ -110,17 +110,18 @@ func init() {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
+		dateCreated := c.Query("date_created")
 
-		if language == "" || cefr == "" || subject == "" {
+		if language == "" || cefr == "" || subject == "" || dateCreated == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "language, cefr, and subject parameter is required!",
+				"error": "language, cefr, subject, and date_created parameter is required!",
 			})
 			return
 		}
 
 		// theres no check for valid language or cefr yet
 
-		content, err := pullContent(language, cefr, subject, "Story")
+		content, err := pullContent(language, cefr, subject, "Story", dateCreated)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "content retrieval failed!",
@@ -135,17 +136,18 @@ func init() {
 		language := c.Query("language")
 		cefr := c.Query("cefr")
 		subject := c.Query("subject")
+		dateCreated := c.Query("date_created")
 
-		if language == "" || cefr == "" || subject == "" {
+		if language == "" || cefr == "" || subject == "" || dateCreated == "" {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "language, cefr, and subject parameter is required!",
+				"error": "language, cefr, subject, and date_created parameter is required!",
 			})
 			return
 		}
 
 		// theres no check for valid language or cefr yet
 
-		content, err := pullContent(language, cefr, subject, "News")
+		content, err := pullContent(language, cefr, subject, "News", dateCreated)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "content retrieval failed!",
