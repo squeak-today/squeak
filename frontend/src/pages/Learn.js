@@ -48,9 +48,9 @@ function Learn() {
 
 	const navigate = useNavigate();
 
-	const pullStory = async (contentType, language, cefrLevel, subject) => {
+	const pullStory = async (contentType, language, cefrLevel, subject, dateCreated) => {
 		apiUrl = apiBase + contentType;
-		let url = `${apiUrl}?language=${language}&cefr=${cefrLevel}&subject=${subject}`;
+		let url = `${apiUrl}?language=${language}&cefr=${cefrLevel}&subject=${subject}&date_created=${dateCreated}`;
 		
 		try {
 			const { data: { session } } = await supabase.auth.getSession();
@@ -129,7 +129,8 @@ function Learn() {
 					title: story['title'],
 					preview: story['preview_text'],
 					tags: [story['language'], story['topic']],
-					difficulty: story['cefr_level']
+					difficulty: story['cefr_level'],
+					date_created: story['date_created']
 				});
 			}
 			for (const story of storiesData) {
@@ -138,7 +139,8 @@ function Learn() {
 					title: story['title'],
 					preview: story['preview_text'],
 					tags: [story['language'], story['topic']],
-					difficulty: story['cefr_level']
+					difficulty: story['cefr_level'],
+					date_created: story['date_created']
 				});
 			}
 			setAllStories(tempStories);
@@ -166,7 +168,7 @@ function Learn() {
 	const handleStoryBlockClick = async (story) => {
 		setContentType((story.type).toLowerCase());
 		setSourceLanguage(LANGUAGE_CODES_REVERSE[story.tags[0]]);
-		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1]);
+		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1], story.date_created);
 		setIsModalOpen(true);
 	}
 
