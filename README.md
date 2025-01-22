@@ -43,6 +43,7 @@ Pulls generated story data as JSON. Pass `language`, `cefr`, and `subject` as fi
 | `language` | `string` | Yes | Current supported languages are `French`. |
 | `cefr` | `string` | Yes | Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`. |
 | `subject` | `string` | Yes | e.g `Politics`. |
+| `date_created` | `string` | Yes | e.g `2025-01-01`. |
 
 ### Response
 > `200 Successful`
@@ -73,6 +74,7 @@ Pulls generated news article data as JSON. Pass `language`, `cefr`, and `subject
 | `language` | `string` | Yes | Current supported languages are `French`. |
 | `cefr` | `string` | Yes | Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`. |
 | `subject` | `string` | Yes | e.g `Politics`. |
+| `date_created` | `string` | Yes | e.g `2025-01-01`. |
 
 ### Response
 > `200 Successful`
