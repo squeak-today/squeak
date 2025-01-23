@@ -56,6 +56,15 @@ const PageButton = styled.button`
 	}
 `;
 
+const DisclaimerText = styled.p`
+	color: #999;
+	font-size: 0.75rem;
+	text-align: center;
+	margin-top: 2rem;
+	font-family: 'Noto Serif', serif;
+	font-style: italic;
+`;
+
 const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 	const [filterLanguage, setFilterLanguage] = useState('any');
 	const [filterLevel, setFilterLevel] = useState('any');
@@ -182,6 +191,10 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 					Next
 				</PageButton>
 			</PaginationContainer>
+
+			<DisclaimerText>
+				Content may be AI-assisted. While we strive for accuracy, please verify important information from official sources.
+			</DisclaimerText>
 		</div>
 	);
 };
