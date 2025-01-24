@@ -14,8 +14,16 @@ const FilterContainer = styled.div`
 	display: flex;
 	gap: 1em;
 	margin-bottom: 1.25em;
+	padding-left: 1.5em;
+	padding-right: 1.5em;
 	max-width: 800px;
 	margin: 0 auto 1.25em;
+
+	@media (max-width: 800px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 1em;
+  }
 `;
 
 const FilterLabel = styled.label`
