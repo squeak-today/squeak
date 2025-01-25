@@ -62,6 +62,7 @@ export const AuthButton = styled.button`
 	border-radius: 10px;
 	background: white;
 	cursor: pointer;
+	color: black;
 	font-family: 'Noto Serif', serif;
 	font-size: 16px;
 	transition: all 0.2s ease;
