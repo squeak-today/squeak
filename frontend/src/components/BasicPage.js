@@ -1,16 +1,20 @@
 import { TransitionWrapper } from './PageTransition';
+import { ArrowRight } from 'react-icons/fi';
+
 import {
   NavHeader,
   HeaderLogo,
-  PictureLogo,
-  Footer,
+  FooterContainer,
+  FooterLogo,
+  FooterText,
   MiscButton,
   ButtonContainer,
   PageContainer,
+  LogoText,
 } from './StyledComponents'; // Updated import
-import logo from '../assets/logo.png';
-import headerLogo from '../assets/drawing_400.png';
+import logo from '../assets/drawing_400.png';
 import { useNavigate } from 'react-router-dom';
+import { FiArrowRight } from 'react-icons/fi'; 
 
 function BasicPage({ children, showLogout, onLogout }) {
   const navigate = useNavigate();
@@ -21,33 +25,38 @@ function BasicPage({ children, showLogout, onLogout }) {
         <NavHeader>
           <HeaderLogo
             src={logo}
-            alt="Squeak"
+            alt="Squeak Logo"
             onClick={() => navigate('/')}
           />
-          <PictureLogo src={headerLogo} alt="Squeak Mouse" />
-          
+          <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
           <ButtonContainer>
             <MiscButton
-              as="a" 
-              href="/contact-support.html" 
-              target="_blank" 
+              as="a"
+              href="/contact-support.html"
+              target="_blank"
               rel="noopener noreferrer"
             >
-              Tell Us Anything! ❤️
+              Get Started
+              <FiArrowRight size={24} />
             </MiscButton>
-            {showLogout && (
-              <MiscButton onClick={onLogout}>Logout</MiscButton>
-            )}
           </ButtonContainer>
         </NavHeader>
 
         {/* Main Content */}
         {children}
 
-        <Footer>© 2024 Squeak. All rights reserved.</Footer>
+        <FooterContainer>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <FooterLogo src={logo} alt="Squeak Footer Logo" />
+            <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
+          </div>
+          <FooterText>© 2025 Squeak. All rights reserved.</FooterText>
+        </FooterContainer>
       </PageContainer>
     </TransitionWrapper>
   );
 }
 
 export default BasicPage;
+
+

@@ -9,7 +9,7 @@ export const BrowserBox = styled.div`
   height: 100%;
   margin: 80px auto 0 auto;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #F8F9FA;;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -204,24 +204,49 @@ export const HeaderTitle = styled.h1`
   }
 `;
 
-export const Footer = styled.footer`
+export const FooterContainer = styled.footer`
   position: relative;
-  width: 100%;
-  height: 10vh;
+  width: 90%; /* Match the width to the header */
+  max-width: 1200px; /* Keep it consistent with the header */
+  height: 80px;
+  margin: 0 auto; /* Center the footer */
   background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
+  border-top: 0.75px solid #000000; /* Black border on top */
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-family: 'Noto Serif', serif;
+  justify-content: space-between; /* Space between left and right content */
+  padding: 0 20px; /* Add padding inside the footer */
   box-sizing: border-box;
-  margin-top: auto;
 
   @media (max-width: 768px) {
+    flex-direction: column; /* Stack items on smaller screens */
     height: auto;
     padding: 1rem;
   }
 `;
+
+export const FooterLogo = styled.img`
+  height: 54px; /* Match header logo size */
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    height: 45px;
+  }
+`;
+
+export const FooterText = styled.span`
+  font-family: 'Lora', serif;
+  font-size: 1em; /* Adjust the font size */
+  font-weight: 400;
+  color: #000000;
+
+  @media (max-width: 768px) {
+    font-size: 1.2em;
+    text-align: center; /* Center-align for smaller screens */
+    margin-top: 10px;
+  }
+`;
+
 
 /**
  * Navigation header.
@@ -230,16 +255,17 @@ export const Footer = styled.footer`
 export const NavHeader = styled.header`
   position: absolute;
   top: 0;
-  left: 0;
-  width: 100vw;
-  max-width: 100%;
+  left: 50%;
+  transform: translateX(-50%); /* Centers the header */
+  width: 90%; /* Adds margin from the sides */
+  max-width: 1200px; /* Restricts the maximum width */
   height: 80px;
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 0.75px solid #000000; 
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 5%;
+  justify-content: space-between; /* Ensures elements are spaced properly */
+  padding: 0 20px; /* Adds internal padding */
   z-index: 1000;
   box-sizing: border-box;
 
@@ -248,57 +274,64 @@ export const NavHeader = styled.header`
     flex-direction: column;
     height: auto;
     padding: 0.5rem 1rem;
+    width: 95%; /* Adjust width for smaller screens */
   }
 `;
 
+
+
 export const HeaderLogo = styled.img`
-  height: 50px;
-  margin: 0;
+  height: 54px; /* Reduced size by 10% */
+  margin-right: 10px;
   cursor: pointer;
-  
-  /* By default, it's visible on desktop */
-  display: block;
+  padding-left: 6em;
 
   @media (max-width: 768px) {
-    /* Hide on mobile */
-    display: none;
+    height: 45px; /* Adjusted size for smaller screens */
+    margin-right: 5px;
   }
 `;
 
 
 export const MiscButton = styled.button`
-  padding: 0.8em 1.5em;
-  border: 1px solid #e0e0e0;
+  width: 8em;
+  height: 6vh;
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
   border-radius: 10px;
-  background: white;
-  cursor: pointer;
-  font-family: 'Noto Serif', serif;
-  font-weight: bold;
-  font-size: 1rem;
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
   color: #000000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  margin-right: 4em;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
 
   &:hover {
-    background: #f5f5f5;
+    background: #f3c87d; /* Slightly darker on hover */
   }
-
-  ${props => props.as === 'a' && `
-    text-decoration: none;
-  `}
 
   @media (max-width: 768px) {
     width: 100%;
-    margin-bottom: 0.5rem;
-	margin: 0 auto;	
-    white-space: normal;       /* allow wrapping */
-	max-width: 80%;            /* ensures it can't exceed 90% of container */
-    white-space: normal;       /* allow text to wrap */
-    word-wrap: break-word;
-    word-wrap: break-word;     /* ensure long strings wrap */
-    text-align: center;        /* center text on mobile if you like */
+    font-size: 28px;
   }
 `;
 
+// Add a styled component for the "Squeak" text
+export const LogoText = styled.span`
+  font-family: 'Lora', serif;
+  font-size: 2em;
+  font-weight: 400;
+  color: #000000;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 32.4px; /* Adjusted size for smaller screens */
+  }
+`;
 /**
  * Positioned in the center on larger screens, 
  * but for mobile we can un-position and stack as needed.
@@ -332,7 +365,9 @@ export const PageContainer = styled.div`
 
 // 2) ButtonContainer
 export const ButtonContainer = styled.div`
+  margin-left: auto; /* Push button to the right */
   display: flex;
+  align-items: center;
   gap: 1rem;
 
   @media (max-width: 768px) {

@@ -17,6 +17,7 @@ const HomeContent = styled.div`
   max-width: 60%;
   height: 75vh;
   margin: 0 auto;
+  
 
   /* On smaller screens, stack content vertically and reduce padding */
   @media (max-width: 768px) {
