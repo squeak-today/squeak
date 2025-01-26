@@ -28,9 +28,9 @@ function BasicPage({ children, showLogout, onLogout }) {
           
           <ButtonContainer>
             <MiscButton
-              as="a"
-              href="https://forms.gle/LumHWSYaqLKV4KMa8"
-              target="_blank"
+              as="a" 
+              href="/contact-support.html" 
+              target="_blank" 
               rel="noopener noreferrer"
             >
               Tell Us Anything! ❤️

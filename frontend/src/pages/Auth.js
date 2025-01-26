@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import supabase from '../lib/supabase';
 import { Subtitle } from '../components/StyledComponents';
-import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle } from '../styles/AuthPageStyles';
+import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle, AuthText } from '../styles/AuthPageStyles';
 import { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
@@ -113,10 +113,14 @@ function Auth() {
                 <AuthBox>
                     <AuthContainer>
                         <Subtitle>Check Your Email!</Subtitle>
-                        <p style={{ textAlign: 'center', fontFamily: 'Noto Serif, serif' }}>
-                            We've sent you a verification link to {email}.<br/>
-                            Please verify your email to start learning with Squeak!
-                        </p>
+                        <AuthText>We’ve just sent a verification link to <strong>{email}</strong>.</AuthText>
+                        <AuthText>If you don’t see it in your inbox, don’t forget to check your junk or spam folder.</AuthText>
+                        <AuthText>Still having trouble?</AuthText>
+                        <AuthText>
+                            <a href="/contact-support.html" target="_blank" rel="noopener noreferrer">
+                                    Contact our support team
+                            </a>.
+                        </AuthText>
                         <AuthButton onClick={() => navigate('/')}>
                             Return Home
                         </AuthButton>
