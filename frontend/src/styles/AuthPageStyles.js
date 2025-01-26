@@ -15,7 +15,6 @@ export const AuthContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 2rem;
 	width: 90%;
 	max-width: 24rem;
 	padding: 2rem;
@@ -96,4 +95,10 @@ export const AuthToggle = styled.button`
 	&:hover {
 		color: #666;
 	}
+`;
+
+export const AuthText = styled.p`
+	text-align: center;
+	font-family: 'Noto Serif', serif;
+	margin: 0.5rem 0;
 `;
