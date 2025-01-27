@@ -26,11 +26,13 @@ func createStoryPrompt(language string, cefr string, topic string) string {
 }
 
 func createNewsArticlePrompt(language string, cefr string, query string, web_results string) string {
+	languageUpper := strings.ToUpper(language)
+	
 	var sb strings.Builder
-	sb.WriteString("You are an LLM designed to write " + language + " news articles. ")
-	sb.WriteString("Below this, you are given the results of a search query for \"" + query + "\". ")
-	sb.WriteString("Using this information, write a news article that matches the writing complexity of " + cefr + " on the CEFR scale. ")
-	sb.WriteString("Your article " + cefrPrompts[cefr] + " ")
+	sb.WriteString("You are an LLM designed to write " + languageUpper + " news articles. ")
+	sb.WriteString("You will be given the results of am internet search query for \"" + query + "\". ")
+	sb.WriteString("Using this information, write a " + languageUpper + "news article that matches the writing complexity of " + cefr + " on the CEFR scale. ")
+	sb.WriteString(cefr + " writing " + cefrPrompts[cefr] + " ")
 	sb.WriteString("Your article must include a title styled like a newspaper headline. Use markdown headers for titles, subtitles, and section titles.\n")
 	sb.WriteString("Provide the article without preamble or other comment.\n\n")
 	sb.WriteString(web_results)

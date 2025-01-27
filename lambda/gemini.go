@@ -14,6 +14,16 @@ type GeminiClient struct {
 	client      *genai.Client
 }
 
+const (
+	STORY_MODEL = "gemini-1.5-pro"
+	NEWS_MODEL = "gemini-1.5-pro"
+
+	STORY_TEMPERATURE = 1.5
+	NEWS_TEMPERATURE = 1.2
+	TOP_K = 40
+	TOP_P = 0.95
+	MAX_OUTPUT_TOKENS = 8192
+)
 
 // USAGE
 // apiKey := os.Getenv("GEMINI_API_KEY")
@@ -41,11 +51,11 @@ func NewGeminiClient(apiKey string) (*GeminiClient, error) {
 func (c *GeminiClient) generateStory(language string, cefr string, topic string) (string, error) {
 	ctx := context.Background()
 
-	model := c.client.GenerativeModel("gemini-1.5-flash")
-	model.SetTemperature(1)
-	model.SetTopK(40)
-	model.SetTopP(0.95)
-	model.SetMaxOutputTokens(8192)
+	model := c.client.GenerativeModel(STORY_MODEL)
+	model.SetTemperature(STORY_TEMPERATURE)
+	model.SetTopK(TOP_K)
+	model.SetTopP(TOP_P)
+	model.SetMaxOutputTokens(MAX_OUTPUT_TOKENS)
 	model.ResponseMIMEType = "text/plain"
 
 	startingMessage := createStoryPrompt(language, cefr, topic)
@@ -65,11 +75,11 @@ func (c *GeminiClient) generateStory(language string, cefr string, topic string)
 func (c *GeminiClient) generateNewsArticle(language string, cefr string, query string, web_results string) (string, error) {
 	ctx := context.Background()
 
-	model := c.client.GenerativeModel("gemini-1.5-flash")
-	model.SetTemperature(1)
-	model.SetTopK(40)
-	model.SetTopP(0.95)
-	model.SetMaxOutputTokens(8192)
+	model := c.client.GenerativeModel(NEWS_MODEL)
+	model.SetTemperature(NEWS_TEMPERATURE)
+	model.SetTopK(TOP_K)
+	model.SetTopP(TOP_P)
+	model.SetMaxOutputTokens(MAX_OUTPUT_TOKENS)
 	model.ResponseMIMEType = "text/plain"
 
 	startingMessage := createNewsArticlePrompt(language, cefr, query, web_results)
