@@ -12,6 +12,7 @@ Example:
 ```sh
 cohere_api_key    = "key"
 google_api_key    = "key"
+gemini_api_key    = "key"
 tavily_api_key    = "key"
 supabase_host     = "xxxxxx.supabase.com"
 supabase_port     = "6543"
