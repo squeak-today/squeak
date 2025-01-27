@@ -103,7 +103,16 @@ const CEFRLevel = styled.div`
 	font-family: 'Noto Serif', serif;
 `;
 
-const StoryBlock = ({ type, title, preview, tags, difficulty, onStoryBlockClick }) => {
+const formatDate = (dateString) => {
+	const date = new Date(dateString);
+	return date.toLocaleDateString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric'
+	});
+};
+
+const StoryBlock = ({ type, title, preview, tags, difficulty, date, onStoryBlockClick }) => {
 	return (
 		<StoryBlockContainer onClick={onStoryBlockClick}>
 			<StoryType type={type}>{type}</StoryType>
@@ -111,6 +120,7 @@ const StoryBlock = ({ type, title, preview, tags, difficulty, onStoryBlockClick 
 			<ContentWrapper>
 				<Preview>{preview}</Preview>
 				<TagContainer>
+					<Tag>{formatDate(date)}</Tag>
 					{tags.map((tag, index) => (
 						<Tag key={index}>{tag}</Tag>
 					))}
