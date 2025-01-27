@@ -152,12 +152,12 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 						}}
 					>
 						<option value="any">Any Level</option>
-						<option value="A1">A1</option>
-						<option value="A2">A2</option>
-						<option value="B1">B1</option>
-						<option value="B2">B2</option>
-						<option value="C1">C1</option>
-						<option value="C2">C2</option>
+						<option value="A1">A1 (Beginner)</option>
+						<option value="A2">A2 (Elementary)</option>
+						<option value="B1">B1 (Intermediate)</option>
+						<option value="B2">B2 (Upper Intermediate)</option>
+						<option value="C1">C1 (Advanced)</option>
+						<option value="C2">C2 (Proficient)</option>
 					</FilterSelect>
 				</div>
 
