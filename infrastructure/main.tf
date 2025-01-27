@@ -29,6 +29,7 @@ module "generation" {
   aws_region     = var.aws_region
   cohere_api_key = var.cohere_api_key
   google_api_key = var.google_api_key
+  gemini_api_key = var.gemini_api_key
   tavily_api_key = var.tavily_api_key
 
   supabase_host     = var.supabase_host

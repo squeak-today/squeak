@@ -117,6 +117,8 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 		webResults[subject] = buildInfoBlockFromTavilyResponse(resp)
 	}
 
+	apiKey := os.Getenv("GEMINI_API_KEY")
+
 	for _, genRequest := range generationRequests {
 		log.Println("Generating story for", genRequest.CEFRLevel)
 		language := genRequest.Language

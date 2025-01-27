@@ -10,6 +10,12 @@ variable "google_api_key" {
   sensitive   = true
 }
 
+variable "gemini_api_key" {
+  description = "Gemini API Key for Gemini API"
+  type        = string
+  sensitive   = true
+}
+
 variable "tavily_api_key" {
   description = "Tavily API Key for Web Search API"
   type        = string
