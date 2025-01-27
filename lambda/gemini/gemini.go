@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math"
+	"time"
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
@@ -12,19 +14,21 @@ import (
 )
 
 type GeminiClient struct {
-	apiKey      string
-	Client      *genai.Client
+	apiKey string
+	Client *genai.Client
 }
 
 const (
 	STORY_MODEL = "gemini-1.5-pro"
-	NEWS_MODEL = "gemini-1.5-pro"
+	NEWS_MODEL  = "gemini-1.5-pro"
 
 	STORY_TEMPERATURE = 1.5
-	NEWS_TEMPERATURE = 1.2
-	TOP_K = 40
-	TOP_P = 0.95
+	NEWS_TEMPERATURE  = 1.2
+	TOP_K             = 40
+	TOP_P             = 0.95
 	MAX_OUTPUT_TOKENS = 8192
+
+	MAX_RETRIES = 3
 )
 
 // USAGE
@@ -45,8 +49,8 @@ func NewGeminiClient(apiKey string) (*GeminiClient, error) {
 	}
 
 	return &GeminiClient{
-		apiKey:      apiKey,
-		Client:      client,
+		apiKey: apiKey,
+		Client: client,
 	}, nil
 }
 
@@ -65,13 +69,26 @@ func (c *GeminiClient) GenerateStory(language string, cefr string, topic string)
 	session := model.StartChat()
 	session.History = []*genai.Content{}
 
-	resp, err := session.SendMessage(ctx, genai.Text(startingMessage))
-	if err != nil {
-		log.Fatalf("Error sending message: %v", err)
-		return "", err
+	var result string
+	var lastErr error
+
+	for attempt := 0; attempt < MAX_RETRIES; attempt++ {
+		if attempt > 0 {
+			// Exponential backoff: 2^attempt * 100ms
+			backoffDuration := time.Duration(math.Pow(2, float64(attempt))) * 100 * time.Millisecond
+			time.Sleep(backoffDuration)
+		}
+
+		resp, err := session.SendMessage(ctx, genai.Text(startingMessage))
+		if err == nil {
+			result = fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0])
+			return result, nil
+		}
+		lastErr = err
+		log.Printf("Attempt %d failed: %v", attempt+1, err)
 	}
 
-	return fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0]), nil
+	return "", fmt.Errorf("failed after %d attempts, last error: %v", MAX_RETRIES, lastErr)
 }
 
 func (c *GeminiClient) GenerateNewsArticle(language string, cefr string, query string, web_results string) (string, error) {
@@ -89,11 +106,24 @@ func (c *GeminiClient) GenerateNewsArticle(language string, cefr string, query s
 	session := model.StartChat()
 	session.History = []*genai.Content{}
 
-	resp, err := session.SendMessage(ctx, genai.Text(startingMessage))
-	if err != nil {
-		log.Fatalf("Error sending message: %v", err)
-		return "", err
+	var result string
+	var lastErr error
+
+	for attempt := 0; attempt < MAX_RETRIES; attempt++ {
+		if attempt > 0 {
+			// Exponential backoff: 2^attempt * 100ms
+			backoffDuration := time.Duration(math.Pow(2, float64(attempt))) * 100 * time.Millisecond
+			time.Sleep(backoffDuration)
+		}
+
+		resp, err := session.SendMessage(ctx, genai.Text(startingMessage))
+		if err == nil {
+			result = fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0])
+			return result, nil
+		}
+		lastErr = err
+		log.Printf("Attempt %d failed: %v", attempt+1, err)
 	}
 
-	return fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0]), nil
+	return "", fmt.Errorf("failed after %d attempts, last error: %v", MAX_RETRIES, lastErr)
 }
