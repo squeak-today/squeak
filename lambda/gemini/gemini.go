@@ -1,4 +1,4 @@
-package main
+package gemini
 
 import (
 	"context"
@@ -7,11 +7,13 @@ import (
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
+
+	"story-gen-lambda/prompts"
 )
 
 type GeminiClient struct {
 	apiKey      string
-	client      *genai.Client
+	Client      *genai.Client
 }
 
 const (
@@ -44,21 +46,21 @@ func NewGeminiClient(apiKey string) (*GeminiClient, error) {
 
 	return &GeminiClient{
 		apiKey:      apiKey,
-		client:      client,
+		Client:      client,
 	}, nil
 }
 
-func (c *GeminiClient) generateStory(language string, cefr string, topic string) (string, error) {
+func (c *GeminiClient) GenerateStory(language string, cefr string, topic string) (string, error) {
 	ctx := context.Background()
 
-	model := c.client.GenerativeModel(STORY_MODEL)
+	model := c.Client.GenerativeModel(STORY_MODEL)
 	model.SetTemperature(STORY_TEMPERATURE)
 	model.SetTopK(TOP_K)
 	model.SetTopP(TOP_P)
 	model.SetMaxOutputTokens(MAX_OUTPUT_TOKENS)
 	model.ResponseMIMEType = "text/plain"
 
-	startingMessage := createStoryPrompt(language, cefr, topic)
+	startingMessage := prompts.CreateStoryPrompt(language, cefr, topic)
 
 	session := model.StartChat()
 	session.History = []*genai.Content{}
@@ -72,17 +74,17 @@ func (c *GeminiClient) generateStory(language string, cefr string, topic string)
 	return fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0]), nil
 }
 
-func (c *GeminiClient) generateNewsArticle(language string, cefr string, query string, web_results string) (string, error) {
+func (c *GeminiClient) GenerateNewsArticle(language string, cefr string, query string, web_results string) (string, error) {
 	ctx := context.Background()
 
-	model := c.client.GenerativeModel(NEWS_MODEL)
+	model := c.Client.GenerativeModel(NEWS_MODEL)
 	model.SetTemperature(NEWS_TEMPERATURE)
 	model.SetTopK(TOP_K)
 	model.SetTopP(TOP_P)
 	model.SetMaxOutputTokens(MAX_OUTPUT_TOKENS)
 	model.ResponseMIMEType = "text/plain"
 
-	startingMessage := createNewsArticlePrompt(language, cefr, query, web_results)
+	startingMessage := prompts.CreateNewsArticlePrompt(language, cefr, query, web_results)
 
 	session := model.StartChat()
 	session.History = []*genai.Content{}

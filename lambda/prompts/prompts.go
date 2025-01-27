@@ -1,4 +1,4 @@
-package main
+package prompts
 
 import (
 	"strings"
@@ -14,7 +14,7 @@ var cefrPrompts = map[string]string{
 }
 
 
-func createStoryPrompt(language string, cefr string, topic string) string {
+func CreateStoryPrompt(language string, cefr string, topic string) string {
 	var sb strings.Builder
 	sb.WriteString("You are an LLM designed to write " + language + " fiction stories. ")
 	sb.WriteString("Using the topic of " + topic + ", write a fictional story that matches the writing complexity of " + cefr + " on the CEFR scale.")
@@ -25,7 +25,7 @@ func createStoryPrompt(language string, cefr string, topic string) string {
 	return prompt
 }
 
-func createNewsArticlePrompt(language string, cefr string, query string, web_results string) string {
+func CreateNewsArticlePrompt(language string, cefr string, query string, web_results string) string {
 	languageUpper := strings.ToUpper(language)
 	
 	var sb strings.Builder

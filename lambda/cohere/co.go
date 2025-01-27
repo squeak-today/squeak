@@ -1,4 +1,4 @@
-package main
+package cohere
 
 import (
 	"os"
@@ -8,6 +8,7 @@ import (
 	"errors"
 	"bytes"
 	"log"
+	"story-gen-lambda/prompts"
 )
 
 type Citation struct {
@@ -53,7 +54,7 @@ func generateStory(language string, cefr string, topic string, max_retries int) 
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
 
-	startingMessage := createStoryPrompt(language, cefr, topic)
+	startingMessage := prompts.CreateStoryPrompt(language, cefr, topic)
 	coherePayload := map[string]interface{}{
         "model": "c4ai-aya-expanse-32b",
         "messages": []map[string]string{
@@ -111,7 +112,7 @@ func generateNewsArticle(language string, cefr string, query string, web_results
 	}
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
 
-	startingMessage := createNewsArticlePrompt(language, cefr, query, web_results)
+	startingMessage := prompts.CreateNewsArticlePrompt(language, cefr, query, web_results)
 
 	coherePayload := map[string]interface{}{
 		"chat_history": []map[string]string{

@@ -16,6 +16,8 @@ import (
 	"database/sql"
 
 	_ "github.com/lib/pq"
+
+	"story-gen-lambda/gemini"
 )
 
 type GenerationRequest struct {
@@ -118,6 +120,12 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 	}
 
 	apiKey := os.Getenv("GEMINI_API_KEY")
+	geminiClient, err := gemini.NewGeminiClient(apiKey)
+	if err != nil {
+		log.Println("Failed to create Gemini client:", err)
+		return err
+	}
+	defer geminiClient.Client.Close()
 
 	for _, genRequest := range generationRequests {
 		log.Println("Generating story for", genRequest.CEFRLevel)
@@ -128,10 +136,9 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 					
 		// Story Generation
 		if (contentType == "Story") {
-			storyResponse, err := generateStory(language, CEFRLevel, subject, 3)
+			story, err := geminiClient.GenerateStory(language, CEFRLevel, subject)
 
 			if err == nil {
-				story := storyResponse.Message.Content[0].Text
 				log.Println("Story:", story)
 
 				words, sentences := getWordsAndSentences(story)
@@ -166,15 +173,15 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 			}
 		} else if (contentType == "News") {
 			// News Generation
-			newsResp, err := generateNewsArticle(language, CEFRLevel, "today " + subject + " news", webResults[subject], 3)
+			newsText, err := geminiClient.GenerateNewsArticle(language, CEFRLevel, "today " + subject + " news", webResults[subject])
 
 			if err == nil {
-				words, sentences := getWordsAndSentences(newsResp.Text)
+				words, sentences := getWordsAndSentences(newsText)
 				dictionary := blankStoryDictionary
 				if providingTranslations {
 					dictionary, _ = generateTranslations(words, sentences, language_ids[language])
 				}
-				body, _ := buildNewsBody(newsResp.Text, dictionary, webSources[subject])
+				body, _ := buildNewsBody(newsText, dictionary, webSources[subject])
 
 				current_time := time.Now().UTC().Format("2006-01-02")
 
@@ -189,7 +196,7 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 					return err
 				}
 
-				first30, previewText := generateTitleAndPreview(newsResp.Text)
+				first30, previewText := generateTitleAndPreview(newsText)
                 err := supabaseInsertContent(db, "news", first30, language, subject, CEFRLevel, previewText)
                 if err != nil {
                     log.Println(err)
