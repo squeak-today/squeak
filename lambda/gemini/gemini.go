@@ -28,7 +28,7 @@ const (
 	TOP_P             = 0.95
 	MAX_OUTPUT_TOKENS = 8192
 
-	MAX_RETRIES = 3
+	MAX_RETRIES = 5
 )
 
 // USAGE
