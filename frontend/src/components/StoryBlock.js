@@ -21,6 +21,12 @@ const TopSection = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+
+	@media (max-width: 500px) {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.5em;
+	}
 `;
 
 const DateText = styled.div`
@@ -28,6 +34,12 @@ const DateText = styled.div`
 	font-size: 0.875em;
 	text-align: right;
 	padding-right: 0.5em;
+
+	@media (max-width: 500px) {
+		text-align: left;
+		padding-right: 0;
+		margin-top: 0.5em;
+	}
 `;
 
 const Title = styled.h2`
@@ -53,6 +65,10 @@ const TagContainer = styled.div`
 	display: flex;
 	gap: 0.625em;
 	font-family: 'Noto Serif', serif;
+
+	@media (max-width: 500px) {
+		flex-wrap: wrap;
+	}
 `;
 
 const Tag = styled.span`
