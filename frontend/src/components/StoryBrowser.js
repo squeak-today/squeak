@@ -121,7 +121,6 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 						}}
 					>
 						<option value="News">News</option>
-						<option value="Story">Story</option>
 					</FilterSelect>
 				</div>
 
