@@ -22,6 +22,7 @@ const StoryList = ({ stories, onStoryBlockClick }) => {
                     preview={story.preview}
                     tags={story.tags}
                     difficulty={story.difficulty}
+                    date={story.date_created}
                     onStoryBlockClick={() => { onStoryBlockClick(story) }}
                 />
             ))}
