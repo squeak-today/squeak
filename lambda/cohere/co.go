@@ -1,4 +1,4 @@
-package main
+package cohere
 
 import (
 	"os"
@@ -8,8 +8,7 @@ import (
 	"errors"
 	"bytes"
 	"log"
-
-	"strings"
+	"story-gen-lambda/prompts"
 )
 
 type Citation struct {
@@ -47,15 +46,6 @@ type v2Response struct {
 	FinishReason string `json:"finish_reason"`
 }
 
-var cefrPrompts = map[string]string{
-	"A1": "must use extremely basic, everyday vocabulary and short sentences and must be 60-120 words.",
-	"A2": "must use simple vocabulary and clear sentences with some basic connectors. You must aim for 120-160 words.",
-	"B1": "must include semi-complex sentences, specific terms, and connectors. Target 200-300 words.",
-	"B2": "must include clear sentences with somewhat advanced vocabulary and some complex ideas. Use a variety of connectors to link your points. Target 300-400 words.",
-	"C1": "must employ complex vocabulary, some nuanced expressions, and detailed phrasing with 700-1000 words.",
-	"C2": "must employ very complex vocabulary, nuanced expressions, detailed phrasing, and very complex ideas. Target 1400-1900 words.",
-}
-
 func generateStory(language string, cefr string, topic string, max_retries int) (v2Response, error) {
 	emptyResponse := v2Response{}
 	if (max_retries == 0) {
@@ -64,14 +54,7 @@ func generateStory(language string, cefr string, topic string, max_retries int) 
 	cohereAPIKey := os.Getenv("COHERE_API_KEY")
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
 
-	
-	var sb strings.Builder
-	sb.WriteString("You are an LLM designed to write " + language + " fiction stories. ")
-	sb.WriteString("Using the topic of " + topic + ", write a fictional story that matches the writing complexity of " + cefr + " on the CEFR scale.")
-	sb.WriteString("Your story " + cefrPrompts[cefr] + " ")
-	sb.WriteString("Provide the story without preamble or other comment.\n\n")
-
-	startingMessage := sb.String()
+	startingMessage := prompts.CreateStoryPrompt(language, cefr, topic)
 	coherePayload := map[string]interface{}{
         "model": "c4ai-aya-expanse-32b",
         "messages": []map[string]string{
@@ -128,17 +111,8 @@ func generateNewsArticle(language string, cefr string, query string, web_results
 		return emptyResponse, errors.New("MULTIPLE RUNAWAYS ON THIS ARTICLE")
 	}
 	if cohereAPIKey == "" { return emptyResponse, errors.New("ERR: COHERE_API_KEY environment variable not set") }
-	
-	var sb strings.Builder
-	sb.WriteString("You are an LLM designed to write " + language + " news articles. ")
-	sb.WriteString("Below this, you are given the results of a search query for \"" + query + "\". ")
-	sb.WriteString("Using this information, write a news article that matches the writing complexity of " + cefr + " on the CEFR scale. ")
-	sb.WriteString("Your article " + cefrPrompts[cefr] + " ")
-	sb.WriteString("Your article must include a title styled like a newspaper headline.\n")
-	sb.WriteString("Provide the article without preamble or other comment.\n\n")
-	sb.WriteString(web_results)
 
-	startingMessage := sb.String()
+	startingMessage := prompts.CreateNewsArticlePrompt(language, cefr, query, web_results)
 
 	coherePayload := map[string]interface{}{
 		"chat_history": []map[string]string{
