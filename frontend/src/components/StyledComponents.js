@@ -9,7 +9,7 @@ export const BrowserBox = styled.div`
   height: 100%;
   margin: 80px auto 0 auto;
   padding: 20px;
-  background-color: #F8F9FA;;
+  background-color: #F8F9FA;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -22,7 +22,7 @@ export const BrowserBox = styled.div`
 export const Title = styled.h1`
   text-align: center;
   color: #000000;
-  font-family: 'Noto Serif', serif;
+  font-family: 'Lora', serif;
   font-size: 3.5rem;
   margin-bottom: 10px;
 
@@ -34,7 +34,7 @@ export const Title = styled.h1`
 export const Subtitle = styled.h3`
   text-align: center;
   color: #000000;
-  font-family: 'Noto Serif', serif;
+  font-family: 'Lora', serif;
   font-size: 1.8rem;
   margin-top: 0;
 
@@ -66,10 +66,10 @@ export const GenerateButton = styled.button`
 
 export const StoryContainer = styled.div`
   position: relative;
-  background-color: white;
+  background-color: #F8F9FA;
   padding: 5px 30px;
   border-radius: 15px;
-  font-family: 'Noto Serif', serif;
+  font-family: 'Lora', serif;
   
   max-width: 90vw;
   max-height: 80vh;
@@ -141,7 +141,7 @@ export const Tooltip = styled.div`
   top: ${(props) => props.top || 0}px;
   left: ${(props) => props.left || 0}px;
   padding: 10px;
-  background-color: #ffffff;
+  background-color: #F8F9FA;
   border: 1px solid #000000;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -203,6 +203,43 @@ export const HeaderTitle = styled.h1`
     margin-bottom: 1rem;
   }
 `;
+export const HeroButton = styled.button`
+  width: 8em; /* Base width */
+  aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
+  border-radius: 10px;
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
+
+  &:hover {
+    background: #f3c87d; /* Slightly darker on hover */
+  }
+
+  /* Adjust for smaller screens */
+  @media (max-width: 768px) {
+    width: 90%; /* Adjust width for responsiveness */
+    font-size: 1.2em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-width: 192px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%; /* Full width on very small screens */
+    font-size: 1em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-height: 2.5em;
+    max-width: 192px;
+  }
+`;
+
 
 export const FooterContainer = styled.footer`
   position: relative;
@@ -253,14 +290,14 @@ export const FooterText = styled.span`
  * On mobile, switch to static positioning and a column layout.
  */
 export const NavHeader = styled.header`
-  position: absolute;
+  position: relative;
   top: 0;
   left: 50%;
   transform: translateX(-50%); /* Centers the header */
   width: 90%; /* Adds margin from the sides */
-  max-width: 1200px; /* Restricts the maximum width */
+  max-width: 90%; /* Restricts the maximum width */
   height: 80px;
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   border-bottom: 0.75px solid #000000; 
   display: flex;
   align-items: center;
@@ -270,9 +307,11 @@ export const NavHeader = styled.header`
   box-sizing: border-box;
 
   @media (max-width: 768px) {
-    position: static;
-    flex-direction: column;
+    position: relative;
+    z-index: 1000;
     height: auto;
+    align-items: center;
+    justify-content: space-between; /* Ensures elements are spaced properly */
     padding: 0.5rem 1rem;
     width: 95%; /* Adjust width for smaller screens */
   }
@@ -284,7 +323,7 @@ export const HeaderLogo = styled.img`
   height: 54px; /* Reduced size by 10% */
   margin-right: 10px;
   cursor: pointer;
-  padding-left: 6em;
+  padding-left: 1em;
 
   @media (max-width: 768px) {
     height: 45px; /* Adjusted size for smaller screens */
@@ -329,7 +368,7 @@ export const LogoText = styled.span`
   cursor: pointer;
 
   @media (max-width: 768px) {
-    font-size: 32.4px; /* Adjusted size for smaller screens */
+    font-size: 32px; /* Adjusted size for smaller screens */
   }
 `;
 /**
@@ -337,19 +376,13 @@ export const LogoText = styled.span`
  * but for mobile we can un-position and stack as needed.
  */
 export const PictureLogo = styled.img`
-  height: 60px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  cursor: default;
-
+  height: 2em;
 
   @media (max-width: 768px) {
-    position: static;
-    transform: none;
+
     margin-bottom: 0.5rem;
-    height: 50px;
-    display: block; /* Show on mobile */
+    height: 2em;
+
   }
 `;
 

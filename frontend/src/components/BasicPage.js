@@ -7,7 +7,7 @@ import {
   FooterContainer,
   FooterLogo,
   FooterText,
-  MiscButton,
+  HeroButton,
   ButtonContainer,
   PageContainer,
   LogoText,
@@ -30,7 +30,7 @@ function BasicPage({ children, showLogout, onLogout }) {
           />
           <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
           <ButtonContainer>
-            <MiscButton
+            <HeroButton
               as="a"
               href="/contact-support.html"
               target="_blank"
@@ -38,7 +38,7 @@ function BasicPage({ children, showLogout, onLogout }) {
             >
               Get Started
               <FiArrowRight size={24} />
-            </MiscButton>
+            </HeroButton>
           </ButtonContainer>
         </NavHeader>
 
