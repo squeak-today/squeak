@@ -84,25 +84,38 @@ const PageButton = ({isNext, onClick}) => {
 };
 
 const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
-    const words = children.toString().split(/(\s+)/);
+    const renderWords = (text) => {
+        const words = text.split(/(\s+)/);
+        return words.map((word, index) => {
+            if (word.trim() === '') {
+                return word;
+            }
+            return (
+                <MarkdownWord
+                    key={index}
+                    onClick={(e) => handleWordClick(e, word.trim(), sourceLanguage)}
+                >
+                    {word}
+                </MarkdownWord>
+            );
+        });
+    };
+
+    const processNode = (node) => {
+        if (typeof node === 'string') {
+            return renderWords(node);
+        }
+        if (React.isValidElement(node)) {
+            return React.cloneElement(
+                node,
+                { ...node.props },
+                React.Children.map(node.props.children, child => processNode(child))
+            );
+        }
+        return node;
+    }
     
-    return (
-        <p>
-            {words.map((word, index) => {
-                if (word.trim() === '') {
-                    return word;
-                }
-                return (
-                    <MarkdownWord
-                        key={index}
-                        onClick={(e) => handleWordClick(e, word.trim(), sourceLanguage)}
-                    >
-                        {word}
-                    </MarkdownWord>
-                );
-            })}
-        </p>
-    );
+    return <p>{React.Children.map(children, child => processNode(child))}</p>;
 };
 
 const StoryReader = ({data, handleWordClick, sourceLanguage }) => {
