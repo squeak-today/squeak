@@ -37,7 +37,7 @@ If you are viewing this as an open source user, some of these may not apply. You
 1. Build Go binaries with `./build-for-lambda.sh` in all lambda directories which compiles, zips, and places in `infrastructure/`.
 
 2. See `infrastructure/WORKSPACES.md` for instructions on how to deploy/update the infrastructure.
-```
+
 4. The `queue_filler` lambda will be invoked automatically at regular intervals, but you may invoke it early for testing story generation-tied features.
 
 5. **IMPORTANT**: All API endpoints need to be called with a `Authorization: Bearer <JWT Token>` header.
