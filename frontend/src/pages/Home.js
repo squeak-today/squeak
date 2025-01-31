@@ -107,6 +107,7 @@ const SmallText = styled.p`
   font-size: 1.1em; /* Font size */
   color: #575757;
   text-decoration: underline;
+  cursor: pointer; /* should fix Ibeam ossue*/
 
 
 `;

@@ -4,7 +4,7 @@ import {
   HeaderLogo,
   FooterContainer,
   HeaderText,
-  FooterLogo,
+  // FooterLogo,
   FooterText,
   HeaderButton,
   ButtonContainer,
@@ -38,10 +38,9 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
             <HeaderText onClick={() => navigate('/contact-support.html')}>Contact Us</HeaderText>
             <div></div>
             {showLogout && (
-              <HeaderButton onClick={onLogout}>
+              <HeaderText onClick={onLogout}>
                 Logout
-                <FiArrowRight size={24} />
-              </HeaderButton>
+              </HeaderText>
             )}
             {showGetStarted && (
               <HeaderButton
@@ -58,10 +57,15 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
         {children}
 
         <FooterContainer>
+          {/*
+
+
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <FooterLogo src={logo} alt="Squeak Footer Logo" />
             <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
           </div>
+
+          */}
           <FooterText>© 2025 Squeak. All rights reserved.</FooterText>
         </FooterContainer>
       </PageContainer>

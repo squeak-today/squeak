@@ -8,7 +8,7 @@ import styled from 'styled-components';
 export const BrowserBox = styled.div`
   width: 100%;
   height: 100%;
-  margin: 80px auto 0 auto;
+  margin: 2em auto 0 auto;
   padding: 20px;
   box-sizing: border-box;
   overflow: hidden;
@@ -284,7 +284,7 @@ export const FooterContainer = styled.footer`
   border-top: 0.75px solid #000000; /* Black border on top */
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Space between left and right content */
+  justify-content: center; /* Space between left and right content */
   padding: 0 20px; /* Add padding inside the footer */
   box-sizing: border-box;
 
@@ -298,6 +298,7 @@ export const FooterContainer = styled.footer`
 export const FooterLogo = styled.img`
   height: 54px; /* Match header logo size */
   cursor: pointer;
+  margin-right: 10px;
 
   @media (max-width: 768px) {
     height: 45px;
