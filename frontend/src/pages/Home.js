@@ -18,9 +18,8 @@ const HomeContent = styled.div`
   max-width: 75%;
   height: 82vh;
   margin: 0 auto;
-  
 
-  /* On smaller screens, stack content vertically and reduce padding */
+  /* On smaller screens, stack content vertically */
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: center;
@@ -52,6 +51,8 @@ const ButtonContainer = styled.div`
   /* Optionally make buttons full-width on mobile, 
      but the existing MiscButton styling might already handle this. */
   @media (max-width: 768px) {
+    align-items: center; /* Center buttons horizontally */
+    justify-content: center; /* Center buttons vertically */
     width: 100%;
   }
 `;
@@ -65,6 +66,12 @@ const SubHeading = styled.p`
 
   @media (max-width: 768px) {
     font-size: 1.2rem;
+    max-width: 28ch;
+    text-align: center;
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto; /* Center horizontally */
+    width: 100%;
+  }
   }
 `;
 
@@ -83,11 +90,14 @@ const MainHeading = styled.h1`
   @media (max-width: 768px) {
     font-size: 2.5em; /* Adjust font size for smaller screens */
     max-width: 20ch; /* Slightly wider for smaller screens */
+    text-align: center; /* center aligned */
   }
 
   @media (max-width: 480px) {
-    font-size: 2em; /* Further adjustment for very small screens */
+    font-size: 2.5em; /* Further adjustment for very small screens */
     max-width: 24ch; /* Wider for very small screens */
+    text-align: center; /* center aligned */
+
   }
 `;
 
@@ -105,7 +115,9 @@ const LandingImage = styled.img`
   height: auto;
   max-height: 25em;
 
+  /* Change order on mobile */
   @media (max-width: 768px) {
+    order: -1; /* Move image to appear first */
     width: 80%;
     margin: 0 auto; /* Center on mobile */
   }

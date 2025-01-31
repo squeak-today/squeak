@@ -227,18 +227,17 @@ export const HeaderButton = styled.button`
 
   /* Adjust for smaller screens */
   @media (max-width: 768px) {
-    width: 90%; /* Adjust width for responsiveness */
-    font-size: 1.2em;
+    font-size: 1.5em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
-    max-width: 192px;
+    max-width: 25vw;
+    justify: center;
   }
 
   @media (max-width: 480px) {
-    width: 100%; /* Full width on very small screens */
-    font-size: 1em;
+    font-size: 1.25em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
     max-height: 2.5em;
-    max-width: 192px;
+    max-width: 40vw;
   }
 `;
 
@@ -264,15 +263,14 @@ export const HeroButton = styled.button`
 
   /* Adjust for smaller screens */
   @media (max-width: 768px) {
-    width: 90%; /* Adjust width for responsiveness */
-    font-size: 1.2em;
+    font-size: 2em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
-    max-width: 192px;
+    max-width: 40vw;
   }
 
   @media (max-width: 480px) {
     width: 100%; /* Full width on very small screens */
-    font-size: 1em;
+    font-size: 1.5em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
     max-height: 2.5em;
     max-width: 192px;
@@ -408,7 +406,7 @@ export const LogoText = styled.span`
   cursor: pointer;
 
   @media (max-width: 768px) {
-    font-size: 32px; /* Adjusted size for smaller screens */
+    font-size: 1.5em; /* Adjusted size for smaller screens */
   }
 `;
 
@@ -421,7 +419,7 @@ export const HeaderText = styled.span`
   cursor: pointer;
 
   @media (max-width: 768px) {
-    font-size: 32px; /* Adjusted size for smaller screens */
+    font-size: 0em; /* Adjusted size for smaller screens */
   }
 `;
 
@@ -459,7 +457,6 @@ export const ButtonContainer = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
-    width: 100%;
-    align-items: stretch;
+    gap: 0rem;
   }
 `;
