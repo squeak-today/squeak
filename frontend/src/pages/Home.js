@@ -7,6 +7,8 @@ import { HeroButton } from '../components/StyledComponents';
 import { useEffect } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
+import { FiArrowRight } from 'react-icons/fi'; 
+
 
 const HomeContent = styled.div`
   display: flex;
@@ -33,11 +35,9 @@ const HomeContent = styled.div`
 const TextContent = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   gap: 10px;
   max-width: 50%;
-  text-align: center;
 
   @media (max-width: 768px) {
     max-width: 100%;
@@ -61,12 +61,10 @@ const SubHeading = styled.p`
   font-size: 1.5rem;
   color: #333333; /* Slightly lighter color */
   text-align: left; /* Left-aligned like the main heading */
-  margin: 0 auto; /* Center horizontally */
   margin-top: 1rem;
 
   @media (max-width: 768px) {
     font-size: 1.2rem;
-    text-align: center;
   }
 `;
 
@@ -74,13 +72,13 @@ const SubHeading = styled.p`
 const MainHeading = styled.h1`
   font-family: 'Lora', serif;
   font-weight: 400; /* Regular weight */
-  font-size: 3em; /* Font size */
+  font-size: 3.5em; /* Font size */
   color: #000000;
-  margin: 0 auto; /* Center horizontally */
-  line-height: 1.3;
+  line-height: 1.2;
+  max-width: 14ch;
   text-align: left; /* Left aligned */
-  max-width: 16ch; /* Restrict width to ensure desired wrapping */
   white-space: normal; /* Allow text to wrap normally */
+  margin: 0;
 
   @media (max-width: 768px) {
     font-size: 2.5em; /* Adjust font size for smaller screens */
@@ -139,12 +137,16 @@ function Home() {
             fun, stress-free, and truly rewarding.
           </SubHeading>
           <ButtonContainer>
-            <HeroButton onClick={handleGetStarted}>Get Started</HeroButton>
+            <HeroButton onClick={handleGetStarted}>
+              Get Started
+              <FiArrowRight size={24} />
+              </HeroButton>
             <SmallText onClick={() => navigate('/auth/login')}>
               I already have an account
             </SmallText>
           </ButtonContainer>
         </TextContent>
+        <div></div>
         <LandingImage
           src={landingDrawing}
           alt="Squeak Mouse Drawing"

@@ -1,13 +1,11 @@
 import { TransitionWrapper } from './PageTransition';
-import { ArrowRight } from 'react-icons/fi';
-
 import {
   NavHeader,
   HeaderLogo,
   FooterContainer,
   FooterLogo,
   FooterText,
-  HeroButton,
+  HeaderButton,
   ButtonContainer,
   PageContainer,
   LogoText,
@@ -30,7 +28,7 @@ function BasicPage({ children, showLogout, onLogout }) {
           />
           <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
           <ButtonContainer>
-            <HeroButton
+            <HeaderButton
               as="a"
               href="/contact-support.html"
               target="_blank"
@@ -38,7 +36,7 @@ function BasicPage({ children, showLogout, onLogout }) {
             >
               Get Started
               <FiArrowRight size={24} />
-            </HeroButton>
+            </HeaderButton>
           </ButtonContainer>
         </NavHeader>
 

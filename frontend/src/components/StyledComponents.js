@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 
+
 /** 
  * Container that holds main content.
  * Added responsive margin and padding for mobile.
@@ -203,6 +204,43 @@ export const HeaderTitle = styled.h1`
     margin-bottom: 1rem;
   }
 `;
+export const HeaderButton = styled.button`
+  width: 9em; /* Base width */
+  aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
+  border-radius: 10px;
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
+
+  &:hover {
+    background: #f3c87d; /* Slightly darker on hover */
+  }
+
+  /* Adjust for smaller screens */
+  @media (max-width: 768px) {
+    width: 90%; /* Adjust width for responsiveness */
+    font-size: 1.2em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-width: 192px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%; /* Full width on very small screens */
+    font-size: 1em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-height: 2.5em;
+    max-width: 192px;
+  }
+`;
+
 export const HeroButton = styled.button`
   width: 8em; /* Base width */
   aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
@@ -302,7 +340,7 @@ export const NavHeader = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures elements are spaced properly */
-  padding: 0 20px; /* Adds internal padding */
+  padding: 4vh 2vw 2vw 3vh; /* Adds internal padding */
   z-index: 1000;
   box-sizing: border-box;
 
@@ -313,6 +351,7 @@ export const NavHeader = styled.header`
     align-items: center;
     justify-content: space-between; /* Ensures elements are spaced properly */
     padding: 0.5rem 1rem;
+    padding-top: 2vh;
     width: 95%; /* Adjust width for smaller screens */
   }
 `;
@@ -320,13 +359,13 @@ export const NavHeader = styled.header`
 
 
 export const HeaderLogo = styled.img`
-  height: 54px; /* Reduced size by 10% */
+  height: 7vh; /* Reduced size by 10% */
   margin-right: 10px;
   cursor: pointer;
   padding-left: 1em;
 
   @media (max-width: 768px) {
-    height: 45px; /* Adjusted size for smaller screens */
+    height: 5vh; /* Adjusted size for smaller screens */
     margin-right: 5px;
   }
 `;
@@ -362,7 +401,7 @@ export const MiscButton = styled.button`
 // Add a styled component for the "Squeak" text
 export const LogoText = styled.span`
   font-family: 'Lora', serif;
-  font-size: 2em;
+  font-size: 2.3em;
   font-weight: 400;
   color: #000000;
   cursor: pointer;
