@@ -7,7 +7,7 @@ const StoryBlockContainer = styled.div`
 	margin: 1.25em 0;
 	cursor: pointer;
 	transition: transform 0.2s;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	position: relative;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 	border: 1px solid #e0e0e0;
@@ -35,7 +35,7 @@ const StoryType = styled.div`
 	color: black;
 	border-radius: 15px;
 	font-size: 0.875em;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	position: absolute;
 	top: -0.75em;
 	left: 1.25em;
@@ -46,7 +46,7 @@ const Title = styled.h2`
 	margin: 0 0 0.625em 0;
 	font-size: 1.25em;
 	color: #333;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const ContentWrapper = styled.div`
@@ -57,13 +57,13 @@ const ContentWrapper = styled.div`
 const Preview = styled.p`
 	color: #666;
 	font-size: 0.875em;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const TagContainer = styled.div`
 	display: flex;
 	gap: 0.625em;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const Tag = styled.span`
@@ -72,7 +72,7 @@ const Tag = styled.span`
 	border-radius: 15px;
 	font-size: 0.75em;
 	color: #666;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const getCEFRColor = (level) => {
@@ -100,7 +100,7 @@ const CEFRLevel = styled.div`
 	border-radius: 20px;
 	font-weight: bold;
 	font-size: 1em;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const StoryBlock = ({ type, title, preview, tags, difficulty, onStoryBlockClick }) => {

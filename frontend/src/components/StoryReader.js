@@ -33,7 +33,7 @@ const SectionButton = styled.button`
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
-    font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
     font-size: 1.25em;
     display: flex;
     align-items: center;

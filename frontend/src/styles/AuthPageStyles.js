@@ -38,7 +38,7 @@ export const AuthInput = styled.input`
 	padding: 0.5em;
 	border: 1px solid #e0e0e0;
 	border-radius: 5px;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	font-size: 16px;
 	background: white;
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -63,7 +63,7 @@ export const AuthButton = styled.button`
 	background: white;
 	cursor: pointer;
 	color: black;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	font-size: 16px;
 	transition: all 0.2s ease;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -87,7 +87,7 @@ export const AuthToggle = styled.button`
 	color: #333;
 	text-decoration: underline;
 	cursor: pointer;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	margin-top: 1rem;
 	padding: 0.5em 1em;
 	font-size: 16px;
