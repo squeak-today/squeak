@@ -20,7 +20,7 @@ export const ToggleButton = styled.button`
   background: transparent; /* so we can see the slider behind it */
   border: none;
   cursor: pointer;
-  font-size: 1.15em;
+  font-size: 1em;
   font-family: 'Lora', serif;
   color: ${({ active }) => (active ? '#000000' : '#8f8f8f')};
   transition: color 0.3s ease;
@@ -35,7 +35,7 @@ export const ToggleContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  width: 65%;
+  width: 55%;
   height: 36px;
   margin: 0 auto 20px auto;
   background: #f5f5f5;
