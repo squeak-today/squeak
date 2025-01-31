@@ -35,6 +35,7 @@ export const Title = styled.h1`
 export const Subtitle = styled.h3`
   text-align: center;
   color: #000000;
+  font-weight: 400;
   font-family: 'Lora', serif;
   font-size: 1.8rem;
   margin-top: 0;

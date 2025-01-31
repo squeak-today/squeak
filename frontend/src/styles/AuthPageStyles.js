@@ -6,8 +6,9 @@ export const AuthBox = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
 	padding: 20px;
-	margin: 80px auto 0 auto;
+	margin: 0px auto 0 auto;
 	box-sizing: border-box;
 `;
 
@@ -15,14 +16,13 @@ export const AuthContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 2rem;
+	gap: 1rem;
 	width: 90%;
 	max-width: 24rem;
 	padding: 2rem;
 	background: white;
 	border-radius: 10px;
 	border: 1px solid #e0e0e0;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 export const AuthForm = styled.form`
