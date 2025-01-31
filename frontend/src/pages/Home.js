@@ -2,25 +2,28 @@
 
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import landingDrawing from '../assets/mouse_reading.png';
-import { MiscButton } from '../components/StyledComponents';
+import landingDrawing from '../assets/mouse_pencil.png';
+import { HeroButton } from '../components/StyledComponents';
 import { useEffect } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
+import { FiArrowRight } from 'react-icons/fi'; 
+
 
 const HomeContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
-  padding: 40px;
-  max-width: 60%;
-  height: 75vh;
+  max-width: 75%;
+  height: 82vh;
   margin: 0 auto;
 
-  /* On smaller screens, stack content vertically and reduce padding */
+  /* On smaller screens, stack content vertically */
   @media (max-width: 768px) {
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     max-width: 90%;
     height: auto;
     padding: 20px;
@@ -31,11 +34,9 @@ const HomeContent = styled.div`
 const TextContent = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   gap: 10px;
   max-width: 50%;
-  text-align: center;
 
   @media (max-width: 768px) {
     max-width: 100%;
@@ -50,32 +51,79 @@ const ButtonContainer = styled.div`
   /* Optionally make buttons full-width on mobile, 
      but the existing MiscButton styling might already handle this. */
   @media (max-width: 768px) {
+    align-items: center; /* Center buttons horizontally */
+    justify-content: center; /* Center buttons vertically */
     width: 100%;
   }
 `;
 
-const MainHeading = styled.h1`
-  font-family: 'Noto Serif', serif;
-  font-size: 2rem;
-  color: #000000;
-  margin: 0;
-  line-height: 1.3;
-  text-align: center;
+const SubHeading = styled.p`
+  font-family: 'Lora', serif;
+  font-size: 1.5rem;
+  color: #333333; /* Slightly lighter color */
+  text-align: left; /* Left-aligned like the main heading */
+  margin-top: 1rem;
 
   @media (max-width: 768px) {
-    font-size: 1.6rem;
+    font-size: 1.2rem;
+    max-width: 28ch;
+    text-align: center;
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto; /* Center horizontally */
+    width: 100%;
   }
+  }
+`;
+
+
+const MainHeading = styled.h1`
+  font-family: 'Lora', serif;
+  font-weight: 400; /* Regular weight */
+  font-size: 3.5em; /* Font size */
+  color: #000000;
+  line-height: 1.2;
+  max-width: 14ch;
+  text-align: left; /* Left aligned */
+  white-space: normal; /* Allow text to wrap normally */
+  margin: 0;
+
+  @media (max-width: 768px) {
+    font-size: 2.5em; /* Adjust font size for smaller screens */
+    max-width: 20ch; /* Slightly wider for smaller screens */
+    text-align: center; /* center aligned */
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2.5em; /* Further adjustment for very small screens */
+    max-width: 24ch; /* Wider for very small screens */
+    text-align: center; /* center aligned */
+
+  }
+`;
+
+const SmallText = styled.p`
+  font-family: 'Lora', serif;
+  font-weight: 400; /* Regular weight */
+  font-size: 1.1em; /* Font size */
+  color: #575757;
+  text-decoration: underline;
+  cursor: pointer; /* should fix Ibeam ossue*/
+
+
 `;
 
 const LandingImage = styled.img`
-  width: 40%;
   height: auto;
+  max-height: 25em;
 
+  /* Change order on mobile */
   @media (max-width: 768px) {
+    order: -1; /* Move image to appear first */
     width: 80%;
-    margin-bottom: 1rem; /* Add spacing when stacked above text */
+    margin: 0 auto; /* Center on mobile */
   }
 `;
+
 
 function Home() {
   const navigate = useNavigate();
@@ -93,28 +141,29 @@ function Home() {
   };
 
   return (
-    <BasicPage>
+    <BasicPage showGetStarted>
       <HomeContent>
-        <LandingImage src={landingDrawing} alt="Squeak Mouse Drawing" />
         <TextContent>
-          <MainHeading>
-            Learn Languages Through Stories You Love
-          </MainHeading>
+          <MainHeading>Learn Languages Through Stories</MainHeading>
+          <SubHeading>
+            Engaging news and stories at your level, making language learning
+            fun, stress-free, and truly rewarding.
+          </SubHeading>
           <ButtonContainer>
-            <MiscButton 
-              onClick={handleGetStarted}
-              style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
-            >
+            <HeroButton onClick={handleGetStarted}>
               Get Started
-            </MiscButton>
-            <MiscButton 
-              onClick={() => navigate('/auth/login')}
-              style={{ fontSize: '1.1rem', padding: '0.8em 3.5em' }}
-            >
-              I'm Back To Learn!
-            </MiscButton>
+              <FiArrowRight size={24} />
+              </HeroButton>
+            <SmallText onClick={() => navigate('/auth/login')}>
+              I already have an account
+            </SmallText>
           </ButtonContainer>
         </TextContent>
+        <div></div>
+        <LandingImage
+          src={landingDrawing}
+          alt="Squeak Mouse Drawing"
+        />
       </HomeContent>
     </BasicPage>
   );

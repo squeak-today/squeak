@@ -2,18 +2,26 @@ import { TransitionWrapper } from './PageTransition';
 import {
   NavHeader,
   HeaderLogo,
-  PictureLogo,
-  Footer,
-  MiscButton,
+  FooterContainer,
+  HeaderText,
+  // FooterLogo,
+  FooterText,
+  HeaderButton,
   ButtonContainer,
   PageContainer,
+  LogoText,
 } from './StyledComponents'; // Updated import
-import logo from '../assets/logo.png';
-import headerLogo from '../assets/drawing_400.png';
+import logo from '../assets/drawing_400.png';
 import { useNavigate } from 'react-router-dom';
+import { FiArrowRight } from 'react-icons/fi'; 
 
-function BasicPage({ children, showLogout, onLogout }) {
+function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
   const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/auth/signup');
+  };
+
 
   return (
     <TransitionWrapper>
@@ -21,22 +29,26 @@ function BasicPage({ children, showLogout, onLogout }) {
         <NavHeader>
           <HeaderLogo
             src={logo}
-            alt="Squeak"
+            alt="Squeak Logo"
             onClick={() => navigate('/')}
           />
-          <PictureLogo src={headerLogo} alt="Squeak Mouse" />
+          <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
           
           <ButtonContainer>
-            <MiscButton
-              as="a" 
-              href="/contact-support.html" 
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              Tell Us Anything! ❤️
-            </MiscButton>
+            <HeaderText onClick={() => navigate('/contact-support.html')}>Contact Us</HeaderText>
+            <div></div>
             {showLogout && (
-              <MiscButton onClick={onLogout}>Logout</MiscButton>
+              <HeaderText onClick={onLogout}>
+                Logout
+              </HeaderText>
+            )}
+            {showGetStarted && (
+              <HeaderButton
+                onClick={handleGetStarted}
+              >
+                Get Started
+                <FiArrowRight size={24} />
+              </HeaderButton>
             )}
           </ButtonContainer>
         </NavHeader>
@@ -44,10 +56,23 @@ function BasicPage({ children, showLogout, onLogout }) {
         {/* Main Content */}
         {children}
 
-        <Footer>© 2024 Squeak. All rights reserved.</Footer>
+        <FooterContainer>
+          {/*
+
+
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <FooterLogo src={logo} alt="Squeak Footer Logo" />
+            <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
+          </div>
+
+          */}
+          <FooterText>© 2025 Squeak. All rights reserved.</FooterText>
+        </FooterContainer>
       </PageContainer>
     </TransitionWrapper>
   );
 }
 
 export default BasicPage;
+
+

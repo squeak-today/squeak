@@ -7,7 +7,7 @@ const StoryBlockContainer = styled.div`
 	margin: 1.25em 0;
 	cursor: pointer;
 	transition: transform 0.2s;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	position: relative;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 	border: 1px solid #e0e0e0;
@@ -46,7 +46,7 @@ const Title = styled.h2`
 	margin: 1em 0 0.625em 0;
 	font-size: 1.25em;
 	color: #333;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const ContentWrapper = styled.div`
@@ -58,7 +58,7 @@ const ContentWrapper = styled.div`
 const Preview = styled.p`
 	color: #666;
 	font-size: 0.875em;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const TagContainer = styled.div`
