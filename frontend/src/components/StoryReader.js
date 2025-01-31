@@ -28,10 +28,11 @@ const StoryText = styled.div`
 `;
 
 const SectionButton = styled.button`
-    background-color: #2C2C2C;
+    background-color: #f3c87d;
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
+    color: black;
 	font-family: 'Lora', serif;
     font-size: 1.25em;
     display: flex;
@@ -64,7 +65,7 @@ const ProgressBarContainer = styled.div`
 
 const ProgressBarFill = styled.div`
     height: 100%;
-    background-color: #2C2C2C;
+    background-color: #f3c87d;
     border-radius: 5px;
     transition: width 0.3s ease;
     width: ${props => props.progress}%;

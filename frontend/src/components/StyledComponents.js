@@ -67,7 +67,7 @@ export const GenerateButton = styled.button`
 
 export const StoryContainer = styled.div`
   position: relative;
-  padding: 5px 30px;
+
   border-radius: 15px;
   font-family: 'Lora', serif;
   
@@ -75,7 +75,7 @@ export const StoryContainer = styled.div`
   max-height: 80vh;
   overflow-y: auto;
 
-  padding-top: 10px;
+
   box-sizing: border-box;
 
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -98,7 +98,6 @@ export const StoryContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 10px;
     max-height: 70vh;
   }
 `;
