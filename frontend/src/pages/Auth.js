@@ -120,20 +120,14 @@ function Auth() {
                 <AuthBox>
                     <AuthContainer>
                         <Subtitle>Check Your Email!</Subtitle>
-                        <p style={{ textAlign: 'center', fontFamily: 'Noto Serif, serif' }}>
-                        <div>
-                            <h2>Verify Your Email to Start Learning!</h2>
-                            <p>We’ve just sent a verification link to <strong>{email}</strong>.</p>
-                            <p>Please check your inbox and click the link to get started with Squeak.</p>
-                            <p>If you don’t see it in your inbox, don’t forget to check your junk or spam folder.</p>
-                            <p> Still having trouble?</p>
-                            <p>  
-                                <a href="/contact-support.html" target="_blank" rel="noopener noreferrer">
-                                      Contact our support team
-                                </a>.
-                            </p>
-                        </div>
-                        </p>
+                        <AuthText>We’ve just sent a verification link to <strong>{email}</strong>.</AuthText>
+                        <AuthText>If you don’t see it in your inbox, don’t forget to check your junk or spam folder.</AuthText>
+                        <AuthText>Still having trouble?</AuthText>
+                        <AuthText>
+                            <a href="/contact-support.html" target="_blank" rel="noopener noreferrer">
+                                    Contact our support team
+                            </a>.
+                        </AuthText>
                         <AuthButton onClick={() => navigate('/')}>
                             Return Home
                         </AuthButton>

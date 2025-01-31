@@ -1,55 +1,42 @@
-provider "aws" {
-	region = "us-east-2"  # Adjust the region as needed
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.16"
+    }
+  }
+
+  cloud {
+    organization = "squeak_team"
+    workspaces {
+      tags = ["shared"]
+    }
+  }
+
+  required_version = ">= 1.2.0"
 }
 
-resource "aws_cognito_user_pool" "user_pool" {
-	name = "user-pool"
-
-	username_attributes = ["email"]
-	auto_verified_attributes = ["email"]
-
-	password_policy {
-		minimum_length = 8
-		require_lowercase = true
-		require_uppercase = true
-		require_numbers = true
-		require_symbols = true
-	}
-
-	admin_create_user_config {
-    	allow_admin_create_user_only = false
-	}
-
-	verification_message_template {
-		default_email_option = "CONFIRM_WITH_CODE"
-		email_message = "Your verification code is {####}"
-		email_subject = "Verify your email"
-	}
-
+locals {
+  environment = terraform.workspace
+  prefix      = "${terraform.workspace}-"
 }
 
-resource "aws_cognito_user_pool_client" "app_client" {
-	name = "squeak_app_client"
-	user_pool_id = aws_cognito_user_pool.user_pool.id
+module "generation" {
+  source                  = "./generation"
+  story_gen_bucket_arn    = aws_s3_bucket.story_gen_bucket.arn
+  story_gen_bucket_bucket = aws_s3_bucket.story_gen_bucket.bucket
 
-	explicit_auth_flows = [ // defaults
-		"ALLOW_CUSTOM_AUTH",
-		"ALLOW_USER_SRP_AUTH",
-		"ALLOW_REFRESH_TOKEN_AUTH",
-	]
+  aws_region     = var.aws_region
+  cohere_api_key = var.cohere_api_key
+  google_api_key = var.google_api_key
+  gemini_api_key = var.gemini_api_key
+  tavily_api_key = var.tavily_api_key
 
-	generate_secret = false
-}
+  supabase_host     = var.supabase_host
+  supabase_port     = var.supabase_port
+  supabase_user     = var.supabase_user
+  supabase_password = var.supabase_password
+  supabase_database = var.supabase_database
 
-resource "aws_cognito_user_pool_domain" "user_pool_domain" {
-	domain = "squeak-auth"
-	user_pool_id = aws_cognito_user_pool.user_pool.id
-}
-
-output "user_pool_id" {
-	value = aws_cognito_user_pool.user_pool.id
-}
-
-output "app_client_id" {
-	value = aws_cognito_user_pool_client.app_client.id
+  content_generation_interval = var.content_generation_interval
 }
