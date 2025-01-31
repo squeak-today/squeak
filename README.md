@@ -146,6 +146,26 @@ Translates a given sentence to English and returns the result.
 }
 ```
 
+### **POST** `/evaluate-qna`
+> https://api.squeak.today/evaluate-qna
+
+Evaluates a user's answer to a question about a given content.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `cefr` | `string` | Yes | CEFR level of the content, question, answer. |
+| `content` | `string` | Yes | Content to evaluate on. |
+| `question` | `string` | Yes | Question to evaluate on. |
+| `answer` | `string` | Yes | User's answer to evaluate. |
+
+### Response
+> `200 Successful`
+```json
+{
+	"evaluation": "PASS" // or "FAIL"
+}
+```
+
 ### **GET** `/news-query`
 > https://api.squeak.today/news-query
 

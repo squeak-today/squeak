@@ -25,7 +25,8 @@ resource "aws_lambda_function" "story_api_lambda" {
       SUPABASE_PASSWORD = var.supabase_password
       SUPABASE_DATABASE = var.supabase_database
 
-      JWT_SECRET = var.supabase_jwt_secret
+      JWT_SECRET     = var.supabase_jwt_secret
+      GEMINI_API_KEY = var.gemini_api_key
     }
   }
 

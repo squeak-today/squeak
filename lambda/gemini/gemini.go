@@ -33,11 +33,11 @@ const (
 
 // USAGE
 // apiKey := os.Getenv("GEMINI_API_KEY")
-// geminiClient, err := NewGeminiClient(apiKey)
+// geminiClient, err := gemini.NewGeminiClient(apiKey)
 // if err != nil {
 // 	log.Fatalf("Failed to create Gemini client: %v", err)
 // }
-// defer geminiClient.client.Close()
+// defer geminiClient.Client.Close()
 
 // story, _ := geminiClient.generateStory("French", "B1", "Politics")
 // article, _ := geminiClient.generateNewsArticle("French", "B1", "today Politics news", "France's new president is here!")
