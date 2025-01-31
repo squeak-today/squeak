@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import supabase from '../lib/supabase';
 import { Subtitle } from '../components/StyledComponents';
-import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle } from '../styles/AuthPageStyles';
+import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle, AuthTitle, ToggleButton, AuthToggleContainer } from '../styles/AuthPageStyles';
 import { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
@@ -17,6 +17,13 @@ function Auth() {
     const [signupSuccess, setSignupSuccess] = useState(false);
     const [showResetForm, setShowResetForm] = useState(false);
     const { showNotification } = useNotification();
+
+
+    const toggleMode = (newMode) => {
+        setIsLogin(newMode === 'login');
+        navigate(`/auth/${newMode}`);
+    };
+
 
     useEffect(() => {
 		supabase.auth.onAuthStateChange(async (event, session) => {
@@ -192,10 +199,29 @@ function Auth() {
         <BasicPage>
             <AuthBox>
                 <AuthContainer>
-                    <Subtitle>
-                        {isLogin ? 'Welcome Back!' : 'Create Account'}
-                    </Subtitle>
+                    {!isLogin && (
+                        <AuthTitle>Create Account</AuthTitle>
+                    )}
+                    {isLogin && (
+                        <AuthTitle>Welcome Back!</AuthTitle>
+                    )}
+                    
+                    <AuthToggleContainer>
+                        <ToggleButton 
+                            active={!isLogin} 
+                            onClick={() => toggleMode('signup')}
+                        >
+                            Sign Up
+                        </ToggleButton>
+                        <ToggleButton 
+                            active={isLogin} 
+                            onClick={() => toggleMode('login')}
+                        >
+                            Login
+                        </ToggleButton>
+                    </AuthToggleContainer>
                     <AuthForm onSubmit={handleSubmit}>
+                        
                         <AuthInput
                             type="email"
                             placeholder="Email"
@@ -211,16 +237,11 @@ function Auth() {
                             required
                         />
                         <AuthButton type="submit" disabled={loading}>
-                            {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
+                            {loading ? 'Loading...' : (isLogin ? 'Login' : 'Sign Up')}
                         </AuthButton>
-						{isLogin && (
-                            <AuthToggle onClick={() => setShowResetForm('request')}>
-                                Forgot Password?
-                            </AuthToggle>
-                        )}
                     </AuthForm>
-                    <AuthToggle onClick={() => navigate(isLogin ? '/auth/signup' : '/auth/login')}>
-                        {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+                    <AuthToggle onClick={() => toggleMode(isLogin ? 'signup' : 'login')}>
+                        {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Login'}
                     </AuthToggle>
                 </AuthContainer>
             </AuthBox>

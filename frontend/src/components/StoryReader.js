@@ -29,7 +29,6 @@ const StoryText = styled.div`
 
 const SectionButton = styled.button`
     background-color: #2C2C2C;
-    color: #F8F9FA;
     border: none;
     padding: 10px 20px;
     border-radius: 8px;

@@ -140,7 +140,7 @@ function Home() {
   };
 
   return (
-    <BasicPage>
+    <BasicPage showGetStarted>
       <HomeContent>
         <TextContent>
           <MainHeading>Learn Languages Through Stories</MainHeading>

@@ -12,6 +12,35 @@ export const AuthBox = styled.div`
 	box-sizing: border-box;
 `;
 
+export const AuthToggleContainer = styled.div`
+  display: flex;
+  width: 80%;
+  background: #f5f5f5;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+`;
+
+export const ToggleButton = styled.button`
+  flex: 1;
+  padding: 12px;
+  border: none;
+  background: ${props => props.active ? '#fad48f' : '#f5f5f5'};
+  color: ${props => props.active ? '#000000' : '#8f8f8f'};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Lora', serif;
+`;
+
+export const AuthTitle = styled.h2`
+  font-family: 'Lora', serif;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+  text-align: center;
+`;
+
+
 export const AuthContainer = styled.div`
 	display: flex;
 	flex-direction: column;

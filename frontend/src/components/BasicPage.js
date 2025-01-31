@@ -15,7 +15,7 @@ import logo from '../assets/drawing_400.png';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi'; 
 
-function BasicPage({ children, showLogout, onLogout }) {
+function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
@@ -37,12 +37,20 @@ function BasicPage({ children, showLogout, onLogout }) {
           <ButtonContainer>
             <HeaderText onClick={() => navigate('/contact-support.html')}>Contact Us</HeaderText>
             <div></div>
-            <HeaderButton
-              onClick={handleGetStarted}
-            >
-              Get Started
-              <FiArrowRight size={24} />
-            </HeaderButton>
+            {showLogout && (
+              <HeaderButton onClick={onLogout}>
+                Logout
+                <FiArrowRight size={24} />
+              </HeaderButton>
+            )}
+            {showGetStarted && (
+              <HeaderButton
+                onClick={handleGetStarted}
+              >
+                Get Started
+                <FiArrowRight size={24} />
+              </HeaderButton>
+            )}
           </ButtonContainer>
         </NavHeader>
 

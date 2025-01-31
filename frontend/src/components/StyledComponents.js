@@ -10,7 +10,6 @@ export const BrowserBox = styled.div`
   height: 100%;
   margin: 80px auto 0 auto;
   padding: 20px;
-  background-color: #F8F9FA;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -68,7 +67,6 @@ export const GenerateButton = styled.button`
 
 export const StoryContainer = styled.div`
   position: relative;
-  background-color: #F8F9FA;
   padding: 5px 30px;
   border-radius: 15px;
   font-family: 'Lora', serif;
@@ -143,7 +141,6 @@ export const Tooltip = styled.div`
   top: ${(props) => props.top || 0}px;
   left: ${(props) => props.left || 0}px;
   padding: 10px;
-  background-color: #F8F9FA;
   border: 1px solid #000000;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
