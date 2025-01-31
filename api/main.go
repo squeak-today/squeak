@@ -23,6 +23,8 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
+
+	"story-api/gemini"
 )
 
 type TranslateResponse struct {
@@ -37,6 +39,7 @@ var ginLambda *ginadapter.GinLambda
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
@@ -438,6 +441,46 @@ func init() {
 
 		c.JSON(http.StatusOK, gin.H{
 			"sentence": result.Data.Translations[0].TranslatedText,
+		})
+	})
+
+	router.POST("/evaluate-qna", func(c *gin.Context) {
+		var infoBody struct {
+			CEFR string `json:"cefr"`
+			Content string `json:"content"`
+			Question string `json:"question"`
+			Answer string `json:"answer"`
+		}
+
+		if err := c.ShouldBindJSON(&infoBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		apiKey := os.Getenv("GEMINI_API_KEY")
+		geminiClient, err := gemini.NewGeminiClient(apiKey)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create Gemini client: %v", err)})
+			return
+		}
+		defer geminiClient.Client.Close()
+
+		evaluation, err := geminiClient.EvaluateQNA(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Evaluation with Gemini failed"})
+			return
+		}
+
+		// take only first 4 characters of evaluation, as its either PASS or FAIL
+		evaluationScore := ""
+		if len(evaluation) >= 4 {
+			evaluationScore = evaluation[:4]
+		} else {
+			evaluationScore = evaluation
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"evaluation": evaluationScore,
 		})
 	})
 

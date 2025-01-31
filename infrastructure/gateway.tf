@@ -28,6 +28,15 @@ module "translate" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "evaluate_qna" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "evaluate-qna"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "news_query" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -62,6 +71,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.story,
     module.news,
     module.translate,
-    module.news_query
+    module.evaluate_qna,
+    module.news_query,
+    module.story_query,
   ]
 }
