@@ -94,7 +94,7 @@ const MainHeading = styled.h1`
 const SmallText = styled.p`
   font-family: 'Lora', serif;
   font-weight: 400; /* Regular weight */
-  font-size: 1em; /* Font size */
+  font-size: 1.1em; /* Font size */
   color: #575757;
   text-decoration: underline;
 

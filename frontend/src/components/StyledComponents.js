@@ -205,7 +205,7 @@ export const HeaderTitle = styled.h1`
   }
 `;
 export const HeaderButton = styled.button`
-  width: 9em; /* Base width */
+  width: 8em; /* Base width */
   aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
   font-family: 'Lora', serif;
   font-size: 1.5em;
@@ -410,6 +410,20 @@ export const LogoText = styled.span`
     font-size: 32px; /* Adjusted size for smaller screens */
   }
 `;
+
+
+export const HeaderText = styled.span`
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
+  font-weight: 400;
+  color: #000000;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 32px; /* Adjusted size for smaller screens */
+  }
+`;
+
 /**
  * Positioned in the center on larger screens, 
  * but for mobile we can un-position and stack as needed.

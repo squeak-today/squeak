@@ -3,6 +3,7 @@ import {
   NavHeader,
   HeaderLogo,
   FooterContainer,
+  HeaderText,
   FooterLogo,
   FooterText,
   HeaderButton,
@@ -17,6 +18,11 @@ import { FiArrowRight } from 'react-icons/fi';
 function BasicPage({ children, showLogout, onLogout }) {
   const navigate = useNavigate();
 
+  const handleGetStarted = () => {
+    navigate('/auth/signup');
+  };
+
+
   return (
     <TransitionWrapper>
       <PageContainer>
@@ -27,12 +33,12 @@ function BasicPage({ children, showLogout, onLogout }) {
             onClick={() => navigate('/')}
           />
           <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
+          
           <ButtonContainer>
+            <HeaderText onClick={() => navigate('/contact-support.html')}>Contact Us</HeaderText>
+            <div></div>
             <HeaderButton
-              as="a"
-              href="/contact-support.html"
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={handleGetStarted}
             >
               Get Started
               <FiArrowRight size={24} />
