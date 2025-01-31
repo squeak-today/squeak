@@ -225,7 +225,7 @@ export const HeaderButton = styled.button`
   @media (max-width: 768px) {
     font-size: 1.5em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
-    max-width: 25vw;
+    max-width: 35vw;
     justify: center;
   }
 
@@ -259,7 +259,7 @@ export const HeroButton = styled.button`
 
   /* Adjust for smaller screens */
   @media (max-width: 768px) {
-    font-size: 2em;
+    font-size: 1.5em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
     max-width: 40vw;
   }
@@ -336,7 +336,6 @@ export const NavHeader = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures elements are spaced properly */
-  padding: 4vh 2vw 2vw 3vh; /* Adds internal padding */
   z-index: 1000;
   box-sizing: border-box;
 
@@ -355,16 +354,60 @@ export const NavHeader = styled.header`
 
 
 export const HeaderLogo = styled.img`
-  height: 7vh; /* Reduced size by 10% */
+  height: 3em; /* Reduced size by 10% */
   margin-right: 10px;
   cursor: pointer;
   padding-left: 1em;
 
   @media (max-width: 768px) {
-    height: 5vh; /* Adjusted size for smaller screens */
+    height: 2.5em; /* Adjusted size for smaller screens */
     margin-right: 5px;
   }
 `;
+
+
+export const MobileMenuIcon = styled.div`
+  display: none;
+  cursor: pointer;
+
+  /* Only show the menu icon on mobile */
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+export const MenuText = styled.div`
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: 'Lora', serif;
+  color: #333;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+export const MobileMenu = styled.div`
+  display: none; 
+  position: absolute;
+  top: 70px; 
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border-radius: 4px;
+  z-index: 999;  
+  padding: 0.5rem 1rem;
+  width: auto;
+  height: auto;
+
+  @media (max-width: 768px) {
+    /* Show only if open on mobile */
+    display: ${(props) => (props.isOpen ? 'block' : 'none')};
+  }
+`;
+
 
 
 export const MiscButton = styled.button`
@@ -406,6 +449,7 @@ export const LogoText = styled.span`
     font-size: 1.5em; /* Adjusted size for smaller screens */
   }
 `;
+
 
 
 export const HeaderText = styled.span`
@@ -450,10 +494,12 @@ export const ButtonContainer = styled.div`
   margin-left: auto; /* Push button to the right */
   display: flex;
   align-items: center;
+  margin-top: 10px;
   gap: 1rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 0rem;
+    margin-top: 10px;
   }
 `;
