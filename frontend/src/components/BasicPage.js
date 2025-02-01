@@ -82,11 +82,11 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
             </MobileMenu>
             
             {showGetStarted && (
-              <HeaderButton
-                onClick={handleGetStarted}
-              >
+              <HeaderButton onClick={handleGetStarted}>
                 Get Started
-                <FiArrowRight size={24} />
+                <span className="arrow-icon">
+                  <FiArrowRight size={24} />
+                </span>
               </HeaderButton>
             )}
           </ButtonContainer>

@@ -225,6 +225,17 @@ export const HeaderButton = styled.button`
   gap: 10px; /* Space between text and arrow */
   text-decoration: none;
 
+  .arrow-icon {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .arrow-icon {
+    display: none;
+  }
+}
+
+
   &:hover {
     background: #f3c87d; /* Slightly darker on hover */
   }
@@ -249,6 +260,7 @@ export const HeaderButton = styled.button`
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
     max-height: 3em;
     max-width: 45vw;
+
   }
 `;
 
