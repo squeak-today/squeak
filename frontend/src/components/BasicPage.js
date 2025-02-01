@@ -40,10 +40,8 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
           <HeaderLogo
             src={logo}
             alt="Squeak Logo"
-            alt="Squeak Logo"
             onClick={() => navigate('/')}
           />
-          <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
           <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
           
           <ButtonContainer>
@@ -97,18 +95,6 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
         {/* Main Content */}
         {children}
 
-        <FooterContainer>
-          {/*
-
-
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <FooterLogo src={logo} alt="Squeak Footer Logo" />
-            <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
-          </div>
-
-          */}
-          <FooterText>© 2025 Squeak. All rights reserved.</FooterText>
-        </FooterContainer>
         <FooterContainer>
           {/*
 
