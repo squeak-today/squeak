@@ -27,7 +27,6 @@ const HomeContent = styled.div`
     max-width: 90%;
     height: auto;
     padding: 20px;
-    gap: 20px;
   }
 `;
 
@@ -39,7 +38,7 @@ const TextContent = styled.div`
   max-width: 50%;
 
   @media (max-width: 768px) {
-    max-width: 100%;
+    max-width: 95%;
   }
 `;
 
@@ -62,11 +61,11 @@ const SubHeading = styled.p`
   font-size: 1.5rem;
   color: #333333; /* Slightly lighter color */
   text-align: left; /* Left-aligned like the main heading */
-  margin-top: 1rem;
+  margin-top: 1vh;
 
   @media (max-width: 768px) {
-    font-size: 1.2rem;
-    max-width: 28ch;
+    font-size: 1rem;
+    max-width: 36ch;
     text-align: center;
     margin-left: auto; /* Center horizontally */
     margin-right: auto; /* Center horizontally */
@@ -81,7 +80,7 @@ const MainHeading = styled.h1`
   font-weight: 400; /* Regular weight */
   font-size: 3.5em; /* Font size */
   color: #000000;
-  line-height: 1.2;
+  line-height: 1.15;
   max-width: 14ch;
   text-align: left; /* Left aligned */
   white-space: normal; /* Allow text to wrap normally */
@@ -94,7 +93,7 @@ const MainHeading = styled.h1`
   }
 
   @media (max-width: 480px) {
-    font-size: 2.5em; /* Further adjustment for very small screens */
+    font-size: 2.2em; /* Further adjustment for very small screens */
     max-width: 24ch; /* Wider for very small screens */
     text-align: center; /* center aligned */
 

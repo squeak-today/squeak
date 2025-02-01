@@ -243,6 +243,13 @@ export const HeaderButton = styled.button`
     max-height: 2.5em;
     max-width: 40vw;
   }
+
+  @media (max-width: 350px) {
+    font-size: 1.2em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-height: 3em;
+    max-width: 45vw;
+  }
 `;
 
 export const HeroButton = styled.button`
@@ -329,9 +336,9 @@ export const FooterText = styled.span`
   color: #000000;
 
   @media (max-width: 768px) {
-    font-size: 1.2em;
+    font-size: 1em;
     text-align: center; /* Center-align for smaller screens */
-    margin-top: 10px;
+
   }
 `;
 
@@ -389,11 +396,12 @@ export const HeaderLogo = styled.img`
   height: 3em; /* Reduced size by 10% */
   margin-right: 10px;
   cursor: pointer;
-  padding-left: 1em;
+  padding-left: 1vw;
 
   @media (max-width: 768px) {
-    height: 2.5em; /* Adjusted size for smaller screens */
-    margin-right: 5px;
+    height: 2.2em; /* Adjusted size for smaller screens */
+    padding-left: 0vw;
+    margin-right: 1vh;
   }
 `;
 
@@ -492,7 +500,8 @@ export const LogoText = styled.span`
   cursor: pointer;
 
   @media (max-width: 768px) {
-    font-size: 1.5em; /* Adjusted size for smaller screens */
+    font-size: 1.4em; /* Adjusted size for smaller screens */
+    margin-right: 10px;
   }
 `;
 
@@ -507,6 +516,7 @@ export const HeaderText = styled.span`
 
   @media (max-width: 768px) {
     font-size: 0em; /* Adjusted size for smaller screens */
+    margin-right: 10px;
   }
 `;
 
@@ -542,15 +552,13 @@ export const PageContainer = styled.div`
 // 2) ButtonContainer
 export const ButtonContainer = styled.div`
   margin-left: auto; /* Push button to the right */
-  margin-left: auto; /* Push button to the right */
   display: flex;
   align-items: center;
-  margin-top: 10px;
   gap: 1rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 0rem;
-    margin-top: 10px;
+
   }
 `;
