@@ -376,7 +376,7 @@ func init() {
 
 	router.POST("/content-question", func(c *gin.Context) {
 		var infoBody struct {
-			StoryType    string `json:"story_type"`
+			ContentType    string `json:"content_type"`
 			ID           int    `json:"id"`
 			CEFRLevel    string `json:"cefr_level"`
 			QuestionType string `json:"question_type"`
@@ -392,6 +392,25 @@ func init() {
 			return
 		}
 
+		client, err := supabase.NewClient()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+			return
+		}
+		defer client.Close()
+
+		question, err := client.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve question"})
+			return
+		}
+
+		if question == nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "No question found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, question)
 	})
 
 	ginLambda = ginadapter.New(router)

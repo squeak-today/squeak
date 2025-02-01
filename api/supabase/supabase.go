@@ -113,3 +113,91 @@ func (c *Client) queryContent(baseQuery string, params QueryParams) ([]map[strin
 
 	return results, nil
 }
+
+// retrieves a question for the given content type, id, question type and CEFR level
+func (c *Client) GetContentQuestion(contentType string, contentID int, questionType string, cefrLevel string) (map[string]interface{}, error) {
+	var query string
+	if contentType == "Story" {
+		query = `
+			SELECT id, story_id, question_type, cefr_level, question, created_at 
+			FROM questions 
+			WHERE story_id = $1 AND question_type = $2 AND cefr_level = $3`
+	} else if contentType == "News" {
+		query = `
+			SELECT id, news_id, question_type, cefr_level, question, created_at 
+			FROM questions 
+			WHERE news_id = $1 AND question_type = $2 AND cefr_level = $3`
+	} else {
+		return nil, fmt.Errorf("invalid content type: %s", contentType)
+	}
+
+	var id int
+	var contentRefID int
+	var qType, cefr, question string
+	var createdAt time.Time
+
+	err := c.db.QueryRow(query, contentID, questionType, cefrLevel).Scan(
+		&id,
+		&contentRefID,
+		&qType,
+		&cefr,
+		&question,
+		&createdAt,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil // No question found
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query question: %v", err)
+	}
+
+	result := map[string]interface{}{
+		"id":            id,
+		"question_type": qType,
+		"cefr_level":    cefr,
+		"question":      question,
+		"created_at":    createdAt,
+	}
+
+	// Add the appropriate content ID field based on type
+	if contentType == "Story" {
+		result["story_id"] = contentRefID
+	} else {
+		result["news_id"] = contentRefID
+	}
+
+	return result, nil
+}
+
+// creates a new question for the given content (story/news)
+func (c *Client) CreateContentQuestion(contentType string, contentID int, questionType string, cefrLevel string, question string) error {
+	var query string
+	if contentType == "Story" {
+		query = `
+			INSERT INTO questions (story_id, question_type, cefr_level, question)
+			VALUES ($1, $2, $3, $4)`
+	} else if contentType == "News" {
+		query = `
+			INSERT INTO questions (news_id, question_type, cefr_level, question)
+			VALUES ($1, $2, $3, $4)`
+	} else {
+		return fmt.Errorf("invalid content type: %s", contentType)
+	}
+
+	result, err := c.db.Exec(query, contentID, questionType, cefrLevel, question)
+	if err != nil {
+		return fmt.Errorf("failed to insert question: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %v", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no rows were inserted")
+	}
+
+	return nil
+}
