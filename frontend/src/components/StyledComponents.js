@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 
+
 /** 
  * Container that holds main content.
  * Added responsive margin and padding for mobile.
@@ -8,6 +9,7 @@ import styled from 'styled-components';
 export const BrowserBox = styled.div`
   width: 100%;
   height: 100%;
+  margin: 2em auto 0 auto;
   margin: 2em auto 0 auto;
   padding: 20px;
   box-sizing: border-box;
@@ -23,6 +25,7 @@ export const Title = styled.h1`
   text-align: center;
   color: #000000;
   font-family: 'Lora', serif;
+  font-family: 'Lora', serif;
   font-size: 3.5rem;
   margin-bottom: 10px;
 
@@ -34,6 +37,8 @@ export const Title = styled.h1`
 export const Subtitle = styled.h3`
   text-align: center;
   color: #000000;
+  font-weight: 400;
+  font-family: 'Lora', serif;
   font-weight: 400;
   font-family: 'Lora', serif;
   font-size: 1.8rem;
@@ -68,12 +73,15 @@ export const GenerateButton = styled.button`
 export const StoryContainer = styled.div`
   position: relative;
 
+
   border-radius: 15px;
+  font-family: 'Lora', serif;
   font-family: 'Lora', serif;
   
   max-width: 90vw;
   max-height: 80vh;
   overflow-y: auto;
+
 
 
   box-sizing: border-box;
@@ -225,7 +233,7 @@ export const HeaderButton = styled.button`
   @media (max-width: 768px) {
     font-size: 1.5em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
-    max-width: 25vw;
+    max-width: 35vw;
     justify: center;
   }
 
@@ -259,7 +267,7 @@ export const HeroButton = styled.button`
 
   /* Adjust for smaller screens */
   @media (max-width: 768px) {
-    font-size: 2em;
+    font-size: 1.5em;
     aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
     max-width: 40vw;
   }
@@ -280,20 +288,52 @@ export const FooterContainer = styled.footer`
   max-width: 1200px; /* Keep it consistent with the header */
   height: 80px;
   margin: 0 auto; /* Center the footer */
+  width: 90%; /* Match the width to the header */
+  max-width: 1200px; /* Keep it consistent with the header */
+  height: 80px;
+  margin: 0 auto; /* Center the footer */
   background-color: #ffffff;
+  border-top: 0.75px solid #000000; /* Black border on top */
   border-top: 0.75px solid #000000; /* Black border on top */
   display: flex;
   align-items: center;
+  justify-content: center; /* Space between left and right content */
+  padding: 0 20px; /* Add padding inside the footer */
   justify-content: center; /* Space between left and right content */
   padding: 0 20px; /* Add padding inside the footer */
   box-sizing: border-box;
 
   @media (max-width: 768px) {
     flex-direction: column; /* Stack items on smaller screens */
+    flex-direction: column; /* Stack items on smaller screens */
     height: auto;
     padding: 1rem;
   }
 `;
+
+export const FooterLogo = styled.img`
+  height: 54px; /* Match header logo size */
+  cursor: pointer;
+  margin-right: 10px;
+
+  @media (max-width: 768px) {
+    height: 45px;
+  }
+`;
+
+export const FooterText = styled.span`
+  font-family: 'Lora', serif;
+  font-size: 1em; /* Adjust the font size */
+  font-weight: 400;
+  color: #000000;
+
+  @media (max-width: 768px) {
+    font-size: 1.2em;
+    text-align: center; /* Center-align for smaller screens */
+    margin-top: 10px;
+  }
+`;
+
 
 export const FooterLogo = styled.img`
   height: 54px; /* Match header logo size */
@@ -325,7 +365,12 @@ export const FooterText = styled.span`
  */
 export const NavHeader = styled.header`
   position: relative;
+  position: relative;
   top: 0;
+  left: 50%;
+  transform: translateX(-50%); /* Centers the header */
+  width: 90%; /* Adds margin from the sides */
+  max-width: 90%; /* Restricts the maximum width */
   left: 50%;
   transform: translateX(-50%); /* Centers the header */
   width: 90%; /* Adds margin from the sides */
@@ -333,20 +378,27 @@ export const NavHeader = styled.header`
   height: 80px;
   background-color: #FFFFFF;
   border-bottom: 0.75px solid #000000; 
+  background-color: #FFFFFF;
+  border-bottom: 0.75px solid #000000; 
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures elements are spaced properly */
-  padding: 4vh 2vw 2vw 3vh; /* Adds internal padding */
   z-index: 1000;
   box-sizing: border-box;
 
   @media (max-width: 768px) {
     position: relative;
     z-index: 1000;
+    position: relative;
+    z-index: 1000;
     height: auto;
     align-items: center;
     justify-content: space-between; /* Ensures elements are spaced properly */
+    align-items: center;
+    justify-content: space-between; /* Ensures elements are spaced properly */
     padding: 0.5rem 1rem;
+    padding-top: 2vh;
+    width: 95%; /* Adjust width for smaller screens */
     padding-top: 2vh;
     width: 95%; /* Adjust width for smaller screens */
   }
@@ -354,17 +406,63 @@ export const NavHeader = styled.header`
 
 
 
+
+
 export const HeaderLogo = styled.img`
-  height: 7vh; /* Reduced size by 10% */
+  height: 3em; /* Reduced size by 10% */
   margin-right: 10px;
   cursor: pointer;
   padding-left: 1em;
 
   @media (max-width: 768px) {
-    height: 5vh; /* Adjusted size for smaller screens */
+    height: 2.5em; /* Adjusted size for smaller screens */
     margin-right: 5px;
   }
 `;
+
+
+export const MobileMenuIcon = styled.div`
+  display: none;
+  cursor: pointer;
+
+  /* Only show the menu icon on mobile */
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+export const MenuText = styled.div`
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: 'Lora', serif;
+  color: #333;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+export const MobileMenu = styled.div`
+  display: none; 
+  position: absolute;
+  top: 70px; 
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border-radius: 4px;
+  z-index: 999;  
+  padding: 0.5rem 1rem;
+  width: auto;
+  height: auto;
+
+  @media (max-width: 768px) {
+    /* Show only if open on mobile */
+    display: ${(props) => (props.isOpen ? 'block' : 'none')};
+  }
+`;
+
 
 
 export const MiscButton = styled.button`
@@ -372,7 +470,14 @@ export const MiscButton = styled.button`
   height: 6vh;
   font-family: 'Lora', serif;
   font-size: 1.5em;
+  width: 8em;
+  height: 6vh;
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
   border-radius: 10px;
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
+  color: #000000;
   background: #fad48f; /* Updated color */
   border: none; /* Removed border */
   color: #000000;
@@ -383,8 +488,15 @@ export const MiscButton = styled.button`
   justify-content: center;
   gap: 10px; /* Space between text and arrow */
   text-decoration: none;
+  display: flex;
+  margin-right: 4em;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
 
   &:hover {
+    background: #f3c87d; /* Slightly darker on hover */
     background: #f3c87d; /* Slightly darker on hover */
   }
 
@@ -408,6 +520,7 @@ export const LogoText = styled.span`
 `;
 
 
+
 export const HeaderText = styled.span`
   font-family: 'Lora', serif;
   font-size: 1.5em;
@@ -426,10 +539,14 @@ export const HeaderText = styled.span`
  */
 export const PictureLogo = styled.img`
   height: 2em;
+  height: 2em;
 
   @media (max-width: 768px) {
 
+
     margin-bottom: 0.5rem;
+    height: 2em;
+
     height: 2em;
 
   }
@@ -448,12 +565,15 @@ export const PageContainer = styled.div`
 // 2) ButtonContainer
 export const ButtonContainer = styled.div`
   margin-left: auto; /* Push button to the right */
+  margin-left: auto; /* Push button to the right */
   display: flex;
   align-items: center;
+  margin-top: 10px;
   gap: 1rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
     gap: 0rem;
+    margin-top: 10px;
   }
 `;
