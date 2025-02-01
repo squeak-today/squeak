@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"net/http"
 
@@ -19,12 +18,11 @@ import (
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 
-	"database/sql"
-
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
 
 	"story-api/gemini"
+	"story-api/supabase"
 )
 
 type TranslateResponse struct {
@@ -39,6 +37,10 @@ var ginLambda *ginadapter.GinLambda
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if os.Getenv("WORKSPACE") == "dev" {
+			c.Next()
+			return
+		}
 
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -187,81 +189,25 @@ func init() {
 			return
 		}
 
-		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-			os.Getenv("SUPABASE_HOST"),
-			os.Getenv("SUPABASE_PORT"),
-			os.Getenv("SUPABASE_USER"),
-			os.Getenv("SUPABASE_PASSWORD"),
-			os.Getenv("SUPABASE_DATABASE"),
-		)
-
-		db, err := sql.Open("postgres", connStr)
+		client, err := supabase.NewClient()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
 			return
 		}
-		defer db.Close()
+		defer client.Close()
 
-		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1"
-		var params []interface{}
-		paramCount := 1
-
-		if language != "" && language != "any" {
-			query += fmt.Sprintf(" AND language = $%d", paramCount)
-			params = append(params, language)
-			paramCount++
+		params := supabase.QueryParams{
+			Language: language,
+			CEFR:     cefr,
+			Subject:  subject,
+			Page:     pageNum,
+			PageSize: pageSizeNum,
 		}
 
-		if cefr != "" && cefr != "any" {
-			query += fmt.Sprintf(" AND cefr_level = $%d", paramCount)
-			params = append(params, cefr)
-			paramCount++
-		}
-
-		if subject != "" && subject != "any" {
-			query += fmt.Sprintf(" AND topic = $%d", paramCount)
-			params = append(params, subject)
-			paramCount++
-		}
-
-		query += " ORDER BY created_at DESC"
-		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
-		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
-
-		log.Printf("Executing query: %s with params: %v", query, params)
-
-		results := make([]map[string]interface{}, 0)
-
-		rows, err := db.Query(query, params...)
+		results, err := client.QueryNews(params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
 			return
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var id, title, language, topic, cefrLevel, previewText string
-			var createdAt time.Time
-			var dateCreated sql.NullTime
-
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
-				return
-			}
-
-			result := map[string]interface{}{
-				"id":           id,
-				"title":        title,
-				"language":     language,
-				"topic":        topic,
-				"cefr_level":   cefrLevel,
-				"preview_text": previewText,
-				"created_at":   createdAt,
-				"date_created": dateCreated.Time.Format("2006-01-02"),
-			}
-			results = append(results, result)
 		}
 
 		c.JSON(http.StatusOK, results)
@@ -293,81 +239,25 @@ func init() {
 			return
 		}
 
-		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-			os.Getenv("SUPABASE_HOST"),
-			os.Getenv("SUPABASE_PORT"),
-			os.Getenv("SUPABASE_USER"),
-			os.Getenv("SUPABASE_PASSWORD"),
-			os.Getenv("SUPABASE_DATABASE"),
-		)
-
-		db, err := sql.Open("postgres", connStr)
+		client, err := supabase.NewClient()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
 			return
 		}
-		defer db.Close()
+		defer client.Close()
 
-		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM stories WHERE 1=1"
-		var params []interface{}
-		paramCount := 1
-
-		if language != "" && language != "any" {
-			query += fmt.Sprintf(" AND language = $%d", paramCount)
-			params = append(params, language)
-			paramCount++
+		params := supabase.QueryParams{
+			Language: language,
+			CEFR:     cefr,
+			Subject:  subject,
+			Page:     pageNum,
+			PageSize: pageSizeNum,
 		}
 
-		if cefr != "" && cefr != "any" {
-			query += fmt.Sprintf(" AND cefr_level = $%d", paramCount)
-			params = append(params, cefr)
-			paramCount++
-		}
-
-		if subject != "" && subject != "any" {
-			query += fmt.Sprintf(" AND topic = $%d", paramCount)
-			params = append(params, subject)
-			paramCount++
-		}
-
-		query += " ORDER BY date_created DESC"
-		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
-		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
-
-		log.Printf("Executing query: %s with params: %v", query, params)
-
-		results := make([]map[string]interface{}, 0)
-
-		rows, err := db.Query(query, params...)
+		results, err := client.QueryStories(params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
 			return
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var id, title, language, topic, cefrLevel, previewText string
-			var createdAt time.Time
-			var dateCreated sql.NullTime
-
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
-				return
-			}
-
-			result := map[string]interface{}{
-				"id":           id,
-				"title":        title,
-				"language":     language,
-				"topic":        topic,
-				"cefr_level":   cefrLevel,
-				"preview_text": previewText,
-				"created_at":   createdAt,
-				"date_created": dateCreated.Time.Format("2006-01-02"),
-			}
-			results = append(results, result)
 		}
 
 		c.JSON(http.StatusOK, results)
@@ -446,10 +336,10 @@ func init() {
 
 	router.POST("/evaluate-qna", func(c *gin.Context) {
 		var infoBody struct {
-			CEFR string `json:"cefr"`
-			Content string `json:"content"`
+			CEFR     string `json:"cefr"`
+			Content  string `json:"content"`
 			Question string `json:"question"`
-			Answer string `json:"answer"`
+			Answer   string `json:"answer"`
 		}
 
 		if err := c.ShouldBindJSON(&infoBody); err != nil {
@@ -482,6 +372,26 @@ func init() {
 		c.JSON(http.StatusOK, gin.H{
 			"evaluation": evaluationScore,
 		})
+	})
+
+	router.POST("/content-question", func(c *gin.Context) {
+		var infoBody struct {
+			StoryType    string `json:"story_type"`
+			ID           int    `json:"id"`
+			CEFRLevel    string `json:"cefr_level"`
+			QuestionType string `json:"question_type"`
+		}
+
+		if err := c.ShouldBindJSON(&infoBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		if infoBody.QuestionType != "vocab" && infoBody.QuestionType != "understanding" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid question type"})
+			return
+		}
+
 	})
 
 	ginLambda = ginadapter.New(router)

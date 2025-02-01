@@ -27,6 +27,7 @@ resource "aws_lambda_function" "story_api_lambda" {
 
       JWT_SECRET     = var.supabase_jwt_secret
       GEMINI_API_KEY = var.gemini_api_key
+      WORKSPACE      = terraform.workspace
     }
   }
 
