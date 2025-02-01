@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+
+
 /** 
  * Container that holds main content.
  * Added responsive margin and padding for mobile.
@@ -7,9 +9,9 @@ import styled from 'styled-components';
 export const BrowserBox = styled.div`
   width: 100%;
   height: 100%;
-  margin: 80px auto 0 auto;
+  margin: 2em auto 0 auto;
+  margin: 2em auto 0 auto;
   padding: 20px;
-  background-color: #ffffff;
   box-sizing: border-box;
   overflow: hidden;
 
@@ -22,7 +24,8 @@ export const BrowserBox = styled.div`
 export const Title = styled.h1`
   text-align: center;
   color: #000000;
-  font-family: 'Noto Serif', serif;
+  font-family: 'Lora', serif;
+  font-family: 'Lora', serif;
   font-size: 3.5rem;
   margin-bottom: 10px;
 
@@ -34,7 +37,10 @@ export const Title = styled.h1`
 export const Subtitle = styled.h3`
   text-align: center;
   color: #000000;
-  font-family: 'Noto Serif', serif;
+  font-weight: 400;
+  font-family: 'Lora', serif;
+  font-weight: 400;
+  font-family: 'Lora', serif;
   font-size: 1.8rem;
   margin-top: 0;
 
@@ -66,16 +72,18 @@ export const GenerateButton = styled.button`
 
 export const StoryContainer = styled.div`
   position: relative;
-  background-color: white;
-  padding: 5px 30px;
+
+
   border-radius: 15px;
-  font-family: 'Noto Serif', serif;
+  font-family: 'Lora', serif;
+  font-family: 'Lora', serif;
   
   max-width: 90vw;
   max-height: 80vh;
   overflow-y: auto;
 
-  padding-top: 10px;
+
+
   box-sizing: border-box;
 
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -98,7 +106,6 @@ export const StoryContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    padding: 10px;
     max-height: 70vh;
   }
 `;
@@ -141,7 +148,6 @@ export const Tooltip = styled.div`
   top: ${(props) => props.top || 0}px;
   left: ${(props) => props.left || 0}px;
   padding: 10px;
-  background-color: #ffffff;
   border: 1px solid #000000;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -203,99 +209,326 @@ export const HeaderTitle = styled.h1`
     margin-bottom: 1rem;
   }
 `;
-
-export const Footer = styled.footer`
-  position: relative;
-  width: 100%;
-  height: 10vh;
-  background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
+export const HeaderButton = styled.button`
+  width: 8em; /* Base width */
+  aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
+  border-radius: 10px;
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
+  color: #000000;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Noto Serif', serif;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
+
+  .arrow-icon {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .arrow-icon {
+    display: none;
+  }
+}
+
+
+  &:hover {
+    background: #f3c87d; /* Slightly darker on hover */
+  }
+
+  /* Adjust for smaller screens */
+  @media (max-width: 768px) {
+    font-size: 1.5em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-width: 35vw;
+    justify: center;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.25em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-height: 2.5em;
+    max-width: 40vw;
+  }
+
+  @media (max-width: 350px) {
+    font-size: 1.2em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-height: 3em;
+    max-width: 45vw;
+
+  }
+`;
+
+export const HeroButton = styled.button`
+  width: 8em; /* Base width */
+  aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
+  border-radius: 10px;
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
+
+  &:hover {
+    background: #f3c87d; /* Slightly darker on hover */
+  }
+
+  /* Adjust for smaller screens */
+  @media (max-width: 768px) {
+    font-size: 1.5em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-width: 40vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%; /* Full width on very small screens */
+    font-size: 1.5em;
+    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    max-height: 2.5em;
+    max-width: 192px;
+  }
+`;
+
+
+export const FooterContainer = styled.footer`
+  position: relative;
+  width: 90%; /* Match the width to the header */
+  max-width: 1200px; /* Keep it consistent with the header */
+  height: 80px;
+  margin: 0 auto; /* Center the footer */
+  width: 90%; /* Match the width to the header */
+  max-width: 1200px; /* Keep it consistent with the header */
+  height: 80px;
+  margin: 0 auto; /* Center the footer */
+  background-color: #ffffff;
+  border-top: 0.75px solid #000000; /* Black border on top */
+  border-top: 0.75px solid #000000; /* Black border on top */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Space between left and right content */
+  padding: 0 20px; /* Add padding inside the footer */
+  justify-content: center; /* Space between left and right content */
+  padding: 0 20px; /* Add padding inside the footer */
   box-sizing: border-box;
-  margin-top: auto;
 
   @media (max-width: 768px) {
+    flex-direction: column; /* Stack items on smaller screens */
+    flex-direction: column; /* Stack items on smaller screens */
     height: auto;
     padding: 1rem;
   }
 `;
+
+
+export const FooterLogo = styled.img`
+  height: 54px; /* Match header logo size */
+  cursor: pointer;
+  margin-right: 10px;
+
+  @media (max-width: 768px) {
+    height: 45px;
+  }
+`;
+
+export const FooterText = styled.span`
+  font-family: 'Lora', serif;
+  font-size: 1em; /* Adjust the font size */
+  font-weight: 400;
+  color: #000000;
+
+  @media (max-width: 768px) {
+    font-size: 1em;
+    text-align: center; /* Center-align for smaller screens */
+
+  }
+`;
+
 
 /**
  * Navigation header.
  * On mobile, switch to static positioning and a column layout.
  */
 export const NavHeader = styled.header`
-  position: absolute;
+  position: relative;
+  position: relative;
   top: 0;
-  left: 0;
-  width: 100vw;
-  max-width: 100%;
+  left: 50%;
+  transform: translateX(-50%); /* Centers the header */
+  width: 90%; /* Adds margin from the sides */
+  max-width: 90%; /* Restricts the maximum width */
+  left: 50%;
+  transform: translateX(-50%); /* Centers the header */
+  width: 90%; /* Adds margin from the sides */
+  max-width: 90%; /* Restricts the maximum width */
   height: 80px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  background-color: #FFFFFF;
+  border-bottom: 0.75px solid #000000; 
+  background-color: #FFFFFF;
+  border-bottom: 0.75px solid #000000; 
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 5%;
+  justify-content: space-between; /* Ensures elements are spaced properly */
   z-index: 1000;
   box-sizing: border-box;
 
   @media (max-width: 768px) {
-    position: static;
-    flex-direction: column;
+    position: relative;
+    z-index: 1000;
+    position: relative;
+    z-index: 1000;
     height: auto;
+    align-items: center;
+    justify-content: space-between; /* Ensures elements are spaced properly */
+    align-items: center;
+    justify-content: space-between; /* Ensures elements are spaced properly */
     padding: 0.5rem 1rem;
+    padding-top: 2vh;
+    width: 95%; /* Adjust width for smaller screens */
+    padding-top: 2vh;
+    width: 95%; /* Adjust width for smaller screens */
   }
 `;
+
+
+
+
 
 export const HeaderLogo = styled.img`
-  height: 50px;
-  margin: 0;
+  height: 3em; /* Reduced size by 10% */
+  margin-right: 10px;
   cursor: pointer;
-  
-  /* By default, it's visible on desktop */
-  display: block;
+  padding-left: 1vw;
 
   @media (max-width: 768px) {
-    /* Hide on mobile */
-    display: none;
+    height: 2.2em; /* Adjusted size for smaller screens */
+    padding-left: 0vw;
+    margin-right: 1vh;
   }
 `;
+
+
+export const MobileMenuIcon = styled.div`
+  display: none;
+  cursor: pointer;
+
+  /* Only show the menu icon on mobile */
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+export const MenuText = styled.div`
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: 'Lora', serif;
+  color: #333;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+export const MobileMenu = styled.div`
+  display: none; 
+  position: absolute;
+  top: 70px; 
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border-radius: 4px;
+  z-index: 999;  
+  padding: 0.5rem 1rem;
+  width: auto;
+  height: auto;
+
+  @media (max-width: 768px) {
+    /* Show only if open on mobile */
+    display: ${(props) => (props.isOpen ? 'block' : 'none')};
+  }
+`;
+
 
 
 export const MiscButton = styled.button`
-  padding: 0.8em 1.5em;
-  border: 1px solid #e0e0e0;
+  width: 8em;
+  height: 6vh;
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
+  width: 8em;
+  height: 6vh;
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
   border-radius: 10px;
-  background: white;
-  cursor: pointer;
-  font-family: 'Noto Serif', serif;
-  font-weight: bold;
-  font-size: 1rem;
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
   color: #000000;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #fad48f; /* Updated color */
+  border: none; /* Removed border */
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  margin-right: 4em;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
+  display: flex;
+  margin-right: 4em;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between text and arrow */
+  text-decoration: none;
 
   &:hover {
-    background: #f5f5f5;
+    background: #f3c87d; /* Slightly darker on hover */
+    background: #f3c87d; /* Slightly darker on hover */
   }
-
-  ${props => props.as === 'a' && `
-    text-decoration: none;
-  `}
 
   @media (max-width: 768px) {
     width: 100%;
-    margin-bottom: 0.5rem;
-	margin: 0 auto;	
-    white-space: normal;       /* allow wrapping */
-	max-width: 80%;            /* ensures it can't exceed 90% of container */
-    white-space: normal;       /* allow text to wrap */
-    word-wrap: break-word;
-    word-wrap: break-word;     /* ensure long strings wrap */
-    text-align: center;        /* center text on mobile if you like */
+    font-size: 28px;
+  }
+`;
+
+// Add a styled component for the "Squeak" text
+export const LogoText = styled.span`
+  font-family: 'Lora', serif;
+  font-size: 2.3em;
+  font-weight: 400;
+  color: #000000;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 1.4em; /* Adjusted size for smaller screens */
+    margin-right: 10px;
+  }
+`;
+
+
+
+export const HeaderText = styled.span`
+  font-family: 'Lora', serif;
+  font-size: 1.5em;
+  font-weight: 400;
+  color: #000000;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 0em; /* Adjusted size for smaller screens */
+    margin-right: 10px;
   }
 `;
 
@@ -304,19 +537,17 @@ export const MiscButton = styled.button`
  * but for mobile we can un-position and stack as needed.
  */
 export const PictureLogo = styled.img`
-  height: 60px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  cursor: default;
-
+  height: 2em;
+  height: 2em;
 
   @media (max-width: 768px) {
-    position: static;
-    transform: none;
+
+
     margin-bottom: 0.5rem;
-    height: 50px;
-    display: block; /* Show on mobile */
+    height: 2em;
+
+    height: 2em;
+
   }
 `;
 
@@ -332,12 +563,14 @@ export const PageContainer = styled.div`
 
 // 2) ButtonContainer
 export const ButtonContainer = styled.div`
+  margin-left: auto; /* Push button to the right */
   display: flex;
+  align-items: center;
   gap: 1rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    width: 100%;
-    align-items: stretch;
+    gap: 0rem;
+
   }
 `;

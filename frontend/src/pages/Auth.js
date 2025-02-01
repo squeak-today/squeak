@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import supabase from '../lib/supabase';
 import { Subtitle } from '../components/StyledComponents';
-import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle, AuthText } from '../styles/AuthPageStyles';
+import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle, AuthTitle, ToggleButton, AuthText, Slider, ToggleContainer } from '../styles/AuthPageStyles';
 import { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
@@ -17,6 +17,13 @@ function Auth() {
     const [signupSuccess, setSignupSuccess] = useState(false);
     const [showResetForm, setShowResetForm] = useState(false);
     const { showNotification } = useNotification();
+
+
+    const toggleMode = (newMode) => {
+        setIsLogin(newMode === 'login');
+        navigate(`/auth/${newMode}`);
+    };
+
 
     useEffect(() => {
 		supabase.auth.onAuthStateChange(async (event, session) => {
@@ -184,42 +191,71 @@ function Auth() {
 
     return (
         <BasicPage>
-            <AuthBox>
-                <AuthContainer>
-                    <Subtitle>
-                        {isLogin ? 'Welcome Back!' : 'Create Account'}
-                    </Subtitle>
-                    <AuthForm onSubmit={handleSubmit}>
-                        <AuthInput
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                        <AuthInput
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                        <AuthButton type="submit" disabled={loading}>
-                            {loading ? 'Loading...' : (isLogin ? 'Sign In' : 'Sign Up')}
-                        </AuthButton>
-						{isLogin && (
-                            <AuthToggle onClick={() => setShowResetForm('request')}>
-                                Forgot Password?
-                            </AuthToggle>
-                        )}
-                    </AuthForm>
-                    <AuthToggle onClick={() => navigate(isLogin ? '/auth/signup' : '/auth/login')}>
-                        {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-                    </AuthToggle>
-                </AuthContainer>
-            </AuthBox>
+          <AuthBox>
+            <AuthContainer>
+              {isLogin ? (
+                <AuthTitle>Welcome Back!</AuthTitle>
+              ) : (
+                <AuthTitle>Create Account</AuthTitle>
+              )}
+    
+              {/* 
+                Sliding Toggle:
+                1) The Slider is absolutely positioned & slides based on “isLogin”.
+                2) Two ToggleButtons on top that change “isLogin”.
+              */}
+              <ToggleContainer>
+                <Slider isLogin={isLogin} />
+                <ToggleButton
+                  active={!isLogin}
+                  onClick={() => toggleMode('signup')}
+                >
+                  Sign Up
+                </ToggleButton>
+                <ToggleButton
+                  active={isLogin}
+                  onClick={() => toggleMode('login')}
+                >
+                  Login
+                </ToggleButton>
+              </ToggleContainer>
+    
+              <AuthForm onSubmit={handleSubmit}>
+                <AuthInput
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <AuthInput
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <AuthButton type="submit" disabled={loading}>
+                  {loading ? 'Loading...' : isLogin ? 'Login' : 'Sign Up'}
+                </AuthButton>
+              </AuthForm>
+    
+              {/* Forgot password or toggle link */}
+              {isLogin ? (
+                <AuthToggle onClick={() => setShowResetForm('request')}>
+                  Forgot password?
+                </AuthToggle>
+              ) : null}
+    
+              <AuthToggle onClick={() => toggleMode(isLogin ? 'signup' : 'login')}>
+                {isLogin
+                  ? "Don't have an account? Sign up"
+                  : 'Already have an account? Login'}
+              </AuthToggle>
+            </AuthContainer>
+          </AuthBox>
         </BasicPage>
-    );
-}
+      );
+    }
 
 export default Auth; 

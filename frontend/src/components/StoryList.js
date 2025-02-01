@@ -5,7 +5,7 @@ const ListContainer = styled.div`
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-    font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
     display: flex;
     flex-direction: column;
     gap: 0.1rem;

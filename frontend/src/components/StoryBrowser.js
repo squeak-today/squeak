@@ -3,7 +3,7 @@ import StoryList from './StoryList';
 import { useState } from 'react';
 
 const DateHeader = styled.h1`
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	text-align: center;
 	margin-bottom: 1em;
 	font-size: 2em;
@@ -29,14 +29,14 @@ const FilterContainer = styled.div`
 const FilterLabel = styled.label`
 	display: block;
 	margin-bottom: 0.3em;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 `;
 
 const FilterSelect = styled.select`
 	padding: 0.5em;
 	border: 1px solid #e0e0e0;
 	border-radius: 5px;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	width: 100%;
 	background: white;
 	cursor: pointer;
@@ -56,7 +56,7 @@ const PageButton = styled.button`
 	border-radius: 10px;
 	background: white;
 	cursor: pointer;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 
 	&:disabled {
 		background: #eee;
@@ -69,7 +69,7 @@ const DisclaimerText = styled.p`
 	font-size: 0.75rem;
 	text-align: center;
 	margin-top: 2rem;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	font-style: italic;
 `;
 

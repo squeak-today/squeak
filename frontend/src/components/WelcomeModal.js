@@ -32,7 +32,7 @@ const WelcomeContent = styled.div`
     background-color: white;
     padding: 30px;
     border-radius: 15px;
-    font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
     max-width: 600px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     animation: slideIn 0.3s ease forwards;
