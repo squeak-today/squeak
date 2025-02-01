@@ -311,29 +311,6 @@ export const FooterContainer = styled.footer`
   }
 `;
 
-export const FooterLogo = styled.img`
-  height: 54px; /* Match header logo size */
-  cursor: pointer;
-  margin-right: 10px;
-
-  @media (max-width: 768px) {
-    height: 45px;
-  }
-`;
-
-export const FooterText = styled.span`
-  font-family: 'Lora', serif;
-  font-size: 1em; /* Adjust the font size */
-  font-weight: 400;
-  color: #000000;
-
-  @media (max-width: 768px) {
-    font-size: 1.2em;
-    text-align: center; /* Center-align for smaller screens */
-    margin-top: 10px;
-  }
-`;
-
 
 export const FooterLogo = styled.img`
   height: 54px; /* Match header logo size */

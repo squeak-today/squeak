@@ -16,12 +16,10 @@ import {
   MenuText,
 } from './StyledComponents'; // Updated import
 import logo from '../assets/drawing_400.png';
-import logo from '../assets/drawing_400.png';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi'; 
 import { AiOutlineMenu } from 'react-icons/ai';  // hamburger/waffle icon
 
-function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
 function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
   const navigate = useNavigate();
 
@@ -129,7 +127,3 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
 }
 
 export default BasicPage;
-
-
-
-
