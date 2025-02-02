@@ -158,6 +158,10 @@ Evaluates a user's answer to a question about a given content.
 | `question` | `string` | Yes | Question to evaluate on. |
 | `answer` | `string` | Yes | User's answer to evaluate. |
 
+### Headers
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
 ### Response
 > `200 Successful`
 ```json
@@ -223,6 +227,30 @@ Query Supabase for stories.
 > `200 Successful`
 
 See `news-query` response.
+
+### **POST** `/content-question`
+> https://api.squeak.today/evaluate-qna
+
+Pulls a given question testing vocabulary (vocab) or understanding (understanding) of a given piece of content by ID. If the question does not exist, another will be generated, stored and returned.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `content_type` | `string` | Yes | Type of content, either `News` or `Story`. |
+| `id` | `string` | Yes | ID of the content. |
+| `cefr_level` | `string` | Yes | Desired CEFR level of the resulting question. |
+| `question_type` | `string` | Yes | Type of question, either `vocab` or `understanding`. |
+
+### Headers
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+### Response
+> `200 Successful`
+```json
+{
+	"question": "What does 'economie' mean?"
+}
+```
 
 ## Examples: `api.squeak.today`
 > https://api.squeak.today/news?language=French&cefr=B2&subject=Politics&page=1&pagesize=10
