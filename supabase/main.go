@@ -84,7 +84,7 @@ func generateTestData(db *sql.DB) error {
 	return nil
 }
 
-func getContentQuestion(db *sql.DB, contentType string, contentID int, questionType string, cefrLevel string) (map[string]interface{}, error) {
+func getContentQuestion(db *sql.DB, contentType string, contentID string, questionType string, cefrLevel string) (map[string]interface{}, error) {
 	var query string
 	if contentType == "Story" {
 		query = `
@@ -101,7 +101,7 @@ func getContentQuestion(db *sql.DB, contentType string, contentID int, questionT
 	}
 
 	var id int
-	var contentRefID int
+	var contentRefID string
 	var qType, cefr, question string
 	var createdAt time.Time
 
@@ -138,7 +138,7 @@ func getContentQuestion(db *sql.DB, contentType string, contentID int, questionT
 	return result, nil
 }
 
-func createContentQuestion(db *sql.DB, contentType string, contentID int, questionType string, cefrLevel string, question string) error {
+func createContentQuestion(db *sql.DB, contentType string, contentID string, questionType string, cefrLevel string, question string) error {
 	var query string
 	if contentType == "Story" {
 		query = `
@@ -229,6 +229,7 @@ func main() {
 	defer rows.Close()
 
 	// Print results
+	var idToCreateQuestion string = "1610"
 	for rows.Next() {
 		var id, title, language, topic, cefrLevel, previewText string
 		var createdAt time.Time
@@ -242,8 +243,8 @@ func main() {
 			id, title, language, topic, cefrLevel, createdAt, dateCreated.Time.Format("2006-01-02"))
 	}
 
-	// Create a question
-	err = createContentQuestion(db, "News", 1602, "vocab", "B1", "What does this word mean?")
+	// Example usage with string ID
+	err = createContentQuestion(db, "News", idToCreateQuestion, "vocab", "B1", "What does this word mean?")
 	if err != nil {
 		log.Printf("Failed to create question: %v", err)
 	} else {
@@ -251,7 +252,7 @@ func main() {
 	}
 
 	// Get the question back
-	question, err := getContentQuestion(db, "News", 1602, "vocab", "B1")
+	question, err := getContentQuestion(db, "News", idToCreateQuestion, "vocab", "B1")
 	if err != nil {
 		log.Printf("Failed to get question: %v", err)
 	} else if question == nil {
