@@ -115,7 +115,7 @@ func (c *Client) queryContent(baseQuery string, params QueryParams) ([]map[strin
 }
 
 // retrieves a question for the given content type, id, question type and CEFR level
-func (c *Client) GetContentQuestion(contentType string, contentID int, questionType string, cefrLevel string) (map[string]interface{}, error) {
+func (c *Client) GetContentQuestion(contentType string, contentID string, questionType string, cefrLevel string) (map[string]interface{}, error) {
 	var query string
 	if contentType == "Story" {
 		query = `
@@ -132,7 +132,7 @@ func (c *Client) GetContentQuestion(contentType string, contentID int, questionT
 	}
 
 	var id int
-	var contentRefID int
+	var contentRefID string
 	var qType, cefr, question string
 	var createdAt time.Time
 
@@ -171,7 +171,7 @@ func (c *Client) GetContentQuestion(contentType string, contentID int, questionT
 }
 
 // creates a new question for the given content (story/news)
-func (c *Client) CreateContentQuestion(contentType string, contentID int, questionType string, cefrLevel string, question string) error {
+func (c *Client) CreateContentQuestion(contentType string, contentID string, questionType string, cefrLevel string, question string) error {
 	var query string
 	if contentType == "Story" {
 		query = `
@@ -200,4 +200,58 @@ func (c *Client) CreateContentQuestion(contentType string, contentID int, questi
 	}
 
 	return nil
+}
+
+// retrieves a single content row (news or story) by its ID
+func (c *Client) GetContentByID(contentType string, contentID string) (map[string]interface{}, error) {
+	var query string
+	if contentType == "Story" {
+		query = `
+			SELECT id, title, language, topic, cefr_level, content, created_at, date_created 
+			FROM stories 
+			WHERE id = $1`
+	} else if contentType == "News" {
+		query = `
+			SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created 
+			FROM news 
+			WHERE id = $1`
+	} else {
+		return nil, fmt.Errorf("invalid content type: %s", contentType)
+	}
+
+	var id, title, language, topic, cefrLevel, previewText, content string
+	var createdAt time.Time
+	var dateCreated sql.NullTime
+
+	err := c.db.QueryRow(query, contentID).Scan(
+		&id,
+		&title,
+		&language,
+		&topic,
+		&cefrLevel,
+		&previewText,
+		&createdAt,
+		&dateCreated,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil // No content found
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query content: %v", err)
+	}
+
+	result := map[string]interface{}{
+		"id":           id,
+		"title":        title,
+		"language":     language,
+		"topic":        topic,
+		"cefr_level":   cefrLevel,
+		"preview_text": previewText,
+		"content":      content,
+		"created_at":   createdAt,
+		"date_created": dateCreated.Time.Format("2006-01-02"),
+	}
+
+	return result, nil
 }

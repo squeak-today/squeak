@@ -18,3 +18,33 @@ func CreateEvaluateQNAPrompt(cefr string, content string, question string, answe
 	prompt := sb.String()
 	return prompt
 }
+
+func CreateUnderstandingQuestionPrompt(cefr string, content string) string {
+	var sb strings.Builder
+
+	sb.WriteString("You are an LLM designed to write questions for reading comprehension tests of other languages. ")
+	sb.WriteString("You will be a given a news article or story with a CEFR level of " + cefr + ". ")
+	sb.WriteString("Based on the content of this article, respond with a question that would sufficiently challenge someone with the proficiency of " + cefr + ". ")
+	sb.WriteString("Your question should test them on understanding of the content. ")
+	sb.WriteString("\n\nRespond with the question ONLY. Do NOT add any other preamble or comment.")
+	sb.WriteString("\n\nContent:\n" + content)
+
+	prompt := sb.String()
+
+	return prompt
+}
+
+func CreateVocabQuestionPrompt(cefr string, content string) string {
+	var sb strings.Builder
+
+	sb.WriteString("You are an LLM designed to write questions for word memory of other languages. ")
+	sb.WriteString("You will be a given a news article or story with a CEFR level of " + cefr + ". ")
+	sb.WriteString("Based on the content of this article, respond with a question in the format of 'What does <word> mean?'. The chosen word must sufficiently challenge someone with the proficiency of " + cefr + ". ")
+	sb.WriteString("The question MUST be in the exact form 'What does <word> mean?'. The word MUST be a word that is present in the content.")
+	sb.WriteString("\n\nRespond with the question ONLY. Do NOT add any other preamble or comment.")
+	sb.WriteString("\n\nContent:\n" + content)
+
+	prompt := sb.String()
+
+	return prompt
+}

@@ -376,8 +376,8 @@ func init() {
 
 	router.POST("/content-question", func(c *gin.Context) {
 		var infoBody struct {
-			ContentType    string `json:"content_type"`
-			ID           int    `json:"id"`
+			ContentType  string `json:"content_type"`
+			ID           string `json:"id"`
 			CEFRLevel    string `json:"cefr_level"`
 			QuestionType string `json:"question_type"`
 		}
@@ -399,18 +399,59 @@ func init() {
 		}
 		defer client.Close()
 
-		question, err := client.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
+		questionData, err := client.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve question"})
 			return
 		}
 
-		if question == nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "No question found"})
+		if questionData == nil {
+			// no question so we begin task of making new q
+			// Step 1: Get the record from supabase db
+			contentRecord, _ := client.GetContentByID(infoBody.ContentType, infoBody.ID)
+			// Step 2: Get the content from s3
+			contentData, _ := pullContent(contentRecord["language"].(string), contentRecord["cefr_level"].(string), contentRecord["topic"].(string), infoBody.ContentType, contentRecord["date_created"].(string))
+			var contentString string
+			switch v := contentData.(type) {
+			case Story:
+				contentString = v.Content  // This gets the "story" field
+			case News:
+				contentString = v.Content  // This gets the "article" field
+			default:
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid content type"})
+				return
+			}
+			// Step 3: generate the question
+			apiKey := os.Getenv("GEMINI_API_KEY")
+			geminiClient, err := gemini.NewGeminiClient(apiKey)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create Gemini client: %v", err)})
+				return
+			}
+			defer geminiClient.Client.Close()
+			// no question found, so we create a new question and save it to db
+			var generatedQuestion string
+			if infoBody.QuestionType == "vocab" {
+				generatedQuestion, _ = geminiClient.CreateVocabQuestion(infoBody.CEFRLevel, contentString)
+			}
+			if infoBody.QuestionType == "understanding" {
+				generatedQuestion, _ = geminiClient.CreateUnderstandingQuestion(infoBody.CEFRLevel, contentString)
+			}
+			// Step 4: save question to db
+			err = client.CreateContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel, generatedQuestion)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save question to db"})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"question": generatedQuestion,
+			})
 			return
 		}
 
-		c.JSON(http.StatusOK, question)
+		c.JSON(http.StatusOK, gin.H{
+			"question": questionData["question"],
+		})
 	})
 
 	ginLambda = ginadapter.New(router)
