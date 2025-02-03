@@ -111,7 +111,8 @@ function Read() {
         };
 
         fetchContent();
-    }, [type, id, showNotification]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [type, id]);
 
     const handleWordClick = async (e, word, sourceLang) => {
         try {
