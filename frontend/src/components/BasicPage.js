@@ -47,7 +47,7 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
           <ButtonContainer>
             {showLogout && (
               <>
-                <HeaderText onClick={() => navigate('/contact-support.html')}>
+                <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
                   Contact Us
                 </HeaderText>
                 <HeaderText onClick={onLogout}>
@@ -65,7 +65,7 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
             <MobileMenu isOpen={isMobileMenuOpen}>
               <MenuText
                 onClick={() => {
-                  navigate('/contact-support.html');
+                  window.open('/contact-support.html', '_blank');
                   setIsMobileMenuOpen(false);
                 }}
               >
