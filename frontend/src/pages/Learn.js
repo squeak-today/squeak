@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
+import TranslationPanel from '../components/TranslationPanel';
 
 import { LANGUAGE_CODES_REVERSE } from '../lib/lang_codes';
 
@@ -43,6 +44,19 @@ function Learn() {
 
 	const [sourceLanguage, setSourceLanguage] = useState('fr');
 
+	const [translationData, setTranslationData] = useState({
+		word: '',
+		wordTranslation: '',
+		originalSentence: '',
+		sentenceTranslation: ''
+	  });
+	
+	// track if the panel should be displayed
+	const [showTranslation, setShowTranslation] = useState(false);
+
+	const [panelPosition, setPanelPosition] = useState({ top: 0, left: 0 });
+
+
 	const apiBase = "https://api.squeak.today/";
 	let apiUrl = apiBase + contentType;
 
@@ -74,41 +88,90 @@ function Learn() {
 		}
 	};
 
-	const fetchWordDefinition = async (word, source) => {
+	const fetchWordDefinition = async (word, sentence, source) => {
 		let url = `${apiBase}translate`;
-		let translation = "";
-		const data = {
-			sentence: word,
-			source: source,
-			target: 'en'
+		let resultObject = {
+		  wordTranslation: '',
+		  sentenceTranslation: ''
 		};
+
+		let combinedTranslation = word + "   $$$....$$$   " + sentence;
+	  
+		const data = {
+		  sentence: combinedTranslation,
+		  source: source,
+		  target: 'en'
+		};
+	  
 		const { data: { session } } = await supabase.auth.getSession();
 		const jwt = session?.access_token;
-		await fetch(url, {
+	
+		try {
+		const response = await fetch(url, {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${jwt}`
+			'Content-Type': 'application/json',
+			'Authorization': `Bearer ${jwt}`,
+			'Accept': 'application/json',
 			},
 			body: JSON.stringify(data)
-		}).then(response => response.json())
-		.then(result => {
-			console.log('Successful word translation!');
-			translation = result["sentence"].toString();
-		})
-		.catch(error => {
-			console.error('ERROR: ', error);
-			showNotification("Couldn't find that word. Please try again or come back later!", 'error');
-		})
-		return translation;
-	};
+		});
+	
+		const result = await response.json();
+		console.log("Translation API response (json):", result);
+	
+		// Update here: use the "sentence" key from the API response.
+		const translatedCombined = result.sentence || '';
 
-	const handleWordClick = async (e, word, sourceLanguage) => {
-		const definition = await fetchWordDefinition(word, sourceLanguage);
+		// Split the combined translation using your custom marker
+		const parts = translatedCombined.split("$$$....$$$");
+		
+		if (parts.length === 2) {
+		// Trim each part to remove any extra spaces
+		resultObject.wordTranslation = parts[0].trim();
+		resultObject.sentenceTranslation = parts[1].trim();
+		} else {
+		// If the split didn't work as expected, use the entire string as fallback
+		resultObject.wordTranslation = translatedCombined;
+		resultObject.sentenceTranslation = '';
+		}
+		} catch (error) {
+			console.error('Translation error:', error);
+		}
+		
+		console.log("word:",resultObject.wordTranslation)
+		console.log(resultObject.sentenceTranslation)
+			
+		return resultObject;
+	  };
+		
+
+	const handleWordClick = async (e, word, fullSentence, sourceLanguage) => {
 		const { top, left } = e.target.getBoundingClientRect();
-		setTooltip({ visible: true, word, top: top + window.scrollY + 20, left: left + window.scrollX, definition });
+		// fetch both single-word & full-sentence translations
+		const result = await fetchWordDefinition(word, fullSentence, sourceLanguage);
+	  
+		// store in your local translationData state
+		setTranslationData({
+		  word,
+		  wordTranslation: result.wordTranslation,
+		  originalSentence: fullSentence,
+		  sentenceTranslation: result.sentenceTranslation
+		});
+	  
+		setShowTranslation(true);
+	  
+		// return the translation to the child so it can display in the panel
+		return {
+		  wordTranslation: result.wordTranslation,
+		  sentenceTranslation: result.sentenceTranslation
+		};
 	};
+	  
+
+	const closeTranslationPanel = () => {
+    	setShowTranslation(false);
+  	};
 	
 	const handleCloseTooltip = () => {
 		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
@@ -244,16 +307,26 @@ function Learn() {
 				{story && isModalOpen && (
 					<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
 						<StoryContainer $isClosing={isClosing}>
-							<StoryReader data={story} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} />
+						<StoryReader
+							data={story}
+							handleWordClick={(e, word, fullSentence, sourceLanguage) => {
+								const { top, left } = e.target.getBoundingClientRect();
+								setPanelPosition({ top, left });
+								return handleWordClick(e, word, fullSentence, sourceLanguage);
+							}}
+							sourceLanguage={sourceLanguage}
+						/>
 						</StoryContainer>
 					</ModalContainer>
 				)}
 
-				{/* displaying the word definition */}
-				{tooltip.visible && (
-					<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
-					<strong>{tooltip.word}</strong>: {tooltip.definition}
-					</Tooltip>
+				{showTranslation && (
+					<TranslationPanel
+					data={translationData}
+					onClose={closeTranslationPanel}
+					top={panelPosition.top}
+					left={panelPosition.left}
+					/>
 				)}
 			</BrowserBox>
 
