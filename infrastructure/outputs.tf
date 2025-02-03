@@ -27,3 +27,8 @@ output "api_gateway_url_story_query" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/story-query"
   description = "Story Query URL for Story API"
 }
+
+output "api_gateway_url_content_question" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/content-question"
+  description = "Content Question URL for Story API"
+}

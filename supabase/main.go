@@ -84,6 +84,91 @@ func generateTestData(db *sql.DB) error {
 	return nil
 }
 
+func getContentQuestion(db *sql.DB, contentType string, contentID string, questionType string, cefrLevel string) (map[string]interface{}, error) {
+	var query string
+	if contentType == "Story" {
+		query = `
+			SELECT id, story_id, question_type, cefr_level, question, created_at 
+			FROM questions 
+			WHERE story_id = $1 AND question_type = $2 AND cefr_level = $3`
+	} else if contentType == "News" {
+		query = `
+			SELECT id, news_id, question_type, cefr_level, question, created_at 
+			FROM questions 
+			WHERE news_id = $1 AND question_type = $2 AND cefr_level = $3`
+	} else {
+		return nil, fmt.Errorf("invalid content type: %s", contentType)
+	}
+
+	var id int
+	var contentRefID string
+	var qType, cefr, question string
+	var createdAt time.Time
+
+	err := db.QueryRow(query, contentID, questionType, cefrLevel).Scan(
+		&id,
+		&contentRefID,
+		&qType,
+		&cefr,
+		&question,
+		&createdAt,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query question: %v", err)
+	}
+
+	result := map[string]interface{}{
+		"id":            id,
+		"question_type": qType,
+		"cefr_level":    cefr,
+		"question":      question,
+		"created_at":    createdAt,
+	}
+
+	if contentType == "Story" {
+		result["story_id"] = contentRefID
+	} else {
+		result["news_id"] = contentRefID
+	}
+
+	return result, nil
+}
+
+func createContentQuestion(db *sql.DB, contentType string, contentID string, questionType string, cefrLevel string, question string) error {
+	var query string
+	if contentType == "Story" {
+		query = `
+			INSERT INTO questions (story_id, question_type, cefr_level, question)
+			VALUES ($1, $2, $3, $4)`
+	} else if contentType == "News" {
+		query = `
+			INSERT INTO questions (news_id, question_type, cefr_level, question)
+			VALUES ($1, $2, $3, $4)`
+	} else {
+		return fmt.Errorf("invalid content type: %s", contentType)
+	}
+
+	result, err := db.Exec(query, contentID, questionType, cefrLevel, question)
+	if err != nil {
+		return fmt.Errorf("failed to insert question: %v", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %v", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no rows were inserted")
+	}
+
+	return nil
+}
+
 func main() {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 		os.Getenv("SUPABASE_HOST"),
@@ -144,6 +229,7 @@ func main() {
 	defer rows.Close()
 
 	// Print results
+	var idToCreateQuestion string = "1610"
 	for rows.Next() {
 		var id, title, language, topic, cefrLevel, previewText string
 		var createdAt time.Time
@@ -155,5 +241,23 @@ func main() {
 
 		fmt.Printf("ID: %s, Title: %s, Language: %s, Topic: %s, CEFR: %s, Created: %s, Date: %s\n",
 			id, title, language, topic, cefrLevel, createdAt, dateCreated.Time.Format("2006-01-02"))
+	}
+
+	// Example usage with string ID
+	err = createContentQuestion(db, "News", idToCreateQuestion, "vocab", "B1", "What does this word mean?")
+	if err != nil {
+		log.Printf("Failed to create question: %v", err)
+	} else {
+		log.Println("Successfully created question")
+	}
+
+	// Get the question back
+	question, err := getContentQuestion(db, "News", idToCreateQuestion, "vocab", "B1")
+	if err != nil {
+		log.Printf("Failed to get question: %v", err)
+	} else if question == nil {
+		log.Println("No question found")
+	} else {
+		log.Printf("Found question: %+v", question)
 	}
 }
