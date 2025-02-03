@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 
 const StoryBox = styled.div`
-	padding: 20px;
-	margin: 0px 0;
+	padding: 0px 10px;
+    padding-bottom: 5px;
+	margin: 0;
 	border-radius: 15px; // Rounded corners
 	background-color: white;
 	overflow-y: auto;
