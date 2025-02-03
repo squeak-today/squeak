@@ -35,7 +35,7 @@ export const ToggleContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  width: 55%;
+  width: 60%;
   height: 36px;
   margin: 0 auto 20px auto;
   background: #f5f5f5;

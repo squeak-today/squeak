@@ -227,6 +227,7 @@ export const HeaderButton = styled.button`
 
   .arrow-icon {
   display: inline-block;
+  max-height: 24px;
 }
 
 @media (max-width: 768px) {
