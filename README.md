@@ -45,11 +45,23 @@ If you are viewing this as an open source user, some of these may not apply. You
 ## Backend API
 | Endpoint | Type | Description | 
 | --- | --- | --- |
+| `/content` | `GET` | Pull generated content data. |
 | `/story` | `GET` | Pull a generated story. |
 | `/news` | `GET` | Pull a generated news article. |
 | `/translate` | `POST` | Translation of given sentence to source language. |
+| `/evaluate-qna` | `POST` | Evaluation of a user's answer to a question about a given content. |
 | `/news-query` | `GET` | Query Supabase for news articles. |
 | `/story-query` | `GET` | Query Supabase for stories. |
+| `/content-question` | `POST` | Generate a question testing vocabulary or understanding of a given piece of content. |
+
+### **GET** `/content`
+> https://api.squeak.today/content
+
+Pulls generated content data as JSON. Pass `type` and `id` as fields.
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `type` | `string` | Yes | Type of content, either `Story` or `News`. |
+| `id` | `string` | Yes | ID of the content. |
 
 ### **GET** `/story`
 > https://api.squeak.today/story
