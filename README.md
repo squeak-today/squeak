@@ -63,6 +63,10 @@ Pulls generated content data as JSON. Pass `type` and `id` as fields.
 | `type` | `string` | Yes | Type of content, either `Story` or `News`. |
 | `id` | `string` | Yes | ID of the content. |
 
+### Response
+> `200 Successful`
+See output for `/story` and `/news` endpoints.
+
 ### **GET** `/story`
 > https://api.squeak.today/story
 
