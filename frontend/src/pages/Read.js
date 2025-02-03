@@ -19,7 +19,7 @@ const DEFAULT_CONTENT = {
     tags: [],
     difficulty: '',
     date_created: '',
-    content: ''
+    content: '',
 };
 
 function Read() {
@@ -29,7 +29,6 @@ function Read() {
     const { showNotification } = useNotification();
     
     const [contentData, setContentData] = useState(DEFAULT_CONTENT);
-    const [textSections, setTextSections] = useState([]);
     const [sourceLanguage, setSourceLanguage] = useState('en');
     const [questions, setQuestions] = useState([]);
     const [loadingQuestions, setLoadingQuestions] = useState(false);
@@ -90,10 +89,6 @@ function Read() {
 
                 const data = await response.json();
                 
-                // Split content into sections
-                const sections = data.content.match(/(?:\s*\S+){1,200}/g) || [];
-                
-                setTextSections(sections);
                 setContentData({
                     id: id,
                     type: data.content_type,
@@ -102,7 +97,7 @@ function Read() {
                     tags: [data.language, data.topic],
                     difficulty: data.cefr_level,
                     date_created: data.date_created,
-                    content: data.content
+                    content: data.content,
                 });
                 setSourceLanguage(LANGUAGE_CODES_REVERSE[data.language]);
             } catch (error) {
@@ -213,7 +208,6 @@ function Read() {
                         if (q) questions.push(q);
                     }
                     break;
-
                 case '8': // Strong
                     for (let i = 1; i <= cefrIndex; i++) {
                         const q = await fetchQuestion(CEFR_LEVELS[i], 'understanding');
@@ -221,6 +215,8 @@ function Read() {
                     }
                     const q = await fetchQuestion(contentData.difficulty, 'vocab');
                     if (q) questions.push(q);
+                    break;
+                default:
                     break;
             }
             setQuestions(questions);
@@ -287,14 +283,13 @@ function Read() {
             <ReadPageLayout onClick={handleClickOutside}>
                 <ReaderPanel>
                     <StoryReader 
-                        textSections={textSections}
+                        content={contentData.content}
                         handleWordClick={handleWordClick}
                         sourceLanguage={sourceLanguage}
                     />
                 </ReaderPanel>
                 <SidePanel 
-                    contentData={contentData} 
-                    pageCount={textSections.length}
+                    contentData={contentData}
                     questions={questions}
                     onGetQuestions={handleGetGoalQuestions}
                     onAnswerChange={handleAnswerChange}

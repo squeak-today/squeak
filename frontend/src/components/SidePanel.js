@@ -11,7 +11,6 @@ import {
 import {
     TagsContainer,
     Tag,
-    InfoText,
     ItalicInfoText,
     ButtonGroup,
     ShareButton,
@@ -71,8 +70,7 @@ const GOAL_OPTIONS = {
 };
 
 const SidePanel = ({ 
-    contentData, 
-    pageCount, 
+    contentData,
     questions, 
     onGetQuestions, 
     onAnswerChange,
@@ -131,7 +129,6 @@ const SidePanel = ({
                 </TagsContainer>
 
                 <ItalicInfoText>Written on {formatDate(contentData.date_created)}</ItalicInfoText>
-                <InfoText>Pages: {pageCount}</InfoText>
             </ContentSection>
 
             <ContentSection>
