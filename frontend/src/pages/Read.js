@@ -7,6 +7,7 @@ import { ReadPageLayout, ReaderPanel } from '../styles/ReadPageStyles';
 import SidePanel from '../components/SidePanel';
 import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
+import { Tooltip } from '../components/StyledComponents';
 
 import { LANGUAGE_CODES_REVERSE } from '../lib/lang_codes';
 
@@ -32,6 +33,12 @@ function Read() {
     const [sourceLanguage, setSourceLanguage] = useState('en');
     const [questions, setQuestions] = useState([]);
     const [loadingQuestions, setLoadingQuestions] = useState(false);
+    const [tooltip, setTooltip] = useState({
+        show: false,
+        text: '',
+        top: 0,
+        left: 0
+    });
 
     const apiBase = "https://api.squeak.today/";
 
@@ -108,7 +115,33 @@ function Read() {
     }, [type, id, showNotification]);
 
     const handleWordClick = async (e, word, sourceLang) => {
-        console.log(`Clicked word: ${word} in ${sourceLang}`);
+        try {
+            // get position
+            const rect = e.target.getBoundingClientRect();
+            const top = rect.bottom;
+            const left = rect.left;
+            const translation = await fetchWordDefinition(word, sourceLang);
+            
+            if (translation) {
+                setTooltip({
+                    word: word,
+                    show: true,
+                    text: translation,
+                    top,
+                    left
+                });
+            }
+        } catch (error) {
+            console.error('Error getting word definition:', error);
+            showNotification('Failed to get translation', 'error');
+        }
+    };
+
+    // Add click outside handler to close tooltip
+    const handleClickOutside = (e) => {
+        if (!e.target.closest('.word')) {
+            setTooltip(prev => ({ ...prev, show: false }));
+        }
     };
 
     const handleLogout = async () => {
@@ -251,7 +284,7 @@ function Read() {
 
     return (
         <BasicPage showLogout onLogout={handleLogout}>
-            <ReadPageLayout>
+            <ReadPageLayout onClick={handleClickOutside}>
                 <ReaderPanel>
                     <StoryReader 
                         textSections={textSections}
@@ -268,6 +301,14 @@ function Read() {
                     loadingQuestions={loadingQuestions}
                     onCheckAnswers={handleCheckAnswers}
                 />
+                {tooltip.show && (
+                    <Tooltip
+                        top={tooltip.top}
+                        left={tooltip.left}
+                    >
+                        <strong>{tooltip.word}</strong>: {tooltip.text}
+                    </Tooltip>
+                )}
             </ReadPageLayout>
         </BasicPage>
     );
