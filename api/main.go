@@ -111,6 +111,52 @@ func init() {
 		}
 	})
 
+	router.GET("/content", func(c *gin.Context) {
+		contentType := c.Query("type")
+		id := c.Query("id")
+
+		if contentType != "Story" && contentType != "News" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid content type"})
+			return
+		}
+
+		client, err := supabase.NewClient()
+		if err != nil {
+			log.Printf("Database connection failed: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+			return
+		}
+		defer client.Close()
+
+		// Step 1: Get the record from supabase db
+		contentRecord, err := client.GetContentByID(contentType, id)
+		if err != nil {
+			log.Printf("Failed to retrieve content record in DB: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
+			return
+		}
+		if contentRecord == nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+			return
+		}
+
+		// Step 2: Get the content from s3
+		content, err := pullContent(
+			contentRecord["language"].(string),
+			contentRecord["cefr_level"].(string),
+			contentRecord["topic"].(string),
+			contentType,
+			contentRecord["date_created"].(string),
+		)
+		if err != nil {
+			log.Printf("Failed to pull content from S3 bucket: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data during new question generation"})
+			return
+		}
+
+		c.JSON(http.StatusOK, content.ToMap())
+	})
+
 	router.GET("/story", func(c *gin.Context) {
 		language := c.Query("language")
 		cefr := c.Query("cefr")

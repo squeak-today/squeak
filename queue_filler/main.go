@@ -28,9 +28,9 @@ func handler(ctx context.Context) error {
 	}))
 	sqsSvc := sqs.New(sess)
 
-	languages := []string{"French", "Spanish"}
+	languages := []string{"French"}
 	cefrLevels := []string{"A1", "A2", "B1", "B2", "C1", "C2"}
-	subjects := []string{"Politics", "Business", "Technology", "Sports"}
+	subjects := []string{"Politics"}
 	contentTypes := []string{"News"}
 
 	var batch []*sqs.SendMessageBatchRequestEntry
