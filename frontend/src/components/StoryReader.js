@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
+import LoadingSpinner from './LoadingSpinner';
 
 const StoryBox = styled.div`
 	padding: 0px 10px;
@@ -63,18 +64,22 @@ const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
     return <p>{React.Children.map(children, child => processNode(child))}</p>;
 };
 
-const StoryReader = ({ content, handleWordClick, sourceLanguage }) => {
+const StoryReader = ({ content, handleWordClick, sourceLanguage, isLoading }) => {
     return (
         <StoryBox>
-            <StoryText>
-                <ReactMarkdown
-                    components={{
-                        p(props) { return <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />; }
-                    }}
-                >
-                    {content}
-                </ReactMarkdown>
-            </StoryText>
+            {isLoading ? (
+                <LoadingSpinner />
+            ) : (
+                <StoryText>
+                    <ReactMarkdown
+                        components={{
+                            p(props) { return <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />; }
+                        }}
+                    >
+                        {content}
+                    </ReactMarkdown>
+                </StoryText>
+            )}
         </StoryBox>
     );
 };

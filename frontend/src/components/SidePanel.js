@@ -32,6 +32,8 @@ import {
     CheckAnswersButton
 } from '../styles/ReadPageStyles';
 
+import LoadingSpinner from './LoadingSpinner';
+
 const getCEFRColor = (level) => {
     const firstLetter = level.charAt(0);
     switch (firstLetter) {
@@ -75,7 +77,8 @@ const SidePanel = ({
     onGetQuestions, 
     onAnswerChange,
     loadingQuestions,
-    onCheckAnswers
+    onCheckAnswers,
+    isLoading
 }) => {
     const [activeTab, setActiveTab] = useState('info');
     const [selectedGoal, setSelectedGoal] = useState(GOAL_OPTIONS.RECOMMENDED.value);
@@ -114,33 +117,39 @@ const SidePanel = ({
 
     const renderInfoTab = () => (
         <>
-            <ContentSection>
-                <UnderstandingButton onClick={() => setActiveTab('learn')}>
-                    Check Your Understanding!
-                </UnderstandingButton>
+            {isLoading ? (
+                <LoadingSpinner />
+            ) : (
+                <>
+                    <ContentSection>
+                        <UnderstandingButton onClick={() => setActiveTab('learn')}>
+                            Check Your Understanding!
+                        </UnderstandingButton>
 
-                <TagsContainer>
-                    <Tag type="cefr" color={getCEFRColor(contentData.difficulty)} value={contentData.difficulty}>
-                        {contentData.difficulty}
-                    </Tag>
-                    {contentData.tags.map((tag, index) => (
-                        <Tag key={index}>{tag}</Tag>
-                    ))}
-                </TagsContainer>
+                        <TagsContainer>
+                            <Tag type="cefr" color={getCEFRColor(contentData.difficulty)} value={contentData.difficulty}>
+                                {contentData.difficulty}
+                            </Tag>
+                            {contentData.tags.map((tag, index) => (
+                                <Tag key={index}>{tag}</Tag>
+                            ))}
+                        </TagsContainer>
 
-                <ItalicInfoText>Written on {formatDate(contentData.date_created)}</ItalicInfoText>
-            </ContentSection>
+                        <ItalicInfoText>Written on {formatDate(contentData.date_created)}</ItalicInfoText>
+                    </ContentSection>
 
-            <ContentSection>
-                <ButtonGroup>
-                    <ShareButton onClick={handleShare}>
-                        Share
-                    </ShareButton>
-                    <ReportButton onClick={() => window.open('/contact-support.html', '_blank')}>
-                        Report
-                    </ReportButton>
-                </ButtonGroup>
-            </ContentSection>
+                    <ContentSection>
+                        <ButtonGroup>
+                            <ShareButton onClick={handleShare}>
+                                Share
+                            </ShareButton>
+                            <ReportButton onClick={() => window.open('/contact-support.html', '_blank')}>
+                                Report
+                            </ReportButton>
+                        </ButtonGroup>
+                    </ContentSection>
+                </>
+            )}
         </>
     );
 

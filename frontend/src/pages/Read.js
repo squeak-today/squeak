@@ -38,6 +38,7 @@ function Read() {
         top: 0,
         left: 0
     });
+    const [isLoading, setIsLoading] = useState(true);
 
     const apiBase = "https://api.squeak.today/";
 
@@ -73,6 +74,7 @@ function Read() {
 
     useEffect(() => {
         const fetchContent = async () => {
+            setIsLoading(true);
             const url = `${apiBase}content?type=${type}&id=${id}`;
             try {
                 const { data: { session } } = await supabase.auth.getSession();
@@ -103,6 +105,8 @@ function Read() {
             } catch (error) {
                 console.error('Error fetching content:', error);
                 showNotification('Failed to load content. Please try again later.', 'error');
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -286,6 +290,7 @@ function Read() {
                         content={contentData.content}
                         handleWordClick={handleWordClick}
                         sourceLanguage={sourceLanguage}
+                        isLoading={isLoading}
                     />
                 </ReaderPanel>
                 <SidePanel 
@@ -295,6 +300,7 @@ function Read() {
                     onAnswerChange={handleAnswerChange}
                     loadingQuestions={loadingQuestions}
                     onCheckAnswers={handleCheckAnswers}
+                    isLoading={isLoading}
                 />
                 {tooltip.show && (
                     <Tooltip
