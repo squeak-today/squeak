@@ -1,17 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BrowserBox,
-    StoryContainer,
-    Tooltip,
-    ModalContainer} from '../components/StyledComponents';
-import StoryReader from '../components/StoryReader';
+import { BrowserBox } from '../components/StyledComponents';
 import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
-
-import { LANGUAGE_CODES_REVERSE } from '../lib/lang_codes';
 
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
@@ -26,93 +20,15 @@ const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject,
 };
 
 function Learn() {
-	const [contentType, setContentType] = useState('');
-	const [story, setStory] = useState(''); // State to store the story
-
-	const [tooltip, setTooltip] = useState({ visible: false, word: '', top: 0, left: 0, definition: '' });
-
 	const [allStories, setAllStories] = useState([]);
-
-	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const [isClosing, setIsClosing] = useState(false);
 
 	const [showWelcome, setShowWelcome] = useState(false);
 
 	const { showNotification } = useNotification();
 
-	const [sourceLanguage, setSourceLanguage] = useState('fr');
-
 	const apiBase = "https://api.squeak.today/";
-	let apiUrl = apiBase + contentType;
 
 	const navigate = useNavigate();
-
-	const pullStory = async (contentType, language, cefrLevel, subject, dateCreated) => {
-		apiUrl = apiBase + contentType;
-		let url = `${apiUrl}?language=${language}&cefr=${cefrLevel}&subject=${subject}&date_created=${dateCreated}`;
-		
-		try {
-			const { data: { session } } = await supabase.auth.getSession();
-			const jwt = session?.access_token
-			const response = await fetch(url, {
-				headers: {
-					'Authorization': `Bearer ${jwt}`
-				}
-			});
-			if (!response.ok) {
-				setStory("Failed to generate story");
-				throw new Error("Network response was not ok");
-			}
-			const data = await response.json();
-			console.log("Pulled story successfully!");
-			setStory(data["content"]);
-		} catch (error) {
-			console.error("Error generating story:", error);
-			setStory("");
-			showNotification("Couldn't find that story. Please try again or come back later!", 'error');
-		}
-	};
-
-	const fetchWordDefinition = async (word, source) => {
-		let url = `${apiBase}translate`;
-		let translation = "";
-		const data = {
-			sentence: word,
-			source: source,
-			target: 'en'
-		};
-		const { data: { session } } = await supabase.auth.getSession();
-		const jwt = session?.access_token;
-		await fetch(url, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${jwt}`
-			},
-			body: JSON.stringify(data)
-		}).then(response => response.json())
-		.then(result => {
-			console.log('Successful word translation!');
-			translation = result["sentence"].toString();
-		})
-		.catch(error => {
-			console.error('ERROR: ', error);
-			showNotification("Couldn't find that word. Please try again or come back later!", 'error');
-		})
-		return translation;
-	};
-
-	const handleWordClick = async (e, word, sourceLanguage) => {
-		const definition = await fetchWordDefinition(word, sourceLanguage);
-		const { top, left } = e.target.getBoundingClientRect();
-		setTooltip({ visible: true, word, top: top + window.scrollY + 20, left: left + window.scrollX, definition });
-	};
-	
-	const handleCloseTooltip = () => {
-		setTooltip({ visible: false, word: '', top: 0, left: 0, definition: '' });
-	};
 
 	const handleListStories = useCallback(async (type, language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
@@ -125,6 +41,7 @@ function Learn() {
 
 			for (const story of newsData) {
 				tempStories.push({
+					id: story['id'],
 					type: 'News',
 					title: story['title'],
 					preview: story['preview_text'],
@@ -135,6 +52,7 @@ function Learn() {
 			}
 			for (const story of storiesData) {
 				tempStories.push({
+					id: story['id'],
 					type: 'Story',
 					title: story['title'],
 					preview: story['preview_text'],
@@ -166,27 +84,9 @@ function Learn() {
 	}, []);
 
 	const handleStoryBlockClick = async (story) => {
-		setContentType((story.type).toLowerCase());
-		setSourceLanguage(LANGUAGE_CODES_REVERSE[story.tags[0]]);
-		await pullStory(story.type.toLowerCase(), story.tags[0], story.difficulty, story.tags[1], story.date_created);
-		setIsModalOpen(true);
+		console.log("Story clicked:", story);
+		navigate(`/read/${story.type}/${story.id}`);
 	}
-
-	const handleCloseModal = () => {
-		setIsClosing(true);
-		// wait for anim to complete before removing from DOM
-		setTimeout(() => {
-			setIsModalOpen(false);
-			setStory('');
-			setIsClosing(false);
-		}, 300); // Match animation duration
-	};
-
-	const handleModalClick = (e) => {
-		if (e.target === e.currentTarget) { // not triggering on children
-			handleCloseModal();
-		}
-	};
 
 	useEffect(() => {
 		// Check if user has seen welcome message in their metadata
@@ -241,20 +141,6 @@ function Learn() {
 					onStoryBlockClick={handleStoryBlockClick}
 				/>
 				
-				{story && isModalOpen && (
-					<ModalContainer onClick={handleModalClick} $isClosing={isClosing}>
-						<StoryContainer $isClosing={isClosing}>
-							<StoryReader data={story} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} />
-						</StoryContainer>
-					</ModalContainer>
-				)}
-
-				{/* displaying the word definition */}
-				{tooltip.visible && (
-					<Tooltip top={tooltip.top} left={tooltip.left} onClick={handleCloseTooltip}>
-					<strong>{tooltip.word}</strong>: {tooltip.definition}
-					</Tooltip>
-				)}
 			</BrowserBox>
 
 		</BasicPage>

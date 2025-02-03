@@ -118,10 +118,8 @@ const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
     return <p>{React.Children.map(children, child => processNode(child))}</p>;
 };
 
-const StoryReader = ({data, handleWordClick, sourceLanguage }) => {
+const StoryReader = ({textSections, handleWordClick, sourceLanguage }) => {
     const [sectionIndex, setSectionIndex] = useState(0);
-    const textSections = data.match(/(?:\s*\S+){1,200}/g) || [];
-    
     const storyBoxRef = useRef(null);
 
     const scrollToTop = () => { storyBoxRef.current?.scrollIntoView({ behavior: 'smooth' }); };
