@@ -114,6 +114,7 @@ const SmallText = styled.p`
 const LandingImage = styled.img`
   height: auto;
   max-height: 25em;
+  aspect-ratio: 1 / 1;
 
   /* Change order on mobile */
   @media (max-width: 768px) {
