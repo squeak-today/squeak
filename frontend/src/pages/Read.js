@@ -156,7 +156,9 @@ function Read() {
     const handleGetGoalQuestions = async (goalType, isBeginnerLevel) => {
         const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
         const questions = [];
+        const vocabQuestions = [];
         const cefrIndex = CEFR_LEVELS.indexOf(contentData.difficulty);
+        let qv;
         
         const fetchQuestion = async (cefrLevel, qType) => {
             try {
@@ -193,37 +195,49 @@ function Read() {
         try {
             switch (goalType) {
                 case '1': // Quick
-                    const qv = await fetchQuestion(contentData.difficulty, 'vocab');
+                    qv = await fetchQuestion(contentData.difficulty, 'vocab');
                     if (qv) questions.push(qv);
                     break;
 
                 case '3': // Recommended
                     if (isBeginnerLevel) {
+                        // Get vocab question first
                         let q = await fetchQuestion(contentData.difficulty, 'vocab');
-                        if (q) questions.push(q);
+                        if (q) vocabQuestions.push(q);
+                        
+                        // Then get understanding question
                         q = await fetchQuestion(contentData.difficulty, 'understanding');
                         if (q) questions.push(q);
                     } else {
+                        // Get vocab question first
+                        qv = await fetchQuestion(contentData.difficulty, 'vocab');
+                        if (qv) vocabQuestions.push(qv);
+                        
+                        // Then get understanding questions
                         const q1 = await fetchQuestion(contentData.difficulty, 'understanding');
                         const q2 = await fetchQuestion(CEFR_LEVELS[cefrIndex - 1], 'understanding');
                         if (q1) questions.push(q1);
                         if (q2) questions.push(q2);
-                        const q = await fetchQuestion(contentData.difficulty, 'vocab');
-                        if (q) questions.push(q);
                     }
                     break;
+
                 case '8': // Strong
+                    // Get vocab question first
+                    qv = await fetchQuestion(contentData.difficulty, 'vocab');
+                    if (qv) vocabQuestions.push(qv);
+                    
+                    // Then get understanding questions
                     for (let i = 1; i <= cefrIndex; i++) {
                         const q = await fetchQuestion(CEFR_LEVELS[i], 'understanding');
                         if (q) questions.push(q);
                     }
-                    const q = await fetchQuestion(contentData.difficulty, 'vocab');
-                    if (q) questions.push(q);
                     break;
+                    
                 default:
                     break;
             }
-            setQuestions(questions);
+            
+            setQuestions([...vocabQuestions, ...questions]);
         } catch (error) {
             console.error('Error setting goal:', error);
             showNotification('Failed to load questions. Please try again.', 'error');

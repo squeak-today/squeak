@@ -84,7 +84,6 @@ function Learn() {
 	}, []);
 
 	const handleStoryBlockClick = async (story) => {
-		console.log("Story clicked:", story);
 		navigate(`/read/${story.type}/${story.id}`);
 	}
 
