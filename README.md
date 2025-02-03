@@ -65,7 +65,44 @@ Pulls generated content data as JSON. Pass `type` and `id` as fields.
 
 ### Response
 > `200 Successful`
-See output for `/story` and `/news` endpoints.
+```json
+{
+    "content_type": "Story",  // or "News"
+    "language": "French",
+    "cefr_level": "B2",
+    "topic": "Politics",
+    "date_created": "2024-03-20",
+    "title": "A Very Cool Title",
+    "preview_text": "A preview of the content...",
+    "dictionary": {
+        "translations": {
+            "words": {
+                "J'aime": "I like",
+                "Squeak": "Squeak",
+                "beaucoup": "a lot"
+            },
+            "sentences": {
+                "J'aime Squeak beaucoup": "I like Squeak a lot"
+            }
+        }
+    }
+}
+```
+
+For News content, the response will also include a `sources` field:
+```json
+{
+    // ... other fields as above ...
+    "sources": [
+        {
+            "title": "Source Article Title",
+            "url": "https://source.url",
+            "content": "Source article content",
+            "score": 0.9865718
+        }
+    ]
+}
+```
 
 ### **GET** `/story`
 > https://api.squeak.today/story
