@@ -154,7 +154,24 @@ func init() {
 			return
 		}
 
-		c.JSON(http.StatusOK, content.ToMap())
+		// Step 3: Combine the data
+		contentMap := content.ToMap()
+		response := map[string]interface{}{
+			"content_type": contentType,
+			"language":     contentRecord["language"],
+			"cefr_level":   contentRecord["cefr_level"],
+			"topic":        contentRecord["topic"],
+			"date_created": contentRecord["date_created"],
+			"title":        contentRecord["title"],
+			"preview_text": contentRecord["preview_text"],
+		}
+
+		// Add all fields from contentMap to response
+		for k, v := range contentMap {
+			response[k] = v
+		}
+
+		c.JSON(http.StatusOK, response)
 	})
 
 	router.GET("/story", func(c *gin.Context) {
