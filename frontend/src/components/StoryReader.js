@@ -24,12 +24,18 @@ const StoryText = styled.div`
 const MarkdownWord = styled.span`
     display: inline;
     cursor: pointer;
+    margin: -2px 0;
+    padding: 2px 1px;
+    border-radius: ${(props) => props.highlightRounding}px;
+    transition: background-color 0.15s ease;
+
     &:hover {
-        text-decoration: underline;
+        text-decoration: none;
+        background-color: rgba(170, 255, 170, 0.6);
     }
 `;
 
-const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
+const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLanguage }) => {
     const getSentences = (text) => {
         // big regex for sentence detection:
         /**
@@ -65,6 +71,7 @@ const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
             }
             return (
                 <MarkdownWord
+                    highlightRounding={highlightRounding}
                     key={index}
                     onClick={(e) => handleWordClick(e, word.trim(), sourceLanguage, sentence.trim())}
                     className="word"
@@ -110,45 +117,35 @@ const StoryReader = ({ content, handleWordClick, sourceLanguage, isLoading }) =>
                             // Handle paragraphs
                             p: (props) => (
                                 <p>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
                                 </p>
                             ),
                             // Handle list items
                             li: (props) => (
                                 <li>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
                                 </li>
                             ),
                             // Handle headers
                             h1: (props) => (
                                 <h1>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                    <ClickableText highlightRounding={10}handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
                                 </h1>
                             ),
                             h2: (props) => (
                                 <h2>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                    <ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
                                 </h2>
                             ),
                             h3: (props) => (
                                 <h3>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
                                 </h3>
                             ),
                             h4: (props) => (
                                 <h4>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
                                 </h4>
-                            ),
-                            h5: (props) => (
-                                <h5>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h5>
-                            ),
-                            h6: (props) => (
-                                <h6>
-                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h6>
                             ),
                         }}
                     >

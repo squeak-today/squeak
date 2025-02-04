@@ -32,7 +32,7 @@ const Panel = styled.div`
   background: #2F3C32;
   color: #fff;
   padding: 20px;
-  border-radius: 8px 8px 0 0;
+  border-radius: 20px 20px 0 0;
   max-width: 700px;
   margin: 0 auto;
   z-index: 999;
@@ -85,6 +85,11 @@ const Sentence = styled.div`
   }
 `;
 
+const TranslatedSentence = styled.div`
+  font-style: italic;
+  opacity: 0.9;
+`;
+
 function TranslationPanel({ data, onClose, handleSentenceToggle }) {
   const [isClosing, setIsClosing] = useState(false);
   const [showSentences, setShowSentences] = useState(false);
@@ -127,7 +132,7 @@ function TranslationPanel({ data, onClose, handleSentenceToggle }) {
           </Sentence>
           <Sentence>
             <strong>Translated</strong><br />
-            {data.sentenceTranslation}
+            <TranslatedSentence>{data.sentenceTranslation}</TranslatedSentence>
           </Sentence>
         </>
       )}
