@@ -144,10 +144,11 @@ export const InputField = styled.input`
 `;
 
 export const Tooltip = styled.div`
-  position: absolute;
-  top: ${(props) => props.top || 0}px;
-  left: ${(props) => props.left || 0}px;
+  position: fixed;
+  top: ${(props) => props.top}px;
+  left: ${(props) => props.left}px;
   padding: 10px;
+  background: white;
   border: 1px solid #000000;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
