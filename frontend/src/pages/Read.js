@@ -39,6 +39,7 @@ function Read() {
         originalSentence: '',
         sentenceTranslation: '',
         top: 0,
+        bottom: 0,
         left: 0
     });
     const [isLoading, setIsLoading] = useState(true);
@@ -121,8 +122,9 @@ function Read() {
         try {
             // get position
             const rect = e.target.getBoundingClientRect();
-            const top = rect.bottom + window.scrollY;
-            const left = rect.left + window.scrollX;
+            const top = rect.top + rect.height;
+            const bottom = rect.bottom - rect.height;
+            const left = rect.left;
             const translation = await fetchTranslation(word, sourceLang);
             
             if (translation) {
@@ -133,6 +135,7 @@ function Read() {
                     originalSentence: sentence,
                     sentenceTranslation: '',
                     top,
+                    bottom,
                     left
                 });
             }
@@ -332,6 +335,7 @@ function Read() {
                         style={{
                             position: 'absolute',
                             top: tooltip.top,
+                            bottom: tooltip.bottom,
                             left: tooltip.left
                         }}
                         handleSentenceToggle={handleSentenceToggle}
