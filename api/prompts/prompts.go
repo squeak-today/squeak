@@ -48,3 +48,19 @@ func CreateVocabQuestionPrompt(cefr string, content string) string {
 
 	return prompt
 }
+
+func CreateEvaluateVocabQNAPrompt(cefr string, content string, question string, answer string) string {
+	var sb strings.Builder
+
+	sb.WriteString("You are an LLM designed to evaluate answers to questions that test word memory in other languages. ")
+	sb.WriteString("You will be given a news article or story, a question asking about the meaning of a word, and a user's translation of the word. The question and content's difficulty is " + cefr + " on the CEFR scale. ")
+	sb.WriteString("You must evaluate the user's answer as either PASS or FAIL based on whether or not they provided a sufficient translation of the word. ")
+	sb.WriteString("\n\nAnswer with ONLY PASS or FAIL. Do NOT add any other preamble or comment.")
+
+	sb.WriteString("\n\nContent:\n" + content)
+	sb.WriteString("\n\nQuestion:\n" + question)
+	sb.WriteString("\n\nAnswer:\n" + answer)
+
+	prompt := sb.String()
+	return prompt
+}
