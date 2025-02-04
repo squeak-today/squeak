@@ -3,16 +3,23 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const PanelContainer = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: fixed;
   background: #2F3C32;
   color: #fff;
   padding: 20px;
   border-radius: 8px;
   max-width: 700px;
   z-index: 999;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  top: ${props => props.$top + 10}px;
+  left: ${props => props.$left - 20}px;
+  
+  @media (max-width: 768px) {
+    max-width: 90vw;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 `;
 
 const PanelHeader = styled.div`
@@ -49,16 +56,20 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
-function TranslationPanel({ data, onClose }) {
+function TranslationPanel({ data, onClose, style, handleSentenceToggle }) {
   const { word, wordTranslation, originalSentence, sentenceTranslation } = data;
   const [showFullSentences, setShowFullSentences] = useState(false);
 
-  const handleToggle = () => {
+  const handleToggle = async() => {
+    await handleSentenceToggle();
     setShowFullSentences((prev) => !prev);
   };
 
   return (
-    <PanelContainer>
+    <PanelContainer 
+      $top={style.top} 
+      $left={style.left}
+    >
       <CloseButton onClick={onClose}>✕</CloseButton>
       
       {/* Word + Word Translation */}
