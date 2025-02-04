@@ -82,12 +82,18 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
             </MobileMenu>
             
             {showGetStarted && (
+              <>
+              <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
+              Contact Us
+              </HeaderText>
               <HeaderButton onClick={handleGetStarted}>
                 Get Started
                 <span className="arrow-icon">
                   <FiArrowRight size={24} />
                 </span>
               </HeaderButton>
+              
+              </>
             )}
           </ButtonContainer>
         </NavHeader>
