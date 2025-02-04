@@ -45,11 +45,64 @@ If you are viewing this as an open source user, some of these may not apply. You
 ## Backend API
 | Endpoint | Type | Description | 
 | --- | --- | --- |
+| `/content` | `GET` | Pull generated content data. |
 | `/story` | `GET` | Pull a generated story. |
 | `/news` | `GET` | Pull a generated news article. |
 | `/translate` | `POST` | Translation of given sentence to source language. |
+| `/evaluate-qna` | `POST` | Evaluation of a user's answer to a question about a given content. |
 | `/news-query` | `GET` | Query Supabase for news articles. |
 | `/story-query` | `GET` | Query Supabase for stories. |
+| `/content-question` | `POST` | Generate a question testing vocabulary or understanding of a given piece of content. |
+
+### **GET** `/content`
+> https://api.squeak.today/content
+
+Pulls generated content data as JSON. Pass `type` and `id` as fields.
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `type` | `string` | Yes | Type of content, either `Story` or `News`. |
+| `id` | `string` | Yes | ID of the content. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "content_type": "Story",  // or "News"
+    "language": "French",
+    "cefr_level": "B2",
+    "topic": "Politics",
+    "date_created": "2024-03-20",
+    "title": "A Very Cool Title",
+    "preview_text": "A preview of the content...",
+    "dictionary": {
+        "translations": {
+            "words": {
+                "J'aime": "I like",
+                "Squeak": "Squeak",
+                "beaucoup": "a lot"
+            },
+            "sentences": {
+                "J'aime Squeak beaucoup": "I like Squeak a lot"
+            }
+        }
+    }
+}
+```
+
+For News content, the response will also include a `sources` field:
+```json
+{
+    // ... other fields as above ...
+    "sources": [
+        {
+            "title": "Source Article Title",
+            "url": "https://source.url",
+            "content": "Source article content",
+            "score": 0.9865718
+        }
+    ]
+}
+```
 
 ### **GET** `/story`
 > https://api.squeak.today/story
@@ -158,6 +211,10 @@ Evaluates a user's answer to a question about a given content.
 | `question` | `string` | Yes | Question to evaluate on. |
 | `answer` | `string` | Yes | User's answer to evaluate. |
 
+### Headers
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
 ### Response
 > `200 Successful`
 ```json
@@ -223,6 +280,30 @@ Query Supabase for stories.
 > `200 Successful`
 
 See `news-query` response.
+
+### **POST** `/content-question`
+> https://api.squeak.today/evaluate-qna
+
+Pulls a given question testing vocabulary (vocab) or understanding (understanding) of a given piece of content by ID. If the question does not exist, another will be generated, stored and returned.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `content_type` | `string` | Yes | Type of content, either `News` or `Story`. |
+| `id` | `string` | Yes | ID of the content. |
+| `cefr_level` | `string` | Yes | Desired CEFR level of the resulting question. |
+| `question_type` | `string` | Yes | Type of question, either `vocab` or `understanding`. |
+
+### Headers
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+### Response
+> `200 Successful`
+```json
+{
+	"question": "What does 'economie' mean?"
+}
+```
 
 ## Examples: `api.squeak.today`
 > https://api.squeak.today/news?language=French&cefr=B2&subject=Politics&page=1&pagesize=10

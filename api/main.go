@@ -10,7 +10,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"net/http"
 
@@ -19,12 +18,11 @@ import (
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 
-	"database/sql"
-
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
 
 	"story-api/gemini"
+	"story-api/supabase"
 )
 
 type TranslateResponse struct {
@@ -39,6 +37,10 @@ var ginLambda *ginadapter.GinLambda
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if os.Getenv("WORKSPACE") == "dev" {
+			c.Next()
+			return
+		}
 
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -107,6 +109,69 @@ func init() {
 		if c.Request.Method != http.MethodOptions {
 			authMiddleware()(c)
 		}
+	})
+
+	router.GET("/content", func(c *gin.Context) {
+		contentType := c.Query("type")
+		id := c.Query("id")
+
+		if contentType != "Story" && contentType != "News" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid content type"})
+			return
+		}
+
+		client, err := supabase.NewClient()
+		if err != nil {
+			log.Printf("Database connection failed: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+			return
+		}
+		defer client.Close()
+
+		// Step 1: Get the record from supabase db
+		contentRecord, err := client.GetContentByID(contentType, id)
+		if err != nil {
+			log.Printf("Failed to retrieve content record in DB: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
+			return
+		}
+		if contentRecord == nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+			return
+		}
+
+		// Step 2: Get the content from s3
+		content, err := pullContent(
+			contentRecord["language"].(string),
+			contentRecord["cefr_level"].(string),
+			contentRecord["topic"].(string),
+			contentType,
+			contentRecord["date_created"].(string),
+		)
+		if err != nil {
+			log.Printf("Failed to pull content from S3 bucket: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data during new question generation"})
+			return
+		}
+
+		// Step 3: Combine the data
+		contentMap := content.ToMap()
+		response := map[string]interface{}{
+			"content_type": contentType,
+			"language":     contentRecord["language"],
+			"cefr_level":   contentRecord["cefr_level"],
+			"topic":        contentRecord["topic"],
+			"date_created": contentRecord["date_created"],
+			"title":        contentRecord["title"],
+			"preview_text": contentRecord["preview_text"],
+		}
+
+		// Add all fields from contentMap to response
+		for k, v := range contentMap {
+			response[k] = v
+		}
+
+		c.JSON(http.StatusOK, response)
 	})
 
 	router.GET("/story", func(c *gin.Context) {
@@ -187,81 +252,25 @@ func init() {
 			return
 		}
 
-		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-			os.Getenv("SUPABASE_HOST"),
-			os.Getenv("SUPABASE_PORT"),
-			os.Getenv("SUPABASE_USER"),
-			os.Getenv("SUPABASE_PASSWORD"),
-			os.Getenv("SUPABASE_DATABASE"),
-		)
-
-		db, err := sql.Open("postgres", connStr)
+		client, err := supabase.NewClient()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
 			return
 		}
-		defer db.Close()
+		defer client.Close()
 
-		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1"
-		var params []interface{}
-		paramCount := 1
-
-		if language != "" && language != "any" {
-			query += fmt.Sprintf(" AND language = $%d", paramCount)
-			params = append(params, language)
-			paramCount++
+		params := supabase.QueryParams{
+			Language: language,
+			CEFR:     cefr,
+			Subject:  subject,
+			Page:     pageNum,
+			PageSize: pageSizeNum,
 		}
 
-		if cefr != "" && cefr != "any" {
-			query += fmt.Sprintf(" AND cefr_level = $%d", paramCount)
-			params = append(params, cefr)
-			paramCount++
-		}
-
-		if subject != "" && subject != "any" {
-			query += fmt.Sprintf(" AND topic = $%d", paramCount)
-			params = append(params, subject)
-			paramCount++
-		}
-
-		query += " ORDER BY created_at DESC"
-		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
-		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
-
-		log.Printf("Executing query: %s with params: %v", query, params)
-
-		results := make([]map[string]interface{}, 0)
-
-		rows, err := db.Query(query, params...)
+		results, err := client.QueryNews(params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
 			return
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var id, title, language, topic, cefrLevel, previewText string
-			var createdAt time.Time
-			var dateCreated sql.NullTime
-
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
-				return
-			}
-
-			result := map[string]interface{}{
-				"id":           id,
-				"title":        title,
-				"language":     language,
-				"topic":        topic,
-				"cefr_level":   cefrLevel,
-				"preview_text": previewText,
-				"created_at":   createdAt,
-				"date_created": dateCreated.Time.Format("2006-01-02"),
-			}
-			results = append(results, result)
 		}
 
 		c.JSON(http.StatusOK, results)
@@ -293,81 +302,25 @@ func init() {
 			return
 		}
 
-		connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-			os.Getenv("SUPABASE_HOST"),
-			os.Getenv("SUPABASE_PORT"),
-			os.Getenv("SUPABASE_USER"),
-			os.Getenv("SUPABASE_PASSWORD"),
-			os.Getenv("SUPABASE_DATABASE"),
-		)
-
-		db, err := sql.Open("postgres", connStr)
+		client, err := supabase.NewClient()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
 			return
 		}
-		defer db.Close()
+		defer client.Close()
 
-		// Build query dynamically
-		query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM stories WHERE 1=1"
-		var params []interface{}
-		paramCount := 1
-
-		if language != "" && language != "any" {
-			query += fmt.Sprintf(" AND language = $%d", paramCount)
-			params = append(params, language)
-			paramCount++
+		params := supabase.QueryParams{
+			Language: language,
+			CEFR:     cefr,
+			Subject:  subject,
+			Page:     pageNum,
+			PageSize: pageSizeNum,
 		}
 
-		if cefr != "" && cefr != "any" {
-			query += fmt.Sprintf(" AND cefr_level = $%d", paramCount)
-			params = append(params, cefr)
-			paramCount++
-		}
-
-		if subject != "" && subject != "any" {
-			query += fmt.Sprintf(" AND topic = $%d", paramCount)
-			params = append(params, subject)
-			paramCount++
-		}
-
-		query += " ORDER BY date_created DESC"
-		query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
-		params = append(params, pageSizeNum, (pageNum-1)*pageSizeNum)
-
-		log.Printf("Executing query: %s with params: %v", query, params)
-
-		results := make([]map[string]interface{}, 0)
-
-		rows, err := db.Query(query, params...)
+		results, err := client.QueryStories(params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
 			return
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var id, title, language, topic, cefrLevel, previewText string
-			var createdAt time.Time
-			var dateCreated sql.NullTime
-
-			err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Data scanning failed"})
-				return
-			}
-
-			result := map[string]interface{}{
-				"id":           id,
-				"title":        title,
-				"language":     language,
-				"topic":        topic,
-				"cefr_level":   cefrLevel,
-				"preview_text": previewText,
-				"created_at":   createdAt,
-				"date_created": dateCreated.Time.Format("2006-01-02"),
-			}
-			results = append(results, result)
 		}
 
 		c.JSON(http.StatusOK, results)
@@ -446,10 +399,10 @@ func init() {
 
 	router.POST("/evaluate-qna", func(c *gin.Context) {
 		var infoBody struct {
-			CEFR string `json:"cefr"`
-			Content string `json:"content"`
+			CEFR     string `json:"cefr"`
+			Content  string `json:"content"`
 			Question string `json:"question"`
-			Answer string `json:"answer"`
+			Answer   string `json:"answer"`
 		}
 
 		if err := c.ShouldBindJSON(&infoBody); err != nil {
@@ -481,6 +434,133 @@ func init() {
 
 		c.JSON(http.StatusOK, gin.H{
 			"evaluation": evaluationScore,
+		})
+	})
+
+	router.POST("/content-question", func(c *gin.Context) {
+		var infoBody struct {
+			ContentType  string `json:"content_type"`
+			ID           string `json:"id"`
+			CEFRLevel    string `json:"cefr_level"`
+			QuestionType string `json:"question_type"`
+		}
+
+		if err := c.ShouldBindJSON(&infoBody); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		// Validate ContentType
+		if infoBody.ContentType != "News" && infoBody.ContentType != "Story" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Content type must be either 'News' or 'Story'"})
+			return
+		}
+
+		// Validate ID is numeric
+		if _, err := strconv.Atoi(infoBody.ID); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ID must be a valid number"})
+			return
+		}
+
+		// Validate Question Type
+		if infoBody.QuestionType != "vocab" && infoBody.QuestionType != "understanding" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Question type must be either 'vocab' or 'understanding'"})
+			return
+		}
+
+		client, err := supabase.NewClient()
+		if err != nil {
+			log.Printf("Database connection failed: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+			return
+		}
+		defer client.Close()
+
+		questionData, err := client.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
+		if err != nil {
+			log.Printf("Failed to retrieve question: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve question"})
+			return
+		}
+
+		if questionData == nil {
+			// Step 1: Get the record from supabase db
+			contentRecord, err := client.GetContentByID(infoBody.ContentType, infoBody.ID)
+			if err != nil {
+				log.Printf("Failed to retrieve content record in DB: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
+				return
+			}
+			if contentRecord == nil {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+				return
+			}
+
+			// Step 2: Get the content from s3
+			contentData, err := pullContent(
+				contentRecord["language"].(string),
+				contentRecord["cefr_level"].(string),
+				contentRecord["topic"].(string),
+				infoBody.ContentType,
+				contentRecord["date_created"].(string),
+			)
+			if err != nil {
+				log.Printf("Failed to pull content from S3 bucket: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data during new question generation"})
+				return
+			}
+
+			var contentString string
+			switch v := contentData.(type) {
+			case Story:
+				contentString = v.Content
+			case News:
+				contentString = v.Content
+			default:
+				log.Printf("Invalid content type received: %T", contentData)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid content type"})
+				return
+			}
+
+			// Step 3: generate the question
+			apiKey := os.Getenv("GEMINI_API_KEY")
+			geminiClient, err := gemini.NewGeminiClient(apiKey)
+			if err != nil {
+				log.Printf("Failed to create Gemini client: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to initialize gemini client"})
+				return
+			}
+			defer geminiClient.Client.Close()
+
+			var generatedQuestion string
+			var genErr error
+			if infoBody.QuestionType == "vocab" {
+				generatedQuestion, genErr = geminiClient.CreateVocabQuestion(infoBody.CEFRLevel, contentString)
+			} else {
+				generatedQuestion, genErr = geminiClient.CreateUnderstandingQuestion(infoBody.CEFRLevel, contentString)
+			}
+			if genErr != nil {
+				log.Printf("Failed to generate question: %v", genErr)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate question"})
+				return
+			}
+
+			// Step 4: save question to db
+			err = client.CreateContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel, generatedQuestion)
+			if err != nil {
+				log.Printf("Failed to save question to database: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save question to database"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"question": generatedQuestion,
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"question": questionData["question"],
 		})
 	})
 

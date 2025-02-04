@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Learn from './pages/Learn';
 import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
+import Read from './pages/Read';
 
 function App() {
 	return (
@@ -17,6 +18,14 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<Learn />
+							</ProtectedRoute>
+						} 
+					/>
+					<Route 
+						path="/read/:type/:id" 
+						element={
+							<ProtectedRoute>
+								<Read />
 							</ProtectedRoute>
 						} 
 					/>
