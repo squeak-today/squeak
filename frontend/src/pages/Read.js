@@ -114,7 +114,7 @@ function Read() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type, id]);
 
-    const handleWordClick = async (e, word, sourceLang) => {
+    const handleWordClick = async (e, word, sourceLang, sentence) => {
         try {
             // get position
             const rect = e.target.getBoundingClientRect();
@@ -127,6 +127,7 @@ function Read() {
                     word: word,
                     show: true,
                     text: translation,
+                    sentence: sentence,
                     top,
                     left
                 });
@@ -323,6 +324,8 @@ function Read() {
                         left={tooltip.left}
                     >
                         <strong>{tooltip.word}</strong>: {tooltip.text}
+                        <br />
+                        <small>Sentence: "{tooltip.sentence}"</small>
                     </Tooltip>
                 )}
             </ReadPageLayout>

@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
-import TranslationPanel from '../components/TranslationPanel';
 
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
