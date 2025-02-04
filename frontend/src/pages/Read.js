@@ -297,10 +297,12 @@ function Read() {
         }
     };
 
+    const handleReaderScroll = () => { setTooltip(prev => ({ ...prev, show: false })); };
+
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <ReadPageLayout onClick={handleClickOutside}>
-                <ReaderPanel>
+                <ReaderPanel onScroll={handleReaderScroll}>
                     <StoryReader 
                         content={contentData.content}
                         handleWordClick={handleWordClick}
