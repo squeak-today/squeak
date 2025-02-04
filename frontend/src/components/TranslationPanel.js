@@ -1,32 +1,43 @@
 // TranslationPanel.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
+
+const slideUpAnimation = keyframes`
+  0% {
+    transform: translateY(25%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+`;
+
+const slideDownAnimation = keyframes`
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+`;
 
 const Panel = styled.div`
   position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background: #2F3C32;
   color: #fff;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   max-width: 700px;
+  margin: 0 auto;
   z-index: 999;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-  /* position above the clicked word if near the bottom of the screen */
-  ${props => {
-    const viewportHeight = window.innerHeight;
-    const shouldShowAbove = props.$top + props.$panelHeight > viewportHeight;
-    const gap = 10;
-    const wordHeight = 20;
-    
-    return `
-      top: ${shouldShowAbove 
-        ? `${props.$top - props.$panelHeight - gap - wordHeight}px` 
-        : `${props.$top + gap}px`
-      };
-      left: ${props.$left}px;
-    `;
-  }}
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  animation: ${props => props.$show ? slideUpAnimation : slideDownAnimation} 0.15s ease-in-out forwards;
 `;
 
 const Header = styled.div`
@@ -74,10 +85,17 @@ const Sentence = styled.div`
   }
 `;
 
-function TranslationPanel({ data, onClose, style, handleSentenceToggle }) {
+function TranslationPanel({ data, onClose, handleSentenceToggle }) {
+  const [isClosing, setIsClosing] = useState(false);
   const [showSentences, setShowSentences] = useState(false);
-  const [panelHeight, setPanelHeight] = useState(120); // default base height
-  const panelRef = useRef(null);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+      setIsClosing(false);
+    }, 400);
+  };
 
   const handleToggle = async () => {
     await handleSentenceToggle();
@@ -85,27 +103,14 @@ function TranslationPanel({ data, onClose, style, handleSentenceToggle }) {
   };
 
   useEffect(() => {
-    if (panelRef.current) {
-      setPanelHeight(panelRef.current.offsetHeight);
-    }
-  }, [showSentences, data.word]); // re-measure when sentences are toggled or word changes
-
-  useEffect(() => {
-    console.log(data.word);
     setShowSentences(false);
   }, [data.word]);
 
   return (
-    <Panel 
-      ref={panelRef}
-      $top={style.top}
-      $left={style.left}
-      $showSentences={showSentences}
-      $panelHeight={panelHeight}
-    >
+    <Panel $show={!isClosing}>
       <Header>
         <Word>{data.word}</Word>
-        <CloseButton onClick={onClose}>✕</CloseButton>
+        <CloseButton onClick={handleClose}>✕</CloseButton>
       </Header>
       
       <TranslationText>{data.wordTranslation}</TranslationText>

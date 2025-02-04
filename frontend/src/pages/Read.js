@@ -120,11 +120,6 @@ function Read() {
 
     const handleWordClick = async (e, word, sourceLang, sentence) => {
         try {
-            // get position
-            const rect = e.target.getBoundingClientRect();
-            const top = rect.top + rect.height;
-            const bottom = rect.bottom - rect.height;
-            const left = rect.left;
             const translation = await fetchTranslation(word, sourceLang);
             
             if (translation) {
@@ -134,9 +129,6 @@ function Read() {
                     wordTranslation: translation,
                     originalSentence: sentence,
                     sentenceTranslation: '',
-                    top,
-                    bottom,
-                    left
                 });
             }
         } catch (error) {
@@ -334,12 +326,6 @@ function Read() {
                             sentenceTranslation: tooltip.sentenceTranslation
                         }}
                         onClose={() => setTooltip(prev => ({ ...prev, show: false }))}
-                        style={{
-                            position: 'absolute',
-                            top: tooltip.top,
-                            bottom: tooltip.bottom,
-                            left: tooltip.left
-                        }}
                         handleSentenceToggle={handleSentenceToggle}
                     />
                 )}
