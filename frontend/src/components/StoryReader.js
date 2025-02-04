@@ -40,6 +40,7 @@ const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
                 <MarkdownWord
                     key={index}
                     onClick={(e) => handleWordClick(e, word.trim(), sourceLanguage)}
+                    className="word"
                 >
                     {word}
                 </MarkdownWord>
@@ -61,7 +62,7 @@ const ClickableText = ({ children, handleWordClick, sourceLanguage }) => {
         return node;
     }
     
-    return <p>{React.Children.map(children, child => processNode(child))}</p>;
+    return <>{React.Children.map(children, child => processNode(child))}</>;
 };
 
 const StoryReader = ({ content, handleWordClick, sourceLanguage, isLoading }) => {
@@ -73,7 +74,49 @@ const StoryReader = ({ content, handleWordClick, sourceLanguage, isLoading }) =>
                 <StoryText>
                     <ReactMarkdown
                         components={{
-                            p(props) { return <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />; }
+                            // Handle paragraphs
+                            p: (props) => (
+                                <p>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </p>
+                            ),
+                            // Handle list items
+                            li: (props) => (
+                                <li>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </li>
+                            ),
+                            // Handle headers
+                            h1: (props) => (
+                                <h1>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </h1>
+                            ),
+                            h2: (props) => (
+                                <h2>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </h2>
+                            ),
+                            h3: (props) => (
+                                <h3>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </h3>
+                            ),
+                            h4: (props) => (
+                                <h4>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </h4>
+                            ),
+                            h5: (props) => (
+                                <h5>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </h5>
+                            ),
+                            h6: (props) => (
+                                <h6>
+                                    <ClickableText handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
+                                </h6>
+                            ),
                         }}
                     >
                         {content}
