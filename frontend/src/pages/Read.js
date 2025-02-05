@@ -7,7 +7,7 @@ import { ReadPageLayout, ReaderPanel } from '../styles/ReadPageStyles';
 import SidePanel from '../components/SidePanel';
 import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
-import { Tooltip } from '../components/StyledComponents';
+import TranslationPanel from '../components/TranslationPanel';
 
 import { LANGUAGE_CODES_REVERSE } from '../lib/lang_codes';
 
@@ -34,19 +34,23 @@ function Read() {
     const [loadingQuestions, setLoadingQuestions] = useState(false);
     const [tooltip, setTooltip] = useState({
         show: false,
-        text: '',
+        word: '',
+        wordTranslation: '',
+        originalSentence: '',
+        sentenceTranslation: '',
         top: 0,
+        bottom: 0,
         left: 0
     });
     const [isLoading, setIsLoading] = useState(true);
 
     const apiBase = "https://api.squeak.today/";
 
-    const fetchWordDefinition = async (word, source) => {
+    const fetchTranslation = async (content, source) => {
 		let url = `${apiBase}translate`;
 		let translation = "";
 		const data = {
-			sentence: word,
+			sentence: content,
 			source: source,
 			target: 'en'
 		};
@@ -62,12 +66,12 @@ function Read() {
 			body: JSON.stringify(data)
 		}).then(response => response.json())
 		.then(result => {
-			console.log('Successful word translation!');
+			console.log('Successful content translation!');
 			translation = result["sentence"].toString();
 		})
 		.catch(error => {
 			console.error('ERROR: ', error);
-			showNotification("Couldn't find that word. Please try again or come back later!", 'error');
+			showNotification("Couldn't find the translation. Please try again or come back later!", 'error');
 		})
 		return translation;
 	};
@@ -114,21 +118,17 @@ function Read() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type, id]);
 
-    const handleWordClick = async (e, word, sourceLang) => {
+    const handleWordClick = async (e, word, sourceLang, sentence) => {
         try {
-            // get position
-            const rect = e.target.getBoundingClientRect();
-            const top = rect.bottom;
-            const left = rect.left;
-            const translation = await fetchWordDefinition(word, sourceLang);
+            const translation = await fetchTranslation(word, sourceLang);
             
             if (translation) {
                 setTooltip({
-                    word: word,
                     show: true,
-                    text: translation,
-                    top,
-                    left
+                    word: word,
+                    wordTranslation: translation,
+                    originalSentence: sentence,
+                    sentenceTranslation: '',
                 });
             }
         } catch (error) {
@@ -137,11 +137,9 @@ function Read() {
         }
     };
 
-    // Add click outside handler to close tooltip
-    const handleClickOutside = (e) => {
-        if (!e.target.closest('.word')) {
-            setTooltip(prev => ({ ...prev, show: false }));
-        }
+    const handleSentenceToggle = async () => {
+        const translation = await fetchTranslation(tooltip.originalSentence, sourceLanguage);
+        setTooltip(prev => ({ ...prev, sentenceTranslation: translation }));
     };
 
     const handleLogout = async () => {
@@ -301,7 +299,7 @@ function Read() {
 
     return (
         <BasicPage showLogout onLogout={handleLogout}>
-            <ReadPageLayout onClick={handleClickOutside}>
+            <ReadPageLayout>
                 <ReaderPanel onScroll={handleReaderScroll}>
                     <StoryReader 
                         content={contentData.content}
@@ -320,12 +318,16 @@ function Read() {
                     isLoading={isLoading}
                 />
                 {tooltip.show && (
-                    <Tooltip
-                        top={tooltip.top}
-                        left={tooltip.left}
-                    >
-                        <strong>{tooltip.word}</strong>: {tooltip.text}
-                    </Tooltip>
+                    <TranslationPanel
+                        data={{
+                            word: tooltip.word,
+                            wordTranslation: tooltip.wordTranslation,
+                            originalSentence: tooltip.originalSentence,
+                            sentenceTranslation: tooltip.sentenceTranslation
+                        }}
+                        onClose={() => setTooltip(prev => ({ ...prev, show: false }))}
+                        handleSentenceToggle={handleSentenceToggle}
+                    />
                 )}
             </ReadPageLayout>
         </BasicPage>
