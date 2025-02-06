@@ -286,7 +286,7 @@ function Read() {
             }));
             setQuestions(updatedQuestions);
 
-            const passCount = results.filter(r => r).length;
+            const passCount = updatedQuestions.filter(q => q.passed === true).length;
             showNotification(`You got ${passCount} out of ${questions.length} correct!`, 'success');
             return true;
         } catch (error) {
