@@ -246,7 +246,7 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 	)
 
 	if err == sql.ErrNoRows {
-		return nil, nil // No content found
+		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to query content: %v", err)
@@ -283,10 +283,10 @@ func (c *Client) GetProfile(userID string) (*Profile, error) {
 	)
 
 	if err == sql.ErrNoRows {
-		return nil, nil
+		return nil, sql.ErrNoRows
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to query profile: %v", err)
+		return nil, fmt.Errorf("database error querying profile: %v", err)
 	}
 
 	return &profile, nil

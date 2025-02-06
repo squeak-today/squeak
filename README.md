@@ -324,10 +324,20 @@ Get a user's profile.
 }
 ```
 
+Will return `"code": "PROFILE_NOT_FOUND"` as a JSON field if the profile does not exist.
+
 ### **POST** `/profile-upsert`
 > https://api.squeak.today/profile-upsert
 
 Upsert a user's profile.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `username` | `string` | Yes | Username of the user. |
+| `learning_language` | `string` | Yes | Language the user is learning. |
+| `skill_level` | `string` | Yes | CEFR level of the user's proficiency. |
+| `interested_topics` | `[]string` | Yes | Topics the user is interested in. |
+| `daily_questions_goal` | `int` | Yes | Number of questions the user wants to answer per day. |
 
 ### Response
 > `200 Successful`

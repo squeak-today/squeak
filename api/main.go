@@ -23,6 +23,7 @@ import (
 
 	"story-api/gemini"
 	"story-api/supabase"
+	"database/sql"
 )
 
 type TranslateResponse struct {
@@ -590,11 +591,15 @@ func init() {
 
 		profile, err := client.GetProfile(userID)
 		if err != nil {
+			if err == sql.ErrNoRows {
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": "Failed to retrieve profile",
+					"code": "PROFILE_NOT_FOUND",
+				})
+				return
+			}
+			log.Printf("Failed to retrieve profile: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve profile"})
-			return
-		}
-		if profile == nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Profile not found"})
 			return
 		}
 
