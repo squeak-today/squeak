@@ -50,30 +50,61 @@ function Auth() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
+      
         try {
-            if (isLogin) {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                navigate('/learn');
-            } else {
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                });
-                if (error) { showNotification(error.message, 'error'); throw error; }
-                setSignupSuccess(true);
+          if (isLogin) {
+            // Login flow remains the same.
+            const { error } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+            if (error) throw error;
+            navigate('/learn');
+          } else {
+            // Sign Up flow:
+            const { data, error } = await supabase.auth.signUp({ email, password });
+      
+            // If confirm email is disabled, you might get an error with a message like "User already registered".
+            if (error) {
+              // Check for the duplicate user error message if confirm email is off.
+              if (error.message.toLowerCase().includes("already registered")) {
+                showNotification(
+                  "An account with this email already exists. Please log in.",
+                  "error"
+                );
+              } else {
+                showNotification(error.message, "error");
+              }
+              return; // Exit early if an error is encountered.
             }
+      
+            // When email confirmation is enabled, a fake (obfuscated) user object may be returned.
+            // Check if the user object’s identities array is empty:
+            if (data?.user) {
+              const user = data.user;
+              // If identities is empty, the email is already in use.
+              if (user.identities && user.identities.length === 0) {
+                showNotification(
+                  "An account with this email already exists. " +
+                  "If you haven’t verified your email, please check your inbox (or spam folder) " +
+                  "or try logging in.",
+                  "error"
+                );
+                return; // Exit early.
+              }
+            }
+      
+            // If we reach here, the sign-up was successful.
+            setSignupSuccess(true);
+          }
         } catch (error) {
-            console.error('Auth error:', error);
-            showNotification('Authentication error. Please try again.');
+          console.error("Auth error:", error);
+          showNotification("Authentication error. Please try again.", "error");
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+      
 
     const handleResetRequest = async (e) => {
         e.preventDefault();
