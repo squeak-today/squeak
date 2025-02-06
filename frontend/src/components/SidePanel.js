@@ -16,7 +16,6 @@ import {
     ButtonGroup,
     ShareButton,
     ReportButton,
-    UnderstandingButton,
 } from '../styles/ReadPageStyles';
 
 // Learn tab components
@@ -123,10 +122,6 @@ const SidePanel = ({
             ) : (
                 <>
                     <ContentSection>
-                        <UnderstandingButton onClick={() => setActiveTab('learn')}>
-                            Check Your Understanding!
-                        </UnderstandingButton>
-
                         <TagsContainer>
                             <Tag type="cefr" color={getCEFRColor(contentData.difficulty)} value={contentData.difficulty}>
                                 {contentData.difficulty}
@@ -156,7 +151,7 @@ const SidePanel = ({
 
     const renderLearnTab = () => (
         <LearnContentContainer>
-            <Label htmlFor="goal-select">Learning Goal</Label>
+            <Label htmlFor="goal-select">Choose a goal for this content:</Label>
             <GoalSelect 
                 id="goal-select"
                 value={selectedGoal}
@@ -229,7 +224,7 @@ const SidePanel = ({
                     $active={activeTab === 'learn'} 
                     onClick={() => setActiveTab('learn')}
                 >
-                    Learn Content
+                    Test Yourself
                 </Tab>
             </TabContainer>
 
