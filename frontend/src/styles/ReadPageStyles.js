@@ -242,3 +242,14 @@ export const CheckAnswersButton = styled(SetGoalButton)`
     margin-top: 20px;
     width: 100%;
 `;
+
+export const ExplanationText = styled.div`
+    margin-top: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: 'Lora', serif;
+    font-size: 0.9em;
+    line-height: 1.5;
+    background-color: ${props => props.$passed ? '#D4F7D4' : '#FFE8E8'};
+    color: ${props => props.$passed ? '#2E7D32' : '#D32F2F'};
+`;

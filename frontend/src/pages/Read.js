@@ -275,13 +275,14 @@ function Read() {
                     })
                 });
                 const data = await response.json();
-                return data.evaluation === 'PASS';
+                return data;
             }));
 
             const updatedQuestions = questions.map((q, i) => ({
                 ...q,
                 evaluated: true,
-                passed: results[i]
+                passed: results[i].evaluation === 'PASS',
+                explanation: results[i].explanation
             }));
             setQuestions(updatedQuestions);
 

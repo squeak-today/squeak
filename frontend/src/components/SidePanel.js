@@ -5,6 +5,7 @@ import {
     TabContainer,
     Tab,
     ContentSection,
+    ExplanationText,
 } from '../styles/ReadPageStyles';
 
 // General tab components
@@ -66,9 +67,9 @@ const formatDate = (dateString) => {
 };
 
 const GOAL_OPTIONS = {
-    QUICK: { value: '1', label: '1 minute (Quick)' },
-    RECOMMENDED: { value: '3', label: '3 minutes (Recommended)' },
-    STRONG: { value: '8', label: '8 minutes (Strong)' }
+    QUICK: { value: '1', label: 'Quick Study (30 seconds)' },
+    RECOMMENDED: { value: '3', label: 'Standard Study (1-2 minutes)' },
+    STRONG: { value: '8', label: 'Deep Study (5-10 minutes)' }
 };
 
 const SidePanel = ({ 
@@ -155,7 +156,7 @@ const SidePanel = ({
 
     const renderLearnTab = () => (
         <LearnContentContainer>
-            <Label htmlFor="goal-select">Goal</Label>
+            <Label htmlFor="goal-select">Learning Goal</Label>
             <GoalSelect 
                 id="goal-select"
                 value={selectedGoal}
@@ -196,6 +197,11 @@ const SidePanel = ({
                         $evaluated={q.evaluated}
                         $passed={q.passed}
                     />
+                    {q.evaluated && q.explanation && (
+                        <ExplanationText $passed={q.passed}>
+                            {q.explanation}
+                        </ExplanationText>
+                    )}
                 </QuestionContainer>
             ))}
 
