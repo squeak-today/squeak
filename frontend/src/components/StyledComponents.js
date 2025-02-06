@@ -1,26 +1,5 @@
 import styled from 'styled-components';
 
-
-
-/** 
- * Container that holds main content.
- * Added responsive margin and padding for mobile.
- */
-export const BrowserBox = styled.div`
-  width: 100%;
-  height: 100%;
-  margin: 2em auto 0 auto;
-  margin: 2em auto 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    margin: 40px auto 0 auto;
-    padding: 1em;
-  }
-`;
-
 export const Title = styled.h1`
   text-align: center;
   color: #000000;

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import StoryList from './StoryList';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const DateHeader = styled.h1`
 	font-family: 'Lora', serif;
@@ -73,13 +73,17 @@ const DisclaimerText = styled.p`
 	font-style: italic;
 `;
 
-const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
-	const [filterLanguage, setFilterLanguage] = useState('any');
+const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLanguage }) => {
+	const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
 	const [filterLevel, setFilterLevel] = useState('any');
 	const [filterTopic, setFilterTopic] = useState('any');
 	const [filterType, setFilterType] = useState('News');
 	const [currentPage, setCurrentPage] = useState(1);
 	const storiesPerPage = 6;
+
+	useEffect(() => {
+		setFilterLanguage(defaultLanguage);
+	}, [defaultLanguage]);
 
 	const formatDate = () => {
 		const date = new Date();

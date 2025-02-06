@@ -44,7 +44,7 @@ function Read() {
     });
     const [isLoading, setIsLoading] = useState(true);
 
-    const apiBase = "https://api.squeak.today/";
+    const apiBase = process.env.REACT_APP_API_BASE;
 
     const fetchTranslation = async (content, source) => {
 		let url = `${apiBase}translate`;

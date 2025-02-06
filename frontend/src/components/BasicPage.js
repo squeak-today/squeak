@@ -5,7 +5,6 @@ import {
   HeaderLogo,
   FooterContainer,
   HeaderText,
-  // FooterLogo,
   MobileMenuIcon,
   MobileMenu,
   FooterText,
@@ -14,7 +13,7 @@ import {
   PageContainer,
   LogoText,
   MenuText,
-} from './StyledComponents'; // Updated import
+} from './StyledComponents';
 import logo from '../assets/drawing_400.png';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi'; 

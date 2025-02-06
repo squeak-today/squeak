@@ -5,6 +5,7 @@ import Learn from './pages/Learn';
 import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import Read from './pages/Read';
+import Welcome from './pages/Welcome';
 
 function App() {
 	return (
@@ -29,6 +30,11 @@ function App() {
 							</ProtectedRoute>
 						} 
 					/>
+					<Route path="/welcome" element={
+						<ProtectedRoute>
+							<Welcome />
+						</ProtectedRoute>
+					} />
 				</Routes>
 			</Router>
 		</NotificationProvider>

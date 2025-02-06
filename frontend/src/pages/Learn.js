@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BrowserBox } from '../components/StyledComponents';
+import { BrowserBox, LearnPageLayout, StoryBrowserContainer, ProfileDashboardContainer } from '../styles/LearnPageStyles';
 import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
+import ProfileDashboard from '../components/ProfileDashboard';
 
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
@@ -27,9 +28,11 @@ function Learn() {
 
 	const { showNotification } = useNotification();
 
-	const apiBase = "https://api.squeak.today/";
+	const apiBase = process.env.REACT_APP_API_BASE;
 
 	const navigate = useNavigate();
+
+	const [profile, setProfile] = useState(null);
 
 	const handleListStories = useCallback(async (type, language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
@@ -130,19 +133,87 @@ function Learn() {
 		}
 	};
 
+	const handleGetProfile = useCallback(async () => {
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			const jwt = session?.access_token;
+			
+			const response = await fetch(`${apiBase}profile`, {
+				headers: {
+					'Authorization': `Bearer ${jwt}`
+				}
+			});
+			
+			const data = await response.json();
+			
+			if (data.code === "PROFILE_NOT_FOUND") {
+				navigate('/welcome');
+				return null;
+			}
+			
+			if (!response.ok) throw new Error('Failed to fetch profile');
+			
+			setProfile(data);
+			return data;
+		} catch (error) {
+			console.error('Error fetching profile:', error);
+			showNotification('Failed to load profile. Please try again.', 'error');
+		}
+	}, [showNotification, apiBase, navigate]);
+
+	const handleUpdateProfile = useCallback(async (profileData) => {
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			const jwt = session?.access_token;
+			
+			const response = await fetch(`${apiBase}profile-upsert`, {
+				method: 'POST',
+				headers: {
+					'Authorization': `Bearer ${jwt}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(profileData)
+			});
+			
+			const result = await response.json();
+			if (result.message === "Username already taken") {
+				showNotification('Username already taken. Please try again.', 'error');
+				return;
+			}
+			if (!response.ok) throw new Error('Failed to update profile');
+			
+			await handleGetProfile();
+			showNotification('Profile updated successfully!', 'success');
+			return result;
+		} catch (error) {
+			console.error('Error updating profile:', error);
+			showNotification('Failed to update profile. Please try again.', 'error');
+		}
+	}, [handleGetProfile, showNotification, apiBase]);
+
 	return (
 		<BasicPage showLogout onLogout={handleLogout}>
-
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<BrowserBox>
-				<StoryBrowser 
-					stories={allStories} 
-					onParamsSelect={handleListStories} 
-					onStoryBlockClick={handleStoryBlockClick}
-				/>
-				
+				<LearnPageLayout>
+					<StoryBrowserContainer>
+						<StoryBrowser 
+							stories={allStories} 
+							onParamsSelect={handleListStories} 
+							onStoryBlockClick={handleStoryBlockClick}
+							defaultLanguage={profile?.learning_language || 'any'}
+						/>
+					</StoryBrowserContainer>
+					
+					<ProfileDashboardContainer>
+						<ProfileDashboard
+							profile={profile}
+							onGetProfile={handleGetProfile}
+							onUpdateProfile={handleUpdateProfile}
+						/>
+					</ProfileDashboardContainer>
+				</LearnPageLayout>
 			</BrowserBox>
-
 		</BasicPage>
 	);
 }
