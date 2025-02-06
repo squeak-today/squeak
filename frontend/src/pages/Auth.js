@@ -50,30 +50,55 @@ function Auth() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
+      
         try {
-            if (isLogin) {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                navigate('/learn');
-            } else {
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                });
-                if (error) { showNotification(error.message, 'error'); throw error; }
-                setSignupSuccess(true);
+          if (isLogin) {
+            const { error } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+            if (error) throw error;
+            navigate('/learn');
+          } else {
+            const { data, error } = await supabase.auth.signUp({ email, password });
+      
+            // for disabled email confirmation, we get an error with a message like "User already registered".
+            if (error) {
+              if (error.message.toLowerCase().includes("already registered")) {
+                showNotification(
+                  "An account with this email already exists. Please log in.",
+                  "error"
+                );
+                toggleMode('login');
+              } else {
+                showNotification(error.message, "error");
+              }
+              return;
             }
+
+            // for enabled email confirmation, a fake user obj is returned so we check validity
+            if (data?.user) {
+              const user = data.user;
+              if (user.identities && user.identities.length === 0) {
+                showNotification(
+                  "An account with this email already exists. Log in instead!" +
+                  "If you haven’t verified your email, please check your inbox (or spam folder) for a verification link.",
+                  "error"
+                );
+                toggleMode('login');
+                return;
+              }
+            }
+            setSignupSuccess(true);
+          }
         } catch (error) {
-            console.error('Auth error:', error);
-            showNotification('Authentication error. Please try again.');
+          console.error("Auth error:", error);
+          showNotification("Authentication error. Please try again.", "error");
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+      
 
     const handleResetRequest = async (e) => {
         e.preventDefault();
