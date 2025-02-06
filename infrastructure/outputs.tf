@@ -37,3 +37,13 @@ output "api_gateway_url_content_question" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/content-question"
   description = "Content Question URL for Story API"
 }
+
+output "api_gateway_url_profile" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/profile"
+  description = "Profile URL for Story API"
+}
+
+output "api_gateway_url_profile_update" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/profile-upsert"
+  description = "Profile Update URL for Story API"
+}

@@ -11,6 +11,7 @@ const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject,
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
 	const { data: { session } } = await supabase.auth.getSession();
 	const jwt = session?.access_token
+	console.log(jwt);
 	const response = await fetch(url, {
 		headers: {
 			'Authorization': `Bearer ${jwt}`

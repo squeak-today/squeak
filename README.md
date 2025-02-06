@@ -53,6 +53,8 @@ If you are viewing this as an open source user, some of these may not apply. You
 | `/news-query` | `GET` | Query Supabase for news articles. |
 | `/story-query` | `GET` | Query Supabase for stories. |
 | `/content-question` | `POST` | Generate a question testing vocabulary or understanding of a given piece of content. |
+| `/profile` | `GET` | Get a user's profile. |
+| `/profile-upsert` | `POST` | Upsert a user's profile. |
 
 ### **GET** `/content`
 > https://api.squeak.today/content
@@ -302,6 +304,37 @@ Pulls a given question testing vocabulary (vocab) or understanding (understandin
 ```json
 {
 	"question": "What does 'economie' mean?"
+}
+```
+
+### **GET** `/profile`
+> https://api.squeak.today/profile
+
+Get a user's profile.
+
+### Response
+> `200 Successful`
+```json
+{
+    "username": "Connor",
+    "learning_language": "French",
+    "skill_level": "A2",
+    "interested_topics": ["Business", "Sports"],
+    "daily_questions_goal": 5
+}
+```
+
+### **POST** `/profile-upsert`
+> https://api.squeak.today/profile-upsert
+
+Upsert a user's profile.
+
+### Response
+> `200 Successful`
+```json
+{
+    "id": 1,
+    "message": "Profile updated successfully"
 }
 ```
 

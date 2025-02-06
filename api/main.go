@@ -33,11 +33,24 @@ type TranslateResponse struct {
 	} `json:"data"`
 }
 
+type Profile = supabase.Profile
+
 var ginLambda *ginadapter.GinLambda
+
+func getUserIDFromToken(c *gin.Context) string {
+	value, exists := c.Get("sub")
+	if !exists {
+		return ""
+	}
+	if userID, ok := value.(string); ok {
+		return userID
+	}
+	return ""
+}
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if os.Getenv("WORKSPACE") == "dev" {
+		if os.Getenv("WORKSPACE") == "dev" && c.GetHeader("Authorization") == "Bearer dev-token" {
 			c.Next()
 			return
 		}
@@ -76,9 +89,10 @@ func authMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		// 	c.Set("user_claims", claims)
-		// }
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			c.Set("sub", claims["sub"])
+			c.Set("email", claims["email"])
+		}
 
 		c.Next()
 	}
@@ -562,6 +576,64 @@ func init() {
 		c.JSON(http.StatusOK, gin.H{
 			"question": questionData["question"],
 		})
+	})
+
+	router.GET("/profile", func(c *gin.Context) {
+		userID := getUserIDFromToken(c)
+
+		client, err := supabase.NewClient()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+			return
+		}
+		defer client.Close()
+
+		profile, err := client.GetProfile(userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve profile"})
+			return
+		}
+		if profile == nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Profile not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, profile)
+	})
+
+	router.POST("/profile-upsert", func(c *gin.Context) {
+		userID := getUserIDFromToken(c)
+
+		var profile Profile
+		if err := c.ShouldBindJSON(&profile); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+			return
+		}
+
+		if profile.Username == "" || profile.LearningLanguage == "" || profile.SkillLevel == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Username, learning language, and skill level are required"})
+			return
+		}
+
+		client, err := supabase.NewClient()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+			return
+		}
+		defer client.Close()
+
+		id, err := client.UpsertProfile(userID, &profile)
+		if err != nil {
+			log.Println(err)
+			if strings.Contains(err.Error(), "unique_constraint") {
+				c.JSON(http.StatusConflict, gin.H{"error": "Username already taken"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save profile"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully", "id": id})
 	})
 
 	ginLambda = ginadapter.New(router)

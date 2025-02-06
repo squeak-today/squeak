@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 // supabase database client
@@ -19,6 +21,15 @@ type QueryParams struct {
 	Subject  string
 	Page     int
 	PageSize int
+}
+
+// Add these near the top with other type definitions
+type Profile struct {
+	Username           string   `json:"username"`
+	LearningLanguage   string   `json:"learning_language"`
+	SkillLevel         string   `json:"skill_level"`
+	InterestedTopics   []string `json:"interested_topics"`
+	DailyQuestionsGoal int      `json:"daily_questions_goal"`
 }
 
 func NewClient() (*Client, error) {
@@ -254,4 +265,63 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 	}
 
 	return result, nil
+}
+
+func (c *Client) GetProfile(userID string) (*Profile, error) {
+	query := `
+		SELECT username, learning_language, skill_level, interested_topics, daily_questions_goal 
+		FROM profiles 
+		WHERE user_id = $1`
+
+	var profile Profile
+	err := c.db.QueryRow(query, userID).Scan(
+		&profile.Username,
+		&profile.LearningLanguage,
+		&profile.SkillLevel,
+		pq.Array(&profile.InterestedTopics),
+		&profile.DailyQuestionsGoal,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query profile: %v", err)
+	}
+
+	return &profile, nil
+}
+
+func (c *Client) UpsertProfile(userID string, profile *Profile) (int, error) {
+	query := `
+		INSERT INTO profiles (
+			user_id, username, learning_language, skill_level, 
+			interested_topics, daily_questions_goal
+		) 
+		VALUES ($1, $2, $3, $4, $5, $6)
+		ON CONFLICT (user_id) 
+		DO UPDATE SET 
+			username = EXCLUDED.username,
+			learning_language = EXCLUDED.learning_language,
+			skill_level = EXCLUDED.skill_level,
+			interested_topics = EXCLUDED.interested_topics,
+			daily_questions_goal = EXCLUDED.daily_questions_goal
+		RETURNING id`
+
+	var id int
+	err := c.db.QueryRow(
+		query,
+		userID,
+		profile.Username,
+		profile.LearningLanguage,
+		profile.SkillLevel,
+		pq.Array(profile.InterestedTopics),
+		profile.DailyQuestionsGoal,
+	).Scan(&id)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to upsert profile: %v", err)
+	}
+
+	return id, nil
 }
