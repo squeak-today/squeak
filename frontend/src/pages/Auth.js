@@ -72,6 +72,8 @@ function Auth() {
                   "An account with this email already exists. Please log in.",
                   "error"
                 );
+                // Switch to login mode
+                toggleMode('login');
               } else {
                 showNotification(error.message, "error");
               }
@@ -90,6 +92,8 @@ function Auth() {
                   "or try logging in.",
                   "error"
                 );
+                // Switch to login mode
+                toggleMode('login');
                 return; // Exit early.
               }
             }
