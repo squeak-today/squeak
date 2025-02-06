@@ -33,6 +33,9 @@ const (
 	VOCAB_QUESTION_MODEL               = "gemini-1.5-flash"
 	UNDERSTANDING_QUESTION_TEMPERATURE = 1.0
 	VOCAB_QUESTION_TEMPERATURE         = 0.3
+
+	EXPLANATION_MODEL = "gemini-1.5-flash"
+	EXPLANATION_TEMPERATURE = 0.8
 )
 
 // USAGE
@@ -57,7 +60,7 @@ func NewGeminiClient(apiKey string) (*GeminiClient, error) {
 	}, nil
 }
 
-func (c *GeminiClient) ExecutePrompt(model_name string, temperature float32, prompt string) (string, error) {
+func (c *GeminiClient) ExecutePrompt(model_name string, temperature float32, prompt string, history []*genai.Content) (string, error) {
 	ctx := context.Background()
 
 	model := c.Client.GenerativeModel(model_name)
@@ -68,7 +71,7 @@ func (c *GeminiClient) ExecutePrompt(model_name string, temperature float32, pro
 	model.ResponseMIMEType = "text/plain"
 
 	session := model.StartChat()
-	session.History = []*genai.Content{}
+    session.History = history
 
 	var result string
 	var lastErr error
@@ -93,21 +96,44 @@ func (c *GeminiClient) ExecutePrompt(model_name string, temperature float32, pro
 }
 
 func (c *GeminiClient) EvaluateQNA(cefr string, content string, question string, answer string) (string, error) {
+	empty_history := []*genai.Content{}
 	cleanQuestion := strings.TrimSpace(question)
 	if strings.HasPrefix(strings.ToLower(cleanQuestion), "what does") && strings.HasSuffix(strings.ToLower(cleanQuestion), "mean?") {
 		prompt := prompts.CreateEvaluateVocabQNAPrompt(cefr, content, question, answer)
-		return c.ExecutePrompt(EVALUATE_QNA_MODEL, EVALUATE_QNA_TEMPERATURE, prompt)
+		return c.ExecutePrompt(EVALUATE_QNA_MODEL, EVALUATE_QNA_TEMPERATURE, prompt, empty_history)
 	}
 	prompt := prompts.CreateEvaluateQNAPrompt(cefr, content, question, answer)
-	return c.ExecutePrompt(EVALUATE_QNA_MODEL, EVALUATE_QNA_TEMPERATURE, prompt)
+	return c.ExecutePrompt(EVALUATE_QNA_MODEL, EVALUATE_QNA_TEMPERATURE, prompt, empty_history)
 }
 
 func (c *GeminiClient) CreateUnderstandingQuestion(cefr string, content string) (string, error) {
+	empty_history := []*genai.Content{}
 	prompt := prompts.CreateUnderstandingQuestionPrompt(cefr, content)
-	return c.ExecutePrompt(UNDERSTANDING_QUESTION_MODEL, UNDERSTANDING_QUESTION_TEMPERATURE, prompt)
+	return c.ExecutePrompt(UNDERSTANDING_QUESTION_MODEL, UNDERSTANDING_QUESTION_TEMPERATURE, prompt, empty_history)
 }
 
 func (c *GeminiClient) CreateVocabQuestion(cefr string, content string) (string, error) {
+	empty_history := []*genai.Content{}
 	prompt := prompts.CreateVocabQuestionPrompt(cefr, content)
-	return c.ExecutePrompt(VOCAB_QUESTION_MODEL, VOCAB_QUESTION_TEMPERATURE, prompt)
+	return c.ExecutePrompt(VOCAB_QUESTION_MODEL, VOCAB_QUESTION_TEMPERATURE, prompt, empty_history)
+}
+
+func (c *GeminiClient) GenerateQNAExplanation(cefr string, content string, question string, answer string, evaluation string) (string, error) {
+	original_prompt := prompts.CreateEvaluateQNAPrompt(cefr, content, question, answer)
+	history := []*genai.Content{
+		{
+			Role: "user",
+			Parts: []genai.Part{
+				genai.Text(original_prompt),
+			},
+		},
+		{
+			Role: "user",
+			Parts: []genai.Part{
+				genai.Text(evaluation),
+			},
+		},
+	}
+	prompt := prompts.CreateQNAExplanationPrompt(cefr, content, question, answer, evaluation)
+	return c.ExecutePrompt(EXPLANATION_MODEL, EXPLANATION_TEMPERATURE, prompt, history)
 }

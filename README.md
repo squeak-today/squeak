@@ -220,6 +220,7 @@ Evaluates a user's answer to a question about a given content.
 ```json
 {
 	"evaluation": "PASS" // or "FAIL"
+    "explanation": "Make sure you conjugate avoir correctly!"
 }
 ```
 

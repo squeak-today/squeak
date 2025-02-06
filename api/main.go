@@ -431,9 +431,16 @@ func init() {
 		} else {
 			evaluationScore = evaluation
 		}
+		
+		explanation, err := geminiClient.GenerateQNAExplanation(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer, evaluationScore)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Explanation with Gemini failed"})
+			return
+		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"evaluation": evaluationScore,
+			"explanation": explanation,
 		})
 	})
 
