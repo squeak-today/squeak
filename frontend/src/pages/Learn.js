@@ -157,13 +157,15 @@ function Learn() {
 	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
 		try {
 			const recommendedNews = await fetchContentList(apiBase, 'news-query', language, cefrLevel, 'any', 1, 5);
-			const transformedRecommendations = recommendedNews.map(story => ({
-				id: story.id,
-				title: story.title,
-				cefr_level: story.cefr_level,
-				language: story.language,
-				topic: story.topic
-			}));
+			const transformedRecommendations = Array.isArray(recommendedNews) 
+				? recommendedNews.map(story => ({
+					id: story.id,
+					title: story.title,
+					cefr_level: story.cefr_level,
+					language: story.language,
+					topic: story.topic
+				}))
+				: [];
 			setRecommendations(transformedRecommendations);
 		} catch (error) {
 			console.error("Failed to fetch recommendations:", error);
@@ -182,31 +184,43 @@ function Learn() {
 					headers: {
 						'Authorization': `Bearer ${jwt}`
 					}
+				}).catch(error => {
+					console.error('Progress fetch failed:', error);
+					return { ok: false };
 				}),
 				fetch(`${apiBase}progress/streak`, {
 					headers: {
 						'Authorization': `Bearer ${jwt}`
 					}
+				}).catch(error => {
+					console.error('Streak fetch failed:', error);
+					return { ok: false };
 				})
 			]);
 			
-			if (!progressResponse.ok || !streakResponse.ok) 
+			if (!progressResponse.ok || !streakResponse.ok) {
 				throw new Error('Failed to fetch progress data');
+			}
 			
 			const progressData = await progressResponse.json();
 			const streakData = await streakResponse.json();
 
-			// Combine the data
 			setProgress({
 				...progressData,
-				streak: streakData.streak,
-				completed_today: streakData.completed_today
+				streak: streakData?.streak || 0,
+				completed_today: streakData?.completed_today || false
 			});
 			
 			return progressData;
 		} catch (error) {
 			console.error('Error fetching progress:', error);
 			showNotification('Failed to load progress. Please try again.', 'error');
+			setProgress({
+				questions_completed: 0,
+				goal_met: false,
+				streak: 0,
+				completed_today: false
+			});
 		}
 	}, [apiBase, showNotification]);
 
