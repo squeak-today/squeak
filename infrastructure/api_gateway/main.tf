@@ -1,5 +1,3 @@
-
-
 // Define path
 resource "aws_api_gateway_resource" "resource" {
   rest_api_id = var.rest_api_id
@@ -9,6 +7,7 @@ resource "aws_api_gateway_resource" "resource" {
 
 // Define the endpoint method
 resource "aws_api_gateway_method" "method" {
+  count         = var.is_resource_only ? 0 : 1
   rest_api_id   = var.rest_api_id
   resource_id   = aws_api_gateway_resource.resource.id
   http_method   = var.http_method
@@ -17,9 +16,10 @@ resource "aws_api_gateway_method" "method" {
 
 // Define endpoint response
 resource "aws_api_gateway_method_response" "get_method_response" {
+  count       = var.is_resource_only ? 0 : 1
   rest_api_id = var.rest_api_id
   resource_id = aws_api_gateway_resource.resource.id
-  http_method = aws_api_gateway_method.method.http_method
+  http_method = aws_api_gateway_method.method[count.index].http_method
   status_code = "200"
 
   response_parameters = {
@@ -32,9 +32,10 @@ resource "aws_api_gateway_method_response" "get_method_response" {
 
 // Integrate
 resource "aws_api_gateway_integration" "integration" {
+  count                   = var.is_resource_only ? 0 : 1
   rest_api_id             = var.rest_api_id
   resource_id             = aws_api_gateway_resource.resource.id
-  http_method             = aws_api_gateway_method.method.http_method
+  http_method             = aws_api_gateway_method.method[count.index].http_method
   type                    = "AWS_PROXY"
   integration_http_method = "POST"
   uri                     = var.lambda_arn
@@ -89,4 +90,8 @@ resource "aws_api_gateway_integration_response" "options_integration_response" {
     aws_api_gateway_integration.options_integration,
     aws_api_gateway_method_response.options_method_response
   ]
+}
+
+output "resource_id" {
+  value = aws_api_gateway_resource.resource.id
 }

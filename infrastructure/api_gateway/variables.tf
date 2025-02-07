@@ -23,3 +23,9 @@ variable "lambda_arn" {
   description = "The ARN of the front Lambda function"
   type        = string
 }
+
+variable "is_resource_only" {
+  description = "Whether to create a resource only (no methods)"
+  type        = bool
+  default     = false
+}
