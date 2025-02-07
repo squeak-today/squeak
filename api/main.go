@@ -128,8 +128,24 @@ func init() {
 
 	categoryGroup := router.Group("/progress")
 	{
-		categoryGroup.GET("/increment", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "Progress endpoint"})
+		categoryGroup.GET("/", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+
+			client, err := supabase.NewClient()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+				return
+			}
+			defer client.Close()
+
+			progress, err := client.GetTodayProgress(userID)
+			if err != nil {
+				log.Printf("Failed to get progress: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get progress"})
+				return
+			}
+
+			c.JSON(http.StatusOK, progress)
 		})
 	}
 

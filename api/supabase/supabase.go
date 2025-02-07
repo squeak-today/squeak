@@ -32,6 +32,13 @@ type Profile struct {
 	DailyQuestionsGoal int      `json:"daily_questions_goal"`
 }
 
+type DailyProgress struct {
+	UserID             string    `json:"user_id"`
+	Date               time.Time `json:"date"`
+	QuestionsCompleted int       `json:"questions_completed"`
+	GoalMet            bool      `json:"goal_met"`
+}
+
 func NewClient() (*Client, error) {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 		os.Getenv("SUPABASE_HOST"),
@@ -324,4 +331,104 @@ func (c *Client) UpsertProfile(userID string, profile *Profile) (int, error) {
 	}
 
 	return id, nil
+}
+
+func (c *Client) GetTodayProgress(userID string) (*DailyProgress, error) {
+	var progress DailyProgress
+	err := c.db.QueryRow(`
+        SELECT user_id, date, questions_completed, goal_met
+        FROM daily_progress
+        WHERE user_id = $1 AND date = CURRENT_DATE
+    `, userID).Scan(&progress.UserID, &progress.Date, &progress.QuestionsCompleted, &progress.GoalMet)
+
+	if err == sql.ErrNoRows {
+		err = c.db.QueryRow(`
+            INSERT INTO daily_progress (user_id, date)
+            VALUES ($1, CURRENT_DATE)
+            RETURNING user_id, date, questions_completed, goal_met
+        `, userID).Scan(&progress.UserID, &progress.Date, &progress.QuestionsCompleted, &progress.GoalMet)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return &progress, nil
+}
+
+func (c *Client) IncrementQuestionsCompleted(userID string, amount int) error {
+	var dailyGoal int
+	err := c.db.QueryRow(`
+        SELECT daily_questions_goal 
+        FROM profiles 
+        WHERE user_id = $1
+    `, userID).Scan(&dailyGoal)
+	if err != nil {
+		return fmt.Errorf("failed to get daily goal: %v", err)
+	}
+
+	query := `
+        INSERT INTO daily_progress (user_id, date, questions_completed, goal_met)
+        VALUES ($1, CURRENT_DATE, $2, $2 >= $3)
+        ON CONFLICT (user_id, date) 
+        DO UPDATE SET 
+            questions_completed = daily_progress.questions_completed + $2,
+            goal_met = (daily_progress.questions_completed + $2) >= $3
+    `
+
+	_, err = c.db.Exec(query, userID, amount, dailyGoal)
+	return err
+}
+
+func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
+	var streak int
+	var completedToday bool
+	err := c.db.QueryRow(`
+		WITH consecutive_days AS (
+			SELECT
+				date,
+				goal_met,
+				date - INTERVAL '1 day' * ROW_NUMBER() OVER (ORDER BY date ASC) AS streak_group
+			FROM daily_progress
+			WHERE user_id = 'd2a17127-875f-4bd9-b97d-7bb3fc8762ab'
+				AND goal_met = TRUE
+			ORDER BY date
+		),
+
+		streak_groups AS (
+			SELECT
+				MIN(date) AS start_at,
+				MAX(date) AS end_at,
+				COUNT(*) AS days_count,
+				(CURRENT_DATE - INTERVAL '1 day')::DATE AS day_before_end,
+				MAX(date) = CURRENT_DATE AS completed_for_today,
+				MAX(date) = (CURRENT_DATE - INTERVAL '1 day')::DATE AS completed_for_yesterday,
+				MAX(date) - (MIN(date) - INTERVAL '1 day')::DATE AS streak_size
+			FROM consecutive_days
+			GROUP BY streak_group
+			HAVING COUNT(*) >= 1
+		)
+
+		SELECT 
+		COALESCE(
+			(SELECT streak_size 
+				FROM streak_groups 
+				WHERE completed_for_today = true 
+				OR completed_for_yesterday = true
+				ORDER BY streak_size DESC 
+				LIMIT 1), 0
+		) as current_streak,
+		COALESCE(
+			(SELECT completed_for_today 
+				FROM streak_groups 
+				WHERE completed_for_today = true 
+				OR completed_for_yesterday = true
+				ORDER BY streak_size DESC 
+				LIMIT 1), false
+		) as completed_today;
+	`, userID).Scan(&streak, &completedToday)
+
+	if err != nil {
+		return 0, false, err
+	}
+	return streak, completedToday, nil
 }

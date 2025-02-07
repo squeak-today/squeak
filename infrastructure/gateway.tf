@@ -96,25 +96,14 @@ resource "aws_lambda_permission" "allow_apigateway" {
   source_arn    = "${aws_api_gateway_rest_api.story_api.execution_arn}/*/*"
 }
 
-# /progress
+# GET /progress
 module "progress" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
   parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
   path_part   = "progress"
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-  is_resource_only = true
 }
-
-# GET /progress/increment
-module "progress_increment" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = module.progress.resource_id
-  path_part   = "increment"
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
 
 # DEPLOY
 resource "aws_api_gateway_deployment" "api_deployment" {
@@ -130,6 +119,5 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.story_query,
     module.content_question,
     module.progress,
-    module.progress_increment
   ]
 }
