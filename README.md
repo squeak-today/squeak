@@ -55,6 +55,9 @@ If you are viewing this as an open source user, some of these may not apply. You
 | `/content-question` | `POST` | Generate a question testing vocabulary or understanding of a given piece of content. |
 | `/profile` | `GET` | Get a user's profile. |
 | `/profile-upsert` | `POST` | Upsert a user's profile. |
+| `/progress/` | `GET` | Get today's progress for the authenticated user. |
+| `/progress/increment` | `POST` | Increment the number of questions completed for today. |
+| `/progress/streak` | `GET` | Get the user's current streak information. |
 
 ### **GET** `/content`
 > https://api.squeak.today/content
@@ -345,6 +348,56 @@ Upsert a user's profile.
 {
     "id": 1,
     "message": "Profile updated successfully"
+}
+```
+
+### **GET** `/progress`
+> https://api.squeak.today/progress/
+
+Get today's progress for the authenticated user.
+
+### Response
+> `200 Successful`
+```json
+{
+    "user_id": "XXXX...",
+    "date": "2024-02-07",
+    "questions_completed": 5,
+    "goal_met": true
+}
+```
+
+### **GET** `/progress/increment`
+> https://api.squeak.today/progress/increment
+
+Increment the number of questions completed for today.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `amount` | `int` | Yes | Amount to increment by. Must be non-negative. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "user_id": "123e4567-e89b-12d3-a456-426614174000",
+    "date": "2024-02-07",
+    "questions_completed": 6,
+    "goal_met": true
+}
+```
+
+### **GET** `/progress/streak`
+> https://api.squeak.today/progress/streak
+
+Get the user's current streak information.
+
+### Response
+> `200 Successful`
+```json
+{
+    "streak": 5,
+    "completed_today": true
 }
 ```
 
