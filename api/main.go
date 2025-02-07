@@ -21,9 +21,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
 
+	"database/sql"
 	"story-api/gemini"
 	"story-api/supabase"
-	"database/sql"
 )
 
 type TranslateResponse struct {
@@ -125,6 +125,13 @@ func init() {
 			authMiddleware()(c)
 		}
 	})
+
+	categoryGroup := router.Group("/progress")
+	{
+		categoryGroup.GET("/increment", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"message": "Progress endpoint"})
+		})
+	}
 
 	router.GET("/content", func(c *gin.Context) {
 		contentType := c.Query("type")
@@ -594,7 +601,7 @@ func init() {
 			if err == sql.ErrNoRows {
 				c.JSON(http.StatusNotFound, gin.H{
 					"error": "Failed to retrieve profile",
-					"code": "PROFILE_NOT_FOUND",
+					"code":  "PROFILE_NOT_FOUND",
 				})
 				return
 			}
