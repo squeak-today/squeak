@@ -105,6 +105,15 @@ module "progress" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+# POST /progress/increment
+module "progress_increment" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.progress.resource_id
+  path_part   = "increment"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 # GET /progress/streak
 module "progress_streak" {
   source      = "./api_gateway"
@@ -128,6 +137,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.story_query,
     module.content_question,
     module.progress,
-    module.progress_streak
+    module.progress_streak,
+    module.progress_increment
   ]
 }

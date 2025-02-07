@@ -170,6 +170,49 @@ func init() {
 				"completed_today": completedToday,
 			})
 		})
+
+		categoryGroup.GET("/increment", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+			amount := c.Query("amount")
+
+			if amount == "" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Amount parameter is required"})
+				return
+			}
+
+			amountInt, err := strconv.Atoi(amount)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid amount parameter"})
+				return
+			}
+			if amountInt < 0 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Amount parameter must be non-negative"})
+				return
+			}
+
+			client, err := supabase.NewClient()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+				return
+			}
+			defer client.Close()
+
+			err = client.IncrementQuestionsCompleted(userID, amountInt)
+			if err != nil {
+				log.Printf("Failed to increment progress: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to increment progress"})
+				return
+			}
+
+			progress, err := client.GetTodayProgress(userID)
+			if err != nil {
+				log.Printf("Failed to get updated progress: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get updated progress"})
+				return
+			}
+
+			c.JSON(http.StatusOK, progress)
+		})
 	}
 
 	router.GET("/content", func(c *gin.Context) {

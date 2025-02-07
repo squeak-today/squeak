@@ -366,13 +366,23 @@ func (c *Client) IncrementQuestionsCompleted(userID string, amount int) error {
 		return fmt.Errorf("failed to get daily goal: %v", err)
 	}
 
+	// not sure why but a CTE is needed here literally just for the increment_by amount
+	// if it doesn't it complains about inconsistent types but everything is an integer so idk
 	query := `
+        WITH new_amount AS (
+            SELECT $2::INTEGER as increment_by
+        )
         INSERT INTO daily_progress (user_id, date, questions_completed, goal_met)
-        VALUES ($1, CURRENT_DATE, $2, $2 >= $3)
+        VALUES (
+            $1, 
+            CURRENT_DATE, 
+            (SELECT increment_by FROM new_amount), 
+            (SELECT increment_by FROM new_amount) >= $3
+        )
         ON CONFLICT (user_id, date) 
         DO UPDATE SET 
-            questions_completed = daily_progress.questions_completed + $2,
-            goal_met = (daily_progress.questions_completed + $2) >= $3
+            questions_completed = daily_progress.questions_completed + (SELECT increment_by FROM new_amount),
+            goal_met = ((daily_progress.questions_completed + (SELECT increment_by FROM new_amount)) >= $3)
     `
 
 	_, err = c.db.Exec(query, userID, amount, dailyGoal)
