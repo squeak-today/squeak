@@ -389,7 +389,7 @@ func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
 				goal_met,
 				date - INTERVAL '1 day' * ROW_NUMBER() OVER (ORDER BY date ASC) AS streak_group
 			FROM daily_progress
-			WHERE user_id = 'd2a17127-875f-4bd9-b97d-7bb3fc8762ab'
+			WHERE user_id = $1
 				AND goal_met = TRUE
 			ORDER BY date
 		),

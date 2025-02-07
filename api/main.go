@@ -147,6 +147,29 @@ func init() {
 
 			c.JSON(http.StatusOK, progress)
 		})
+
+		categoryGroup.GET("/streak", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+
+			client, err := supabase.NewClient()
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
+				return
+			}
+			defer client.Close()
+
+			streak, completedToday, err := client.GetProgressStreak(userID)
+			if err != nil {
+				log.Printf("Failed to get streak: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get streak"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"streak":          streak,
+				"completed_today": completedToday,
+			})
+		})
 	}
 
 	router.GET("/content", func(c *gin.Context) {
