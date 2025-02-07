@@ -375,14 +375,14 @@ const ProfileDashboard = ({ profile, progress, onGetProfile, onUpdateProfile }) 
             {isEditing ? (
                 <GoalAdjuster>
                     <GoalButton 
-                        onClick={() => adjustGoal(-1)} 
+                        onClick={() => adjustGoal(1)} 
                         disabled={editedGoal <= 1}
                     >
                         <FaChevronUp />
                     </GoalButton>
                     <StatValue>{editedGoal} questions</StatValue>
                     <GoalButton 
-                        onClick={() => adjustGoal(1)} 
+                        onClick={() => adjustGoal(-1)} 
                         disabled={editedGoal >= 20}
                     >
                         <FaChevronDown />
