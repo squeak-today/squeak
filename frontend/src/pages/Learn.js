@@ -9,6 +9,24 @@ import BasicPage from '../components/BasicPage';
 import ProfileDashboard from '../components/ProfileDashboard';
 import NewsRecommendations from '../components/NewsRecommendations';
 
+const formatDate = () => {
+	const date = new Date();
+	const month = date.toLocaleDateString('en-US', { month: 'long' });
+	const day = date.getDate();
+	const year = date.getFullYear();
+
+	const getOrdinal = (n) => {
+		if (n > 3 && n < 21) return 'th';
+		switch (n % 10) {
+			case 1: return 'st';
+			case 2: return 'nd';
+			case 3: return 'rd';
+			default: return 'th';
+		}
+	};
+
+	return `${month} ${day}${getOrdinal(day)}, ${year}`;
+};
 
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
@@ -37,6 +55,12 @@ function Learn() {
 	const [profile, setProfile] = useState(null);
 
 	const [recommendations, setRecommendations] = useState([]);
+
+	const [progress, setProgress] = useState(null);
+
+	const handleStoryBlockClick = async (story) => {
+		navigate(`/read/${story.type}/${story.id}`);
+	}
 
 	const handleListStories = useCallback(async (type, language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
@@ -75,42 +99,6 @@ function Learn() {
 			showNotification("Couldn't get Squeak's content. Please try again or come back later!", 'error');
 		}
 	}, [apiBase, showNotification]);
-
-	useEffect(() => {
-		// using an "IIFE" to handle the handleListStories call,
-		// basically only running on mount and ignoring any changes to handleListStories
-		// this prevents a cyclical loop of errors if the fetch fails (and thus this would run infinitely)
-		(async () => {
-			try {
-				await handleListStories('News','any', 'any', 'any', 1, 6);
-			} catch (error) {
-				console.error('Failed to fetch initial stories:', error);
-			}
-		})();
-		// we're intentionally only running this on mount and accepting that handleListStories may change
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	const handleStoryBlockClick = async (story) => {
-		navigate(`/read/${story.type}/${story.id}`);
-	}
-
-	useEffect(() => {
-		// Check if user has seen welcome message in their metadata
-		const checkWelcomeStatus = async () => {
-			const { data: { session } } = await supabase.auth.getSession();
-			if (session) {
-				const { data: { user } } = await supabase.auth.getUser();
-				const hasSeenWelcome = user?.user_metadata?.has_seen_welcome;
-				
-				if (!hasSeenWelcome) {
-					setShowWelcome(true);
-				}
-			}
-		};
-
-		checkWelcomeStatus();
-	}, []);
 
 	const handleCloseWelcome = async () => {
 		try {
@@ -162,8 +150,65 @@ function Learn() {
 		} catch (error) {
 			console.error('Error fetching profile:', error);
 			showNotification('Failed to load profile. Please try again.', 'error');
+			return null;
 		}
-	}, [showNotification, apiBase, navigate]);
+	}, [apiBase, navigate, showNotification]);
+
+	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
+		try {
+			const recommendedNews = await fetchContentList(apiBase, 'news-query', language, cefrLevel, 'any', 1, 5);
+			const transformedRecommendations = recommendedNews.map(story => ({
+				id: story.id,
+				title: story.title,
+				cefr_level: story.cefr_level,
+				language: story.language,
+				topic: story.topic
+			}));
+			setRecommendations(transformedRecommendations);
+		} catch (error) {
+			console.error("Failed to fetch recommendations:", error);
+			showNotification("Couldn't load recommendations. Please try again later!", 'error');
+			setRecommendations([]);
+		}
+	}, [apiBase, showNotification]);
+
+	const fetchProgress = useCallback(async () => {
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			const jwt = session?.access_token;
+			
+			const [progressResponse, streakResponse] = await Promise.all([
+				fetch(`${apiBase}progress/`, {
+					headers: {
+						'Authorization': `Bearer ${jwt}`
+					}
+				}),
+				fetch(`${apiBase}progress/streak`, {
+					headers: {
+						'Authorization': `Bearer ${jwt}`
+					}
+				})
+			]);
+			
+			if (!progressResponse.ok || !streakResponse.ok) 
+				throw new Error('Failed to fetch progress data');
+			
+			const progressData = await progressResponse.json();
+			const streakData = await streakResponse.json();
+
+			// Combine the data
+			setProgress({
+				...progressData,
+				streak: streakData.streak,
+				completed_today: streakData.completed_today
+			});
+			
+			return progressData;
+		} catch (error) {
+			console.error('Error fetching progress:', error);
+			showNotification('Failed to load progress. Please try again.', 'error');
+		}
+	}, [apiBase, showNotification]);
 
 	const handleUpdateProfile = useCallback(async (profileData) => {
 		try {
@@ -185,66 +230,52 @@ function Learn() {
 				return;
 			}
 			if (!response.ok) throw new Error('Failed to update profile');
+			setProfile(profileData);
+			await fetchRecommendations(profileData.learning_language, profileData.skill_level);
+			await fetchProgress();
 			
-			await handleGetProfile();
 			showNotification('Profile updated successfully!', 'success');
 			return result;
 		} catch (error) {
 			console.error('Error updating profile:', error);
 			showNotification('Failed to update profile. Please try again.', 'error');
 		}
-	}, [handleGetProfile, showNotification, apiBase]);
-
-	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
-		try {
-			const recommendedNews = await fetchContentList(apiBase, 'news-query', language, cefrLevel, 'any', 1, 5);
-			const transformedRecommendations = recommendedNews.map(story => ({
-				id: story.id,
-				title: story.title,
-				cefr_level: story.cefr_level,
-				language: story.language,
-				topic: story.topic
-			}));
-			setRecommendations(transformedRecommendations);
-		} catch (error) {
-			console.error("Failed to fetch recommendations:", error);
-			showNotification("Couldn't load recommendations. Please try again later!", 'error');
-			setRecommendations([]); // Set empty array on error
-		}
-	}, [apiBase, showNotification]);
+	}, [fetchRecommendations, fetchProgress, showNotification, apiBase]);
 
 	useEffect(() => {
-		const initializeData = async () => {
+		const initializeProfile = async () => {
 			const profileData = await handleGetProfile();
 			if (profileData) {
-				await fetchRecommendations(
-					profileData.learning_language,
-					profileData.skill_level
-				);
+				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
+				await fetchProgress();
 			}
 		};
 
-		initializeData();
-	}, [handleGetProfile, fetchRecommendations]);
+		const initializeBrowser = async () => {
+			try {
+				await handleListStories('News','any', 'any', 'any', 1, 6);
+			} catch (error) {
+				console.error('Failed to fetch initial stories:', error);
+			}
+		}
 
-	const formatDate = () => {
-		const date = new Date();
-		const month = date.toLocaleDateString('en-US', { month: 'long' });
-		const day = date.getDate();
-		const year = date.getFullYear();
-
-		const getOrdinal = (n) => {
-			if (n > 3 && n < 21) return 'th';
-			switch (n % 10) {
-				case 1: return 'st';
-				case 2: return 'nd';
-				case 3: return 'rd';
-				default: return 'th';
+		const checkWelcomeStatus = async () => {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (session) {
+				const { data: { user } } = await supabase.auth.getUser();
+				const hasSeenWelcome = user?.user_metadata?.has_seen_welcome;
+				
+				if (!hasSeenWelcome) {
+					setShowWelcome(true);
+				}
 			}
 		};
 
-		return `${month} ${day}${getOrdinal(day)}, ${year}`;
-	};
+		initializeProfile();
+		initializeBrowser();
+		checkWelcomeStatus();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	return (
 		<BasicPage showLogout onLogout={handleLogout}>
@@ -265,6 +296,7 @@ function Learn() {
 					<ProfileDashboardContainer>
 						<ProfileDashboard
 							profile={profile}
+							progress={progress}
 							onGetProfile={handleGetProfile}
 							onUpdateProfile={handleUpdateProfile}
 						/>

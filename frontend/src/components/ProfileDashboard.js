@@ -158,6 +158,38 @@ const LevelSection = styled.div`
     margin-bottom: 1rem;
 `;
 
+const ProgressBarContainer = styled.div`
+    width: 100%;
+    height: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    margin-top: 1rem;
+    overflow: hidden;
+`;
+
+const ProgressBarFill = styled.div`
+    height: 100%;
+    background-color: ${props => props.$percentage >= 100 ? '#90EE90' : '#FFB6C1'};
+    width: ${props => Math.min(props.$percentage, 100)}%;
+    transition: width 0.3s ease-in-out;
+`;
+
+const ProgressText = styled.div`
+    font-family: 'Lora', serif;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    margin-top: 0.5rem;
+`;
+
+const StreakTag = styled(Tag)`
+    margin-bottom: 1rem;
+    background: ${props => getStreakColor(props.$streak)};
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+`;
+
 const AVAILABLE_TOPICS = [
     'Politics',
     'Business',
@@ -175,17 +207,21 @@ const getCEFRColor = (level) => {
     }
 };
 
-const ProfileDashboard = ({ profile, onGetProfile, onUpdateProfile }) => {
+const getStreakColor = (streak) => {
+    if (streak === 0) return '#f0f0f0';
+    if (streak >= 60) return '#FFB3B3';
+    if (streak >= 20) return '#FFD6B3';
+    if (streak >= 5) return '#B3FFB3';
+    return '#f0f0f0';
+};
+
+const ProfileDashboard = ({ profile, progress, onGetProfile, onUpdateProfile }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedUsername, setEditedUsername] = useState('');
     const [editedLanguage, setEditedLanguage] = useState('');
     const [editedLevel, setEditedLevel] = useState('');
     const [editedGoal, setEditedGoal] = useState(0);
     const [editedTopics, setEditedTopics] = useState([]);
-
-    useEffect(() => {
-        onGetProfile();
-    }, [onGetProfile]);
 
     useEffect(() => {
         if (profile) {
@@ -297,6 +333,10 @@ const ProfileDashboard = ({ profile, onGetProfile, onUpdateProfile }) => {
                 </LevelSection>
             )}
 
+            <StreakTag $streak={progress?.streak || 0}>
+                {progress?.streak || 0} day streak!
+            </StreakTag>
+
             <MainSection>
                 <ProfileSection>
                     <ProfileLabel>Learning</ProfileLabel>
@@ -350,6 +390,19 @@ const ProfileDashboard = ({ profile, onGetProfile, onUpdateProfile }) => {
                 </GoalAdjuster>
             ) : (
                 <StatValue>{profile.daily_questions_goal} questions</StatValue>
+            )}
+
+            {progress && (
+                <>
+                    <ProgressBarContainer>
+                        <ProgressBarFill 
+                            $percentage={(progress.questions_completed / profile.daily_questions_goal) * 100} 
+                        />
+                    </ProgressBarContainer>
+                    <ProgressText>
+                        {progress.questions_completed} of {profile.daily_questions_goal} completed
+                    </ProgressText>
+                </>
             )}
         </div>
     );

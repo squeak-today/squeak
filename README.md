@@ -351,7 +351,7 @@ Upsert a user's profile.
 }
 ```
 
-### **GET** `/progress`
+### **GET** `/progress/`
 > https://api.squeak.today/progress/
 
 Get today's progress for the authenticated user.
