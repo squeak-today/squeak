@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BrowserBox, LearnPageLayout, StoryBrowserContainer, ProfileDashboardContainer } from '../styles/LearnPageStyles';
+import { BrowserBox, LearnPageLayout, StoryBrowserContainer, ProfileDashboardContainer, DateHeader } from '../styles/LearnPageStyles';
 import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,8 @@ import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import ProfileDashboard from '../components/ProfileDashboard';
+import NewsRecommendations from '../components/NewsRecommendations';
+
 
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
@@ -33,6 +35,8 @@ function Learn() {
 	const navigate = useNavigate();
 
 	const [profile, setProfile] = useState(null);
+
+	const [recommendations, setRecommendations] = useState([]);
 
 	const handleListStories = useCallback(async (type, language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
@@ -191,12 +195,65 @@ function Learn() {
 		}
 	}, [handleGetProfile, showNotification, apiBase]);
 
+	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
+		try {
+			const recommendedNews = await fetchContentList(apiBase, 'news-query', language, cefrLevel, 'any', 1, 5);
+			const transformedRecommendations = recommendedNews.map(story => ({
+				id: story.id,
+				title: story.title,
+				cefr_level: story.cefr_level,
+				language: story.language,
+				topic: story.topic
+			}));
+			setRecommendations(transformedRecommendations);
+		} catch (error) {
+			console.error("Failed to fetch recommendations:", error);
+			showNotification("Couldn't load recommendations. Please try again later!", 'error');
+			setRecommendations([]); // Set empty array on error
+		}
+	}, [apiBase, showNotification]);
+
+	useEffect(() => {
+		const initializeData = async () => {
+			const profileData = await handleGetProfile();
+			if (profileData) {
+				await fetchRecommendations(
+					profileData.learning_language,
+					profileData.skill_level
+				);
+			}
+		};
+
+		initializeData();
+	}, [handleGetProfile, fetchRecommendations]);
+
+	const formatDate = () => {
+		const date = new Date();
+		const month = date.toLocaleDateString('en-US', { month: 'long' });
+		const day = date.getDate();
+		const year = date.getFullYear();
+
+		const getOrdinal = (n) => {
+			if (n > 3 && n < 21) return 'th';
+			switch (n % 10) {
+				case 1: return 'st';
+				case 2: return 'nd';
+				case 3: return 'rd';
+				default: return 'th';
+			}
+		};
+
+		return `${month} ${day}${getOrdinal(day)}, ${year}`;
+	};
+
 	return (
 		<BasicPage showLogout onLogout={handleLogout}>
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<BrowserBox>
 				<LearnPageLayout>
 					<StoryBrowserContainer>
+						<DateHeader>Today is {formatDate()}...</DateHeader>
+						<NewsRecommendations recommendations={recommendations} />
 						<StoryBrowser 
 							stories={allStories} 
 							onParamsSelect={handleListStories} 

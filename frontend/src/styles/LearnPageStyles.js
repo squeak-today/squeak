@@ -53,4 +53,12 @@ export const ProfileDashboardContainer = styled.div`
     padding: 1.5em;
     align-self: center;
   }
-`; 
+`;
+
+export const DateHeader = styled.h1`
+	font-family: 'Lora', serif;
+	text-align: center;
+	margin-bottom: 1em;
+	font-size: 2em;
+	font-weight: 600;
+`;

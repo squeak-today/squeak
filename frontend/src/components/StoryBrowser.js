@@ -2,14 +2,6 @@ import styled from 'styled-components';
 import StoryList from './StoryList';
 import { useState, useEffect } from 'react';
 
-const DateHeader = styled.h1`
-	font-family: 'Lora', serif;
-	text-align: center;
-	margin-bottom: 1em;
-	font-size: 2em;
-	font-weight: 600;
-`;
-
 const FilterContainer = styled.div`
 	display: flex;
 	gap: 1em;
@@ -85,26 +77,6 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 		setFilterLanguage(defaultLanguage);
 	}, [defaultLanguage]);
 
-	const formatDate = () => {
-		const date = new Date();
-		const month = date.toLocaleDateString('en-US', { month: 'long' });
-		const day = date.getDate();
-		const year = date.getFullYear();
-
-		// Get ordinal suffix for day
-		const getOrdinal = (n) => {
-			if (n > 3 && n < 21) return 'th';
-			switch (n % 10) {
-				case 1: return 'st';
-				case 2: return 'nd';
-				case 3: return 'rd';
-				default: return 'th';
-			}
-		};
-
-		return `${month} ${day}${getOrdinal(day)}, ${year}`;
-	};
-
 	const handlePageChange = (newPage) => {
 		setCurrentPage(newPage);
 		onParamsSelect(filterType, filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
@@ -112,7 +84,6 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 
 	return (
 		<div>
-			<DateHeader>Today is {formatDate()}...</DateHeader>
 			<FilterContainer>
 				<div style={{ flex: 1 }}>
 					<FilterLabel>Type</FilterLabel>
