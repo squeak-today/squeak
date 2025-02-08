@@ -37,6 +37,7 @@ type TranslateResponse struct {
 type Profile = supabase.Profile
 
 var ginLambda *ginadapter.GinLambda
+var dbClient *supabase.Client
 
 func getUserIDFromToken(c *gin.Context) string {
 	value, exists := c.Get("sub")
@@ -101,12 +102,18 @@ func authMiddleware() gin.HandlerFunc {
 
 func init() {
 	log.Println("Gin cold start")
+
+	var err error
+	dbClient, err = supabase.NewClient()
+	if err != nil {
+		log.Fatalf("Failed to initialize database connection: %v", err)
+	}
+
 	router := gin.Default()
 
 	AllowOrigin := "*"
 
 	router.Use(func(c *gin.Context) {
-		// * accepts all origins, change for production
 		c.Writer.Header().Set("Access-Control-Allow-Origin", AllowOrigin)
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
@@ -131,14 +138,7 @@ func init() {
 		categoryGroup.GET("/", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
 
-			client, err := supabase.NewClient()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-				return
-			}
-			defer client.Close()
-
-			progress, err := client.GetTodayProgress(userID)
+			progress, err := dbClient.GetTodayProgress(userID)
 			if err != nil {
 				log.Printf("Failed to get progress: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get progress"})
@@ -151,14 +151,7 @@ func init() {
 		categoryGroup.GET("/streak", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
 
-			client, err := supabase.NewClient()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-				return
-			}
-			defer client.Close()
-
-			streak, completedToday, err := client.GetProgressStreak(userID)
+			streak, completedToday, err := dbClient.GetProgressStreak(userID)
 			if err != nil {
 				log.Printf("Failed to get streak: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get streak"})
@@ -190,21 +183,14 @@ func init() {
 				return
 			}
 
-			client, err := supabase.NewClient()
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-				return
-			}
-			defer client.Close()
-
-			err = client.IncrementQuestionsCompleted(userID, amountInt)
+			err = dbClient.IncrementQuestionsCompleted(userID, amountInt)
 			if err != nil {
 				log.Printf("Failed to increment progress: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to increment progress"})
 				return
 			}
 
-			progress, err := client.GetTodayProgress(userID)
+			progress, err := dbClient.GetTodayProgress(userID)
 			if err != nil {
 				log.Printf("Failed to get updated progress: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get updated progress"})
@@ -224,16 +210,8 @@ func init() {
 			return
 		}
 
-		client, err := supabase.NewClient()
-		if err != nil {
-			log.Printf("Database connection failed: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-			return
-		}
-		defer client.Close()
-
 		// Step 1: Get the record from supabase db
-		contentRecord, err := client.GetContentByID(contentType, id)
+		contentRecord, err := dbClient.GetContentByID(contentType, id)
 		if err != nil {
 			log.Printf("Failed to retrieve content record in DB: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
@@ -356,13 +334,6 @@ func init() {
 			return
 		}
 
-		client, err := supabase.NewClient()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-			return
-		}
-		defer client.Close()
-
 		params := supabase.QueryParams{
 			Language: language,
 			CEFR:     cefr,
@@ -371,7 +342,7 @@ func init() {
 			PageSize: pageSizeNum,
 		}
 
-		results, err := client.QueryNews(params)
+		results, err := dbClient.QueryNews(params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
 			return
@@ -406,13 +377,6 @@ func init() {
 			return
 		}
 
-		client, err := supabase.NewClient()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-			return
-		}
-		defer client.Close()
-
 		params := supabase.QueryParams{
 			Language: language,
 			CEFR:     cefr,
@@ -421,7 +385,7 @@ func init() {
 			PageSize: pageSizeNum,
 		}
 
-		results, err := client.QueryStories(params)
+		results, err := dbClient.QueryStories(params)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
 			return
@@ -572,15 +536,7 @@ func init() {
 			return
 		}
 
-		client, err := supabase.NewClient()
-		if err != nil {
-			log.Printf("Database connection failed: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-			return
-		}
-		defer client.Close()
-
-		questionData, err := client.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
+		questionData, err := dbClient.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
 		if err != nil {
 			log.Printf("Failed to retrieve question: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve question"})
@@ -589,7 +545,7 @@ func init() {
 
 		if questionData == nil {
 			// Step 1: Get the record from supabase db
-			contentRecord, err := client.GetContentByID(infoBody.ContentType, infoBody.ID)
+			contentRecord, err := dbClient.GetContentByID(infoBody.ContentType, infoBody.ID)
 			if err != nil {
 				log.Printf("Failed to retrieve content record in DB: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
@@ -650,7 +606,7 @@ func init() {
 			}
 
 			// Step 4: save question to db
-			err = client.CreateContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel, generatedQuestion)
+			err = dbClient.CreateContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel, generatedQuestion)
 			if err != nil {
 				log.Printf("Failed to save question to database: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save question to database"})
@@ -671,14 +627,7 @@ func init() {
 	router.GET("/profile", func(c *gin.Context) {
 		userID := getUserIDFromToken(c)
 
-		client, err := supabase.NewClient()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-			return
-		}
-		defer client.Close()
-
-		profile, err := client.GetProfile(userID)
+		profile, err := dbClient.GetProfile(userID)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				c.JSON(http.StatusNotFound, gin.H{
@@ -709,14 +658,7 @@ func init() {
 			return
 		}
 
-		client, err := supabase.NewClient()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection failed"})
-			return
-		}
-		defer client.Close()
-
-		id, err := client.UpsertProfile(userID, &profile)
+		id, err := dbClient.UpsertProfile(userID, &profile)
 		if err != nil {
 			log.Println(err)
 			if strings.Contains(err.Error(), "unique_constraint") {

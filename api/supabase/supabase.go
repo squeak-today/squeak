@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
 	"github.com/lib/pq"
 )
 
@@ -40,18 +42,21 @@ type DailyProgress struct {
 }
 
 func NewClient() (*Client, error) {
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-		os.Getenv("SUPABASE_HOST"),
-		os.Getenv("SUPABASE_PORT"),
+	// Create a pgx connection config
+	// postgresql://postgres.hmwqjuylgsoytagxgoyq:[YOUR-PASSWORD]@aws-0-ca-central-1.pooler.supabase.com:6543/postgres
+	config, err := pgx.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require",
 		os.Getenv("SUPABASE_USER"),
 		os.Getenv("SUPABASE_PASSWORD"),
+		os.Getenv("SUPABASE_HOST"),
+		os.Getenv("SUPABASE_PORT"),
 		os.Getenv("SUPABASE_DATABASE"),
-	)
-
-	db, err := sql.Open("postgres", connStr)
+	))
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %v", err)
+		return nil, fmt.Errorf("failed to parse config: %v", err)
 	}
+
+	config.PreferSimpleProtocol = true
+	db := stdlib.OpenDB(*config)
 
 	return &Client{db: db}, nil
 }

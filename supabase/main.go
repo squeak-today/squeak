@@ -8,7 +8,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
 )
 
 func insertContent(db *sql.DB, table string, title, language, topic, cefrLevel, preview_text string) error {
@@ -170,15 +171,19 @@ func createContentQuestion(db *sql.DB, contentType string, contentID string, que
 }
 
 func main() {
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-		os.Getenv("SUPABASE_HOST"),
-		os.Getenv("SUPABASE_PORT"),
+	// Create a pgx connection config
+	// postgresql://postgres.hmwqjuylgsoytagxgoyq:[YOUR-PASSWORD]@aws-0-ca-central-1.pooler.supabase.com:6543/postgres
+	config, err := pgx.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require",
 		os.Getenv("SUPABASE_USER"),
 		os.Getenv("SUPABASE_PASSWORD"),
+		os.Getenv("SUPABASE_HOST"),
+		os.Getenv("SUPABASE_PORT"),
 		os.Getenv("SUPABASE_DATABASE"),
-	)
+	))
 
-	db, err := sql.Open("postgres", connStr)
+	config.PreferSimpleProtocol = true
+	db := stdlib.OpenDB(*config)
+	
 	if err != nil {
 		log.Fatal("Database connection failed:", err)
 	}

@@ -68,7 +68,8 @@ function Learn() {
 			let newsData = [], storiesData = [];
 			if (type === 'News') { newsData = await fetchContentList(apiBase, 'news-query', language, cefrLevel, subject, page, pagesize); }
 			if (type === 'Story') { storiesData = await fetchContentList(apiBase, 'story-query', language, cefrLevel, subject, page, pagesize); }
-			
+			newsData = Array.isArray(newsData) ? newsData : [];
+			storiesData = Array.isArray(storiesData) ? storiesData : [];
 			console.log('Fetched content successfully!')
 
 			for (const story of newsData) {
@@ -213,8 +214,8 @@ function Learn() {
 			
 			return progressData;
 		} catch (error) {
-			console.error('Error fetching progress:', error);
-			showNotification('Failed to load progress. Please try again.', 'error');
+			console.error('Error fetching progress and/or streak:', error);
+			showNotification('Failed to load progress and/or streak. Please try again.', 'error');
 			setProgress({
 				questions_completed: 0,
 				goal_met: false,
