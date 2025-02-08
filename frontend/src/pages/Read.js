@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import BasicPage from '../components/BasicPage';
 import StoryReader from '../components/StoryReader';
 import { useNotification } from '../context/NotificationContext';
-import { ReadPageLayout, ReaderPanel } from '../styles/ReadPageStyles';
+import { ReadPageLayout, ReaderPanel, BackButton } from '../styles/ReadPageStyles';
 import SidePanel from '../components/SidePanel';
 import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
@@ -275,17 +275,18 @@ function Read() {
                     })
                 });
                 const data = await response.json();
-                return data.evaluation === 'PASS';
+                return data;
             }));
 
             const updatedQuestions = questions.map((q, i) => ({
                 ...q,
                 evaluated: true,
-                passed: results[i]
+                passed: results[i].evaluation === 'PASS',
+                explanation: results[i].explanation
             }));
             setQuestions(updatedQuestions);
 
-            const passCount = results.filter(r => r).length;
+            const passCount = updatedQuestions.filter(q => q.passed === true).length;
             showNotification(`You got ${passCount} out of ${questions.length} correct!`, 'success');
             return true;
         } catch (error) {
@@ -299,37 +300,42 @@ function Read() {
 
     return (
         <BasicPage showLogout onLogout={handleLogout}>
-            <ReadPageLayout>
-                <ReaderPanel onScroll={handleReaderScroll}>
-                    <StoryReader 
-                        content={contentData.content}
-                        handleWordClick={handleWordClick}
-                        sourceLanguage={sourceLanguage}
+            <div style={{ width: '95%', alignSelf: 'center' }}>
+                <BackButton onClick={() => navigate('/learn')}>
+                    ← Back to Browse
+                </BackButton>
+                <ReadPageLayout>
+                    <ReaderPanel onScroll={handleReaderScroll}>
+                        <StoryReader 
+                            content={contentData.content}
+                            handleWordClick={handleWordClick}
+                            sourceLanguage={sourceLanguage}
+                            isLoading={isLoading}
+                        />
+                    </ReaderPanel>
+                    <SidePanel 
+                        contentData={contentData}
+                        questions={questions}
+                        onGetQuestions={handleGetGoalQuestions}
+                        onAnswerChange={handleAnswerChange}
+                        loadingQuestions={loadingQuestions}
+                        onCheckAnswers={handleCheckAnswers}
                         isLoading={isLoading}
                     />
-                </ReaderPanel>
-                <SidePanel 
-                    contentData={contentData}
-                    questions={questions}
-                    onGetQuestions={handleGetGoalQuestions}
-                    onAnswerChange={handleAnswerChange}
-                    loadingQuestions={loadingQuestions}
-                    onCheckAnswers={handleCheckAnswers}
-                    isLoading={isLoading}
-                />
-                {tooltip.show && (
-                    <TranslationPanel
-                        data={{
-                            word: tooltip.word,
-                            wordTranslation: tooltip.wordTranslation,
-                            originalSentence: tooltip.originalSentence,
-                            sentenceTranslation: tooltip.sentenceTranslation
-                        }}
-                        onClose={() => setTooltip(prev => ({ ...prev, show: false }))}
-                        handleSentenceToggle={handleSentenceToggle}
-                    />
-                )}
-            </ReadPageLayout>
+                    {tooltip.show && (
+                        <TranslationPanel
+                            data={{
+                                word: tooltip.word,
+                                wordTranslation: tooltip.wordTranslation,
+                                originalSentence: tooltip.originalSentence,
+                                sentenceTranslation: tooltip.sentenceTranslation
+                            }}
+                            onClose={() => setTooltip(prev => ({ ...prev, show: false }))}
+                            handleSentenceToggle={handleSentenceToggle}
+                        />
+                    )}
+                </ReadPageLayout>
+            </div>
         </BasicPage>
     );
 }

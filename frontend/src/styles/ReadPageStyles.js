@@ -2,9 +2,8 @@ import styled from 'styled-components';
 
 export const ReadPageLayout = styled.div`
   display: flex;
-  width: 95%;
-  align-self: center;
-  height: calc(100vh - 120px);
+  width: 100%;
+  height: calc(100vh - 160px);
   padding: 20px;
   gap: 20px;
   box-sizing: border-box;
@@ -241,4 +240,36 @@ export const CEFRTag = styled(Tag)`
 export const CheckAnswersButton = styled(SetGoalButton)`
     margin-top: 20px;
     width: 100%;
+`;
+
+export const ExplanationText = styled.div`
+    margin-top: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: 'Lora', serif;
+    font-size: 0.9em;
+    line-height: 1.5;
+    background-color: ${props => props.$passed ? '#D4F7D4' : '#FFE8E8'};
+    color: ${props => props.$passed ? '#2E7D32' : '#D32F2F'};
+`;
+
+export const BackButton = styled.button`
+    margin: 20px 20px 0 20px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #505050;
+    border-radius: 8px;
+    font-family: 'Lora', serif;
+    font-size: 0.9em;
+    color: black;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #f5f5f5;
+        color: #333;
+    }
 `;

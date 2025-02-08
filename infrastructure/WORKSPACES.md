@@ -41,6 +41,7 @@ terraform apply -var-file="environments/prod.tfvars"
 
 **IMPORTANT:** PLEASE USE PROD VARIABLES IN `prod.tfvars` FOR PRODUCTION. (or incur billing to yourself, I guess)
 
+# PLEASE TRIPLE TRIPLE CHECK IF YOU ARE NOT IN THE PROD WORKSPACE WHEN DESTROYING
 If ever needed, `terraform destroy -var-file="environments/dev.tfvars"`.
 Please don't do this without quintuple checking (...especially prod.)
 

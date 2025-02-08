@@ -5,6 +5,7 @@ import {
     TabContainer,
     Tab,
     ContentSection,
+    ExplanationText,
 } from '../styles/ReadPageStyles';
 
 // General tab components
@@ -15,7 +16,6 @@ import {
     ButtonGroup,
     ShareButton,
     ReportButton,
-    UnderstandingButton,
 } from '../styles/ReadPageStyles';
 
 // Learn tab components
@@ -66,9 +66,9 @@ const formatDate = (dateString) => {
 };
 
 const GOAL_OPTIONS = {
-    QUICK: { value: '1', label: '1 minute (Quick)' },
-    RECOMMENDED: { value: '3', label: '3 minutes (Recommended)' },
-    STRONG: { value: '8', label: '8 minutes (Strong)' }
+    QUICK: { value: '1', label: 'Quick Study (30 seconds)' },
+    RECOMMENDED: { value: '3', label: 'Standard Study (1-2 minutes)' },
+    STRONG: { value: '8', label: 'Deep Study (5-10 minutes)' }
 };
 
 const SidePanel = ({ 
@@ -122,10 +122,6 @@ const SidePanel = ({
             ) : (
                 <>
                     <ContentSection>
-                        <UnderstandingButton onClick={() => setActiveTab('learn')}>
-                            Check Your Understanding!
-                        </UnderstandingButton>
-
                         <TagsContainer>
                             <Tag type="cefr" color={getCEFRColor(contentData.difficulty)} value={contentData.difficulty}>
                                 {contentData.difficulty}
@@ -155,7 +151,7 @@ const SidePanel = ({
 
     const renderLearnTab = () => (
         <LearnContentContainer>
-            <Label htmlFor="goal-select">Goal</Label>
+            <Label htmlFor="goal-select">Choose a goal for this content:</Label>
             <GoalSelect 
                 id="goal-select"
                 value={selectedGoal}
@@ -196,6 +192,11 @@ const SidePanel = ({
                         $evaluated={q.evaluated}
                         $passed={q.passed}
                     />
+                    {q.evaluated && q.explanation && (
+                        <ExplanationText $passed={q.passed}>
+                            {q.explanation}
+                        </ExplanationText>
+                    )}
                 </QuestionContainer>
             ))}
 
@@ -223,7 +224,7 @@ const SidePanel = ({
                     $active={activeTab === 'learn'} 
                     onClick={() => setActiveTab('learn')}
                 >
-                    Learn Content
+                    Test Yourself
                 </Tab>
             </TabContainer>
 
