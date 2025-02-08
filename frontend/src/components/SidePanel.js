@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import {
     SidePanelContainer,
@@ -78,14 +78,20 @@ const SidePanel = ({
     onAnswerChange,
     loadingQuestions,
     onCheckAnswers,
-    isLoading
+    isLoading,
+    onIncrementProgress
 }) => {
     const [activeTab, setActiveTab] = useState('info');
     const [selectedGoal, setSelectedGoal] = useState(GOAL_OPTIONS.RECOMMENDED.value);
     const [checkingAnswers, setCheckingAnswers] = useState(false);
     const { showNotification } = useNotification();
+    const [passedQuestions, setPassedQuestions] = useState(0);
 
     const isBeginnerLevel = contentData.difficulty === 'A1' || contentData.difficulty === 'A2';
+
+    useEffect(() => {
+        setPassedQuestions(0);
+    }, [contentData]);
 
     const handleShare = async () => {
         const url = window.location.href;
@@ -111,7 +117,12 @@ const SidePanel = ({
         }
 
         setCheckingAnswers(true);
-        await onCheckAnswers();
+        const passCount = await onCheckAnswers();
+        const newlyPassedCount = passCount - passedQuestions;
+        if (newlyPassedCount > 0) {
+            await onIncrementProgress(newlyPassedCount);
+        }
+        setPassedQuestions(passCount);
         setCheckingAnswers(false);
     };
 
