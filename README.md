@@ -405,8 +405,3 @@ Get the user's current streak information.
 ## Examples: `api.squeak.today`
 > https://api.squeak.today/news?language=French&cefr=B2&subject=Politics&page=1&pagesize=10
 >https://api.squeak.today/story?language=French&cefr=B2&subject=Politics&page=1&pagesize=10
-
-## Adding New Languages
-1. Add language to `queue_filler/main.go` as part of the `languages` array.
-2. Add language to `lambda/main.go` as part of the `language_ids` map. Note that the language ID is the language code used by Google Translate API, e.g "fr" for French.
-3. Update LLMs to fine-tuning on the new language.
