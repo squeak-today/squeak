@@ -31,7 +31,7 @@ const MarkdownWord = styled.span`
 
     &:hover {
         text-decoration: none;
-        background-color: rgba(170, 255, 170, 0.6);
+        background-color: #fbd48f;
     }
 `;
 
