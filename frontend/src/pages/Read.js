@@ -78,6 +78,11 @@ function Read() {
 
     useEffect(() => {
         const fetchContent = async () => {
+            // tentative:
+            // if the type is Story, then we should be pulling a specific page.
+            // additionally, we should retain cache for the next 3 pages and the previous 2 (if applicable).
+            // this minimizes latency. We store them as MDX components ready for use, as compilation takes a hot minute.
+
             setIsLoading(true);
             const url = `${apiBase}content?type=${type}&id=${id}`;
             try {
@@ -316,6 +321,36 @@ function Read() {
 
     const handleReaderScroll = () => { setTooltip(prev => ({ ...prev, show: false })); };
 
+    const handleNeedPages = (currentPage) => {
+        const DUMMY_PAGES = {
+            0: "# Chapter 1\n\nThis is the first page of our story. The sun was rising over the mountains, casting long shadows across the valley.",
+            1: "# Chapter 2\n\nOn the second page, our hero begins their journey. The path ahead seemed uncertain, but they pressed on.",
+            2: "# Chapter 3\n\nThe third page reveals new challenges. Thunder rolled in the distance as dark clouds gathered overhead.",
+            3: "# Chapter 4\n\nOn page four, the plot thickens. The ancient ruins stood silent, holding secrets of the past.",
+            4: "# Chapter 5\n\nThe fifth page brings revelations. Everything they thought they knew was about to change.",
+            5: "# Final Chapter\n\nOn the final page, all is revealed. The end of one story is just the beginning of another."
+        };
+        
+        const totalPages = 6;
+        const pagesToReturn = new Map();
+        
+        // return current page and next 3 pages if they exist
+        for (let i = currentPage; i < currentPage + 4 && i < totalPages; i++) {
+            if (DUMMY_PAGES[i]) {
+                pagesToReturn.set(i, DUMMY_PAGES[i]);
+            }
+        }
+        
+        // include up to 2 previous pages if they exist
+        for (let i = currentPage - 1; i >= currentPage - 2 && i >= 0; i--) {
+            if (DUMMY_PAGES[i]) {
+                pagesToReturn.set(i, DUMMY_PAGES[i]);
+            }
+        }
+
+        return pagesToReturn;
+    };
+
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
@@ -325,7 +360,9 @@ function Read() {
                 <ReadPageLayout>
                     <ReaderPanel onScroll={handleReaderScroll}>
                         <StoryReader 
-                            content={contentData.content}
+                            content={false ? contentData.content : handleNeedPages(0)}
+                            paged={true}
+                            onNeedPages={handleNeedPages}
                             handleWordClick={handleWordClick}
                             sourceLanguage={sourceLanguage}
                             isLoading={isLoading}

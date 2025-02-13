@@ -116,33 +116,159 @@ const createComponentOverrides = (handleWordClick, sourceLanguage) => ({
     h4: props => <h4><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h4>,
 });
 
-const StoryReader = ({ content, handleWordClick, sourceLanguage, isLoading }) => {
-    const [MDXComponent, setMDXComponent] = useState(null);
+const PageNavigationButton = styled.button`
+    padding: 0.5em 1em;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background: rgb(255, 255, 255);
+    cursor: pointer;
+    color: black;
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 100px;
+
+    &:hover:not(:disabled) {
+        background: rgb(228, 228, 228);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    &:disabled {
+        background: #f5f5f5;
+        cursor: not-allowed;
+        color: #999;
+        box-shadow: none;
+    }
+`;
+
+const PageControls = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-family: 'Lora', serif;
+`;
+
+const PageNumber = styled.span`
+    font-family: 'Lora', serif;
+    font-size: 1.1em;
+    color: #666;
+`;
+
+const StoryReader = ({ content, paged = false, onNeedPages, handleWordClick, sourceLanguage, isLoading }) => {
+    const [currentPage, setCurrentPage] = useState(0);
+    const [compiledPages, setCompiledPages] = useState(new Map());
+    const [singleComponent, setSingleComponent] = useState(null);
 
     useEffect(() => {
-        const compileMDX = async () => {
-			const mdxContents = content;
-			const {default: MDXContent} = await evaluate(mdxContents, {
-				...runtime,
-				useMDXComponents: () => ({
-                    // components used in stories are defined here
-                })
-			});
-			setMDXComponent(() => MDXContent);
-		}
-        compileMDX();
-    }, [content]);
+        if (!paged && content) {
+            const compileSingle = async () => {
+                try {
+                    const {default: MDXContent} = await evaluate(content, {
+                        ...runtime,
+                        useMDXComponents: () => ({
+                            // components used in stories are defined here
+                        })
+                    });
+                    setSingleComponent(() => MDXContent);
+                } catch (error) {
+                    console.error('Failed to compile content:', error);
+                }
+            };
+            compileSingle();
+        }
+    }, [paged, content]);
+
+    useEffect(() => {
+        if (!paged || !content) return;
+
+        const compileNewPages = async () => {
+            const newPagesToCompile = Array.from(content.keys())
+                .filter(pageNum => !compiledPages.has(pageNum));
+
+            if (newPagesToCompile.length === 0) return;
+
+            const compilationPromises = newPagesToCompile.map(async (pageNum) => {
+                try {
+                    const {default: MDXContent} = await evaluate(content.get(pageNum), {
+                        ...runtime,
+                        useMDXComponents: () => ({
+                            // components used in stories are defined here
+                        })
+                    });
+                    return [pageNum, MDXContent];
+                } catch (error) {
+                    console.error(`Failed to compile page ${pageNum}:`, error);
+                    return [pageNum, null];
+                }
+            });
+
+            const newCompiledPages = new Map(compiledPages);
+            const results = await Promise.all(compilationPromises);
+            results.forEach(([pageNum, component]) => {
+                if (component) {
+                    newCompiledPages.set(pageNum, component);
+                }
+            });
+
+            setCompiledPages(newCompiledPages);
+        };
+
+        compileNewPages();
+    }, [paged, content]);
+
+    const handleNextPage = () => {
+        const nextPage = currentPage + 1;
+        if (content?.has(nextPage)) {
+            setCurrentPage(nextPage);
+            if (nextPage >= Math.max(...content.keys()) - 1) {
+                onNeedPages?.(nextPage);
+            }
+        }
+    };
+
+    const handlePrevPage = () => {
+        const prevPage = currentPage - 1;
+        if (content?.has(prevPage)) {
+            setCurrentPage(prevPage);
+        }
+    };
+
+    const CurrentMDXComponent = paged ? compiledPages.get(currentPage) : singleComponent;
 
     return (
         <StoryBox>
             {isLoading ? (
                 <LoadingSpinner />
             ) : (
-                <StoryText>
-                    {MDXComponent && 
-                        <MDXComponent components={createComponentOverrides(handleWordClick, sourceLanguage)}/>
-                    }
-                </StoryText>
+                <div>
+                    {paged && (
+                        <PageControls>
+                            <PageNavigationButton 
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 0}
+                            >
+                                Previous
+                            </PageNavigationButton>
+                            <PageNumber>Page {currentPage + 1}</PageNumber>
+                            <PageNavigationButton 
+                                onClick={handleNextPage}
+                                disabled={!content?.has(currentPage + 1)}
+                            >
+                                Next
+                            </PageNavigationButton>
+                        </PageControls>
+                    )}
+                    <StoryText>
+                        {CurrentMDXComponent && 
+                            <CurrentMDXComponent 
+                                components={createComponentOverrides(handleWordClick, sourceLanguage)}
+                            />
+                        }
+                    </StoryText>
+                </div>
             )}
         </StoryBox>
     );
