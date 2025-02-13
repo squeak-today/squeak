@@ -43,6 +43,7 @@ function Read() {
         left: 0
     });
     const [isLoading, setIsLoading] = useState(true);
+    const [initialPages, setInitialPages] = useState(null);
 
     const apiBase = process.env.REACT_APP_API_BASE;
 
@@ -321,7 +322,7 @@ function Read() {
 
     const handleReaderScroll = () => { setTooltip(prev => ({ ...prev, show: false })); };
 
-    const handleNeedPages = (currentPage) => {
+    const handleNeedPages = async (currentPage) => {
         const DUMMY_PAGES = {
             0: "# Chapter 1\n\nThis is the first page of our story. The sun was rising over the mountains, casting long shadows across the valley.",
             1: "# Chapter 2\n\nOn the second page, our hero begins their journey. The path ahead seemed uncertain, but they pressed on.",
@@ -330,6 +331,9 @@ function Read() {
             4: "# Chapter 5\n\nThe fifth page brings revelations. Everything they thought they knew was about to change.",
             5: "# Final Chapter\n\nOn the final page, all is revealed. The end of one story is just the beginning of another."
         };
+        
+        // Simulate API delay between 200-800ms
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 600 + 200));
         
         const totalPages = 6;
         const pagesToReturn = new Map();
@@ -351,6 +355,14 @@ function Read() {
         return pagesToReturn;
     };
 
+    useEffect(() => {
+        const loadInitialPages = async () => {
+            const pages = await handleNeedPages(0);
+            setInitialPages(pages);
+        };
+        loadInitialPages();
+    }, []);
+
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
@@ -360,12 +372,12 @@ function Read() {
                 <ReadPageLayout>
                     <ReaderPanel onScroll={handleReaderScroll}>
                         <StoryReader 
-                            content={false ? contentData.content : handleNeedPages(0)}
+                            content={false ? contentData.content : initialPages}
                             paged={true}
                             onNeedPages={handleNeedPages}
                             handleWordClick={handleWordClick}
                             sourceLanguage={sourceLanguage}
-                            isLoading={isLoading}
+                            isLoading={isLoading || !initialPages}
                         />
                     </ReaderPanel>
                     <SidePanel 
