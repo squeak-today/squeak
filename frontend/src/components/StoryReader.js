@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import ReactMarkdown from 'react-markdown';
 import LoadingSpinner from './LoadingSpinner';
+
+import {evaluate} from '@mdx-js/mdx'
+import * as runtime from 'react/jsx-runtime'
 
 const StoryBox = styled.div`
 	padding: 0px 10px;
@@ -105,52 +107,41 @@ const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLan
     return <>{React.Children.map(children, child => processNode(child))}</>;
 };
 
+const createComponentOverrides = (handleWordClick, sourceLanguage) => ({
+    p: props => <p><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></p>,
+    li: props => <li><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></li>,
+    h1: props => <h1><ClickableText highlightRounding={10} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h1>,
+    h2: props => <h2><ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h2>,
+    h3: props => <h3><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h3>,
+    h4: props => <h4><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h4>,
+});
+
 const StoryReader = ({ content, handleWordClick, sourceLanguage, isLoading }) => {
+    const [MDXComponent, setMDXComponent] = useState(null);
+
+    useEffect(() => {
+        const compileMDX = async () => {
+			const mdxContents = content;
+			const {default: MDXContent} = await evaluate(mdxContents, {
+				...runtime,
+				useMDXComponents: () => ({
+                    // components used in stories are defined here
+                })
+			});
+			setMDXComponent(() => MDXContent);
+		}
+        compileMDX();
+    }, [content]);
+
     return (
         <StoryBox>
             {isLoading ? (
                 <LoadingSpinner />
             ) : (
                 <StoryText>
-                    <ReactMarkdown
-                        components={{
-                            // Handle paragraphs
-                            p: (props) => (
-                                <p>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </p>
-                            ),
-                            // Handle list items
-                            li: (props) => (
-                                <li>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </li>
-                            ),
-                            // Handle headers
-                            h1: (props) => (
-                                <h1>
-                                    <ClickableText highlightRounding={10}handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h1>
-                            ),
-                            h2: (props) => (
-                                <h2>
-                                    <ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h2>
-                            ),
-                            h3: (props) => (
-                                <h3>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h3>
-                            ),
-                            h4: (props) => (
-                                <h4>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h4>
-                            ),
-                        }}
-                    >
-                        {content}
-                    </ReactMarkdown>
+                    {MDXComponent && 
+                        <MDXComponent components={createComponentOverrides(handleWordClick, sourceLanguage)}/>
+                    }
                 </StoryText>
             )}
         </StoryBox>
