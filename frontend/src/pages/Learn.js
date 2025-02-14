@@ -62,36 +62,26 @@ function Learn() {
 		navigate(`/read/${story.type}/${story.id}`);
 	}
 
-	const handleListStories = useCallback(async (type, language, cefrLevel, subject, page, pagesize) => {
+	const handleListNews = useCallback(async (language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
 		try {
-			let newsData = [], storiesData = [];
-			if (type === 'News') { newsData = await fetchContentList(apiBase, 'news/query', language, cefrLevel, subject, page, pagesize); }
-			if (type === 'Story') { storiesData = await fetchContentList(apiBase, 'story/query', language, cefrLevel, subject, page, pagesize); }
-			newsData = Array.isArray(newsData) ? newsData : [];
-			storiesData = Array.isArray(storiesData) ? storiesData : [];
+			let newsData = [];
+			try {
+				newsData = await fetchContentList(apiBase, 'news/query', language, cefrLevel, subject, page, pagesize);
+			} finally {
+				newsData = Array.isArray(newsData) ? newsData : [];
+			}
 			console.log('Fetched content successfully!')
 
-			for (const story of newsData) {
+			for (const news of newsData) {
 				tempStories.push({
-					id: story['id'],
+					id: news['id'],
 					type: 'News',
-					title: story['title'],
-					preview: story['preview_text'],
-					tags: [story['language'], story['topic']],
-					difficulty: story['cefr_level'],
-					date_created: story['date_created']
-				});
-			}
-			for (const story of storiesData) {
-				tempStories.push({
-					id: story['id'],
-					type: 'Story',
-					title: story['title'],
-					preview: story['preview_text'],
-					tags: [story['language'], story['topic']],
-					difficulty: story['cefr_level'],
-					date_created: story['date_created']
+					title: news['title'],
+					preview: news['preview_text'],
+					tags: [news['language'], news['topic']],
+					difficulty: news['cefr_level'],
+					date_created: news['date_created']
 				});
 			}
 			setAllStories(tempStories);
@@ -268,7 +258,7 @@ function Learn() {
 
 		const initializeBrowser = async () => {
 			try {
-				await handleListStories('News','any', 'any', 'any', 1, 6);
+				await handleListNews('any', 'any', 'any', 1, 6);
 			} catch (error) {
 				console.error('Failed to fetch initial stories:', error);
 			}
@@ -302,7 +292,7 @@ function Learn() {
 						<NewsRecommendations recommendations={recommendations} />
 						<StoryBrowser 
 							stories={allStories} 
-							onParamsSelect={handleListStories} 
+							onParamsSelect={handleListNews} 
 							onStoryBlockClick={handleStoryBlockClick}
 							defaultLanguage={profile?.learning_language || 'any'}
 						/>
