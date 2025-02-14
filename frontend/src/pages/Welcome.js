@@ -15,8 +15,6 @@ function Welcome() {
     const navigate = useNavigate();
     const { showNotification } = useNotification();
     const [selectedLang, setSelectedLang] = useState('');
-    const [chosenLevels, setChosenLevels] = useState({});
-    const [topics, setTopics] = useState([]);
     const [formData, setFormData] = useState({
         username: '',
         learning_language: 'French',
@@ -39,7 +37,6 @@ function Welcome() {
 	};
 
     const handleTopics = (selectedTopics) => {
-        setTopics(selectedTopics);
         const updatedFormData = { ...formData, interested_topics: selectedTopics };
         setFormData(updatedFormData);
         handleSubmit(updatedFormData);
@@ -101,7 +98,6 @@ function Welcome() {
     
 
     const goToScreen5 = (levels) => {
-        setChosenLevels(levels);
         const updatedFormData = { ...formData, skill_level: levels[selectedLang] };
         setFormData(updatedFormData);
         setCurrentScreen(5);
