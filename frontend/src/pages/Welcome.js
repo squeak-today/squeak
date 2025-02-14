@@ -26,6 +26,8 @@ function Welcome() {
     });
     const [currentScreen, setCurrentScreen] = useState(1);
 
+    const apiBase = process.env.REACT_APP_API_BASE;
+
     const handleLogout = async () => {
 		try {
 			await supabase.auth.signOut();
@@ -45,7 +47,7 @@ function Welcome() {
 
     const handleSubmit = async (dataToSubmit = formData) => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_API_BASE}profile-upsert`, {
+          const response = await fetch(`${apiBase}profile-upsert`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
