@@ -721,54 +721,6 @@ func init() {
 		})
 	}
 
-	router.GET("/profile", func(c *gin.Context) {
-		userID := getUserIDFromToken(c)
-
-		profile, err := dbClient.GetProfile(userID)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				c.JSON(http.StatusNotFound, gin.H{
-					"error": "Failed to retrieve profile",
-					"code":  "PROFILE_NOT_FOUND",
-				})
-				return
-			}
-			log.Printf("Failed to retrieve profile: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve profile"})
-			return
-		}
-
-		c.JSON(http.StatusOK, profile)
-	})
-
-	router.POST("/profile-upsert", func(c *gin.Context) {
-		userID := getUserIDFromToken(c)
-
-		var profile Profile
-		if err := c.ShouldBindJSON(&profile); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-			return
-		}
-
-		if profile.Username == "" || profile.LearningLanguage == "" || profile.SkillLevel == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Username, learning language, and skill level are required"})
-			return
-		}
-
-		id, err := dbClient.UpsertProfile(userID, &profile)
-		if err != nil {
-			log.Println(err)
-			if strings.Contains(err.Error(), "unique_constraint") {
-				c.JSON(http.StatusConflict, gin.H{"error": "Username already taken"})
-				return
-			}
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save profile"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully", "id": id})
-	})
-
 	ginLambda = ginadapter.New(router)
 }
 
