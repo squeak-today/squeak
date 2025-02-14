@@ -44,7 +44,7 @@ function Read() {
     });
     const [isLoading, setIsLoading] = useState(true);
 
-    const apiBase = "https://api.squeak.today/";
+    const apiBase = process.env.REACT_APP_API_BASE;
 
     const fetchTranslation = async (content, source) => {
 		let url = `${apiBase}translate`;
@@ -284,15 +284,33 @@ function Read() {
                 passed: results[i].evaluation === 'PASS',
                 explanation: results[i].explanation
             }));
-            setQuestions(updatedQuestions);
 
             const passCount = updatedQuestions.filter(q => q.passed === true).length;
+
+            setQuestions(updatedQuestions);
             showNotification(`You got ${passCount} out of ${questions.length} correct!`, 'success');
-            return true;
+            
+            return passCount;
         } catch (error) {
             console.error('Error checking answers:', error);
             showNotification('Failed to check answers. Please try again.', 'error');
-            return false;
+            return 0;
+        }
+    };
+
+    const handleIncrementProgress = async (newlyPassedCount) => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const jwt = session?.access_token;
+
+            await fetch(`${apiBase}progress/increment?amount=${newlyPassedCount}`, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`
+                }
+            });
+        } catch (error) {
+            console.error('Error incrementing progress:', error);
+            showNotification('Failed to increment progress. Please try again.', 'error');
         }
     };
 
@@ -321,6 +339,7 @@ function Read() {
                         loadingQuestions={loadingQuestions}
                         onCheckAnswers={handleCheckAnswers}
                         isLoading={isLoading}
+                        onIncrementProgress={handleIncrementProgress}
                     />
                     {tooltip.show && (
                         <TranslationPanel

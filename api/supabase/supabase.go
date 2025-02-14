@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/stdlib"
+	"github.com/lib/pq"
 )
 
 // supabase database client
@@ -21,19 +25,38 @@ type QueryParams struct {
 	PageSize int
 }
 
+// Add these near the top with other type definitions
+type Profile struct {
+	Username           string   `json:"username"`
+	LearningLanguage   string   `json:"learning_language"`
+	SkillLevel         string   `json:"skill_level"`
+	InterestedTopics   []string `json:"interested_topics"`
+	DailyQuestionsGoal int      `json:"daily_questions_goal"`
+}
+
+type DailyProgress struct {
+	UserID             string    `json:"user_id"`
+	Date               time.Time `json:"date"`
+	QuestionsCompleted int       `json:"questions_completed"`
+	GoalMet            bool      `json:"goal_met"`
+}
+
 func NewClient() (*Client, error) {
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-		os.Getenv("SUPABASE_HOST"),
-		os.Getenv("SUPABASE_PORT"),
+	// Create a pgx connection config
+	// postgresql://postgres.hmwqjuylgsoytagxgoyq:[YOUR-PASSWORD]@aws-0-ca-central-1.pooler.supabase.com:6543/postgres
+	config, err := pgx.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require",
 		os.Getenv("SUPABASE_USER"),
 		os.Getenv("SUPABASE_PASSWORD"),
+		os.Getenv("SUPABASE_HOST"),
+		os.Getenv("SUPABASE_PORT"),
 		os.Getenv("SUPABASE_DATABASE"),
-	)
-
-	db, err := sql.Open("postgres", connStr)
+	))
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %v", err)
+		return nil, fmt.Errorf("failed to parse config: %v", err)
 	}
+
+	config.PreferSimpleProtocol = true
+	db := stdlib.OpenDB(*config)
 
 	return &Client{db: db}, nil
 }
@@ -235,7 +258,7 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 	)
 
 	if err == sql.ErrNoRows {
-		return nil, nil // No content found
+		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to query content: %v", err)
@@ -254,4 +277,173 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 	}
 
 	return result, nil
+}
+
+func (c *Client) GetProfile(userID string) (*Profile, error) {
+	query := `
+		SELECT username, learning_language, skill_level, interested_topics, daily_questions_goal 
+		FROM profiles 
+		WHERE user_id = $1`
+
+	var profile Profile
+	err := c.db.QueryRow(query, userID).Scan(
+		&profile.Username,
+		&profile.LearningLanguage,
+		&profile.SkillLevel,
+		pq.Array(&profile.InterestedTopics),
+		&profile.DailyQuestionsGoal,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, sql.ErrNoRows
+	}
+	if err != nil {
+		return nil, fmt.Errorf("database error querying profile: %v", err)
+	}
+
+	return &profile, nil
+}
+
+func (c *Client) UpsertProfile(userID string, profile *Profile) (int, error) {
+	query := `
+		INSERT INTO profiles (
+			user_id, username, learning_language, skill_level, 
+			interested_topics, daily_questions_goal
+		) 
+		VALUES ($1, $2, $3, $4, $5, $6)
+		ON CONFLICT (user_id) 
+		DO UPDATE SET 
+			username = EXCLUDED.username,
+			learning_language = EXCLUDED.learning_language,
+			skill_level = EXCLUDED.skill_level,
+			interested_topics = EXCLUDED.interested_topics,
+			daily_questions_goal = EXCLUDED.daily_questions_goal
+		RETURNING id`
+
+	var id int
+	err := c.db.QueryRow(
+		query,
+		userID,
+		profile.Username,
+		profile.LearningLanguage,
+		profile.SkillLevel,
+		pq.Array(profile.InterestedTopics),
+		profile.DailyQuestionsGoal,
+	).Scan(&id)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to upsert profile: %v", err)
+	}
+
+	return id, nil
+}
+
+func (c *Client) GetTodayProgress(userID string) (*DailyProgress, error) {
+	var progress DailyProgress
+	err := c.db.QueryRow(`
+        SELECT user_id, date, questions_completed, goal_met
+        FROM daily_progress
+        WHERE user_id = $1 AND date = CURRENT_DATE
+    `, userID).Scan(&progress.UserID, &progress.Date, &progress.QuestionsCompleted, &progress.GoalMet)
+
+	if err == sql.ErrNoRows {
+		err = c.db.QueryRow(`
+            INSERT INTO daily_progress (user_id, date)
+            VALUES ($1, CURRENT_DATE)
+            RETURNING user_id, date, questions_completed, goal_met
+        `, userID).Scan(&progress.UserID, &progress.Date, &progress.QuestionsCompleted, &progress.GoalMet)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return &progress, nil
+}
+
+func (c *Client) IncrementQuestionsCompleted(userID string, amount int) error {
+	var dailyGoal int
+	err := c.db.QueryRow(`
+        SELECT daily_questions_goal 
+        FROM profiles 
+        WHERE user_id = $1
+    `, userID).Scan(&dailyGoal)
+	if err != nil {
+		return fmt.Errorf("failed to get daily goal: %v", err)
+	}
+
+	// not sure why but a CTE is needed here literally just for the increment_by amount
+	// if it doesn't it complains about inconsistent types but everything is an integer so idk
+	query := `
+        WITH new_amount AS (
+            SELECT $2::INTEGER as increment_by
+        )
+        INSERT INTO daily_progress (user_id, date, questions_completed, goal_met)
+        VALUES (
+            $1, 
+            CURRENT_DATE, 
+            (SELECT increment_by FROM new_amount), 
+            (SELECT increment_by FROM new_amount) >= $3
+        )
+        ON CONFLICT (user_id, date) 
+        DO UPDATE SET 
+            questions_completed = daily_progress.questions_completed + (SELECT increment_by FROM new_amount),
+            goal_met = ((daily_progress.questions_completed + (SELECT increment_by FROM new_amount)) >= $3)
+    `
+
+	_, err = c.db.Exec(query, userID, amount, dailyGoal)
+	return err
+}
+
+func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
+	var streak int
+	var completedToday bool
+	err := c.db.QueryRow(`
+		WITH consecutive_days AS (
+			SELECT
+				date,
+				goal_met,
+				date - INTERVAL '1 day' * ROW_NUMBER() OVER (ORDER BY date ASC) AS streak_group
+			FROM daily_progress
+			WHERE user_id = $1
+				AND goal_met = TRUE
+			ORDER BY date
+		),
+
+		streak_groups AS (
+			SELECT
+				MIN(date) AS start_at,
+				MAX(date) AS end_at,
+				COUNT(*) AS days_count,
+				(CURRENT_DATE - INTERVAL '1 day')::DATE AS day_before_end,
+				MAX(date) = CURRENT_DATE AS completed_for_today,
+				MAX(date) = (CURRENT_DATE - INTERVAL '1 day')::DATE AS completed_for_yesterday,
+				MAX(date) - (MIN(date) - INTERVAL '1 day')::DATE AS streak_size
+			FROM consecutive_days
+			GROUP BY streak_group
+			HAVING COUNT(*) >= 1
+		)
+
+		SELECT 
+		COALESCE(
+			(SELECT streak_size 
+				FROM streak_groups 
+				WHERE completed_for_today = true 
+				OR completed_for_yesterday = true
+				ORDER BY streak_size DESC 
+				LIMIT 1), 0
+		) as current_streak,
+		COALESCE(
+			(SELECT completed_for_today 
+				FROM streak_groups 
+				WHERE completed_for_today = true 
+				OR completed_for_yesterday = true
+				ORDER BY streak_size DESC 
+				LIMIT 1), false
+		) as completed_today;
+	`, userID).Scan(&streak, &completedToday)
+
+	if err != nil {
+		return 0, false, err
+	}
+	return streak, completedToday, nil
 }

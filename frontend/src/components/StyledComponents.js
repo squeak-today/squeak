@@ -1,30 +1,8 @@
 import styled from 'styled-components';
 
-
-
-/** 
- * Container that holds main content.
- * Added responsive margin and padding for mobile.
- */
-export const BrowserBox = styled.div`
-  width: 100%;
-  height: 100%;
-  margin: 2em auto 0 auto;
-  margin: 2em auto 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    margin: 40px auto 0 auto;
-    padding: 1em;
-  }
-`;
-
 export const Title = styled.h1`
   text-align: center;
   color: #000000;
-  font-family: 'Lora', serif;
   font-family: 'Lora', serif;
   font-size: 3.5rem;
   margin-bottom: 10px;
@@ -37,8 +15,6 @@ export const Title = styled.h1`
 export const Subtitle = styled.h3`
   text-align: center;
   color: #000000;
-  font-weight: 400;
-  font-family: 'Lora', serif;
   font-weight: 400;
   font-family: 'Lora', serif;
   font-size: 1.8rem;
@@ -72,18 +48,11 @@ export const GenerateButton = styled.button`
 
 export const StoryContainer = styled.div`
   position: relative;
-
-
   border-radius: 15px;
   font-family: 'Lora', serif;
-  font-family: 'Lora', serif;
-  
   max-width: 90vw;
   max-height: 80vh;
   overflow-y: auto;
-
-
-
   box-sizing: border-box;
 
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -373,11 +342,7 @@ export const NavHeader = styled.header`
   transform: translateX(-50%); /* Centers the header */
   width: 90%; /* Adds margin from the sides */
   max-width: 90%; /* Restricts the maximum width */
-  height: 80px;
-  background-color: #FFFFFF;
-  border-bottom: 0.75px solid #000000; 
-  background-color: #FFFFFF;
-  border-bottom: 0.75px solid #000000; 
+  height: 80px;  
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures elements are spaced properly */

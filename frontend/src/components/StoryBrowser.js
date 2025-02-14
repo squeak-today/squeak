@@ -1,14 +1,6 @@
 import styled from 'styled-components';
 import StoryList from './StoryList';
-import { useState } from 'react';
-
-const DateHeader = styled.h1`
-	font-family: 'Lora', serif;
-	text-align: center;
-	margin-bottom: 1em;
-	font-size: 2em;
-	font-weight: 600;
-`;
+import { useState, useEffect } from 'react';
 
 const FilterContainer = styled.div`
 	display: flex;
@@ -73,33 +65,17 @@ const DisclaimerText = styled.p`
 	font-style: italic;
 `;
 
-const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
-	const [filterLanguage, setFilterLanguage] = useState('any');
+const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLanguage }) => {
+	const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
 	const [filterLevel, setFilterLevel] = useState('any');
 	const [filterTopic, setFilterTopic] = useState('any');
 	const [filterType, setFilterType] = useState('News');
 	const [currentPage, setCurrentPage] = useState(1);
 	const storiesPerPage = 6;
 
-	const formatDate = () => {
-		const date = new Date();
-		const month = date.toLocaleDateString('en-US', { month: 'long' });
-		const day = date.getDate();
-		const year = date.getFullYear();
-
-		// Get ordinal suffix for day
-		const getOrdinal = (n) => {
-			if (n > 3 && n < 21) return 'th';
-			switch (n % 10) {
-				case 1: return 'st';
-				case 2: return 'nd';
-				case 3: return 'rd';
-				default: return 'th';
-			}
-		};
-
-		return `${month} ${day}${getOrdinal(day)}, ${year}`;
-	};
+	useEffect(() => {
+		setFilterLanguage(defaultLanguage);
+	}, [defaultLanguage]);
 
 	const handlePageChange = (newPage) => {
 		setCurrentPage(newPage);
@@ -108,7 +84,6 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick }) => {
 
 	return (
 		<div>
-			<DateHeader>Today is {formatDate()}...</DateHeader>
 			<FilterContainer>
 				<div style={{ flex: 1 }}>
 					<FilterLabel>Type</FilterLabel>

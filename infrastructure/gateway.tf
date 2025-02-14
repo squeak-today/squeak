@@ -70,6 +70,23 @@ module "content_question" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "profile" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "profile"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "profile_upsert" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "profile-upsert"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 // Define Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
   statement_id  = "${terraform.workspace}-AllowExecutionFromAPIGateway"
@@ -77,6 +94,33 @@ resource "aws_lambda_permission" "allow_apigateway" {
   function_name = aws_lambda_function.story_api_lambda.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.story_api.execution_arn}/*/*"
+}
+
+# GET /progress
+module "progress" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "progress"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# POST /progress/increment
+module "progress_increment" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.progress.resource_id
+  path_part   = "increment"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# GET /progress/streak
+module "progress_streak" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.progress.resource_id
+  path_part   = "streak"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
 # DEPLOY
@@ -92,5 +136,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.news_query,
     module.story_query,
     module.content_question,
+    module.progress,
+    module.progress_streak,
+    module.progress_increment
   ]
 }
