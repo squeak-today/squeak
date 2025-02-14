@@ -245,7 +245,7 @@ function Learn() {
 			});
 			
 			const result = await response.json();
-			if (result.message === "Username already taken") {
+			if (result.error === "Username already taken") {
 				showNotification('Username already taken. Please try again.', 'error');
 				return;
 			}
