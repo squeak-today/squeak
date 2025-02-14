@@ -65,6 +65,14 @@ const DisclaimerText = styled.p`
 	font-style: italic;
 `;
 
+const NoContentMessage = styled.div`
+	text-align: center;
+	padding: 2em;
+	color: #666;
+	font-family: 'Lora', serif;
+	font-style: italic;
+`;
+
 const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLanguage }) => {
 	const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
 	const [filterLevel, setFilterLevel] = useState('any');
@@ -139,25 +147,31 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 				</div>
 			</FilterContainer>
 			
-			<StoryList stories={stories} onStoryBlockClick={onStoryBlockClick} />
+			{stories.length > 0 ? (
+				<StoryList stories={stories} onStoryBlockClick={onStoryBlockClick} />
+			) : (
+				<NoContentMessage>No stories found for these filters!</NoContentMessage>
+			)}
 
-			<PaginationContainer>
-				<PageButton 
-					onClick={() => handlePageChange(currentPage - 1)} 
-					disabled={currentPage === 1}
-				>
-					Previous
-				</PageButton>
-				<PageButton disabled>
-					Page {currentPage}
-				</PageButton>
-				<PageButton 
-					onClick={() => handlePageChange(currentPage + 1)} 
-					disabled={stories.length < storiesPerPage} // if we got fewer stories than the page size, we're on the last page
-				>
-					Next
-				</PageButton>
-			</PaginationContainer>
+			{stories.length > 0 && (
+				<PaginationContainer>
+					<PageButton 
+						onClick={() => handlePageChange(currentPage - 1)} 
+						disabled={currentPage === 1}
+					>
+						Previous
+					</PageButton>
+					<PageButton disabled>
+						Page {currentPage}
+					</PageButton>
+					<PageButton 
+						onClick={() => handlePageChange(currentPage + 1)} 
+						disabled={stories.length < storiesPerPage} // if we got fewer stories than the page size, we're on the last page
+					>
+						Next
+					</PageButton>
+				</PaginationContainer>
+			)}
 
 			<DisclaimerText>
 				Content may be AI-assisted. While we strive for accuracy, please verify important information from official sources.

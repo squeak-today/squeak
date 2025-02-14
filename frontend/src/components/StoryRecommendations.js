@@ -80,6 +80,14 @@ const PageCount = styled.span`
     margin-top: 0.5em;
 `;
 
+const NoRecommendationsMessage = styled.div`
+    text-align: center;
+    padding: 1em;
+    color: #666;
+    font-family: 'Lora', serif;
+    font-style: italic;
+`;
+
 const getCEFRColor = (level) => {
     const firstLetter = level.charAt(0);
     switch (firstLetter) {
@@ -100,19 +108,23 @@ const StoryRecommendations = ({ recommendations }) => {
     return (
         <Container>
             <Title>Recommended Stories</Title>
-            <RecommendationsRow>
-                {recommendations?.map((story) => (
-                    <RecommendationBlock key={story.id} onClick={() => handleClick(story)}>
-                        <TagContainer>
-                            <Tag cefr={story.cefr_level}>{story.cefr_level}</Tag>
-                            <Tag>{story.language}</Tag>
-                            <Tag>{story.topic}</Tag>
-                        </TagContainer>
-                        <BlockTitle>{story.title}</BlockTitle>
-                        <PageCount>Pages: {story.pages}</PageCount>
-                    </RecommendationBlock>
-                ))}
-            </RecommendationsRow>
+            {recommendations?.length > 0 ? (
+                <RecommendationsRow>
+                    {recommendations.map((story) => (
+                        <RecommendationBlock key={story.id} onClick={() => handleClick(story)}>
+                            <TagContainer>
+                                <Tag cefr={story.cefr_level}>{story.cefr_level}</Tag>
+                                <Tag>{story.language}</Tag>
+                                <Tag>{story.topic}</Tag>
+                            </TagContainer>
+                            <BlockTitle>{story.title}</BlockTitle>
+                            <PageCount>Pages: {story.pages}</PageCount>
+                        </RecommendationBlock>
+                    ))}
+                </RecommendationsRow>
+            ) : (
+                <NoRecommendationsMessage>No story recommendations available!</NoRecommendationsMessage>
+            )}
         </Container>
     );
 };

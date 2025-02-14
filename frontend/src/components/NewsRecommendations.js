@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { NoRecommendationsMessage } from '../styles/LearnPageStyles';
 
 const Container = styled.div`
   margin-bottom: 2em;
@@ -82,18 +83,22 @@ const NewsRecommendations = ({ recommendations }) => {
     return (
         <Container>
             <Title>Recommended Articles</Title>
-            <RecommendationsRow>
-                {recommendations?.map((story) => (
-                    <RecommendationBlock key={story.id} onClick={() => handleClick(story)}>
-                        <TagContainer>
-                            <Tag cefr={story.cefr_level}>{story.cefr_level}</Tag>
-                            <Tag>{story.language}</Tag>
-                            <Tag>{story.topic}</Tag>
-                        </TagContainer>
-                        <BlockTitle>{story.title}</BlockTitle>
-                    </RecommendationBlock>
-                ))}
-            </RecommendationsRow>
+            {recommendations?.length > 0 ? (
+                <RecommendationsRow>
+                    {recommendations.map((story) => (
+                        <RecommendationBlock key={story.id} onClick={() => handleClick(story)}>
+                            <TagContainer>
+                                <Tag cefr={story.cefr_level}>{story.cefr_level}</Tag>
+                                <Tag>{story.language}</Tag>
+                                <Tag>{story.topic}</Tag>
+                            </TagContainer>
+                            <BlockTitle>{story.title}</BlockTitle>
+                        </RecommendationBlock>
+                    ))}
+                </RecommendationsRow>
+            ) : (
+                <NoRecommendationsMessage>No news recommendations available!</NoRecommendationsMessage>
+            )}
         </Container>
     );
 };
