@@ -15,8 +15,8 @@ function Welcome() {
     const navigate = useNavigate();
     const { showNotification } = useNotification();
     const [selectedLang, setSelectedLang] = useState('');
-    const [setChosenLevels] = useState({});
-    const [setTopics] = useState([]);
+    const [chosenLevels, setChosenLevels] = useState({});
+    const [topics, setTopics] = useState([]);
     const [formData, setFormData] = useState({
         username: '',
         learning_language: 'French',

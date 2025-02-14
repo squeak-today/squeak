@@ -18,6 +18,8 @@ function Auth() {
     const [showResetForm, setShowResetForm] = useState(false);
     const { showNotification } = useNotification();
 
+    const apiBase = process.env.REACT_APP_API_BASE;
+
 
     const toggleMode = (newMode) => {
         setIsLogin(newMode === 'login');
@@ -33,14 +35,28 @@ function Auth() {
             }
         });
 
-		if (mode !== 'reset') {
-			supabase.auth.getSession().then(({ data: { session } }) => {
-				if (session) {
-					navigate('/learn');
-				}
-			});
-		}
-    }, [navigate, mode]);
+        if (mode !== 'reset') {
+          supabase.auth.getSession().then(async ({ data: { session } }) => {
+            if (session) {
+              try {
+                const jwt = session.access_token;
+                const response = await fetch(`${apiBase}profile`, {
+                  headers: { 'Authorization': `Bearer ${jwt}` }
+                });
+                const data = await response.json();
+                if (data.code === "PROFILE_NOT_FOUND") {
+                  navigate('/welcome');
+                } else {
+                  navigate('/learn');
+                }
+              } catch (error) {
+                console.error("Error fetching profile:", error);
+                navigate('/welcome');
+              }
+            }
+          });
+        }
+    }, [navigate, mode, apiBase]);
 
     useEffect(() => {
         setIsLogin(mode === 'login');
