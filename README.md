@@ -17,6 +17,18 @@ See our [roadmap here](https://github.com/orgs/squeak-today/projects/2/views/1).
 
 ## Developer Setup
 
+### `/stories`
+Contains some stories in MDX format, and scripts to upload them to S3.
+Developed on `Python 3.11.11`.
+
+Make sure you have the .aws credentials.
+```shell
+pip install boto3
+python -m venv venv
+source venv/bin/activate
+python upload_story.py XXX --language X --cefr X --topic X --bucket X
+```
+
 ### `/supabase` (semi-optional)
 Contains migrations and code to interact with Supabase via code if needed.
 Needs a `.env` file with the following format:
