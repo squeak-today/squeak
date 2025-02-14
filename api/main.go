@@ -201,198 +201,292 @@ func init() {
 		})
 	}
 
-	router.GET("/content", func(c *gin.Context) {
-		contentType := c.Query("type")
-		id := c.Query("id")
+	newsGroup := router.Group("/news")
+	{
+		newsGroup.GET("", func(c *gin.Context) {
+			id := c.Query("id")
 
-		if contentType != "Story" && contentType != "News" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid content type"})
-			return
-		}
+			if id == "" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "ID parameter is required"})
+				return
+			}
 
-		// Step 1: Get the record from supabase db
-		contentRecord, err := dbClient.GetContentByID(contentType, id)
-		if err != nil {
-			log.Printf("Failed to retrieve content record in DB: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
-			return
-		}
-		if contentRecord == nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
-			return
-		}
+			// Get the record from supabase db
+			contentRecord, err := dbClient.GetContentByID("News", id)
+			if err != nil {
+				log.Printf("Failed to retrieve content record in DB: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
+				return
+			}
+			if contentRecord == nil {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+				return
+			}
 
-		// Step 2: Get the content from s3
-		content, err := pullContent(
-			contentRecord["language"].(string),
-			contentRecord["cefr_level"].(string),
-			contentRecord["topic"].(string),
-			contentType,
-			contentRecord["date_created"].(string),
-		)
-		if err != nil {
-			log.Printf("Failed to pull content from S3 bucket: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data during new question generation"})
-			return
-		}
+			// Get the content from s3
+			content, err := pullContent(
+				contentRecord["language"].(string),
+				contentRecord["cefr_level"].(string),
+				contentRecord["topic"].(string),
+				"News",
+				contentRecord["date_created"].(string),
+			)
+			if err != nil {
+				log.Printf("Failed to pull content from S3 bucket: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data"})
+				return
+			}
 
-		// Step 3: Combine the data
-		contentMap := content.ToMap()
-		response := map[string]interface{}{
-			"content_type": contentType,
-			"language":     contentRecord["language"],
-			"cefr_level":   contentRecord["cefr_level"],
-			"topic":        contentRecord["topic"],
-			"date_created": contentRecord["date_created"],
-			"title":        contentRecord["title"],
-			"preview_text": contentRecord["preview_text"],
-		}
+			response := map[string]interface{}{
+				"content_type": "News",
+				"language":     contentRecord["language"],
+				"cefr_level":   contentRecord["cefr_level"],
+				"topic":        contentRecord["topic"],
+				"date_created": contentRecord["date_created"],
+				"title":        contentRecord["title"],
+				"preview_text": contentRecord["preview_text"],
+				"content":      content.Content,
+				"dictionary":   content.Dictionary,
+				"sources":      content.Sources,
+			}
 
-		// Add all fields from contentMap to response
-		for k, v := range contentMap {
-			response[k] = v
-		}
+			c.JSON(http.StatusOK, response)
+		})
 
-		c.JSON(http.StatusOK, response)
-	})
+		newsGroup.GET("/query", func(c *gin.Context) {
+			language := c.Query("language")
+			cefr := c.Query("cefr")
+			subject := c.Query("subject")
+			page := c.Query("page")
+			pagesize := c.Query("pagesize")
 
-	router.GET("/story", func(c *gin.Context) {
-		language := c.Query("language")
-		cefr := c.Query("cefr")
-		subject := c.Query("subject")
-		dateCreated := c.Query("date_created")
+			if page == "" {
+				page = "1"
+			}
+			if pagesize == "" {
+				pagesize = "10"
+			}
 
-		if language == "" || cefr == "" || subject == "" || dateCreated == "" {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "language, cefr, subject, and date_created parameter is required!",
+			pageNum, err := strconv.Atoi(page)
+			if err != nil || pageNum < 1 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+				return
+			}
+
+			pageSizeNum, err := strconv.Atoi(pagesize)
+			if err != nil || pageSizeNum < 1 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+				return
+			}
+
+			params := supabase.QueryParams{
+				Language: language,
+				CEFR:     cefr,
+				Subject:  subject,
+				Page:     pageNum,
+				PageSize: pageSizeNum,
+			}
+
+			results, err := dbClient.QueryNews(params)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
+				return
+			}
+
+			c.JSON(http.StatusOK, results)
+		})
+	}
+
+	storyGroup := router.Group("/story")
+	{
+		storyGroup.GET("", func(c *gin.Context) {
+			id := c.Query("id")
+			page := c.Query("page")
+
+			if id == "" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "ID parameter is required"})
+				return
+			}
+
+			pageNum, err := strconv.Atoi(page)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Page parameter incorrect"})
+				return
+			}
+
+			// Get the record from supabase db
+			contentRecord, err := dbClient.GetContentByID("Story", id)
+			if err != nil {
+				log.Printf("Failed to retrieve content record in DB: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
+				return
+			}
+			if contentRecord == nil {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+				return
+			}
+
+			// Get the content from s3
+			content, err := pullStoryByPage(
+				contentRecord["language"].(string),
+				contentRecord["cefr_level"].(string),
+				contentRecord["topic"].(string),
+				contentRecord["id"].(string),
+				pageNum,
+			)
+			if err != nil {
+				log.Printf("Failed to pull story by page: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data"})
+				return
+			}
+
+			response := map[string]interface{}{
+				"content_type": "Story",
+				"language":     contentRecord["language"],
+				"cefr_level":   contentRecord["cefr_level"],
+				"topic":        contentRecord["topic"],
+				"date_created": contentRecord["date_created"],
+				"title":        contentRecord["title"],
+				"preview_text": contentRecord["preview_text"],
+				"content":      content.Content,
+				"pages":        contentRecord["pages"],
+			}
+
+			c.JSON(http.StatusOK, response)
+		})
+
+		storyGroup.GET("/context", func(c *gin.Context) {
+			id := c.Query("id")
+
+			if id == "" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "ID parameter is required"})
+				return
+			}
+
+			// Get the record from supabase db
+			contentRecord, err := dbClient.GetContentByID("Story", id)
+			if err != nil {
+				log.Printf("Failed to retrieve content record in DB: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
+				return
+			}
+			if contentRecord == nil {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+				return
+			}
+
+			// Get the context from s3
+			context, err := pullStoryQNAContext(
+				contentRecord["language"].(string),
+				contentRecord["cefr_level"].(string),
+				contentRecord["topic"].(string),
+				contentRecord["id"].(string),
+			)
+			if err != nil {
+				log.Printf("Failed to pull story context: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve context data"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"context": context,
 			})
-			return
-		}
+		})
 
-		// theres no check for valid language or cefr yet
+		storyGroup.GET("/query", func(c *gin.Context) {
+			language := c.Query("language")
+			cefr := c.Query("cefr")
+			subject := c.Query("subject")
+			page := c.Query("page")
+			pagesize := c.Query("pagesize")
 
-		content, err := pullContent(language, cefr, subject, "Story", dateCreated)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "content retrieval failed!",
-			})
-			return
-		}
+			if page == "" {
+				page = "1"
+			}
+			if pagesize == "" {
+				pagesize = "10"
+			}
 
-		c.JSON(http.StatusOK, content.ToMap())
-	})
+			pageNum, err := strconv.Atoi(page)
+			if err != nil || pageNum < 1 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+				return
+			}
 
-	router.GET("/news", func(c *gin.Context) {
-		language := c.Query("language")
-		cefr := c.Query("cefr")
-		subject := c.Query("subject")
-		dateCreated := c.Query("date_created")
+			pageSizeNum, err := strconv.Atoi(pagesize)
+			if err != nil || pageSizeNum < 1 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+				return
+			}
 
-		if language == "" || cefr == "" || subject == "" || dateCreated == "" {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "language, cefr, subject, and date_created parameter is required!",
-			})
-			return
-		}
+			params := supabase.QueryParams{
+				Language: language,
+				CEFR:     cefr,
+				Subject:  subject,
+				Page:     pageNum,
+				PageSize: pageSizeNum,
+			}
 
-		// theres no check for valid language or cefr yet
+			results, err := dbClient.QueryStories(params)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
+				return
+			}
 
-		content, err := pullContent(language, cefr, subject, "News", dateCreated)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "content retrieval failed!",
-			})
-			return
-		}
+			c.JSON(http.StatusOK, results)
+		})
+	}
 
-		c.JSON(http.StatusOK, content.ToMap())
-	})
+	profileGroup := router.Group("/profile")
+	{
+		profileGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 
-	router.GET("/news-query", func(c *gin.Context) {
-		language := c.Query("language")
-		cefr := c.Query("cefr")
-		subject := c.Query("subject")
-		page := c.Query("page")
-		pagesize := c.Query("pagesize")
+			profile, err := dbClient.GetProfile(userID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					c.JSON(http.StatusNotFound, gin.H{
+						"error": "Failed to retrieve profile",
+						"code":  "PROFILE_NOT_FOUND",
+					})
+					return
+				}
+				log.Printf("Failed to retrieve profile: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve profile"})
+				return
+			}
 
-		if page == "" {
-			page = "1"
-		}
-		if pagesize == "" {
-			pagesize = "10"
-		}
+			c.JSON(http.StatusOK, profile)
+		})
 
-		pageNum, err := strconv.Atoi(page)
-		if err != nil || pageNum < 1 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
-			return
-		}
+		profileGroup.POST("/upsert", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 
-		pageSizeNum, err := strconv.Atoi(pagesize)
-		if err != nil || pageSizeNum < 1 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
-			return
-		}
+			var profile Profile
+			if err := c.ShouldBindJSON(&profile); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+				return
+			}
 
-		params := supabase.QueryParams{
-			Language: language,
-			CEFR:     cefr,
-			Subject:  subject,
-			Page:     pageNum,
-			PageSize: pageSizeNum,
-		}
+			if profile.Username == "" || profile.LearningLanguage == "" || profile.SkillLevel == "" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Username, learning language, and skill level are required"})
+				return
+			}
 
-		results, err := dbClient.QueryNews(params)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
-			return
-		}
+			id, err := dbClient.UpsertProfile(userID, &profile)
+			if err != nil {
+				log.Println(err)
+				if strings.Contains(err.Error(), "unique constraint") {
+					c.JSON(http.StatusConflict, gin.H{"error": "Username already taken"})
+					return
+				}
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save profile"})
+				return
+			}
 
-		c.JSON(http.StatusOK, results)
-	})
-
-	router.GET("/story-query", func(c *gin.Context) {
-		language := c.Query("language")
-		cefr := c.Query("cefr")
-		subject := c.Query("subject")
-		page := c.Query("page")
-		pagesize := c.Query("pagesize")
-
-		if page == "" {
-			page = "1"
-		}
-		if pagesize == "" {
-			pagesize = "10"
-		}
-
-		pageNum, err := strconv.Atoi(page)
-		if err != nil || pageNum < 1 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
-			return
-		}
-
-		pageSizeNum, err := strconv.Atoi(pagesize)
-		if err != nil || pageSizeNum < 1 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
-			return
-		}
-
-		params := supabase.QueryParams{
-			Language: language,
-			CEFR:     cefr,
-			Subject:  subject,
-			Page:     pageNum,
-			PageSize: pageSizeNum,
-		}
-
-		results, err := dbClient.QueryStories(params)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
-			return
-		}
-
-		c.JSON(http.StatusOK, results)
-	})
+			c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully", "id": id})
+		})
+	}
 
 	router.POST("/translate", func(c *gin.Context) {
 		var infoBody struct {
@@ -465,219 +559,168 @@ func init() {
 		})
 	})
 
-	router.POST("/evaluate-qna", func(c *gin.Context) {
-		var infoBody struct {
-			CEFR     string `json:"cefr"`
-			Content  string `json:"content"`
-			Question string `json:"question"`
-			Answer   string `json:"answer"`
-		}
+	qnaGroup := router.Group("/qna")
+	{
+		qnaGroup.POST("", func(c *gin.Context) {
+			var infoBody struct {
+				ContentType  string `json:"content_type"`
+				ID           string `json:"id"`
+				CEFRLevel    string `json:"cefr_level"`
+				QuestionType string `json:"question_type"`
+			}
 
-		if err := c.ShouldBindJSON(&infoBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-			return
-		}
+			if err := c.ShouldBindJSON(&infoBody); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+				return
+			}
 
-		apiKey := os.Getenv("GEMINI_API_KEY")
-		geminiClient, err := gemini.NewGeminiClient(apiKey)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create Gemini client: %v", err)})
-			return
-		}
-		defer geminiClient.Client.Close()
+			// Validate ContentType
+			if infoBody.ContentType != "News" && infoBody.ContentType != "Story" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Content type must be either 'News' or 'Story'"})
+				return
+			}
 
-		evaluation, err := geminiClient.EvaluateQNA(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Evaluation with Gemini failed"})
-			return
-		}
+			// Validate ID is numeric
+			if _, err := strconv.Atoi(infoBody.ID); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "ID must be a valid number"})
+				return
+			}
 
-		// take only first 4 characters of evaluation, as its either PASS or FAIL
-		evaluationScore := ""
-		if len(evaluation) >= 4 {
-			evaluationScore = evaluation[:4]
-		} else {
-			evaluationScore = evaluation
-		}
+			// Validate Question Type
+			if infoBody.QuestionType != "vocab" && infoBody.QuestionType != "understanding" {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Question type must be either 'vocab' or 'understanding'"})
+				return
+			}
 
-		explanation, err := geminiClient.GenerateQNAExplanation(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer, evaluationScore)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Explanation with Gemini failed"})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"evaluation":  evaluationScore,
-			"explanation": explanation,
-		})
-	})
-
-	router.POST("/content-question", func(c *gin.Context) {
-		var infoBody struct {
-			ContentType  string `json:"content_type"`
-			ID           string `json:"id"`
-			CEFRLevel    string `json:"cefr_level"`
-			QuestionType string `json:"question_type"`
-		}
-
-		if err := c.ShouldBindJSON(&infoBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-			return
-		}
-
-		// Validate ContentType
-		if infoBody.ContentType != "News" && infoBody.ContentType != "Story" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Content type must be either 'News' or 'Story'"})
-			return
-		}
-
-		// Validate ID is numeric
-		if _, err := strconv.Atoi(infoBody.ID); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "ID must be a valid number"})
-			return
-		}
-
-		// Validate Question Type
-		if infoBody.QuestionType != "vocab" && infoBody.QuestionType != "understanding" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Question type must be either 'vocab' or 'understanding'"})
-			return
-		}
-
-		questionData, err := dbClient.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
-		if err != nil {
-			log.Printf("Failed to retrieve question: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve question"})
-			return
-		}
-
-		if questionData == nil {
-			// Step 1: Get the record from supabase db
-			contentRecord, err := dbClient.GetContentByID(infoBody.ContentType, infoBody.ID)
+			questionData, err := dbClient.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
 			if err != nil {
-				log.Printf("Failed to retrieve content record in DB: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
-				return
-			}
-			if contentRecord == nil {
-				c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+				log.Printf("Failed to retrieve question: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve question"})
 				return
 			}
 
-			// Step 2: Get the content from s3
-			contentData, err := pullContent(
-				contentRecord["language"].(string),
-				contentRecord["cefr_level"].(string),
-				contentRecord["topic"].(string),
-				infoBody.ContentType,
-				contentRecord["date_created"].(string),
-			)
-			if err != nil {
-				log.Printf("Failed to pull content from S3 bucket: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data during new question generation"})
-				return
-			}
+			if questionData == nil {
+				if infoBody.ContentType == "Story" {
+					c.JSON(http.StatusNotFound, gin.H{"error": "No questions found for this story!"})
+					return
+				}
 
-			var contentString string
-			switch v := contentData.(type) {
-			case Story:
-				contentString = v.Content
-			case News:
-				contentString = v.Content
-			default:
-				log.Printf("Invalid content type received: %T", contentData)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid content type"})
-				return
-			}
+				// Step 1: Get the record from supabase db
+				contentRecord, err := dbClient.GetContentByID(infoBody.ContentType, infoBody.ID)
+				if err != nil {
+					log.Printf("Failed to retrieve content record in DB: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
+					return
+				}
+				if contentRecord == nil {
+					c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
+					return
+				}
 
-			// Step 3: generate the question
-			apiKey := os.Getenv("GEMINI_API_KEY")
-			geminiClient, err := gemini.NewGeminiClient(apiKey)
-			if err != nil {
-				log.Printf("Failed to create Gemini client: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to initialize gemini client"})
-				return
-			}
-			defer geminiClient.Client.Close()
+				// Step 2: Get the content from s3
+				contentData, err := pullContent(
+					contentRecord["language"].(string),
+					contentRecord["cefr_level"].(string),
+					contentRecord["topic"].(string),
+					infoBody.ContentType,
+					contentRecord["date_created"].(string),
+				)
+				if err != nil {
+					log.Printf("Failed to pull content from S3 bucket: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data during new question generation"})
+					return
+				}
+				contentString := contentData.Content
 
-			var generatedQuestion string
-			var genErr error
-			if infoBody.QuestionType == "vocab" {
-				generatedQuestion, genErr = geminiClient.CreateVocabQuestion(infoBody.CEFRLevel, contentString)
-			} else {
-				generatedQuestion, genErr = geminiClient.CreateUnderstandingQuestion(infoBody.CEFRLevel, contentString)
-			}
-			if genErr != nil {
-				log.Printf("Failed to generate question: %v", genErr)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate question"})
-				return
-			}
+				// Step 3: generate the question
+				apiKey := os.Getenv("GEMINI_API_KEY")
+				geminiClient, err := gemini.NewGeminiClient(apiKey)
+				if err != nil {
+					log.Printf("Failed to create Gemini client: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to initialize gemini client"})
+					return
+				}
+				defer geminiClient.Client.Close()
 
-			// Step 4: save question to db
-			err = dbClient.CreateContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel, generatedQuestion)
-			if err != nil {
-				log.Printf("Failed to save question to database: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save question to database"})
+				var generatedQuestion string
+				var genErr error
+				if infoBody.QuestionType == "vocab" {
+					generatedQuestion, genErr = geminiClient.CreateVocabQuestion(infoBody.CEFRLevel, contentString)
+				} else {
+					generatedQuestion, genErr = geminiClient.CreateUnderstandingQuestion(infoBody.CEFRLevel, contentString)
+				}
+				if genErr != nil {
+					log.Printf("Failed to generate question: %v", genErr)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate question"})
+					return
+				}
+
+				// Step 4: save question to db
+				err = dbClient.CreateContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel, generatedQuestion)
+				if err != nil {
+					log.Printf("Failed to save question to database: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save question to database"})
+					return
+				}
+
+				c.JSON(http.StatusOK, gin.H{
+					"question": generatedQuestion,
+				})
 				return
 			}
 
 			c.JSON(http.StatusOK, gin.H{
-				"question": generatedQuestion,
+				"question": questionData["question"],
 			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"question": questionData["question"],
 		})
-	})
 
-	router.GET("/profile", func(c *gin.Context) {
-		userID := getUserIDFromToken(c)
+		qnaGroup.POST("/evaluate", func(c *gin.Context) {
+			var infoBody struct {
+				CEFR     string `json:"cefr"`
+				Content  string `json:"content"`
+				Question string `json:"question"`
+				Answer   string `json:"answer"`
+			}
 
-		profile, err := dbClient.GetProfile(userID)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				c.JSON(http.StatusNotFound, gin.H{
-					"error": "Failed to retrieve profile",
-					"code":  "PROFILE_NOT_FOUND",
-				})
+			if err := c.ShouldBindJSON(&infoBody); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 				return
 			}
-			log.Printf("Failed to retrieve profile: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve profile"})
-			return
-		}
 
-		c.JSON(http.StatusOK, profile)
-	})
-
-	router.POST("/profile-upsert", func(c *gin.Context) {
-		userID := getUserIDFromToken(c)
-
-		var profile Profile
-		if err := c.ShouldBindJSON(&profile); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-			return
-		}
-
-		if profile.Username == "" || profile.LearningLanguage == "" || profile.SkillLevel == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Username, learning language, and skill level are required"})
-			return
-		}
-
-		id, err := dbClient.UpsertProfile(userID, &profile)
-		if err != nil {
-			log.Println(err)
-			if strings.Contains(err.Error(), "unique_constraint") {
-				c.JSON(http.StatusConflict, gin.H{"error": "Username already taken"})
+			apiKey := os.Getenv("GEMINI_API_KEY")
+			geminiClient, err := gemini.NewGeminiClient(apiKey)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create Gemini client: %v", err)})
 				return
 			}
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save profile"})
-			return
-		}
+			defer geminiClient.Client.Close()
 
-		c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully", "id": id})
-	})
+			evaluation, err := geminiClient.EvaluateQNA(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Evaluation with Gemini failed"})
+				return
+			}
+
+			// take only first 4 characters of evaluation, as its either PASS or FAIL
+			evaluationScore := ""
+			if len(evaluation) >= 4 {
+				evaluationScore = evaluation[:4]
+			} else {
+				evaluationScore = evaluation
+			}
+
+			explanation, err := geminiClient.GenerateQNAExplanation(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer, evaluationScore)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Explanation with Gemini failed"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"evaluation":  evaluationScore,
+				"explanation": explanation,
+			})
+		})
+	}
 
 	ginLambda = ginadapter.New(router)
 }

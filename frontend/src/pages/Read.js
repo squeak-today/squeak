@@ -43,6 +43,10 @@ function Read() {
         left: 0
     });
     const [isLoading, setIsLoading] = useState(true);
+    
+    // For Story
+    const [pagedData, setPagedData] = useState(new Map());
+    const [totalPages, setTotalPages] = useState(null);
 
     const apiBase = process.env.REACT_APP_API_BASE;
 
@@ -77,44 +81,53 @@ function Read() {
 	};
 
     useEffect(() => {
-        const fetchContent = async () => {
-            setIsLoading(true);
-            const url = `${apiBase}content?type=${type}&id=${id}`;
+        const loadInitialMetadata = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const jwt = session?.access_token;
-                const response = await fetch(url, {
+                let url = '';
+                if (type === 'Story') {
+                    url = `${apiBase}story?id=${id}&page=0`;
+                } else {
+                    url = `${apiBase}news?id=${id}`;
+                }
+                const metadataResponse = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${jwt}`
                     }
                 });
-
-                if (!response.ok) {
+                if (!metadataResponse.ok) {
                     throw new Error('Failed to fetch content');
                 }
-
-                const data = await response.json();
+                const metadata = await metadataResponse.json();
                 
                 setContentData({
                     id: id,
-                    type: data.content_type,
-                    title: data.title,
-                    preview: data.preview_text,
-                    tags: [data.language, data.topic],
-                    difficulty: data.cefr_level,
-                    date_created: data.date_created,
-                    content: data.content,
+                    type: metadata.content_type,
+                    title: metadata.title,
+                    preview: metadata.preview_text,
+                    tags: [metadata.language, metadata.topic],
+                    difficulty: metadata.cefr_level,
+                    date_created: metadata.date_created,
+                    content: metadata.content,
+                     // eslint-disable-next-line no-dupe-keys
+                    type: type, 
                 });
-                setSourceLanguage(LANGUAGE_CODES_REVERSE[data.language]);
+                setSourceLanguage(LANGUAGE_CODES_REVERSE[metadata.language]);
+                if (type === 'Story' && metadata.pages) {
+                    setTotalPages(metadata.pages);
+                    setPagedData(new Map([[0, metadata.content]]));
+                    fetchStoryPages(0, metadata.pages);
+                }
             } catch (error) {
-                console.error('Error fetching content:', error);
-                showNotification('Failed to load content. Please try again later.', 'error');
+                console.error('Error loading metadata:', error);
+                showNotification('Failed to load metadata. Please try again later.', 'error');
             } finally {
                 setIsLoading(false);
             }
         };
-
-        fetchContent();
+        setIsLoading(true);
+        loadInitialMetadata();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type, id]);
 
@@ -163,7 +176,7 @@ function Read() {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const jwt = session?.access_token;
-                const response = await fetch(`${apiBase}content-question`, {
+                const response = await fetch(`${apiBase}qna`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -259,8 +272,20 @@ function Read() {
             const { data: { session } } = await supabase.auth.getSession();
             const jwt = session?.access_token;
 
+            let contextInfo = '';
+            if (type === 'Story') {
+                // stories are too long, so we query context.txt
+                const response = await fetch(`${apiBase}story/context?id=${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`
+                    }
+                });
+                const data = await response.json();
+                contextInfo = data.context;
+            }
+
             const results = await Promise.all(questions.map(async (q) => {
-                const response = await fetch(`${apiBase}evaluate-qna`, {
+                const response = await fetch(`${apiBase}qna/evaluate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -269,7 +294,7 @@ function Read() {
                     },
                     body: JSON.stringify({
                         cefr: q.cefrLevel,
-                        content: contentData.content,
+                        content: (type === 'Story') ? contextInfo : contentData.content,
                         question: q.question,
                         answer: q.answer
                     })
@@ -316,6 +341,61 @@ function Read() {
 
     const handleReaderScroll = () => { setTooltip(prev => ({ ...prev, show: false })); };
 
+    // fetches story pages of current page and three pages before and after
+    // and consequently caches them, and deletes ones outside of that range
+    const fetchStoryPages = async (currentPage, knownTotalPages) => {
+        const pagesToFetch = [];
+        for (let i = currentPage; i < currentPage + 3 && i < knownTotalPages; i++) {
+            pagesToFetch.push(i);
+        }
+        for (let i = currentPage - 1; i >= currentPage - 2 && i >= 0; i--) {
+            pagesToFetch.push(i);
+        }
+
+        const newPagedData = new Map(pagedData);
+        const newPagesToFetch = pagesToFetch.filter(pageNum => !newPagedData.has(pageNum));
+
+        Array.from(newPagedData.keys()).forEach((pageNum) => {
+            if (!pagesToFetch.includes(pageNum)) {
+                newPagedData.delete(pageNum);
+            }
+        })
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        const jwt = session?.access_token;
+
+        const fetchPage = async (pageNum) => {
+            try {
+                const response = await fetch(`${apiBase}story?id=${id}&page=${pageNum}`, {
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`
+                    }
+                });
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error(`Error fetching page ${pageNum}:`, error);
+                return null;
+            }
+        };
+
+        const promises = [];
+        
+        for (let i = 0; i < newPagesToFetch.length; i++) {
+            promises.push(
+                fetchPage(newPagesToFetch[i]).then(data => {
+                    if (data?.content) newPagedData.set(newPagesToFetch[i], data.content);
+                })
+            );
+        }
+
+        await Promise.all(promises);
+        
+        setPagedData(new Map(newPagedData));
+        return newPagedData;
+    };
+
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
@@ -325,10 +405,12 @@ function Read() {
                 <ReadPageLayout>
                     <ReaderPanel onScroll={handleReaderScroll}>
                         <StoryReader 
-                            content={contentData.content}
+                            content={type === 'Story' ? pagedData : contentData.content}
+                            paged={type === 'Story' ? totalPages : 0}
+                            onNeedPages={fetchStoryPages}
                             handleWordClick={handleWordClick}
                             sourceLanguage={sourceLanguage}
-                            isLoading={isLoading}
+                            isLoading={isLoading || (!pagedData && type === 'Story')}
                         />
                     </ReaderPanel>
                     <SidePanel 

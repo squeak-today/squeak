@@ -17,6 +17,29 @@ See our [roadmap here](https://github.com/orgs/squeak-today/projects/2/views/1).
 
 ## Developer Setup
 
+### `/stories`
+Contains some stories in MDX format, and scripts to upload them to S3.
+Developed on `Python 3.11.11`.
+
+Make sure you have the .aws credentials.
+```shell
+pip install boto3
+python -m venv venv
+source venv/bin/activate
+python upload_story.py XXX --language X --cefr X --topic X --bucket X
+```
+
+Adding stories:
+1. Write the pages in MDX format.
+2. Write a context.txt file that has all the necessary context to answer the questions you create.
+3. Upload to S3.
+4. Add all the questions to the supabase `questions` table.
+As of writing, to add support for all levels of studying questions, you need to add:
+- 1 vocab question
+- 1 understanding question for each level of CEFR up to the story's CEFR level.
+
+All available widgets for use in story writing are in `frontend/src/components/StoryWidgets.js`.
+
 ### `/supabase` (semi-optional)
 Contains migrations and code to interact with Supabase via code if needed.
 Needs a `.env` file with the following format:
@@ -45,40 +68,84 @@ If you are viewing this as an open source user, some of these may not apply. You
 ## Backend API
 | Endpoint | Type | Description | 
 | --- | --- | --- |
-| `/content` | `GET` | Pull generated content data. |
-| `/story` | `GET` | Pull a generated story. |
-| `/news` | `GET` | Pull a generated news article. |
-| `/translate` | `POST` | Translation of given sentence to source language. |
-| `/evaluate-qna` | `POST` | Evaluation of a user's answer to a question about a given content. |
-| `/news-query` | `GET` | Query Supabase for news articles. |
-| `/story-query` | `GET` | Query Supabase for stories. |
-| `/content-question` | `POST` | Generate a question testing vocabulary or understanding of a given piece of content. |
+| `/story` | `GET` | Pull a story page by ID. |
+| `/story/context` | `GET` | Pull QNA context for a story. |
+| `/story/query` | `GET` | Query Supabase for stories. |
+| `/news` | `GET` | Pull a news article by ID. |
+| `/news/query` | `GET` | Query Supabase for news articles. |
 | `/profile` | `GET` | Get a user's profile. |
-| `/profile-upsert` | `POST` | Upsert a user's profile. |
-| `/progress/` | `GET` | Get today's progress for the authenticated user. |
+| `/profile/upsert` | `POST` | Upsert a user's profile. |
+| `/translate` | `POST` | Translation of given sentence to source language. |
+| `/qna` | `POST` | Generate a question testing vocabulary or understanding of a given piece of content. |
+| `/qna/evaluate` | `POST` | Evaluation of a user's answer to a question about a given content. |
+| `/progress` | `GET` | Get today's progress for the authenticated user. |
 | `/progress/increment` | `POST` | Increment the number of questions completed for today. |
 | `/progress/streak` | `GET` | Get the user's current streak information. |
 
-### **GET** `/content`
-> https://api.squeak.today/content
+### **GET** `/story`
+> https://api.squeak.today/story
 
-Pulls generated content data as JSON. Pass `type` and `id` as fields.
+Pulls a specific page of a story by ID.
+
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `type` | `string` | Yes | Type of content, either `Story` or `News`. |
-| `id` | `string` | Yes | ID of the content. |
+| `id` | `string` | Yes | ID of the story. |
+| `page` | `string` | Yes | Page number to retrieve. |
 
 ### Response
 > `200 Successful`
 ```json
 {
-    "content_type": "Story",  // or "News"
+    "content_type": "Story",
     "language": "French",
     "cefr_level": "B2",
     "topic": "Politics",
     "date_created": "2024-03-20",
     "title": "A Very Cool Title",
     "preview_text": "A preview of the content...",
+    "content": "The story content in MDX format...",
+    "pages": 10
+}
+```
+
+### **GET** `/story/context`
+> https://api.squeak.today/story/context
+
+Pulls the QNA context for a story by ID.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | Yes | ID of the story. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "context": "Context text for question generation..."
+}
+```
+
+### **GET** `/news`
+> https://api.squeak.today/news
+
+Pulls a news article by ID.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | `string` | Yes | ID of the news article. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "content_type": "News",
+    "language": "French",
+    "cefr_level": "B2",
+    "topic": "Politics",
+    "date_created": "2024-03-20",
+    "title": "A Very Cool Title",
+    "preview_text": "A preview of the content...",
+    "content": "The news article content...",
     "dictionary": {
         "translations": {
             "words": {
@@ -90,14 +157,7 @@ Pulls generated content data as JSON. Pass `type` and `id` as fields.
                 "J'aime Squeak beaucoup": "I like Squeak a lot"
             }
         }
-    }
-}
-```
-
-For News content, the response will also include a `sources` field:
-```json
-{
-    // ... other fields as above ...
+    },
     "sources": [
         {
             "title": "Source Article Title",
@@ -106,78 +166,6 @@ For News content, the response will also include a `sources` field:
             "score": 0.9865718
         }
     ]
-}
-```
-
-### **GET** `/story`
-> https://api.squeak.today/story
-
-Pulls generated story data as JSON. Pass `language`, `cefr`, and `subject` as fields.
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `language` | `string` | Yes | Current supported languages are `French`. |
-| `cefr` | `string` | Yes | Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`. |
-| `subject` | `string` | Yes | e.g `Politics`. |
-| `date_created` | `string` | Yes | e.g `2025-01-01`. |
-
-### Response
-> `200 Successful`
-```json
-{
-	"content": "J'aime Squeak beaucoup.",
-	"dictionary": {
-		"translations": {
-			"words": {
-				"J'aime": "I like",
-				"Squeak": "Squeak",
-				"beaucoup": "a lot"
-			},
-			"sentences": {
-				"J'aime Squeak beaucoup": "I like Squeak a lot"
-			}
-		}
-	}
-}
-```
-
-### **GET** `/news`
-> https://api.squeak.today/news
-
-Pulls generated news article data as JSON. Pass `language`, `cefr`, and `subject` as fields.
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `language` | `string` | Yes | Current supported languages are `French`. |
-| `cefr` | `string` | Yes | Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`. |
-| `subject` | `string` | Yes | e.g `Politics`. |
-| `date_created` | `string` | Yes | e.g `2025-01-01`. |
-
-### Response
-> `200 Successful`
-```json
-{
-	"content": "Donald Trump aime Squeak beaucoup.",
-	"dictionary": {
-		"translations": {
-			"words": {
-				"Donald": "Donald",
-				"Trump": "Trump",
-				"aime": "like",
-				"Squeak": "Squeak",
-				"beaucoup": "a lot"
-			},
-			"sentences": {
-				"Donald Trump aime Squeak beaucoup": "Donald Trump likes Squeak a lot"
-			}
-		}
-	},
-	"sources": [
-		{
-			"title": "Donald Trump thinks Squeak is the best!",
-			"url": "https://www.super-weird-news.com/donald-trump-squeak",
-			"content": "In a very fake interview with Donald Trump, Squeak representative Joe Biden asked Donald Trump if he liked Squeak. He said yes!",
-			"score": 0.9865718
-		}
-	]
 }
 ```
 
@@ -204,8 +192,8 @@ Translates a given sentence to English and returns the result.
 }
 ```
 
-### **POST** `/evaluate-qna`
-> https://api.squeak.today/evaluate-qna
+### **POST** `/qna/evaluate`
+> https://api.squeak.today/qna/evaluate
 
 Evaluates a user's answer to a question about a given content.
 
@@ -229,8 +217,8 @@ Evaluates a user's answer to a question about a given content.
 }
 ```
 
-### **GET** `/news-query`
-> https://api.squeak.today/news-query
+### **GET** `/news/query`
+> https://api.squeak.today/news/query
 
 Query Supabase for news articles.
 
@@ -269,8 +257,8 @@ Query Supabase for news articles.
 ]
 ```
 
-### **GET** `/story-query`
-> https://api.squeak.today/story-query
+### **GET** `/story/query`
+> https://api.squeak.today/story/query
 
 Query Supabase for stories.
 
@@ -285,12 +273,16 @@ Query Supabase for stories.
 ### Response
 > `200 Successful`
 
-See `news-query` response.
+See `news/query` response.
+Each story has a `pages` field, which is the number of pages in the story.
 
-### **POST** `/content-question`
-> https://api.squeak.today/evaluate-qna
+### **POST** `/qna`
+> https://api.squeak.today/qna
 
-Pulls a given question testing vocabulary (vocab) or understanding (understanding) of a given piece of content by ID. If the question does not exist, another will be generated, stored and returned.
+Pulls a given question testing vocabulary (vocab) or understanding (understanding) of a given piece of content by ID. 
+
+If the question does not exist, another will be generated, stored and returned.
+(This only occurs for news articles. Stories are expected to have existing questions.)
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -330,8 +322,8 @@ Get a user's profile.
 
 Will return `"code": "PROFILE_NOT_FOUND"` as a JSON field if the profile does not exist.
 
-### **POST** `/profile-upsert`
-> https://api.squeak.today/profile-upsert
+### **POST** `/profile/upsert`
+> https://api.squeak.today/profile/upsert
 
 Upsert a user's profile.
 
@@ -352,7 +344,7 @@ Upsert a user's profile.
 }
 ```
 
-### **GET** `/progress/`
+### **GET** `/progress`
 > https://api.squeak.today/progress/
 
 Get today's progress for the authenticated user.
@@ -401,7 +393,3 @@ Get the user's current streak information.
     "completed_today": true
 }
 ```
-
-## Examples: `api.squeak.today`
-> https://api.squeak.today/news?language=French&cefr=B2&subject=Politics&page=1&pagesize=10
->https://api.squeak.today/story?language=French&cefr=B2&subject=Politics&page=1&pagesize=10

@@ -153,6 +153,6 @@ export const AuthToggle = styled.button`
 
 export const AuthText = styled.p`
 	text-align: center;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	margin: 0.5rem 0;
 `;

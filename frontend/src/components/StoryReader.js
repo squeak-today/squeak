@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import ReactMarkdown from 'react-markdown';
 import LoadingSpinner from './LoadingSpinner';
+
+import {evaluate} from '@mdx-js/mdx'
+import * as runtime from 'react/jsx-runtime'
+
+import { QuickTipWidget, QuizInputWidget } from './StoryWidgets';
 
 const StoryBox = styled.div`
 	padding: 0px 10px;
@@ -100,58 +104,195 @@ const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLan
             );
         }
         return node;
-    }
+    };
     
     return <>{React.Children.map(children, child => processNode(child))}</>;
 };
 
-const StoryReader = ({ content, handleWordClick, sourceLanguage, isLoading }) => {
+const createComponentOverrides = (handleWordClick, sourceLanguage) => ({
+    p: props => <p><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></p>,
+    li: props => <li><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></li>,
+    h1: props => <h1><ClickableText highlightRounding={10} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h1>,
+    h2: props => <h2><ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h2>,
+    h3: props => <h3><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h3>,
+    h4: props => <h4><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h4>,
+    div: props => <div><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></div>,
+    span: props => <span><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></span>,
+});
+
+const PageNavigationButton = styled.button`
+    padding: 0.5em 1em;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background: rgb(255, 255, 255);
+    cursor: pointer;
+    color: black;
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 100px;
+
+    &:hover:not(:disabled) {
+        background: rgb(228, 228, 228);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    &:disabled {
+        background: #f5f5f5;
+        cursor: not-allowed;
+        color: #999;
+        box-shadow: none;
+    }
+`;
+
+const PageControls = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-family: 'Lora', serif;
+`;
+
+const PageNumber = styled.span`
+    font-family: 'Lora', serif;
+    font-size: 1.1em;
+    color: #666;
+`;
+
+const StoryReader = ({ content, paged, onNeedPages, handleWordClick, sourceLanguage, isLoading }) => {
+    const [currentPage, setCurrentPage] = useState(0);
+    const [compiledPages, setCompiledPages] = useState(new Map());
+    const [singleComponent, setSingleComponent] = useState(null);
+
+    useEffect(() => {
+        if ((paged === 0) && content) {
+            const compileSingle = async () => {
+                try {
+                    const {default: MDXContent} = await evaluate(content, {
+                        ...runtime,
+                        useMDXComponents: () => ({
+                            // components used in stories are defined here
+                        })
+                    });
+                    setSingleComponent(() => MDXContent);
+                } catch (error) {
+                    console.error('Failed to compile content:', error);
+                }
+            };
+            compileSingle();
+        }
+    }, [paged, content]);
+
+    useEffect(() => {
+        if ((paged === 0) || !content) return;
+
+        const compileNewPages = async () => {
+            const newPagesToCompile = Array.from(content.keys())
+                .filter(pageNum => !compiledPages.has(pageNum));
+
+            if (newPagesToCompile.length === 0) return;
+
+            const compilationPromises = newPagesToCompile.map(async (pageNum) => {
+                try {
+                    const {default: MDXContent} = await evaluate(content.get(pageNum), {
+                        ...runtime,
+                        useMDXComponents: () => ({
+                            QuickTipWidget,
+                            QuizInputWidget
+                        })
+                    });
+                    return [pageNum, MDXContent];
+                } catch (error) {
+                    console.error(`Failed to compile page ${pageNum}:`, error);
+                    return [pageNum, null];
+                }
+            });
+
+            const newCompiledPages = new Map(compiledPages);
+            const results = await Promise.all(compilationPromises);
+            results.forEach(([pageNum, component]) => {
+                if (component) {
+                    newCompiledPages.set(pageNum, component);
+                }
+            });
+
+            setCompiledPages(newCompiledPages);
+        };
+
+        const clearUnneededPages = () => {
+            const newCompiledPages = new Map(compiledPages);
+            const pagesToKeep = [];
+            for (let i = currentPage; i < currentPage + 3 && i < paged; i++) {
+                pagesToKeep.push(i);
+            }
+            for (let i = currentPage - 1; i >= currentPage - 2 && i >= 0; i--) {
+                pagesToKeep.push(i);
+            }
+
+            Array.from(newCompiledPages.keys()).forEach((pageNum) => {
+                if (!pagesToKeep.includes(pageNum)) {
+                    newCompiledPages.delete(pageNum);
+                }
+            })
+
+            setCompiledPages(newCompiledPages);
+        }
+
+        compileNewPages();
+        clearUnneededPages();
+    }, [paged, content]);
+
+    const handleNextPage = async () => {
+        const nextPage = currentPage + 1;
+        if (nextPage < paged) {
+            setCurrentPage(nextPage);
+            await onNeedPages?.(nextPage, paged);
+        }
+    };
+
+    const handlePrevPage = async () => {
+        const prevPage = currentPage - 1;
+        if (prevPage >= 0) {
+            setCurrentPage(prevPage);
+            await onNeedPages?.(prevPage, paged);
+        }
+    };
+
+    const CurrentMDXComponent = (paged !== 0) ? compiledPages.get(currentPage) : singleComponent;
+
     return (
         <StoryBox>
             {isLoading ? (
                 <LoadingSpinner />
             ) : (
-                <StoryText>
-                    <ReactMarkdown
-                        components={{
-                            // Handle paragraphs
-                            p: (props) => (
-                                <p>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </p>
-                            ),
-                            // Handle list items
-                            li: (props) => (
-                                <li>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </li>
-                            ),
-                            // Handle headers
-                            h1: (props) => (
-                                <h1>
-                                    <ClickableText highlightRounding={10}handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h1>
-                            ),
-                            h2: (props) => (
-                                <h2>
-                                    <ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h2>
-                            ),
-                            h3: (props) => (
-                                <h3>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h3>
-                            ),
-                            h4: (props) => (
-                                <h4>
-                                    <ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} />
-                                </h4>
-                            ),
-                        }}
-                    >
-                        {content}
-                    </ReactMarkdown>
-                </StoryText>
+                <div>
+                    {(paged !== 0) && (
+                        <PageControls>
+                            <PageNavigationButton 
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 0}
+                            >
+                                Previous
+                            </PageNavigationButton>
+                            <PageNumber>Page {currentPage + 1}</PageNumber>
+                            <PageNavigationButton 
+                                onClick={handleNextPage}
+                                disabled={currentPage + 1 >= paged}
+                            >
+                                Next
+                            </PageNavigationButton>
+                        </PageControls>
+                    )}
+                    <StoryText>
+                        {CurrentMDXComponent && 
+                            <CurrentMDXComponent 
+                                components={createComponentOverrides(handleWordClick, sourceLanguage)}
+                            />
+                        }
+                    </StoryText>
+                </div>
             )}
         </StoryBox>
     );

@@ -44,7 +44,7 @@ function Welcome() {
 
     const handleSubmit = async (dataToSubmit = formData) => {
         try {
-          const response = await fetch(`${apiBase}profile-upsert`, {
+          const response = await fetch(`${apiBase}profile/upsert`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

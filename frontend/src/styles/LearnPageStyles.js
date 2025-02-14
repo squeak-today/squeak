@@ -62,3 +62,11 @@ export const DateHeader = styled.h1`
 	font-size: 2em;
 	font-weight: 600;
 `;
+
+export const NoRecommendationsMessage = styled.div`
+  text-align: center;
+  padding: 1em;
+  color: #666;
+  font-family: 'Lora', serif;
+  font-style: italic;
+`;

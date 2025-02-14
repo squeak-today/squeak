@@ -65,11 +65,18 @@ const DisclaimerText = styled.p`
 	font-style: italic;
 `;
 
+const NoContentMessage = styled.div`
+	text-align: center;
+	padding: 2em;
+	color: #666;
+	font-family: 'Lora', serif;
+	font-style: italic;
+`;
+
 const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLanguage }) => {
 	const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
 	const [filterLevel, setFilterLevel] = useState('any');
 	const [filterTopic, setFilterTopic] = useState('any');
-	const [filterType, setFilterType] = useState('News');
 	const [currentPage, setCurrentPage] = useState(1);
 	const storiesPerPage = 6;
 
@@ -79,26 +86,12 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 
 	const handlePageChange = (newPage) => {
 		setCurrentPage(newPage);
-		onParamsSelect(filterType, filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
+		onParamsSelect("News", filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
 	};
 
 	return (
 		<div>
 			<FilterContainer>
-				<div style={{ flex: 1 }}>
-					<FilterLabel>Type</FilterLabel>
-					<FilterSelect 
-						value={filterType} 
-						onChange={(e) => { 
-							setFilterType(e.target.value); 
-							setCurrentPage(1);
-							onParamsSelect(e.target.value, filterLanguage, filterLevel, filterTopic, 1, storiesPerPage); 
-						}}
-					>
-						<option value="News">News</option>
-					</FilterSelect>
-				</div>
-
 				<div style={{ flex: 1 }}>
 					<FilterLabel>Language</FilterLabel>
 					<FilterSelect 
@@ -106,7 +99,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 						onChange={(e) => { 
 							setFilterLanguage(e.target.value); 
 							setCurrentPage(1);
-							onParamsSelect(filterType, e.target.value, filterLevel, filterTopic, 1, storiesPerPage); 
+							onParamsSelect(e.target.value, filterLevel, filterTopic, 1, storiesPerPage); 
 						}}
 					>
 						<option value="any">Any Language</option>
@@ -122,7 +115,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 						onChange={(e) => { 
 							setFilterLevel(e.target.value); 
 							setCurrentPage(1);
-							onParamsSelect(filterType, filterLanguage, e.target.value, filterTopic, 1, storiesPerPage); 
+							onParamsSelect(filterLanguage, e.target.value, filterTopic, 1, storiesPerPage); 
 						}}
 					>
 						<option value="any">Any Level</option>
@@ -142,7 +135,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 						onChange={(e) => { 
 							setFilterTopic(e.target.value); 
 							setCurrentPage(1);
-							onParamsSelect(filterType, filterLanguage, filterLevel, e.target.value, 1, storiesPerPage); 
+							onParamsSelect(filterLanguage, filterLevel, e.target.value, 1, storiesPerPage); 
 						}}
 					>
 						<option value="any">Any Topic</option>
@@ -154,25 +147,31 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 				</div>
 			</FilterContainer>
 			
-			<StoryList stories={stories} onStoryBlockClick={onStoryBlockClick} />
+			{stories.length > 0 ? (
+				<StoryList stories={stories} onStoryBlockClick={onStoryBlockClick} />
+			) : (
+				<NoContentMessage>No stories found for these filters!</NoContentMessage>
+			)}
 
-			<PaginationContainer>
-				<PageButton 
-					onClick={() => handlePageChange(currentPage - 1)} 
-					disabled={currentPage === 1}
-				>
-					Previous
-				</PageButton>
-				<PageButton disabled>
-					Page {currentPage}
-				</PageButton>
-				<PageButton 
-					onClick={() => handlePageChange(currentPage + 1)} 
-					disabled={stories.length < storiesPerPage} // if we got fewer stories than the page size, we're on the last page
-				>
-					Next
-				</PageButton>
-			</PaginationContainer>
+			{stories.length > 0 && (
+				<PaginationContainer>
+					<PageButton 
+						onClick={() => handlePageChange(currentPage - 1)} 
+						disabled={currentPage === 1}
+					>
+						Previous
+					</PageButton>
+					<PageButton disabled>
+						Page {currentPage}
+					</PageButton>
+					<PageButton 
+						onClick={() => handlePageChange(currentPage + 1)} 
+						disabled={stories.length < storiesPerPage} // if we got fewer stories than the page size, we're on the last page
+					>
+						Next
+					</PageButton>
+				</PaginationContainer>
+			)}
 
 			<DisclaimerText>
 				Content may be AI-assisted. While we strive for accuracy, please verify important information from official sources.

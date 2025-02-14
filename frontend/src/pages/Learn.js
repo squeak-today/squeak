@@ -8,6 +8,7 @@ import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import ProfileDashboard from '../components/ProfileDashboard';
 import NewsRecommendations from '../components/NewsRecommendations';
+import StoryRecommendations from '../components/StoryRecommendations';
 
 const formatDate = () => {
 	const date = new Date();
@@ -56,42 +57,34 @@ function Learn() {
 
 	const [recommendations, setRecommendations] = useState([]);
 
+	const [storyRecommendations, setStoryRecommendations] = useState([]);
+
 	const [progress, setProgress] = useState(null);
 
 	const handleStoryBlockClick = async (story) => {
 		navigate(`/read/${story.type}/${story.id}`);
 	}
 
-	const handleListStories = useCallback(async (type, language, cefrLevel, subject, page, pagesize) => {
+	const handleListNews = useCallback(async (language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
 		try {
-			let newsData = [], storiesData = [];
-			if (type === 'News') { newsData = await fetchContentList(apiBase, 'news-query', language, cefrLevel, subject, page, pagesize); }
-			if (type === 'Story') { storiesData = await fetchContentList(apiBase, 'story-query', language, cefrLevel, subject, page, pagesize); }
-			newsData = Array.isArray(newsData) ? newsData : [];
-			storiesData = Array.isArray(storiesData) ? storiesData : [];
+			let newsData = [];
+			try {
+				newsData = await fetchContentList(apiBase, 'news/query', language, cefrLevel, subject, page, pagesize);
+			} finally {
+				newsData = Array.isArray(newsData) ? newsData : [];
+			}
 			console.log('Fetched content successfully!')
 
-			for (const story of newsData) {
+			for (const news of newsData) {
 				tempStories.push({
-					id: story['id'],
+					id: news['id'],
 					type: 'News',
-					title: story['title'],
-					preview: story['preview_text'],
-					tags: [story['language'], story['topic']],
-					difficulty: story['cefr_level'],
-					date_created: story['date_created']
-				});
-			}
-			for (const story of storiesData) {
-				tempStories.push({
-					id: story['id'],
-					type: 'Story',
-					title: story['title'],
-					preview: story['preview_text'],
-					tags: [story['language'], story['topic']],
-					difficulty: story['cefr_level'],
-					date_created: story['date_created']
+					title: news['title'],
+					preview: news['preview_text'],
+					tags: [news['language'], news['topic']],
+					difficulty: news['cefr_level'],
+					date_created: news['date_created']
 				});
 			}
 			setAllStories(tempStories);
@@ -157,7 +150,7 @@ function Learn() {
 
 	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
 		try {
-			const recommendedNews = await fetchContentList(apiBase, 'news-query', language, cefrLevel, 'any', 1, 5);
+			const recommendedNews = await fetchContentList(apiBase, 'news/query', language, cefrLevel, 'any', 1, 5);
 			const transformedRecommendations = Array.isArray(recommendedNews) 
 				? recommendedNews.map(story => ({
 					id: story.id,
@@ -167,7 +160,19 @@ function Learn() {
 					topic: story.topic
 				}))
 				: [];
+			const storyRecommendations = await fetchContentList(apiBase, 'story/query', language, cefrLevel, 'any', 1, 5);
+			const transformedStoryRecommendations = Array.isArray(storyRecommendations) 
+				? storyRecommendations.map(story => ({
+					id: story.id,
+					title: story.title,
+					cefr_level: story.cefr_level,
+					language: story.language,
+					topic: story.topic,
+					pages: story.pages
+				}))
+				: [];
 			setRecommendations(transformedRecommendations);
+			setStoryRecommendations(transformedStoryRecommendations);
 		} catch (error) {
 			console.error("Failed to fetch recommendations:", error);
 			showNotification("Couldn't load recommendations. Please try again later!", 'error');
@@ -230,7 +235,7 @@ function Learn() {
 			const { data: { session } } = await supabase.auth.getSession();
 			const jwt = session?.access_token;
 			
-			const response = await fetch(`${apiBase}profile-upsert`, {
+			const response = await fetch(`${apiBase}profile/upsert`, {
 				method: 'POST',
 				headers: {
 					'Authorization': `Bearer ${jwt}`,
@@ -240,7 +245,7 @@ function Learn() {
 			});
 			
 			const result = await response.json();
-			if (result.message === "Username already taken") {
+			if (result.error === "Username already taken") {
 				showNotification('Username already taken. Please try again.', 'error');
 				return;
 			}
@@ -268,7 +273,7 @@ function Learn() {
 
 		const initializeBrowser = async () => {
 			try {
-				await handleListStories('News','any', 'any', 'any', 1, 6);
+				await handleListNews('any', 'any', 'any', 1, 6);
 			} catch (error) {
 				console.error('Failed to fetch initial stories:', error);
 			}
@@ -302,10 +307,11 @@ function Learn() {
 						<NewsRecommendations recommendations={recommendations} />
 						<StoryBrowser 
 							stories={allStories} 
-							onParamsSelect={handleListStories} 
+							onParamsSelect={handleListNews} 
 							onStoryBlockClick={handleStoryBlockClick}
 							defaultLanguage={profile?.learning_language || 'any'}
 						/>
+						<StoryRecommendations recommendations={storyRecommendations} />
 					</StoryBrowserContainer>
 					
 					<ProfileDashboardContainer>
