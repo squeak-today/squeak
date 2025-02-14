@@ -475,7 +475,7 @@ func init() {
 			id, err := dbClient.UpsertProfile(userID, &profile)
 			if err != nil {
 				log.Println(err)
-				if strings.Contains(err.Error(), "unique_constraint") {
+				if strings.Contains(err.Error(), "unique constraint") {
 					c.JSON(http.StatusConflict, gin.H{"error": "Username already taken"})
 					return
 				}
