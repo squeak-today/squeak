@@ -62,3 +62,13 @@ output "api_gateway_url_progress_streak" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/progress/streak"
   description = "Progress Streak URL for Story API"
 }
+
+output "api_gateway_url_classroom" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/classroom"
+  description = "Classroom URL for Story API"
+}
+
+output "api_gateway_url_classroom_create" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/classroom/create"
+  description = "Classroom Create URL for Story API"
+}

@@ -149,6 +149,27 @@ func init() {
 				"students_count": students_count,
 			})
 		})
+
+		classroomGroup.POST("/create", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+			var infoBody struct {
+				StudentsCount int `json:"students_count"`
+			}
+	
+			if err := c.ShouldBindJSON(&infoBody); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+				return
+			}
+
+			classroom_id, err := dbClient.CreateClassroom(userID, infoBody.StudentsCount)
+			if err != nil {
+				log.Printf("Failed to create classroom: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create classroom"})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{"classroom_id": classroom_id})
+		})
 	}
 
 	progressGroup := router.Group("/progress")

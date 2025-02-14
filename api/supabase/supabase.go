@@ -478,3 +478,18 @@ func (c *Client) GetClassroom(userID string) (string, int, error) {
 
 	return classroom_id, students_count, nil
 }
+
+func (c *Client) CreateClassroom(userID string, student_count int) (string, error) {
+	var classroomID string
+	err := c.db.QueryRow(`
+		INSERT INTO classrooms (teacher_id, student_count)
+		VALUES ($1, $2)
+		RETURNING id
+	`, userID, student_count).Scan(&classroomID)
+
+	if err != nil {
+		return "", fmt.Errorf("failed to create classroom: %v", err)
+	}
+
+	return classroomID, nil
+}

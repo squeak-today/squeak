@@ -82,6 +82,7 @@ If you are viewing this as an open source user, some of these may not apply. You
 | `/progress/increment` | `POST` | Increment the number of questions completed for today. |
 | `/progress/streak` | `GET` | Get the user's current streak information. |
 | `/classroom` | `GET` | Get the teacher's classroom information. |
+| `/classroom/create` | `POST` | Create a classroom for the authenticated user. |
 
 ### **GET** `/story`
 > https://api.squeak.today/story
@@ -407,3 +408,20 @@ Get the teacher's classroom information.
     "classroom_id": "XXX",
     "students_count": 5
 }
+
+### **POST** `/classroom/create`
+> https://api.squeak.today/classroom/create
+
+Create a classroom for the authenticated user.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `students_count` | `int` | Yes | Number of students in the classroom. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "classroom_id": "XXX"
+}
+```
