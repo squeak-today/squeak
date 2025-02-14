@@ -67,17 +67,17 @@ func (c *Client) Close() error {
 
 func (c *Client) QueryNews(params QueryParams) ([]map[string]interface{}, error) {
 	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1"
-	return c.queryContent(query, params)
+	return c.queryContent(query, params, "News")
 }
 
 func (c *Client) QueryStories(params QueryParams) ([]map[string]interface{}, error) {
 	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created, pages FROM stories WHERE 1=1"
-	return c.queryContent(query, params)
+	return c.queryContent(query, params, "Story")
 }
 
 // helper function called in the QueryNews and QueryStories functions
 // builds on the SQL query string based on the query params
-func (c *Client) queryContent(baseQuery string, params QueryParams) ([]map[string]interface{}, error) {
+func (c *Client) queryContent(baseQuery string, params QueryParams, contentType string) ([]map[string]interface{}, error) {
 	var queryParams []interface{}
 	paramCount := 1
 
@@ -117,7 +117,13 @@ func (c *Client) queryContent(baseQuery string, params QueryParams) ([]map[strin
 		var dateCreated sql.NullTime
 		var pages sql.NullInt32
 
-		err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated, &pages)
+		var err error
+		if contentType == "Story" {
+			err = rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated, &pages)
+		} else {
+			err = rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
+		}
+
 		if err != nil {
 			return nil, fmt.Errorf("data scanning failed: %v", err)
 		}
@@ -133,6 +139,11 @@ func (c *Client) queryContent(baseQuery string, params QueryParams) ([]map[strin
 			"date_created": dateCreated.Time.Format("2006-01-02"),
 			"pages":        pages.Int32,
 		}
+
+		if contentType == "Story" {
+			result["pages"] = pages.Int32
+		}
+
 		results = append(results, result)
 	}
 
