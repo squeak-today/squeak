@@ -133,9 +133,9 @@ func init() {
 		}
 	})
 
-	categoryGroup := router.Group("/progress")
+	progressGroup := router.Group("/progress")
 	{
-		categoryGroup.GET("", func(c *gin.Context) {
+		progressGroup.GET("", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
 
 			progress, err := dbClient.GetTodayProgress(userID)
@@ -148,7 +148,7 @@ func init() {
 			c.JSON(http.StatusOK, progress)
 		})
 
-		categoryGroup.GET("/streak", func(c *gin.Context) {
+		progressGroup.GET("/streak", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
 
 			streak, completedToday, err := dbClient.GetProgressStreak(userID)
@@ -164,7 +164,7 @@ func init() {
 			})
 		})
 
-		categoryGroup.GET("/increment", func(c *gin.Context) {
+		progressGroup.GET("/increment", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
 			amount := c.Query("amount")
 
@@ -499,7 +499,7 @@ func init() {
 		} else {
 			evaluationScore = evaluation
 		}
-		
+
 		explanation, err := geminiClient.GenerateQNAExplanation(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer, evaluationScore)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Explanation with Gemini failed"})
@@ -507,7 +507,7 @@ func init() {
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"evaluation": evaluationScore,
+			"evaluation":  evaluationScore,
 			"explanation": explanation,
 		})
 	})
