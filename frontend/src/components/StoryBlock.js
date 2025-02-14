@@ -64,7 +64,7 @@ const Preview = styled.p`
 const TagContainer = styled.div`
 	display: flex;
 	gap: 0.625em;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 
 	@media (max-width: 500px) {
 		flex-wrap: wrap;
@@ -77,7 +77,7 @@ const Tag = styled.span`
 	border-radius: 15px;
 	font-size: 0.875em;
 	color: black;
-	font-family: 'Noto Serif', serif;
+	font-family: 'Lora', serif;
 	${props => props.cefr && 'font-weight: bold;'}
 `;
 

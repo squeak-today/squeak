@@ -58,7 +58,7 @@ const Tag = styled.span`
   border-radius: 12px;
   font-size: 0.75em;
   color: black;
-  font-family: 'Noto Serif', serif;
+  font-family: 'Lora', serif;
   ${props => props.cefr && 'font-weight: bold;'}
 `;
 

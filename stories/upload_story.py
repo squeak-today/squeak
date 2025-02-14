@@ -20,12 +20,19 @@ def validate_story_folder(folder_path):
     
     return sorted(page_files)
 
+def get_story_id(folder_name):
+    """Convert folder name like '001' to numeric ID '1'"""
+    try:
+        return str(int(folder_name))  # This will strip leading zeros
+    except ValueError:
+        raise ValueError(f"Folder name {folder_name} must be numeric")
+
 def upload_story(folder_path, language, cefr, topic, bucket_name):
     """Upload all story files to S3."""
     s3 = boto3.client('s3')
     
     folder_path = Path(folder_path)
-    story_id = folder_path.name
+    story_id = get_story_id(folder_path.name)
     
     # Upload context file
     context_path = folder_path / "context.txt"
