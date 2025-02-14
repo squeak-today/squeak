@@ -462,3 +462,19 @@ func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
 	}
 	return streak, completedToday, nil
 }
+
+func (c *Client) GetClassroom(userID string) (string, int, error) {
+	var classroom_id string
+	var students_count int
+	err := c.db.QueryRow(`
+		SELECT id, student_count
+		FROM classrooms
+		WHERE teacher_id = $1
+	`, userID).Scan(&classroom_id, &students_count)
+
+	if err != nil {
+		return "", 0, err
+	}
+
+	return classroom_id, students_count, nil
+}

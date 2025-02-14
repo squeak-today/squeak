@@ -133,6 +133,24 @@ func init() {
 		}
 	})
 
+	classroomGroup := router.Group("/classroom")
+	{
+		classroomGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+			
+			classroom_id, students_count, err := dbClient.GetClassroom(userID)
+			if err != nil {
+				log.Printf("Failed to get classroom: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"classroom_id": classroom_id,
+				"students_count": students_count,
+			})
+		})
+	}
+
 	progressGroup := router.Group("/progress")
 	{
 		progressGroup.GET("", func(c *gin.Context) {

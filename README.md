@@ -81,6 +81,7 @@ If you are viewing this as an open source user, some of these may not apply. You
 | `/progress` | `GET` | Get today's progress for the authenticated user. |
 | `/progress/increment` | `POST` | Increment the number of questions completed for today. |
 | `/progress/streak` | `GET` | Get the user's current streak information. |
+| `/classroom` | `GET` | Get the teacher's classroom information. |
 
 ### **GET** `/story`
 > https://api.squeak.today/story
@@ -393,3 +394,16 @@ Get the user's current streak information.
     "completed_today": true
 }
 ```
+
+### **GET** `/classroom`
+> https://api.squeak.today/classroom
+
+Get the teacher's classroom information.
+
+### Response
+> `200 Successful`
+```json
+{
+    "classroom_id": "XXX",
+    "students_count": 5
+}
