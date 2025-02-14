@@ -109,37 +109,6 @@ For News content, the response will also include a `sources` field:
 }
 ```
 
-### **GET** `/story`
-> https://api.squeak.today/story
-
-Pulls generated story data as JSON. Pass `language`, `cefr`, and `subject` as fields.
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `language` | `string` | Yes | Current supported languages are `French`. |
-| `cefr` | `string` | Yes | Must be one of `A1`, `A2`, `B1`, `B2`, `C1`, `C2`. |
-| `subject` | `string` | Yes | e.g `Politics`. |
-| `date_created` | `string` | Yes | e.g `2025-01-01`. |
-
-### Response
-> `200 Successful`
-```json
-{
-	"content": "J'aime Squeak beaucoup.",
-	"dictionary": {
-		"translations": {
-			"words": {
-				"J'aime": "I like",
-				"Squeak": "Squeak",
-				"beaucoup": "a lot"
-			},
-			"sentences": {
-				"J'aime Squeak beaucoup": "I like Squeak a lot"
-			}
-		}
-	}
-}
-```
-
 ### **GET** `/news`
 > https://api.squeak.today/news
 
