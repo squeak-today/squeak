@@ -38,6 +38,8 @@ As of writing, to add support for all levels of studying questions, you need to 
 - 1 vocab question
 - 1 understanding question for each level of CEFR up to the story's CEFR level.
 
+All available widgets for use in story writing are in `frontend/src/components/StoryWidgets.js`.
+
 ### `/supabase` (semi-optional)
 Contains migrations and code to interact with Supabase via code if needed.
 Needs a `.env` file with the following format:

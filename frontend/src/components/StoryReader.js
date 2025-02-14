@@ -5,6 +5,8 @@ import LoadingSpinner from './LoadingSpinner';
 import {evaluate} from '@mdx-js/mdx'
 import * as runtime from 'react/jsx-runtime'
 
+import { QuickTipWidget, QuizInputWidget } from './StoryWidgets';
+
 const StoryBox = styled.div`
 	padding: 0px 10px;
     padding-bottom: 5px;
@@ -102,7 +104,7 @@ const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLan
             );
         }
         return node;
-    }
+    };
     
     return <>{React.Children.map(children, child => processNode(child))}</>;
 };
@@ -114,6 +116,8 @@ const createComponentOverrides = (handleWordClick, sourceLanguage) => ({
     h2: props => <h2><ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h2>,
     h3: props => <h3><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h3>,
     h4: props => <h4><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h4>,
+    div: props => <div><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></div>,
+    span: props => <span><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></span>,
 });
 
 const PageNavigationButton = styled.button`
@@ -195,7 +199,8 @@ const StoryReader = ({ content, paged, onNeedPages, handleWordClick, sourceLangu
                     const {default: MDXContent} = await evaluate(content.get(pageNum), {
                         ...runtime,
                         useMDXComponents: () => ({
-                            // components used in stories are defined here
+                            QuickTipWidget,
+                            QuizInputWidget
                         })
                     });
                     return [pageNum, MDXContent];
