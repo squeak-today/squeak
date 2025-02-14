@@ -110,6 +110,7 @@ function Read() {
                     difficulty: metadata.cefr_level,
                     date_created: metadata.date_created,
                     content: metadata.content,
+                    type: type,
                 });
                 setSourceLanguage(LANGUAGE_CODES_REVERSE[metadata.language]);
                 if (type === 'Story' && metadata.pages) {
@@ -270,6 +271,18 @@ function Read() {
             const { data: { session } } = await supabase.auth.getSession();
             const jwt = session?.access_token;
 
+            let contextInfo = '';
+            if (type === 'Story') {
+                // stories are too long, so we query context.txt
+                const response = await fetch(`${apiBase}story/context?id=${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`
+                    }
+                });
+                const data = await response.json();
+                contextInfo = data.context;
+            }
+
             const results = await Promise.all(questions.map(async (q) => {
                 const response = await fetch(`${apiBase}qna/evaluate`, {
                     method: 'POST',
@@ -280,7 +293,7 @@ function Read() {
                     },
                     body: JSON.stringify({
                         cefr: q.cefrLevel,
-                        content: contentData.content,
+                        content: (type === 'Story') ? contextInfo : contentData.content,
                         question: q.question,
                         answer: q.answer
                     })
