@@ -242,6 +242,8 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
         <ContentWrapper>
           <StoryReader 
             content={sampleContent}
+            paged={0}
+            onNeedPages={null}
             handleWordClick={handleWordClick}
             sourceLanguage={sourceLanguage}
             isLoading={false}

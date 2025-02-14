@@ -110,7 +110,8 @@ function Read() {
                     difficulty: metadata.cefr_level,
                     date_created: metadata.date_created,
                     content: metadata.content,
-                    type: type,
+                     // eslint-disable-next-line no-dupe-keys
+                    type: type, 
                 });
                 setSourceLanguage(LANGUAGE_CODES_REVERSE[metadata.language]);
                 if (type === 'Story' && metadata.pages) {
