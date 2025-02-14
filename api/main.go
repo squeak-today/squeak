@@ -135,7 +135,7 @@ func init() {
 
 	categoryGroup := router.Group("/progress")
 	{
-		categoryGroup.GET("/", func(c *gin.Context) {
+		categoryGroup.GET("", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
 
 			progress, err := dbClient.GetTodayProgress(userID)

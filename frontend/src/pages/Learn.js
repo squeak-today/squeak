@@ -181,7 +181,7 @@ function Learn() {
 			const jwt = session?.access_token;
 			
 			const [progressResponse, streakResponse] = await Promise.all([
-				fetch(`${apiBase}progress/`, {
+				fetch(`${apiBase}progress`, {
 					headers: {
 						'Authorization': `Bearer ${jwt}`
 					}
