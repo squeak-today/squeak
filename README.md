@@ -103,7 +103,8 @@ Pulls a specific page of a story by ID.
     "date_created": "2024-03-20",
     "title": "A Very Cool Title",
     "preview_text": "A preview of the content...",
-    "content": "The story content in MDX format..."
+    "content": "The story content in MDX format...",
+    "pages": 10
 }
 ```
 
@@ -273,6 +274,7 @@ Query Supabase for stories.
 > `200 Successful`
 
 See `news/query` response.
+Each story has a `pages` field, which is the number of pages in the story.
 
 ### **POST** `/qna`
 > https://api.squeak.today/qna
