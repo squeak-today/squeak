@@ -57,9 +57,9 @@ function Learn() {
 
 	const [recommendations, setRecommendations] = useState([]);
 
-	const [progress, setProgress] = useState(null);
-
 	const [storyRecommendations, setStoryRecommendations] = useState([]);
+
+	const [progress, setProgress] = useState(null);
 
 	const handleStoryBlockClick = async (story) => {
 		navigate(`/read/${story.type}/${story.id}`);
@@ -160,31 +160,23 @@ function Learn() {
 					topic: story.topic
 				}))
 				: [];
-			setRecommendations(transformedRecommendations);
-		} catch (error) {
-			console.error("Failed to fetch recommendations:", error);
-			showNotification("Couldn't load recommendations. Please try again later!", 'error');
-			setRecommendations([]);
-		}
-	}, [apiBase, showNotification]);
-
-	const fetchStoryRecommendations = useCallback(async (language, cefrLevel) => {
-		try {
-			const recommendedStories = await fetchContentList(apiBase, 'story/query', language, cefrLevel, 'any', 1, 5);
-			const transformedRecommendations = Array.isArray(recommendedStories) 
-				? recommendedStories.map(story => ({
+			const storyRecommendations = await fetchContentList(apiBase, 'story/query', language, cefrLevel, 'any', 1, 5);
+			const transformedStoryRecommendations = Array.isArray(storyRecommendations) 
+				? storyRecommendations.map(story => ({
 					id: story.id,
 					title: story.title,
 					cefr_level: story.cefr_level,
 					language: story.language,
-					topic: story.topic
+					topic: story.topic,
+					pages: story.pages
 				}))
 				: [];
-			setStoryRecommendations(transformedRecommendations);
+			setRecommendations(transformedRecommendations);
+			setStoryRecommendations(transformedStoryRecommendations);
 		} catch (error) {
-			console.error("Failed to fetch story recommendations:", error);
-			showNotification("Couldn't load story recommendations. Please try again later!", 'error');
-			setStoryRecommendations([]);
+			console.error("Failed to fetch recommendations:", error);
+			showNotification("Couldn't load recommendations. Please try again later!", 'error');
+			setRecommendations([]);
 		}
 	}, [apiBase, showNotification]);
 
@@ -259,11 +251,8 @@ function Learn() {
 			}
 			if (!response.ok) throw new Error('Failed to update profile');
 			setProfile(profileData);
-			await Promise.all([
-				fetchRecommendations(profileData.learning_language, profileData.skill_level),
-				fetchStoryRecommendations(profileData.learning_language, profileData.skill_level),
-				fetchProgress()
-			]);
+			await fetchRecommendations(profileData.learning_language, profileData.skill_level);
+			await fetchProgress();
 			
 			showNotification('Profile updated successfully!', 'success');
 			return result;
@@ -271,17 +260,14 @@ function Learn() {
 			console.error('Error updating profile:', error);
 			showNotification('Failed to update profile. Please try again.', 'error');
 		}
-	}, [fetchRecommendations, fetchStoryRecommendations, fetchProgress, showNotification, apiBase]);
+	}, [fetchRecommendations, fetchProgress, showNotification, apiBase]);
 
 	useEffect(() => {
 		const initializeProfile = async () => {
 			const profileData = await handleGetProfile();
 			if (profileData) {
-				await Promise.all([
-					fetchRecommendations(profileData.learning_language, profileData.skill_level),
-					fetchStoryRecommendations(profileData.learning_language, profileData.skill_level),
-					fetchProgress()
-				]);
+				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
+				await fetchProgress();
 			}
 		};
 

@@ -71,7 +71,7 @@ func (c *Client) QueryNews(params QueryParams) ([]map[string]interface{}, error)
 }
 
 func (c *Client) QueryStories(params QueryParams) ([]map[string]interface{}, error) {
-	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM stories WHERE 1=1"
+	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created, pages FROM stories WHERE 1=1"
 	return c.queryContent(query, params)
 }
 
@@ -115,8 +115,9 @@ func (c *Client) queryContent(baseQuery string, params QueryParams) ([]map[strin
 		var id, title, language, topic, cefrLevel, previewText string
 		var createdAt time.Time
 		var dateCreated sql.NullTime
+		var pages sql.NullInt32
 
-		err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
+		err := rows.Scan(&id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated, &pages)
 		if err != nil {
 			return nil, fmt.Errorf("data scanning failed: %v", err)
 		}
@@ -130,6 +131,7 @@ func (c *Client) queryContent(baseQuery string, params QueryParams) ([]map[strin
 			"preview_text": previewText,
 			"created_at":   createdAt,
 			"date_created": dateCreated.Time.Format("2006-01-02"),
+			"pages":        pages.Int32,
 		}
 		results = append(results, result)
 	}
@@ -230,7 +232,7 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 	var query string
 	if contentType == "Story" {
 		query = `
-			SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created 
+			SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created, pages 
 			FROM stories 
 			WHERE id = $1`
 	} else if contentType == "News" {
@@ -245,17 +247,15 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 	var id, title, language, topic, cefrLevel, previewText, content string
 	var createdAt time.Time
 	var dateCreated sql.NullTime
+	var pages int
 
-	err := c.db.QueryRow(query, contentID).Scan(
-		&id,
-		&title,
-		&language,
-		&topic,
-		&cefrLevel,
-		&previewText,
-		&createdAt,
-		&dateCreated,
-	)
+	var scanArgs []interface{}
+	scanArgs = append(scanArgs, &id, &title, &language, &topic, &cefrLevel, &previewText, &createdAt, &dateCreated)
+	if contentType == "Story" {
+		scanArgs = append(scanArgs, &pages)
+	}
+
+	err := c.db.QueryRow(query, contentID).Scan(scanArgs...)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -274,6 +274,10 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 		"content":      content,
 		"created_at":   createdAt,
 		"date_created": dateCreated.Time.Format("2006-01-02"),
+	}
+
+	if contentType == "Story" {
+		result["pages"] = pages
 	}
 
 	return result, nil

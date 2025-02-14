@@ -157,13 +157,13 @@ const PageNumber = styled.span`
     color: #666;
 `;
 
-const StoryReader = ({ content, paged = false, onNeedPages, handleWordClick, sourceLanguage, isLoading }) => {
+const StoryReader = ({ content, paged, onNeedPages, handleWordClick, sourceLanguage, isLoading }) => {
     const [currentPage, setCurrentPage] = useState(0);
     const [compiledPages, setCompiledPages] = useState(new Map());
     const [singleComponent, setSingleComponent] = useState(null);
 
     useEffect(() => {
-        if (!paged && content) {
+        if ((paged === 0) && content) {
             const compileSingle = async () => {
                 try {
                     const {default: MDXContent} = await evaluate(content, {
@@ -182,7 +182,7 @@ const StoryReader = ({ content, paged = false, onNeedPages, handleWordClick, sou
     }, [paged, content]);
 
     useEffect(() => {
-        if (!paged || !content) return;
+        if ((paged === 0) || !content) return;
 
         const compileNewPages = async () => {
             const newPagesToCompile = Array.from(content.keys())
@@ -216,27 +216,46 @@ const StoryReader = ({ content, paged = false, onNeedPages, handleWordClick, sou
             setCompiledPages(newCompiledPages);
         };
 
+        const clearUnneededPages = () => {
+            const newCompiledPages = new Map(compiledPages);
+            const pagesToKeep = [];
+            for (let i = currentPage; i < currentPage + 3 && i < paged; i++) {
+                pagesToKeep.push(i);
+            }
+            for (let i = currentPage - 1; i >= currentPage - 2 && i >= 0; i--) {
+                pagesToKeep.push(i);
+            }
+
+            Array.from(newCompiledPages.keys()).forEach((pageNum) => {
+                if (!pagesToKeep.includes(pageNum)) {
+                    newCompiledPages.delete(pageNum);
+                }
+            })
+
+            setCompiledPages(newCompiledPages);
+        }
+
         compileNewPages();
+        clearUnneededPages();
     }, [paged, content]);
 
-    const handleNextPage = () => {
+    const handleNextPage = async () => {
         const nextPage = currentPage + 1;
-        if (content?.has(nextPage)) {
+        if (nextPage < paged) {
             setCurrentPage(nextPage);
-            if (nextPage >= Math.max(...content.keys()) - 1) {
-                onNeedPages?.(nextPage);
-            }
+            await onNeedPages?.(nextPage, paged);
         }
     };
 
-    const handlePrevPage = () => {
+    const handlePrevPage = async () => {
         const prevPage = currentPage - 1;
-        if (content?.has(prevPage)) {
+        if (prevPage >= 0) {
             setCurrentPage(prevPage);
+            await onNeedPages?.(prevPage, paged);
         }
     };
 
-    const CurrentMDXComponent = paged ? compiledPages.get(currentPage) : singleComponent;
+    const CurrentMDXComponent = (paged !== 0) ? compiledPages.get(currentPage) : singleComponent;
 
     return (
         <StoryBox>
@@ -244,7 +263,7 @@ const StoryReader = ({ content, paged = false, onNeedPages, handleWordClick, sou
                 <LoadingSpinner />
             ) : (
                 <div>
-                    {paged && (
+                    {(paged !== 0) && (
                         <PageControls>
                             <PageNavigationButton 
                                 onClick={handlePrevPage}
@@ -255,7 +274,7 @@ const StoryReader = ({ content, paged = false, onNeedPages, handleWordClick, sou
                             <PageNumber>Page {currentPage + 1}</PageNumber>
                             <PageNavigationButton 
                                 onClick={handleNextPage}
-                                disabled={!content?.has(currentPage + 1)}
+                                disabled={currentPage + 1 >= paged}
                             >
                                 Next
                             </PageNavigationButton>

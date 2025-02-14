@@ -43,7 +43,10 @@ function Read() {
         left: 0
     });
     const [isLoading, setIsLoading] = useState(true);
-    const [initialPages, setInitialPages] = useState(null);
+    
+    // For Story
+    const [pagedData, setPagedData] = useState(new Map());
+    const [totalPages, setTotalPages] = useState(null);
 
     const apiBase = process.env.REACT_APP_API_BASE;
 
@@ -78,62 +81,51 @@ function Read() {
 	};
 
     useEffect(() => {
-        const fetchNews = async () => {
-            // tentative:
-            // if the type is Story, then we should be pulling a specific page.
-            // additionally, we should retain cache for the next 3 pages and the previous 2 (if applicable).
-            // this minimizes latency. We store them as MDX components ready for use, as compilation takes a hot minute.
-
-            const url = `${apiBase}news?id=${id}`;
+        const loadInitialMetadata = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const jwt = session?.access_token;
-                const response = await fetch(url, {
+                let url = '';
+                if (type === 'Story') {
+                    url = `${apiBase}story?id=${id}&page=0`;
+                } else {
+                    url = `${apiBase}news?id=${id}`;
+                }
+                const metadataResponse = await fetch(url, {
                     headers: {
                         'Authorization': `Bearer ${jwt}`
                     }
                 });
-
-                if (!response.ok) {
+                if (!metadataResponse.ok) {
                     throw new Error('Failed to fetch content');
                 }
-
-                const data = await response.json();
+                const metadata = await metadataResponse.json();
                 
                 setContentData({
                     id: id,
-                    type: data.content_type,
-                    title: data.title,
-                    preview: data.preview_text,
-                    tags: [data.language, data.topic],
-                    difficulty: data.cefr_level,
-                    date_created: data.date_created,
-                    content: data.content,
+                    type: metadata.content_type,
+                    title: metadata.title,
+                    preview: metadata.preview_text,
+                    tags: [metadata.language, metadata.topic],
+                    difficulty: metadata.cefr_level,
+                    date_created: metadata.date_created,
+                    content: metadata.content,
                 });
-                setSourceLanguage(LANGUAGE_CODES_REVERSE[data.language]);
+                setSourceLanguage(LANGUAGE_CODES_REVERSE[metadata.language]);
+                if (type === 'Story' && metadata.pages) {
+                    setTotalPages(metadata.pages);
+                    setPagedData(new Map([[0, metadata.content]]));
+                    fetchStoryPages(0, metadata.pages);
+                }
             } catch (error) {
-                console.error('Error fetching content:', error);
-                showNotification('Failed to load content. Please try again later.', 'error');
+                console.error('Error loading metadata:', error);
+                showNotification('Failed to load metadata. Please try again later.', 'error');
             } finally {
                 setIsLoading(false);
             }
-        };
-        const loadInitialPages = async () => {
-            try {
-                const pages = await fetchStoryPages(0);
-                setInitialPages(pages);
-            } finally {
-                setIsLoading(false);
-            }
-            
         };
         setIsLoading(true);
-        if (type === 'Story') {
-            loadInitialPages();
-        } else {
-            fetchNews();
-        }
-        console.log('isLoading: ', isLoading);
+        loadInitialMetadata();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type, id]);
 
@@ -335,39 +327,59 @@ function Read() {
 
     const handleReaderScroll = () => { setTooltip(prev => ({ ...prev, show: false })); };
 
-    const fetchStoryPages = async (currentPage) => {
-        // /story?id=${id}&page=${...}
-        
-        const DUMMY_PAGES = {
-            0: "# Chapter 1\n\nThis is the first page of our story. The sun was rising over the mountains, casting long shadows across the valley.",
-            1: "# Chapter 2\n\nOn the second page, our hero begins their journey. The path ahead seemed uncertain, but they pressed on.",
-            2: "# Chapter 3\n\nThe third page reveals new challenges. Thunder rolled in the distance as dark clouds gathered overhead.",
-            3: "# Chapter 4\n\nOn page four, the plot thickens. The ancient ruins stood silent, holding secrets of the past.",
-            4: "# Chapter 5\n\nThe fifth page brings revelations. Everything they thought they knew was about to change.",
-            5: "# Final Chapter\n\nOn the final page, all is revealed. The end of one story is just the beginning of another."
-        };
-        
-        // Simulate API delay between 200-800ms
-        await new Promise(resolve => setTimeout(resolve, Math.random() * 600 + 200));
-        
-        const totalPages = 6;
-        const pagesToReturn = new Map();
-        
-        // return current page and next 3 pages if they exist
-        for (let i = currentPage; i < currentPage + 4 && i < totalPages; i++) {
-            if (DUMMY_PAGES[i]) {
-                pagesToReturn.set(i, DUMMY_PAGES[i]);
-            }
+    // fetches story pages of current page and three pages before and after
+    // and consequently caches them, and deletes ones outside of that range
+    const fetchStoryPages = async (currentPage, knownTotalPages) => {
+        const pagesToFetch = [];
+        for (let i = currentPage; i < currentPage + 3 && i < knownTotalPages; i++) {
+            pagesToFetch.push(i);
         }
-        
-        // include up to 2 previous pages if they exist
         for (let i = currentPage - 1; i >= currentPage - 2 && i >= 0; i--) {
-            if (DUMMY_PAGES[i]) {
-                pagesToReturn.set(i, DUMMY_PAGES[i]);
-            }
+            pagesToFetch.push(i);
         }
 
-        return pagesToReturn;
+        const newPagedData = new Map(pagedData);
+        const newPagesToFetch = pagesToFetch.filter(pageNum => !newPagedData.has(pageNum));
+
+        Array.from(newPagedData.keys()).forEach((pageNum) => {
+            if (!pagesToFetch.includes(pageNum)) {
+                newPagedData.delete(pageNum);
+            }
+        })
+        
+        const { data: { session } } = await supabase.auth.getSession();
+        const jwt = session?.access_token;
+
+        const fetchPage = async (pageNum) => {
+            try {
+                const response = await fetch(`${apiBase}story?id=${id}&page=${pageNum}`, {
+                    headers: {
+                        'Authorization': `Bearer ${jwt}`
+                    }
+                });
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error(`Error fetching page ${pageNum}:`, error);
+                return null;
+            }
+        };
+
+        const promises = [];
+        
+        for (let i = 0; i < newPagesToFetch.length; i++) {
+            promises.push(
+                fetchPage(newPagesToFetch[i]).then(data => {
+                    if (data?.content) newPagedData.set(newPagesToFetch[i], data.content);
+                })
+            );
+        }
+
+        await Promise.all(promises);
+        
+        setPagedData(new Map(newPagedData));
+        return newPagedData;
     };
 
     return (
@@ -379,12 +391,12 @@ function Read() {
                 <ReadPageLayout>
                     <ReaderPanel onScroll={handleReaderScroll}>
                         <StoryReader 
-                            content={type === 'Story' ? initialPages : contentData.content}
-                            paged={type === 'Story'}
+                            content={type === 'Story' ? pagedData : contentData.content}
+                            paged={type === 'Story' ? totalPages : 0}
                             onNeedPages={fetchStoryPages}
                             handleWordClick={handleWordClick}
                             sourceLanguage={sourceLanguage}
-                            isLoading={isLoading || (!initialPages && type === 'Story')}
+                            isLoading={isLoading || (!pagedData && type === 'Story')}
                         />
                     </ReaderPanel>
                     <SidePanel 

@@ -73,6 +73,13 @@ const Tag = styled.span`
     ${props => props.cefr && 'font-weight: bold;'}
 `;
 
+const PageCount = styled.span`
+    font-size: 0.8em;
+    color: #666;
+    display: block;
+    margin-top: 0.5em;
+`;
+
 const getCEFRColor = (level) => {
     const firstLetter = level.charAt(0);
     switch (firstLetter) {
@@ -102,6 +109,7 @@ const StoryRecommendations = ({ recommendations }) => {
                             <Tag>{story.topic}</Tag>
                         </TagContainer>
                         <BlockTitle>{story.title}</BlockTitle>
+                        <PageCount>Pages: {story.pages}</PageCount>
                     </RecommendationBlock>
                 ))}
             </RecommendationsRow>
