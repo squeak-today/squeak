@@ -57,3 +57,7 @@ terraform apply -var-file="terraform.tfvars"
 
 To go back, you can uncomment and run `terraform init -migrate-state` again (only if the changes you had in your own account are being pushed to dev).
 Remember to ignore `terraform.tfstate` in `.gitignore`!!!
+
+Sometimes changes to the workspaces are mucked up with cache issues, try:
+> aws apigateway flush-stage-cache --rest-api-id <api-id> --stage-name <stage-name>
+Or flush cache manually.
