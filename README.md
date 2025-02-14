@@ -29,6 +29,15 @@ source venv/bin/activate
 python upload_story.py XXX --language X --cefr X --topic X --bucket X
 ```
 
+Adding stories:
+1. Write the pages in MDX format.
+2. Write a context.txt file that has all the necessary context to answer the questions you create.
+3. Upload to S3.
+4. Add all the questions to the supabase `questions` table.
+As of writing, to add support for all levels of studying questions, you need to add:
+- 1 vocab question
+- 1 understanding question for each level of CEFR up to the story's CEFR level.
+
 ### `/supabase` (semi-optional)
 Contains migrations and code to interact with Supabase via code if needed.
 Needs a `.env` file with the following format:
