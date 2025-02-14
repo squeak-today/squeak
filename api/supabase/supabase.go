@@ -230,7 +230,7 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 	var query string
 	if contentType == "Story" {
 		query = `
-			SELECT id, title, language, topic, cefr_level, content, created_at, date_created 
+			SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created 
 			FROM stories 
 			WHERE id = $1`
 	} else if contentType == "News" {

@@ -66,8 +66,8 @@ function Learn() {
 		const tempStories = [];
 		try {
 			let newsData = [], storiesData = [];
-			if (type === 'News') { newsData = await fetchContentList(apiBase, 'news-query', language, cefrLevel, subject, page, pagesize); }
-			if (type === 'Story') { storiesData = await fetchContentList(apiBase, 'story-query', language, cefrLevel, subject, page, pagesize); }
+			if (type === 'News') { newsData = await fetchContentList(apiBase, 'news/query', language, cefrLevel, subject, page, pagesize); }
+			if (type === 'Story') { storiesData = await fetchContentList(apiBase, 'story/query', language, cefrLevel, subject, page, pagesize); }
 			newsData = Array.isArray(newsData) ? newsData : [];
 			storiesData = Array.isArray(storiesData) ? storiesData : [];
 			console.log('Fetched content successfully!')
@@ -157,7 +157,7 @@ function Learn() {
 
 	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
 		try {
-			const recommendedNews = await fetchContentList(apiBase, 'news-query', language, cefrLevel, 'any', 1, 5);
+			const recommendedNews = await fetchContentList(apiBase, 'news/query', language, cefrLevel, 'any', 1, 5);
 			const transformedRecommendations = Array.isArray(recommendedNews) 
 				? recommendedNews.map(story => ({
 					id: story.id,
@@ -181,7 +181,7 @@ function Learn() {
 			const jwt = session?.access_token;
 			
 			const [progressResponse, streakResponse] = await Promise.all([
-				fetch(`${apiBase}progress/`, {
+				fetch(`${apiBase}progress`, {
 					headers: {
 						'Authorization': `Bearer ${jwt}`
 					}
@@ -230,7 +230,7 @@ function Learn() {
 			const { data: { session } } = await supabase.auth.getSession();
 			const jwt = session?.access_token;
 			
-			const response = await fetch(`${apiBase}profile-upsert`, {
+			const response = await fetch(`${apiBase}profile/upsert`, {
 				method: 'POST',
 				headers: {
 					'Authorization': `Bearer ${jwt}`,

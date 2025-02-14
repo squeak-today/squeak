@@ -78,14 +78,13 @@ function Read() {
 	};
 
     useEffect(() => {
-        const fetchContent = async () => {
+        const fetchNews = async () => {
             // tentative:
             // if the type is Story, then we should be pulling a specific page.
             // additionally, we should retain cache for the next 3 pages and the previous 2 (if applicable).
             // this minimizes latency. We store them as MDX components ready for use, as compilation takes a hot minute.
 
-            setIsLoading(true);
-            const url = `${apiBase}content?type=${type}&id=${id}`;
+            const url = `${apiBase}news?id=${id}`;
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const jwt = session?.access_token;
@@ -119,8 +118,22 @@ function Read() {
                 setIsLoading(false);
             }
         };
-
-        fetchContent();
+        const loadInitialPages = async () => {
+            try {
+                const pages = await fetchStoryPages(0);
+                setInitialPages(pages);
+            } finally {
+                setIsLoading(false);
+            }
+            
+        };
+        setIsLoading(true);
+        if (type === 'Story') {
+            loadInitialPages();
+        } else {
+            fetchNews();
+        }
+        console.log('isLoading: ', isLoading);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type, id]);
 
@@ -169,7 +182,7 @@ function Read() {
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const jwt = session?.access_token;
-                const response = await fetch(`${apiBase}content-question`, {
+                const response = await fetch(`${apiBase}qna`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -266,7 +279,7 @@ function Read() {
             const jwt = session?.access_token;
 
             const results = await Promise.all(questions.map(async (q) => {
-                const response = await fetch(`${apiBase}evaluate-qna`, {
+                const response = await fetch(`${apiBase}qna/evaluate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -322,7 +335,9 @@ function Read() {
 
     const handleReaderScroll = () => { setTooltip(prev => ({ ...prev, show: false })); };
 
-    const handleNeedPages = async (currentPage) => {
+    const fetchStoryPages = async (currentPage) => {
+        // /story?id=${id}&page=${...}
+        
         const DUMMY_PAGES = {
             0: "# Chapter 1\n\nThis is the first page of our story. The sun was rising over the mountains, casting long shadows across the valley.",
             1: "# Chapter 2\n\nOn the second page, our hero begins their journey. The path ahead seemed uncertain, but they pressed on.",
@@ -355,14 +370,6 @@ function Read() {
         return pagesToReturn;
     };
 
-    useEffect(() => {
-        const loadInitialPages = async () => {
-            const pages = await handleNeedPages(0);
-            setInitialPages(pages);
-        };
-        loadInitialPages();
-    }, []);
-
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
@@ -372,12 +379,12 @@ function Read() {
                 <ReadPageLayout>
                     <ReaderPanel onScroll={handleReaderScroll}>
                         <StoryReader 
-                            content={false ? contentData.content : initialPages}
-                            paged={true}
-                            onNeedPages={handleNeedPages}
+                            content={type === 'Story' ? initialPages : contentData.content}
+                            paged={type === 'Story'}
+                            onNeedPages={fetchStoryPages}
                             handleWordClick={handleWordClick}
                             sourceLanguage={sourceLanguage}
-                            isLoading={isLoading || !initialPages}
+                            isLoading={isLoading || (!initialPages && type === 'Story')}
                         />
                     </ReaderPanel>
                     <SidePanel 
