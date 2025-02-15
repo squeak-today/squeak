@@ -81,8 +81,9 @@ If you are viewing this as an open source user, some of these may not apply. You
 | `/progress` | `GET` | Get today's progress for the authenticated user. |
 | `/progress/increment` | `POST` | Increment the number of questions completed for today. |
 | `/progress/streak` | `GET` | Get the user's current streak information. |
-| `/classroom` | `GET` | Get the teacher's classroom information. |
-| `/classroom/create` | `POST` | Create a classroom for the authenticated user. |
+| `/teacher` | `GET` | Check if the authenticated user is a teacher. |
+| `/teacher/classroom` | `GET` | Get the classroom information for the authenticated teacher. |
+| `/teacher/classroom/create` | `POST` | Create a new classroom for the authenticated teacher. |
 
 ### **GET** `/story`
 > https://api.squeak.today/story
@@ -396,10 +397,23 @@ Get the user's current streak information.
 }
 ```
 
-### **GET** `/classroom`
-> https://api.squeak.today/classroom
+### **GET** `/teacher`
+> https://api.squeak.today/teacher
 
-Get the teacher's classroom information.
+Check if the authenticated user is a teacher.
+
+### Response
+> `200 Successful`
+```json
+{
+    "exists": true
+}
+```
+
+### **GET** `/teacher/classroom`
+> https://api.squeak.today/teacher/classroom
+
+Get the classroom information for the authenticated teacher.
 
 ### Response
 > `200 Successful`
@@ -408,11 +422,12 @@ Get the teacher's classroom information.
     "classroom_id": "XXX",
     "students_count": 5
 }
+```
 
-### **POST** `/classroom/create`
-> https://api.squeak.today/classroom/create
+### **POST** `/teacher/classroom/create`
+> https://api.squeak.today/teacher/classroom/create
 
-Create a classroom for the authenticated user.
+Create a new classroom for the authenticated teacher.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |

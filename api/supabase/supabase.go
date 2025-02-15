@@ -66,24 +66,6 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
-func (c *Client) CheckStudentStatus(userID string) (string, error) {
-	var classroomID string
-	err := c.db.QueryRow(`
-		SELECT classroom_id
-		FROM students
-		WHERE user_id = $1
-	`, userID).Scan(&classroomID)
-
-	if err == sql.ErrNoRows {
-		return "", nil
-	}
-	if err != nil {
-		return "", fmt.Errorf("failed to check student status: %v", err)
-	}
-
-	return classroomID, nil
-}
-
 func (c *Client) CheckAcceptedContent(classroomID string, contentType string, contentID string) (bool, error) {
 	var exists bool
 	var query string
@@ -537,7 +519,39 @@ func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
 	return streak, completedToday, nil
 }
 
-func (c *Client) GetClassroom(userID string) (string, int, error) {
+func (c *Client) GetTeacherInfo(teacherID string) (bool, error) {
+	var exists bool
+	err := c.db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1 
+			FROM classrooms
+			WHERE teacher_id = $1 
+	)`, teacherID).Scan(&exists)
+
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
+func (c *Client) GetClassroomById(classroomID string) (string, int, error) {
+	var teacher_id string
+	var students_count int
+	err := c.db.QueryRow(`
+		SELECT teacher_id, student_count
+		FROM classrooms
+		WHERE id = $1
+	`, classroomID).Scan(&teacher_id, &students_count)
+
+	if err != nil {
+		return "", 0, err
+	}
+
+	return teacher_id, students_count, nil
+}
+
+func (c *Client) GetClassroomByTeacherId(userID string) (string, int, error) {
 	var classroom_id string
 	var students_count int
 	err := c.db.QueryRow(`
@@ -553,6 +567,24 @@ func (c *Client) GetClassroom(userID string) (string, int, error) {
 	return classroom_id, students_count, nil
 }
 
+func (c *Client) CheckStudentStatus(userID string) (string, error) {
+	var classroomID string
+	err := c.db.QueryRow(`
+		SELECT classroom_id
+		FROM students
+		WHERE user_id = $1
+	`, userID).Scan(&classroomID)
+
+	if err == sql.ErrNoRows {
+		return "", nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to check student status: %v", err)
+	}
+
+	return classroomID, nil
+}
+
 func (c *Client) CreateClassroom(userID string, student_count int) (string, error) {
 	var classroomID string
 	err := c.db.QueryRow(`
@@ -566,4 +598,17 @@ func (c *Client) CreateClassroom(userID string, student_count int) (string, erro
 	}
 
 	return classroomID, nil
+}
+
+func (c *Client) AddStudentToClassroom(classroomID string, studentID string) error {
+	_, err := c.db.Exec(`
+		INSERT INTO students (user_id, classroom_id)
+		VALUES ($1, $2)
+	`, studentID, classroomID)
+
+	if err != nil {
+		return fmt.Errorf("failed to add student to classroom: %v", err)
+	}
+
+	return nil
 }
