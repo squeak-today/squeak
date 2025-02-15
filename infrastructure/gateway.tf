@@ -143,6 +143,31 @@ module "teacher_classroom_create" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "student" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "student"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "student_classroom" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.student.resource_id
+  path_part   = "classroom"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "student_classroom_join" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.student_classroom.resource_id
+  path_part   = "join"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 # Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
   statement_id  = "${terraform.workspace}-AllowExecutionFromAPIGateway"
@@ -173,6 +198,9 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.progress_increment,
     module.teacher,
     module.teacher_classroom,
-    module.teacher_classroom_create
+    module.teacher_classroom_create,
+    module.student,
+    module.student_classroom,
+    module.student_classroom_join
   ]
 }

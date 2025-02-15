@@ -84,6 +84,9 @@ If you are viewing this as an open source user, some of these may not apply. You
 | `/teacher` | `GET` | Check if the authenticated user is a teacher. |
 | `/teacher/classroom` | `GET` | Get the classroom information for the authenticated teacher. |
 | `/teacher/classroom/create` | `POST` | Create a new classroom for the authenticated teacher. |
+| `/student` | `GET` | Get the authenticated user's student information. |
+| `/student/classroom` | `GET` | Get the classroom information for the authenticated student. |
+| `/student/classroom/join` | `POST` | Join a classroom as a student. |
 
 ### **GET** `/story`
 > https://api.squeak.today/story
@@ -438,5 +441,50 @@ Create a new classroom for the authenticated teacher.
 ```json
 {
     "classroom_id": "XXX"
+}
+```
+
+### **GET** `/student`
+> https://api.squeak.today/student
+
+Get the authenticated user's student information.
+
+### Response
+> `200 Successful`
+```json
+{
+    "student_id": "XXX",
+    "classroom_id": "YYY"
+}
+```
+
+### **GET** `/student/classroom`
+> https://api.squeak.today/student/classroom
+
+Get the classroom information for the authenticated student.
+
+### Response
+> `200 Successful`
+```json
+{
+    "teacher_id": "XXX",
+    "students_count": 5
+}
+```
+
+### **POST** `/student/classroom/join`
+> https://api.squeak.today/student/classroom/join
+
+Join a classroom as a student.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `classroom_id` | `string` | Yes | ID of the classroom to join. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "message": "Student added to classroom"
 }
 ```

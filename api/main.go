@@ -185,6 +185,62 @@ func init() {
 		}
 	}
 
+	studentGroup := router.Group("/student")
+	{
+		studentGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+			studentID, classroomID, err := dbClient.CheckStudentStatus(userID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{"student_id": studentID, "classroom_id": classroomID})
+		})
+
+		classroomGroup := studentGroup.Group("/classroom")
+		{
+			classroomGroup.GET("", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				_, classroomID, err := dbClient.CheckStudentStatus(userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+					return
+				}
+				teacher_id, students_count, err := dbClient.GetClassroomById(classroomID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom by ID"})
+					return
+				}
+
+				c.JSON(http.StatusOK, gin.H{
+					"teacher_id": teacher_id,
+					"students_count": students_count,
+				})
+			})
+
+			classroomGroup.POST("/join", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				var infoBody struct {
+					ClassroomID string `json:"classroom_id"`
+				}
+
+				if err := c.ShouldBindJSON(&infoBody); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+					return
+				}
+				
+				err := dbClient.AddStudentToClassroom(infoBody.ClassroomID, userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add student to classroom"})
+					return
+				}
+
+				c.JSON(http.StatusOK, gin.H{"message": "Student added to classroom"})
+			})
+		}
+	}
+
+
 	progressGroup := router.Group("/progress")
 	{
 		progressGroup.GET("", func(c *gin.Context) {
@@ -264,7 +320,7 @@ func init() {
 				return
 			}
 
-			classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
@@ -356,7 +412,7 @@ func init() {
 				PageSize: pageSizeNum,
 			}
 
-			classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
@@ -394,7 +450,7 @@ func init() {
 				return
 			}
 
-			classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
@@ -523,7 +579,7 @@ func init() {
 				PageSize: pageSizeNum,
 			}
 
-			classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return

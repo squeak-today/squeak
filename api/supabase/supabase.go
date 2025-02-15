@@ -567,22 +567,23 @@ func (c *Client) GetClassroomByTeacherId(userID string) (string, int, error) {
 	return classroom_id, students_count, nil
 }
 
-func (c *Client) CheckStudentStatus(userID string) (string, error) {
+func (c *Client) CheckStudentStatus(userID string) (string, string, error) {
+	var studentID string
 	var classroomID string
 	err := c.db.QueryRow(`
-		SELECT classroom_id
+		SELECT student_id, classroom_id
 		FROM students
 		WHERE user_id = $1
-	`, userID).Scan(&classroomID)
+	`, userID).Scan(&studentID, &classroomID)
 
 	if err == sql.ErrNoRows {
-		return "", nil
+		return "", "", nil
 	}
 	if err != nil {
-		return "", fmt.Errorf("failed to check student status: %v", err)
+		return "", "", fmt.Errorf("failed to check student status: %v", err)
 	}
 
-	return classroomID, nil
+	return studentID, classroomID, nil
 }
 
 func (c *Client) CreateClassroom(userID string, student_count int) (string, error) {

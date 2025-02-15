@@ -63,12 +63,32 @@ output "api_gateway_url_progress_streak" {
   description = "Progress Streak URL for Story API"
 }
 
-output "api_gateway_url_classroom" {
-  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/classroom"
-  description = "Classroom URL for Story API"
+output "api_gateway_url_teacher" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/teacher"
+  description = "Teacher URL for Story API"
 }
 
-output "api_gateway_url_classroom_create" {
-  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/classroom/create"
-  description = "Classroom Create URL for Story API"
+output "api_gateway_url_teacher_classroom" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/teacher/classroom"
+  description = "Teacher Classroom URL for Story API"
+}
+
+output "api_gateway_url_teacher_classroom_create" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/teacher/classroom/create"
+  description = "Teacher Classroom Create URL for Story API"
+}
+
+output "api_gateway_url_student" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/student"
+  description = "Student URL for Story API"
+}
+
+output "api_gateway_url_student_classroom" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/student/classroom"
+  description = "Student Classroom URL for Story API"
+}
+
+output "api_gateway_url_student_classroom_join" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/student/classroom/join"
+  description = "Student Classroom Join URL for Story API"
 }
