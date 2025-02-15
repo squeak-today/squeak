@@ -293,6 +293,7 @@ func init() {
 		})
 
 		newsGroup.GET("/query", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			language := c.Query("language")
 			cefr := c.Query("cefr")
 			subject := c.Query("subject")
@@ -324,6 +325,16 @@ func init() {
 				Subject:  subject,
 				Page:     pageNum,
 				PageSize: pageSizeNum,
+			}
+
+			classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+
+			if classroomID != "" {
+				params.ClassroomID = classroomID
 			}
 
 			results, err := dbClient.QueryNews(params)
@@ -433,6 +444,7 @@ func init() {
 		})
 
 		storyGroup.GET("/query", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			language := c.Query("language")
 			cefr := c.Query("cefr")
 			subject := c.Query("subject")
@@ -466,6 +478,15 @@ func init() {
 				PageSize: pageSizeNum,
 			}
 
+			classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+
+			if classroomID != "" {
+				params.ClassroomID = classroomID
+			}
 			results, err := dbClient.QueryStories(params)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})

@@ -18,11 +18,12 @@ type Client struct {
 
 // QueryParams: query parameters for story-query and news-query endpoints
 type QueryParams struct {
-	Language string
-	CEFR     string
-	Subject  string
-	Page     int
-	PageSize int
+	Language    string
+	CEFR        string
+	Subject     string
+	Page        int
+	PageSize    int
+	ClassroomID string
 }
 
 // Add these near the top with other type definitions
@@ -65,21 +66,62 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
+func (c *Client) CheckStudentStatus(userID string) (string, error) {
+	var classroomID string
+	err := c.db.QueryRow(`
+		SELECT classroom_id
+		FROM students
+		WHERE user_id = $1
+	`, userID).Scan(&classroomID)
+
+	if err == sql.ErrNoRows {
+		return "", nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to check student status: %v", err)
+	}
+
+	return classroomID, nil
+}
+
 func (c *Client) QueryNews(params QueryParams) ([]map[string]interface{}, error) {
-	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1"
-	return c.queryContent(query, params, "News")
+	return c.queryContent(params, "News")
 }
 
 func (c *Client) QueryStories(params QueryParams) ([]map[string]interface{}, error) {
-	query := "SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created, pages FROM stories WHERE 1=1"
-	return c.queryContent(query, params, "Story")
+	return c.queryContent(params, "Story")
 }
 
 // helper function called in the QueryNews and QueryStories functions
-// builds on the SQL query string based on the query params
-func (c *Client) queryContent(baseQuery string, params QueryParams, contentType string) ([]map[string]interface{}, error) {
+// builds the SQL query string based on the query params
+func (c *Client) queryContent(params QueryParams, contentType string) ([]map[string]interface{}, error) {
+	var baseQuery string
 	var queryParams []interface{}
 	paramCount := 1
+
+	if params.ClassroomID != "" {
+		if contentType == "Story" {
+			baseQuery = `
+				SELECT n.id, n.title, n.language, n.topic, n.cefr_level, n.preview_text, n.created_at, n.date_created, n.pages 
+				FROM stories n
+				INNER JOIN accepted_content ac ON n.id = ac.story_id 
+				WHERE ac.classroom_id = $1`
+		} else {
+			baseQuery = `
+				SELECT n.id, n.title, n.language, n.topic, n.cefr_level, n.preview_text, n.created_at, n.date_created 
+				FROM news n
+				INNER JOIN accepted_content ac ON n.id = ac.news_id 
+				WHERE ac.classroom_id = $1`
+		}
+		queryParams = append(queryParams, params.ClassroomID)
+		paramCount = 2
+	} else {
+		if contentType == "Story" {
+			baseQuery = `SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created, pages FROM stories WHERE 1=1`
+		} else {
+			baseQuery = `SELECT id, title, language, topic, cefr_level, preview_text, created_at, date_created FROM news WHERE 1=1`
+		}
+	}
 
 	if params.Language != "" && params.Language != "any" {
 		baseQuery += fmt.Sprintf(" AND language = $%d", paramCount)
