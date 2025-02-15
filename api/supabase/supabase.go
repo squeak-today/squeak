@@ -84,6 +84,38 @@ func (c *Client) CheckStudentStatus(userID string) (string, error) {
 	return classroomID, nil
 }
 
+func (c *Client) CheckAcceptedContent(classroomID string, contentType string, contentID string) (bool, error) {
+	var exists bool
+	var query string
+
+	if contentType == "Story" {
+		query = `
+			SELECT EXISTS (
+				SELECT 1 
+				FROM accepted_content 
+				WHERE classroom_id = $1 
+				AND story_id = $2
+			)`
+	} else if contentType == "News" {
+		query = `
+			SELECT EXISTS (
+				SELECT 1 
+				FROM accepted_content 
+				WHERE classroom_id = $1 
+				AND news_id = $2
+			)`
+	} else {
+		return false, fmt.Errorf("invalid content type: %s", contentType)
+	}
+
+	err := c.db.QueryRow(query, classroomID, contentID).Scan(&exists)
+	if err != nil {
+		return false, fmt.Errorf("failed to check accepted content: %v", err)
+	}
+
+	return exists, nil
+}
+
 func (c *Client) QueryNews(params QueryParams) ([]map[string]interface{}, error) {
 	return c.queryContent(params, "News")
 }

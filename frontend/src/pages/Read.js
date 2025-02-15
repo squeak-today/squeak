@@ -96,10 +96,13 @@ function Read() {
                         'Authorization': `Bearer ${jwt}`
                     }
                 });
+                const metadata = await metadataResponse.json();
+                if (metadata.error === 'Content not accepted in classroom') {
+                    throw new Error('Content not accepted in your classroom');
+                }
                 if (!metadataResponse.ok) {
                     throw new Error('Failed to fetch content');
                 }
-                const metadata = await metadataResponse.json();
                 
                 setContentData({
                     id: id,
@@ -121,7 +124,7 @@ function Read() {
                 }
             } catch (error) {
                 console.error('Error loading metadata:', error);
-                showNotification('Failed to load metadata. Please try again later.', 'error');
+                showNotification('Failed to load metadata: ' + error.message, 'error');
             } finally {
                 setIsLoading(false);
             }

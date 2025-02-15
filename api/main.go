@@ -243,10 +243,26 @@ func init() {
 	newsGroup := router.Group("/news")
 	{
 		newsGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			id := c.Query("id")
 
 			if id == "" {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "ID parameter is required"})
+				return
+			}
+
+			classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+			accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
+				return
+			}
+			if !accepted {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
 				return
 			}
 
@@ -350,6 +366,7 @@ func init() {
 	storyGroup := router.Group("/story")
 	{
 		storyGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			id := c.Query("id")
 			page := c.Query("page")
 
@@ -361,6 +378,21 @@ func init() {
 			pageNum, err := strconv.Atoi(page)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Page parameter incorrect"})
+				return
+			}
+
+			classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+			accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
+				return
+			}
+			if !accepted {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
 				return
 			}
 
