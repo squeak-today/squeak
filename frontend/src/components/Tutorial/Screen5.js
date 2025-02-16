@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import NextButton from './NextButton';
+import { AVAILABLE_TOPICS } from '../../lib/topics';
 
-const ALL_TOPICS = ["Politics", "Technology", "Business", "Sports"];
+const ALL_TOPICS = AVAILABLE_TOPICS;
 
 export default function Screen5({ onNext }) {
   const [selectedTopics, setSelectedTopics] = useState([]);
