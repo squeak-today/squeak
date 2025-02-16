@@ -93,7 +93,7 @@ output "api_gateway_url_student_classroom_join" {
   description = "Student Classroom Join URL for Story API"
 }
 
-output "api_gateway_url_student_classroom_join" {
+output "api_gateway_url_student_classroom_accept" {
   value = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/student/classroom/accept"
   description = "Teacher Classroom Accept URL for Story API"
 }
