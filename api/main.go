@@ -222,6 +222,47 @@ func init() {
 			
 				c.JSON(http.StatusOK, gin.H{"message": "Content accepted successfully"})
 			})
+
+
+			classroomGroup.POST("/reject", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				var infoBody struct {
+					ContentType string `json:"content_type"`
+					ContentID   int    `json:"content_id"`
+				}
+			
+				if err := c.ShouldBindJSON(&infoBody); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+					return
+				}
+			
+				// Verify content type is valid
+				if infoBody.ContentType != "Story" && infoBody.ContentType != "News" {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid content type"})
+					return
+				}
+			
+				// Get classroom ID for teacher
+				classroomID, _, err := dbClient.GetClassroomByTeacherId(userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+					return
+				}
+			
+				classroomIDInt, err := strconv.Atoi(classroomID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid classroom ID format"})
+					return
+				}
+			
+				err = dbClient.RejectContent(classroomIDInt, infoBody.ContentType, infoBody.ContentID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to reject content: %v", err)})
+					return
+				}
+			
+				c.JSON(http.StatusOK, gin.H{"message": "Content rejected successfully"})
+			})
 		}
 	}
 
