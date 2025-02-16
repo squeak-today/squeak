@@ -268,12 +268,13 @@ function Learn() {
 			if (profileData) {
 				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
 				await fetchProgress();
+				await initializeBrowser(profileData.learning_language);
 			}
 		};
 
-		const initializeBrowser = async () => {
+		const initializeBrowser = async (defaultLanguage) => {
 			try {
-				await handleListNews('any', 'any', 'any', 1, 6);
+				await handleListNews(defaultLanguage, 'any', 'any', 1, 6);
 			} catch (error) {
 				console.error('Failed to fetch initial stories:', error);
 			}
@@ -292,7 +293,6 @@ function Learn() {
 		};
 
 		initializeProfile();
-		initializeBrowser();
 		checkWelcomeStatus();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
