@@ -613,3 +613,31 @@ func (c *Client) AddStudentToClassroom(classroomID string, studentID string) err
 
 	return nil
 }
+
+func (c *Client) AcceptContent(classroomID int, contentType string, contentID int) error{
+	var query string
+
+    if contentType == "Story" {
+        query = `
+            INSERT INTO accepted_content (classroom_id, story_id)
+            VALUES ($1, $2)
+            ON CONFLICT (classroom_id, story_id) DO NOTHING
+        `
+    } else if contentType == "News" {
+        query = `
+            INSERT INTO accepted_content (classroom_id, news_id)
+            VALUES ($1, $2)
+            ON CONFLICT (classroom_id, news_id) DO NOTHING
+        `
+    } else {
+        return fmt.Errorf("invalid content type: %s", contentType)
+    }
+
+	_, err := c.db.Exec(query, classroomID, contentID)
+	if err != nil {
+		return fmt.Errorf("failed to accept content: %v", err)
+	}
+
+
+	return nil
+}
