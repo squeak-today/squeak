@@ -315,7 +315,7 @@ Get a user's profile.
     "username": "Connor",
     "learning_language": "French",
     "skill_level": "A2",
-    "interested_topics": ["Business", "Sports"],
+    "interested_topics": ["Business", "NBA", "NFL", "Football"],
     "daily_questions_goal": 5
 }
 ```

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FaPencilAlt, FaCheck, FaTimes, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import MultiSelect from './MultiSelect';
+import { AVAILABLE_TOPICS } from '../lib/topics';
 
 const Header = styled.div`
     display: flex;
@@ -189,13 +190,6 @@ const StreakTag = styled(Tag)`
     align-items: center;
     gap: 0.5rem;
 `;
-
-const AVAILABLE_TOPICS = [
-    'Politics',
-    'Business',
-    'Technology',
-    'Sports'
-];
 
 const getCEFRColor = (level) => {
     const firstLetter = level.charAt(0);
