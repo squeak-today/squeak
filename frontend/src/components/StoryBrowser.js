@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import StoryList from './StoryList';
 import { useState, useEffect } from 'react';
+import { AVAILABLE_TOPICS } from '../lib/topics';
 
 const FilterContainer = styled.div`
 	display: flex;
@@ -139,10 +140,9 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 						}}
 					>
 						<option value="any">Any Topic</option>
-						<option value="Politics">Politics</option>
-						<option value="Business">Business</option>
-						<option value="Technology">Technology</option>
-						<option value="Sports">Sports</option>
+						{AVAILABLE_TOPICS.map(topic => (
+							<option key={topic} value={topic}>{topic}</option>
+						))}
 					</FilterSelect>
 				</div>
 			</FilterContainer>
