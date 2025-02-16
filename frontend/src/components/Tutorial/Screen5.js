@@ -58,26 +58,15 @@ export default function Screen5({ onNext }) {
         })}
       </div>
 
-      <div className="buttonWrapper" style={styles.buttonWrapper}>
+      <div style={styles.buttonWrapper}>
         <NextButton onNext={handleNextClick} />
       </div>
-
-      <style jsx>{`
-        @media (max-width: 600px) {
-          .buttonWrapper {
-            left: 50% !important;
-            right: auto !important;
-            transform: translateX(-50%);
-          }
-        }
-      `}</style>
     </div>
   );
 }
 
 const styles = {
   container: {
-    position: "relative",
     width: "100%",
     minHeight: "calc(100vh - 80px - 60px)",
     display: "flex",
@@ -116,6 +105,7 @@ const styles = {
     width: "100%",
     maxWidth: "800px",
     marginTop: "20px",
+    marginBottom: "20px",
   },
   topicChip: {
     cursor: "pointer",
@@ -125,8 +115,8 @@ const styles = {
     transition: "all 0.2s",
   },
   buttonWrapper: {
-    position: "absolute",
-    bottom: "10vh",
-    right: "10vw",
+    marginTop: "20px",
+    display: "flex",
+    justifyContent: "center",
   },
 };
