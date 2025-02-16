@@ -174,7 +174,7 @@ module "teacher_class_accept" {
   parent_id   = module.teacher_classroom.resource_id
   path_part   = "accept"
   http_method = "POST"
-  lambda_arn  = "aws_lambda_function.story_api_lambda.invoke_arn"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
 module "teacher_classroom_reject" {
@@ -219,6 +219,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.teacher_classroom_create,
     module.student,
     module.student_classroom,
-    module.student_classroom_join
+    module.student_classroom_join,
+    module.teacher_class_accept,
+    module.teacher_classroom_reject
   ]
 }

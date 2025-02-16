@@ -84,6 +84,8 @@ If you are viewing this as an open source user, some of these may not apply. You
 | `/teacher` | `GET` | Check if the authenticated user is a teacher. |
 | `/teacher/classroom` | `GET` | Get the classroom information for the authenticated teacher. |
 | `/teacher/classroom/create` | `POST` | Create a new classroom for the authenticated teacher. |
+| `/teacher/classroom/accept` | `POST` | Accept content for a classroom. |
+| `/teacher/classroom/reject` | `POST` | Reject content from a classroom. |
 | `/student` | `GET` | Get the authenticated user's student information. |
 | `/student/classroom` | `GET` | Get the classroom information for the authenticated student. |
 | `/student/classroom/join` | `POST` | Join a classroom as a student. |
@@ -441,6 +443,42 @@ Create a new classroom for the authenticated teacher.
 ```json
 {
     "classroom_id": "XXX"
+}
+```
+
+### **POST** `/teacher/classroom/accept`
+> https://api.squeak.today/teacher/classroom/accept
+
+Accept content for a classroom. Only the teacher of the classroom can accept content.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `content_type` | `string` | Yes | Type of content, either `Story` or `News`. |
+| `content_id` | `int` | Yes | ID of the content to accept. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "message": "Content accepted successfully"
+}
+```
+
+### **POST** `/teacher/classroom/reject`
+> https://api.squeak.today/teacher/classroom/reject
+
+Reject content from a classroom. Only the teacher of the classroom can reject content.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `content_type` | `string` | Yes | Type of content, either `Story` or `News`. |
+| `content_id` | `int` | Yes | ID of the content to reject. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "message": "Content rejected successfully"
 }
 ```
 

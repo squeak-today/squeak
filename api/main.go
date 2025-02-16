@@ -216,7 +216,7 @@ func init() {
 			
 				err = dbClient.AcceptContent(classroomIDInt, infoBody.ContentType, infoBody.ContentID)
 				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to accept content: %v", err)})
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to accept content"})
 					return
 				}
 			
@@ -257,7 +257,7 @@ func init() {
 			
 				err = dbClient.RejectContent(classroomIDInt, infoBody.ContentType, infoBody.ContentID)
 				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to reject content: %v", err)})
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reject content"})
 					return
 				}
 			
