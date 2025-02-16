@@ -641,3 +641,36 @@ func (c *Client) AcceptContent(classroomID int, contentType string, contentID in
 
 	return nil
 }
+
+func (c *Client) RejectContent(classroomID int, contentType string, contentID int) error {
+    var query string
+    if contentType == "Story" {
+        query = `
+            DELETE FROM accepted_content 
+            WHERE classroom_id = $1 AND story_id = $2
+        `
+    } else if contentType == "News" {
+        query = `
+            DELETE FROM accepted_content 
+            WHERE classroom_id = $1 AND news_id = $2
+        `
+    } else {
+        return fmt.Errorf("invalid content type: %s", contentType)
+    }
+
+    result, err := c.db.Exec(query, classroomID, contentID)
+    if err != nil {
+        return fmt.Errorf("failed to reject content: %v", err)
+    }
+
+    rowsAffected, err := result.RowsAffected()
+    if err != nil {
+        return fmt.Errorf("failed to get rows affected: %v", err)
+    }
+
+    if rowsAffected == 0 {
+        return fmt.Errorf("content was not accepted in classroom")
+    }
+
+    return nil
+}
