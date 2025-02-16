@@ -23,11 +23,6 @@ output "api_gateway_url_story_query" {
   description = "Story Query URL for Story API"
 }
 
-output "api_gateway_url_translate" {
-  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/translate"
-  description = "Translate URL for Story API"
-}
-
 output "api_gateway_url_qna" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/qna"
   description = "QNA URL for Story API"
@@ -61,4 +56,19 @@ output "api_gateway_url_progress_increment" {
 output "api_gateway_url_progress_streak" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/progress/streak"
   description = "Progress Streak URL for Story API"
+}
+
+output "api_gateway_url_audio" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/audio"
+  description = "Audio base URL for Story API"
+}
+
+output "api_gateway_url_audio_translate" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/audio/translate"
+  description = "Audio Translation URL for Story API"
+}
+
+output "api_gateway_url_audio_tts" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/audio/tts"
+  description = "Audio Text-to-Speech URL for Story API"
 }

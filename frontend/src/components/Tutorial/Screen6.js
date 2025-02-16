@@ -3,7 +3,6 @@ import StoryReader from '../StoryReader';
 import NextButton from './NextButton';
 import TranslationPanel from '../TranslationPanel';
 import styled from 'styled-components';
-import supabase from '../../lib/supabase';
 import { useNotification } from '../../context/NotificationContext';
 import {
   QuestionContainer,
@@ -13,6 +12,7 @@ import {
   CheckAnswersButton,
   ExplanationText,
 } from '../../styles/ReadPageStyles';
+import { useTranslation } from '../../hooks/useTranslation';
 
 // Headings as paragraphs with desired font sizes
 const MainHeading = styled.p`
@@ -103,6 +103,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
     originalSentence: '',
     sentenceTranslation: '',
   });
+  const { translate } = useTranslation();
 
   // Normalize sourceLanguage.
   if(sourceLanguage.toLowerCase().trim() === "french"){
@@ -116,8 +117,6 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
   const [evaluationResult, setEvaluationResult] = useState(null);
   const [evaluationError] = useState(null);
 
-  const apiBase = process.env.REACT_APP_API_BASE;
-
   const mainHeadingText = "Let's get you started";
   const subHeadingText =
     sourceLanguage === "es"
@@ -129,53 +128,9 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
       ? "## Bienvenido a Squeak \n Bienvenido a Squeak, esperamos que disfrutes y tengas un gran momento."
       : "## Bienvenue sur Squeak \n Bienvenue sur Squeak, nous espérons que vous passerez un excellent moment.";
 
-  // Updated fetchTranslation with extra checks and fallback.
-  const fetchTranslation = async (content, source) => {
-    const url = `${apiBase}translate`;
-    const payload = { sentence: content, source, target: 'en' };
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const jwt = session?.access_token;
-      if (!jwt) {
-        throw new Error("No valid JWT token found");
-      }
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${jwt}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Translation API error: ${response.status}`);
-      }
-      
-      const responseText = (await response.text()).trim();
-      if (!responseText) {
-        console.error('Empty response from translation API');
-        throw new Error('Empty response from translation API');
-      }
-      
-      let result;
-      try {
-        result = JSON.parse(responseText);
-      } catch (jsonError) {
-        console.error('Failed to parse JSON:', jsonError, responseText);
-        throw jsonError;
-      }
-      
-      return result.sentence ? result.sentence.toString() : content;
-    } catch (error) {
-      return content;
-    }
-  };
-
   const handleWordClick = async (e, word, sourceLang, sentence) => {
     try {
-      const translation = await fetchTranslation(word, sourceLang);
+      const translation = await translate(word, sourceLang);
       if (translation) {
         setTooltip({
           show: true,
@@ -188,17 +143,15 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
       }
     } catch (error) {
       console.error('Error getting word translation:', error);
-      showNotification('Failed to get translation', 'error');
     }
   };
 
   const handleSentenceToggle = async () => {
     try {
-      const translation = await fetchTranslation(tooltip.originalSentence, sourceLanguage);
+      const translation = await translate(tooltip.originalSentence, sourceLanguage);
       setTooltip(prev => ({ ...prev, sentenceTranslation: translation }));
     } catch (error) {
       console.error('Error toggling sentence translation:', error);
-      showNotification('Failed to get sentence translation', 'error');
     }
   };
 

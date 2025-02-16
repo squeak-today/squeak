@@ -8,6 +8,7 @@ import SidePanel from '../components/SidePanel';
 import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import TranslationPanel from '../components/TranslationPanel';
+import { useTranslation } from '../hooks/useTranslation';
 
 import { LANGUAGE_CODES_REVERSE } from '../lib/lang_codes';
 
@@ -50,35 +51,7 @@ function Read() {
 
     const apiBase = process.env.REACT_APP_API_BASE;
 
-    const fetchTranslation = async (content, source) => {
-		let url = `${apiBase}translate`;
-		let translation = "";
-		const data = {
-			sentence: content,
-			source: source,
-			target: 'en'
-		};
-		const { data: { session } } = await supabase.auth.getSession();
-		const jwt = session?.access_token;
-		await fetch(url, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${jwt}`
-			},
-			body: JSON.stringify(data)
-		}).then(response => response.json())
-		.then(result => {
-			console.log('Successful content translation!');
-			translation = result["sentence"].toString();
-		})
-		.catch(error => {
-			console.error('ERROR: ', error);
-			showNotification("Couldn't find the translation. Please try again or come back later!", 'error');
-		})
-		return translation;
-	};
+    const { translate } = useTranslation();
 
     useEffect(() => {
         const loadInitialMetadata = async () => {
@@ -133,7 +106,7 @@ function Read() {
 
     const handleWordClick = async (e, word, sourceLang, sentence) => {
         try {
-            const translation = await fetchTranslation(word, sourceLang);
+            const translation = await translate(word, sourceLang);
             
             if (translation) {
                 setTooltip({
@@ -151,7 +124,7 @@ function Read() {
     };
 
     const handleSentenceToggle = async () => {
-        const translation = await fetchTranslation(tooltip.originalSentence, sourceLanguage);
+        const translation = await translate(tooltip.originalSentence, sourceLanguage);
         setTooltip(prev => ({ ...prev, sentenceTranslation: translation }));
     };
 
