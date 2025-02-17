@@ -17,6 +17,10 @@ See our [roadmap here](https://github.com/orgs/squeak-today/projects/2/views/1).
 
 ## Developer Setup
 
+## `/frontend`
+`cp .env.example .env`
+Run with `npm start`.
+
 ### `/stories`
 Contains some stories in MDX format, and scripts to upload them to S3.
 Developed on `Python 3.11.11`.
@@ -41,17 +45,9 @@ As of writing, to add support for all levels of studying questions, you need to 
 All available widgets for use in story writing are in `frontend/src/components/StoryWidgets.js`.
 
 ### `/supabase` (semi-optional)
-Contains migrations and code to interact with Supabase via code if needed.
-Needs a `.env` file with the following format:
-```shell
-SUPABASE_HOST = "..."
-SUPABASE_PORT = "..."
-SUPABASE_USER = "..."
-SUPABASE_PASSWORD = "..."
-SUPABASE_DATABASE = "..."
-```
-
-This folder is semi-optional as its not needed to test in development, but migrations are still recorded in the repo.
+Contains migrations for Supabase db.
+In the Supabase online dashboard, make a branch with the same name as the branch you are developing.
+That branch should be used as your Supabase testing environment.
 
 ### Deploy API
 These instructions are for deployment using Squeak's official domain and already existing Supabase.
