@@ -39,7 +39,8 @@ END;
 $$ language 'plpgsql';
 
 -- trigger to update updated_at timestamp whenever there's an update on daily_progress
-CREATE TRIGGER IF NOT EXISTS update_daily_progress_updated_at
+DROP TRIGGER IF EXISTS update_daily_progress_updated_at ON daily_progress;
+CREATE TRIGGER update_daily_progress_updated_at
     BEFORE UPDATE ON daily_progress
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
