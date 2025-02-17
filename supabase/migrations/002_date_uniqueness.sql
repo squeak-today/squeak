@@ -25,9 +25,9 @@ ALTER TABLE stories
 DROP CONSTRAINT IF EXISTS unique_stories_entry;
 
 ALTER TABLE news
-ADD CONSTRAINT unique_news_entry 
+ADD CONSTRAINT IF NOT EXISTS unique_news_entry 
 UNIQUE (topic, language, cefr_level, date_created);
 
 ALTER TABLE stories 
-ADD CONSTRAINT unique_stories_entry 
+ADD CONSTRAINT IF NOT EXISTS unique_stories_entry 
 UNIQUE (topic, language, cefr_level, date_created);
