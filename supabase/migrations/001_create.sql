@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS news (
     cefr_level TEXT DEFAULT NULL,
     preview_text TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_created DATE DEFAULT CURRENT_DATE NOT NULL  -- Add this column from the start
+    date_created DATE DEFAULT CURRENT_DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS stories (
@@ -17,10 +17,9 @@ CREATE TABLE IF NOT EXISTS stories (
     cefr_level TEXT DEFAULT NULL,
     preview_text TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    date_created DATE DEFAULT CURRENT_DATE NOT NULL  -- Add this column from the start
+    date_created DATE DEFAULT CURRENT_DATE NOT NULL
 );
 
--- Create the final version of the constraints directly
 ALTER TABLE news
 DROP CONSTRAINT IF EXISTS unique_news_entry;
 
