@@ -19,11 +19,17 @@ CREATE TABLE IF NOT EXISTS stories (
 );
 
 ALTER TABLE news
-ADD CONSTRAINT IF NOT EXISTS unique_news_entry 
+DROP CONSTRAINT IF EXISTS unique_news_entry;
+
+ALTER TABLE news
+ADD CONSTRAINT unique_news_entry 
 UNIQUE (topic, language, cefr_level);
 
 ALTER TABLE stories 
-ADD CONSTRAINT IF NOT EXISTS unique_stories_entry 
+DROP CONSTRAINT IF EXISTS unique_stories_entry;
+
+ALTER TABLE stories 
+ADD CONSTRAINT unique_stories_entry 
 UNIQUE (topic, language, cefr_level);
 
 ALTER TABLE news ENABLE ROW LEVEL SECURITY;
