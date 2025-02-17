@@ -12,15 +12,18 @@ CREATE TABLE IF NOT EXISTS daily_progress (
 
 ALTER TABLE daily_progress ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY IF NOT EXISTS "Users can view own progress"
+DROP POLICY IF EXISTS "Users can view own progress" ON daily_progress;
+CREATE POLICY "Users can view own progress"
     ON daily_progress FOR SELECT
     USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can update own progress"
+DROP POLICY IF EXISTS "Users can update own progress" ON daily_progress;
+CREATE POLICY "Users can update own progress"
     ON daily_progress FOR UPDATE
     USING (auth.uid() = user_id);
 
-CREATE POLICY IF NOT EXISTS "Users can insert own progress"
+DROP POLICY IF EXISTS "Users can insert own progress" ON daily_progress;
+CREATE POLICY "Users can insert own progress"
     ON daily_progress FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
