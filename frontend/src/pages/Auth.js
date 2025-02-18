@@ -76,7 +76,13 @@ function Auth() {
             if (error) throw error;
             navigate('/learn');
           } else {
-            const { data, error } = await supabase.auth.signUp({ email, password });
+            console.log("SIGNUP")
+            const { data, error } = await supabase.auth.signUp({
+              email, password,
+              options: {
+                emailRedirectTo: `${window.location.origin}/welcome`,
+              }
+            });
       
             // for disabled email confirmation, we get an error with a message like "User already registered".
             if (error) {
