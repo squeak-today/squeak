@@ -12,7 +12,7 @@ export const translationService = {
         throw new Error("No valid JWT token found");
       }
 
-      const response = await fetch(`${apiBase}translate`, {
+      const response = await fetch(`${apiBase}audio/translate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

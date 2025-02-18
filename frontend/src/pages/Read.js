@@ -9,8 +9,9 @@ import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import TranslationPanel from '../components/TranslationPanel';
 import { useTranslation } from '../hooks/useTranslation';
+import { useTTS } from '../hooks/useTTS';
 
-import { LANGUAGE_CODES_REVERSE } from '../lib/lang_codes';
+import { LANGUAGE_CODES_REVERSE, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 
 const DEFAULT_CONTENT = {
     id: '',
@@ -52,6 +53,7 @@ function Read() {
     const apiBase = process.env.REACT_APP_API_BASE;
 
     const { translate } = useTranslation();
+    const { speak, isLoading: isPlayingTTS } = useTTS();
 
     useEffect(() => {
         const loadInitialMetadata = async () => {
@@ -369,6 +371,16 @@ function Read() {
         return newPagedData;
     };
 
+    const handlePlayTTS = async (text) => {
+        try {
+            const langCode = TTS_LANGUAGE_CODES[contentData.tags[0]];
+            await speak(text, langCode, TTS_VOICE_IDS[langCode]);
+        } catch (error) {
+            console.error('Error playing TTS:', error);
+            showNotification('Failed to play audio', 'error');
+        }
+    };
+
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
@@ -406,6 +418,8 @@ function Read() {
                             }}
                             onClose={() => setTooltip(prev => ({ ...prev, show: false }))}
                             handleSentenceToggle={handleSentenceToggle}
+                            onPlayTTS={handlePlayTTS}
+                            isPlayingTTS={isPlayingTTS}
                         />
                     )}
                 </ReadPageLayout>

@@ -1,6 +1,7 @@
 // TranslationPanel.js
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
+import audioIcon from '../assets/audio.png';
 
 const slideUpAnimation = keyframes`
   0% {
@@ -50,6 +51,8 @@ const Word = styled.div`
   font-weight: bold;
   word-break: break-word;
   flex: 1;
+  display: flex;
+  align-items: center;
 `;
 
 const CloseButton = styled.button`
@@ -90,7 +93,39 @@ const TranslatedSentence = styled.div`
   opacity: 0.9;
 `;
 
-function TranslationPanel({ data, onClose, handleSentenceToggle }) {
+const SpeakerButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+  }
+`;
+
+const AudioIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  filter: invert(1); // Makes black icon white
+`;
+
+const SentenceHeader = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+function TranslationPanel({ data, onClose, handleSentenceToggle, onPlayTTS, isPlayingTTS }) {
   const [isClosing, setIsClosing] = useState(false);
   const [showSentences, setShowSentences] = useState(false);
 
@@ -114,7 +149,15 @@ function TranslationPanel({ data, onClose, handleSentenceToggle }) {
   return (
     <Panel $show={!isClosing}>
       <Header>
-        <Word>{data.word}</Word>
+        <Word>
+          {data.word}
+          <SpeakerButton 
+            onClick={() => onPlayTTS(data.word)}
+            disabled={isPlayingTTS}
+          >
+            <AudioIcon src={audioIcon} alt="" />
+          </SpeakerButton>
+        </Word>
         <CloseButton onClick={handleClose}>✕</CloseButton>
       </Header>
       
@@ -131,7 +174,15 @@ function TranslationPanel({ data, onClose, handleSentenceToggle }) {
             {data.originalSentence}
           </Sentence>
           <Sentence>
-            <strong>Translated</strong><br />
+            <SentenceHeader>
+              <strong>Translated</strong>
+              <SpeakerButton 
+                onClick={() => onPlayTTS(data.originalSentence)}
+                disabled={isPlayingTTS}
+              >
+                <AudioIcon src={audioIcon} alt="" />
+              </SpeakerButton>
+            </SentenceHeader>
             <TranslatedSentence>{data.sentenceTranslation}</TranslatedSentence>
           </Sentence>
         </>

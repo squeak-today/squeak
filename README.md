@@ -48,6 +48,8 @@ When the branch is opened, it will automatically execute all of the migrations i
 > If you are adding new migrations, you MUST ensure they are idempotent. Be careful when relaxing constraints, as future data may not conform to the earlier versions of the constraints, and thus cause migrations failure on the earlier one.
 
 This Supabase instance will have its own connection strings, i.e its own host to be used later.
+Generate a password for the database:
+`Project Settings > Database > Reset Database Password`
 
 When ready:
 1. Create a PR

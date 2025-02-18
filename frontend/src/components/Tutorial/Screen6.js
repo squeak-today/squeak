@@ -13,6 +13,8 @@ import {
   ExplanationText,
 } from '../../styles/ReadPageStyles';
 import { useTranslation } from '../../hooks/useTranslation';
+import { useTTS } from '../../hooks/useTTS';
+import { TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../../lib/lang_codes';
 
 // Headings as paragraphs with desired font sizes
 const MainHeading = styled.p`
@@ -104,6 +106,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
     sentenceTranslation: '',
   });
   const { translate } = useTranslation();
+  const { speak, isLoading: isPlayingTTS } = useTTS();
 
   // Normalize sourceLanguage.
   if(sourceLanguage.toLowerCase().trim() === "french"){
@@ -175,6 +178,16 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
   
     if (!isPass) {
       showNotification("Your answer doesn't seem to be correct. Please try again.", "error");
+    }
+  };
+
+  const handlePlayTTS = async (text) => {
+    try {
+      const langCode = TTS_LANGUAGE_CODES[sourceLanguage];
+      await speak(text, langCode, TTS_VOICE_IDS[langCode]);
+    } catch (error) {
+      console.error('Error playing TTS:', error);
+      showNotification('Failed to play audio', 'error');
     }
   };
 
@@ -254,6 +267,8 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
             }}
             onClose={() => setTooltip(prev => ({ ...prev, show: false }))}
             handleSentenceToggle={handleSentenceToggle}
+            onPlayTTS={handlePlayTTS}
+            isPlayingTTS={isPlayingTTS}
           />
         )}
       </Container>
