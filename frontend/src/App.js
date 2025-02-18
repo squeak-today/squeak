@@ -6,6 +6,7 @@ import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import Read from './pages/Read';
 import Welcome from './pages/Welcome';
+import Teacher from './pages/Teacher'
 
 function App() {
 	return (
@@ -13,6 +14,7 @@ function App() {
 			<Router>
 				<Routes>
 					<Route path="/" element={<Home />} />
+					<Route path="/Teacher" element={<Teacher />} />
 					<Route path="/auth/:mode" element={<Auth />} />
 					<Route 
 						path="/learn" 
