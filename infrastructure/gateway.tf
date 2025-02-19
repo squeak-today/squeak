@@ -63,16 +63,6 @@ module "profile_upsert" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
-# Other endpoints
-module "translate" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
-  path_part   = "translate"
-  http_method = "POST"
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
 # QNA endpoints
 module "qna" {
   source      = "./api_gateway"
@@ -114,6 +104,33 @@ module "progress_streak" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
   parent_id   = module.progress.resource_id
   path_part   = "streak"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# Audio endpoints
+module "audio" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "audio"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "audio_translate" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.audio.resource_id
+  path_part   = "translate"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "audio_tts" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.audio.resource_id
+  path_part   = "tts"
+  http_method = "POST"
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
@@ -222,11 +239,13 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.news_query,
     module.profile,
     module.profile_upsert,
-    module.translate,
     module.qna,
     module.qna_evaluate,
     module.progress,
     module.progress_streak,
-    module.progress_increment
+    module.progress_increment,
+    module.audio,
+    module.audio_translate,
+    module.audio_tts
   ]
 }

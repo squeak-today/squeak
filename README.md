@@ -48,6 +48,8 @@ When the branch is opened, it will automatically execute all of the migrations i
 > If you are adding new migrations, you MUST ensure they are idempotent. Be careful when relaxing constraints, as future data may not conform to the earlier versions of the constraints, and thus cause migrations failure on the earlier one.
 
 This Supabase instance will have its own connection strings, i.e its own host to be used later.
+Generate a password for the database:
+`Project Settings > Database > Reset Database Password`
 
 When ready:
 1. Create a PR
@@ -157,12 +159,14 @@ That branch should be used as your Supabase testing environment.
 | `/news/query` | `GET` | Query Supabase for news articles. |
 | `/profile` | `GET` | Get a user's profile. |
 | `/profile/upsert` | `POST` | Upsert a user's profile. |
-| `/translate` | `POST` | Translation of given sentence to source language. |
 | `/qna` | `POST` | Generate a question testing vocabulary or understanding of a given piece of content. |
 | `/qna/evaluate` | `POST` | Evaluation of a user's answer to a question about a given content. |
 | `/progress` | `GET` | Get today's progress for the authenticated user. |
 | `/progress/increment` | `POST` | Increment the number of questions completed for today. |
 | `/progress/streak` | `GET` | Get the user's current streak information. |
+| `/audio` | `GET` | Health check for audio services. |
+| `/audio/translate` | `POST` | Translation of given sentence to target language. |
+| `/audio/tts` | `POST` | Convert text to speech audio. |
 
 ### **GET** `/story`
 > https://api.squeak.today/story
@@ -248,29 +252,6 @@ Pulls a news article by ID.
             "score": 0.9865718
         }
     ]
-}
-```
-
-### **POST** `/translate`
-> https://api.squeak.today/translate
-
-Translates a given sentence to English and returns the result.
-
-| Parameter | Type | Required | Description |
-| --- | --- | --- | --- |
-| `sentence` | `string` | Yes | Sentence to translate. |
-| `source` | `string` | Yes | Source language. e.g `fr` |
-| `target` | `string` | Yes | Language to translate to. e.g `en` |
-
-### Headers
-- **Content-Type**: `application/json`
-- **Accept**: `application/json`
-
-### Response
-> `200 Successful`
-```json
-{
-	"sentence": "the translated sentence."
 }
 ```
 
@@ -475,3 +456,64 @@ Get the user's current streak information.
     "completed_today": true
 }
 ```
+
+### **GET** `/audio`
+> https://api.squeak.today/audio
+
+Health check endpoint for audio services.
+
+### Response
+> `200 Successful`
+```json
+{
+    "status": "live"
+}
+```
+
+### **POST** `/audio/translate`
+> https://api.squeak.today/audio/translate
+
+Translates a given sentence between specified languages.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `sentence` | `string` | Yes | Sentence to translate. |
+| `source` | `string` | Yes | Source language code (e.g., `fr`). |
+| `target` | `string` | Yes | Target language code (e.g., `en`). |
+
+### Headers
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+### Response
+> `200 Successful`
+```json
+{
+    "sentence": "The translated sentence."
+}
+```
+
+### **POST** `/audio/tts`
+> https://api.squeak.today/audio/tts
+
+Converts text to speech using Google Cloud Text-to-Speech API.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `text` | `string` | Yes | Text to convert to speech. |
+| `language_code` | `string` | Yes | Language code (e.g., `fr-FR`, `en-US`). |
+| `voice_name` | `string` | Yes | Voice name (e.g., `fr-FR-Standard-A`). |
+
+### Headers
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+### Response
+> `200 Successful`
+```json
+{
+    "audio_content": "base64-encoded audio content"
+}
+```
+
+The `audio_content` is a base64-encoded string of the audio file in MP3 format. You can decode this to get the actual audio bytes.
