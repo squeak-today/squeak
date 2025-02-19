@@ -174,27 +174,27 @@ resource "aws_iam_role_policy" "api_gateway_cloudwatch" {
 
 resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
-  rest_api_id  = aws_api_gateway_rest_api.story_api.id
-  stage_name   = terraform.workspace
+  rest_api_id   = aws_api_gateway_rest_api.story_api.id
+  stage_name    = terraform.workspace
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gateway.arn
     format = jsonencode({
-      requestId              = "$context.requestId"
-      sourceIp              = "$context.identity.sourceIp"
-      requestTime           = "$context.requestTime"
-      protocol              = "$context.protocol"
-      httpMethod            = "$context.httpMethod"
-      resourcePath          = "$context.resourcePath"
-      routeKey              = "$context.routeKey"
-      status                = "$context.status"
-      responseLength        = "$context.responseLength"
-      integrationError      = "$context.integration.error"
-      integrationStatus     = "$context.integration.status"
-      integrationLatency    = "$context.integration.latency"
-      integrationRequestId  = "$context.integration.requestId"
-      errorMessage          = "$context.error.message"
-      errorMessageString    = "$context.error.messageString"
+      requestId            = "$context.requestId"
+      sourceIp             = "$context.identity.sourceIp"
+      requestTime          = "$context.requestTime"
+      protocol             = "$context.protocol"
+      httpMethod           = "$context.httpMethod"
+      resourcePath         = "$context.resourcePath"
+      routeKey             = "$context.routeKey"
+      status               = "$context.status"
+      responseLength       = "$context.responseLength"
+      integrationError     = "$context.integration.error"
+      integrationStatus    = "$context.integration.status"
+      integrationLatency   = "$context.integration.latency"
+      integrationRequestId = "$context.integration.requestId"
+      errorMessage         = "$context.error.message"
+      errorMessageString   = "$context.error.messageString"
     })
   }
 }
