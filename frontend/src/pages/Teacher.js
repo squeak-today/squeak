@@ -184,7 +184,7 @@ function Teacher() {
             <SubHeading>
               Teachers, we’re here to help. Squeak is ready to support your students as they learn languages in class.
             </SubHeading>
-            <CTAButton href="#">Get started as a teacher</CTAButton>
+            <CTAButton href="/teacher/dashboard">Get started as a teacher</CTAButton>
           </HeroText>
         </HeroContent>
       </HeroSection>
