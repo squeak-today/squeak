@@ -36,8 +36,8 @@ func webSearch(query string, info_depth int) (TavilyResponse, error) {
 
 	tavilyPayload := map[string]interface{}{
 		"query":       query,
-		"topic":       "news",
-		"days":        2,
+		"topic":       "general",
+		"time_range":  "d",
 		"max_results": info_depth,
 	}
 
