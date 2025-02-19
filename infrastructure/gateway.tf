@@ -177,6 +177,10 @@ resource "aws_api_gateway_stage" "api_stage" {
   rest_api_id   = aws_api_gateway_rest_api.story_api.id
   stage_name    = terraform.workspace
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.api_gateway.arn
     format = jsonencode({
@@ -197,6 +201,10 @@ resource "aws_api_gateway_stage" "api_stage" {
       errorMessageString   = "$context.error.messageString"
     })
   }
+
+  depends_on = [
+    aws_api_gateway_deployment.api_deployment
+  ]
 }
 
 resource "aws_api_gateway_account" "api_gateway" {
