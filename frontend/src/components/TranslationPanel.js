@@ -170,12 +170,8 @@ function TranslationPanel({ data, onClose, handleSentenceToggle, onPlayTTS, isPl
       {showSentences && (
         <>
           <Sentence>
-            <strong>Original</strong><br />
-            {data.originalSentence}
-          </Sentence>
-          <Sentence>
             <SentenceHeader>
-              <strong>Translated</strong>
+              <strong>Original</strong>
               <SpeakerButton 
                 onClick={() => onPlayTTS(data.originalSentence)}
                 disabled={isPlayingTTS}
@@ -183,6 +179,10 @@ function TranslationPanel({ data, onClose, handleSentenceToggle, onPlayTTS, isPl
                 <AudioIcon src={audioIcon} alt="" />
               </SpeakerButton>
             </SentenceHeader>
+            {data.originalSentence}
+          </Sentence>
+          <Sentence>
+            <strong>Translated</strong>
             <TranslatedSentence>{data.sentenceTranslation}</TranslatedSentence>
           </Sentence>
         </>

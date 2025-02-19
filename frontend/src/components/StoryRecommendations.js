@@ -25,7 +25,7 @@ const RecommendationsRow = styled.div`
 `;
 
 const RecommendationBlock = styled.div`
-    width: 140px;
+    min-width: 140px;
     height: 200px;
     background: linear-gradient(
         to right,
