@@ -126,10 +126,93 @@ resource "aws_lambda_permission" "allow_apigateway" {
   source_arn    = "${aws_api_gateway_rest_api.story_api.execution_arn}/*/*"
 }
 
-# Deploy
+resource "aws_cloudwatch_log_group" "api_gateway" {
+  name              = "/aws/apigateway/${terraform.workspace}-StoryAPI"
+  retention_in_days = 7
+}
+
+resource "aws_iam_role" "api_gateway_cloudwatch" {
+  name = "${terraform.workspace}-api-gateway-cloudwatch"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "api_gateway_cloudwatch" {
+  name = "${terraform.workspace}-api-gateway-cloudwatch"
+  role = aws_iam_role.api_gateway_cloudwatch.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_api_gateway_stage" "api_stage" {
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.story_api.id
+  stage_name    = terraform.workspace
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gateway.arn
+    format = jsonencode({
+      requestId            = "$context.requestId"
+      sourceIp             = "$context.identity.sourceIp"
+      requestTime          = "$context.requestTime"
+      protocol             = "$context.protocol"
+      httpMethod           = "$context.httpMethod"
+      resourcePath         = "$context.resourcePath"
+      routeKey             = "$context.routeKey"
+      status               = "$context.status"
+      responseLength       = "$context.responseLength"
+      integrationError     = "$context.integration.error"
+      integrationStatus    = "$context.integration.status"
+      integrationLatency   = "$context.integration.latency"
+      integrationRequestId = "$context.integration.requestId"
+      errorMessage         = "$context.error.message"
+      errorMessageString   = "$context.error.messageString"
+    })
+  }
+
+  depends_on = [
+    aws_api_gateway_deployment.api_deployment
+  ]
+}
+
+resource "aws_api_gateway_account" "api_gateway" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway_cloudwatch.arn
+}
+
 resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
-  stage_name  = terraform.workspace
 
   depends_on = [
     module.story,
