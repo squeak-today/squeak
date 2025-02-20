@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import supabase from '../lib/supabase';
-import { AuthBox, AuthContainer, AuthTitle, AuthText, AuthButton } from '../styles/AuthPageStyles';
-import { useNotification } from '../context/NotificationContext';
-import BasicPage from '../components/BasicPage';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import supabase from "../lib/supabase";
+import {
+  AuthBox,
+  AuthContainer,
+  AuthTitle,
+  AuthText,
+  AuthButton,
+} from "../styles/AuthPageStyles";
+import { useNotification } from "../context/NotificationContext";
+import BasicPage from "../components/BasicPage";
 
 function BecomeTeacher() {
   const navigate = useNavigate();
@@ -15,10 +21,12 @@ function BecomeTeacher() {
     setLoading(true);
     try {
       // Get the current session (teacher must already be logged in)
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         showNotification("You must be logged in to become a teacher.", "error");
-        navigate('/teacher/auth/login');
+        navigate("/teacher/become");
         return;
       }
       const jwt = session.access_token;
@@ -27,7 +35,7 @@ function BecomeTeacher() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${jwt}`,
+          Authorization: `Bearer ${jwt}`,
         },
         // You can adjust the initial students_count as needed
         body: JSON.stringify({ students_count: 0 }),
@@ -35,10 +43,13 @@ function BecomeTeacher() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        showNotification(errorData.error || "Failed to create classroom", "error");
+        showNotification(
+          errorData.error || "Failed to create classroom",
+          "error"
+        );
       } else {
         showNotification("Classroom created successfully!", "success");
-        navigate('/teacher/dashboard');
+        navigate("/teacher/dashboard");
       }
     } catch (error) {
       console.error("Error creating classroom:", error);
@@ -56,11 +67,9 @@ function BecomeTeacher() {
           <AuthText>
             It looks like you haven't set up a teacher account yet.
           </AuthText>
-          <AuthText>
-            To start teaching, please create your classroom.
-          </AuthText>
+          <AuthText>To start teaching, please create your classroom.</AuthText>
           <AuthButton onClick={handleBecomeTeacher} disabled={loading}>
-            {loading ? 'Creating Classroom...' : 'Create Classroom'}
+            {loading ? "Creating Classroom..." : "Create Classroom"}
           </AuthButton>
         </AuthContainer>
       </AuthBox>

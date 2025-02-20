@@ -7,7 +7,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Read from './pages/Read';
 import Welcome from './pages/Welcome';
 import Teacher from './pages/Teacher'
-import TeacherAuth from './pages/TeacherAuth';
 import BecomeTeacher from './pages/BecomeTeacher';
 import TeacherDashboard from './pages/TeacherDashboard';
 
@@ -20,7 +19,6 @@ function App() {
 					
 					// Teacher Routes
 					<Route path="/teacher" element={<Teacher />} />
-					<Route path="/teacher/auth/:mode" element={<TeacherAuth />} />
 					<Route path="/teacher/dashboard" element={<TeacherDashboard />} />
 					<Route path="/teacher/become" element={<BecomeTeacher />} />
 
