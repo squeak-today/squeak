@@ -5,7 +5,7 @@ export const AVAILABLE_TOPICS = [
     'Finance',
     'Gaming',
     'Music',
-    'Film and TV',
+    'Entertainment',
     'NBA',
     'NFL',
     'Football'

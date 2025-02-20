@@ -1,11 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"strconv"
@@ -22,17 +19,10 @@ import (
 	_ "github.com/lib/pq"
 
 	"database/sql"
+	"story-api/audio"
 	"story-api/gemini"
 	"story-api/supabase"
 )
-
-type TranslateResponse struct {
-	Data struct {
-		Translations []struct {
-			TranslatedText string `json:"translatedText"`
-		} `json:"translations"`
-	} `json:"data"`
-}
 
 type Profile = supabase.Profile
 
@@ -105,6 +95,7 @@ func init() {
 
 	var err error
 	dbClient, err = supabase.NewClient()
+	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"))
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v", err)
 	}
@@ -321,6 +312,65 @@ func init() {
 		}
 	}
 
+
+	audioGroup := router.Group("/audio")
+	{
+		audioGroup.GET("", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "live",
+			})
+		})
+
+		audioGroup.POST("/translate", func(c *gin.Context) {
+			var infoBody struct {
+				Sentence string `json:"sentence"`
+				Source   string `json:"source"`
+				Target   string `json:"target"`
+			}
+
+			if err := c.ShouldBindJSON(&infoBody); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+				return
+			}
+
+			translatedText, err := audioClient.Translate(infoBody.Sentence, infoBody.Source, infoBody.Target)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": fmt.Sprintf("Translation failed: %v", err),
+				})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"sentence": translatedText,
+			})
+		})
+
+		audioGroup.POST("/tts", func(c *gin.Context) {
+			var infoBody struct {
+				Text         string `json:"text"`
+				LanguageCode string `json:"language_code"`
+				VoiceName    string `json:"voice_name"`
+			}
+
+			if err := c.ShouldBindJSON(&infoBody); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+				return
+			}
+
+			audioContent, err := audioClient.TextToSpeech(infoBody.Text, infoBody.LanguageCode, infoBody.VoiceName)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": fmt.Sprintf("Text-to-speech failed: %v", err),
+				})
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"audio_content": audioContent,
+			})
+		})
+	}
 
 	progressGroup := router.Group("/progress")
 	{
@@ -729,77 +779,6 @@ func init() {
 			c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully", "id": id})
 		})
 	}
-
-	router.POST("/translate", func(c *gin.Context) {
-		var infoBody struct {
-			Sentence string `json:"sentence"`
-			Source   string `json:"source"`
-			Target   string `json:"target"`
-		}
-
-		if err := c.ShouldBindJSON(&infoBody); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-			return
-		}
-
-		googleAPIKey := os.Getenv("GOOGLE_API_KEY")
-		query := []string{infoBody.Sentence}
-		translatePayload := map[string]interface{}{
-			"q":      query,
-			"source": infoBody.Source,
-			"target": infoBody.Target,
-			"format": "text",
-		}
-
-		jsonData, err := json.Marshal(translatePayload)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Translate payload marshalling failed!",
-			})
-			return
-		}
-
-		req, err := http.NewRequest("POST", "https://translation.googleapis.com/language/translate/v2?key="+googleAPIKey, bytes.NewBuffer(jsonData))
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Request to GCP failed!",
-			})
-			return
-		}
-
-		req.Header.Set("Content-Type", "application/json")
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Request to GCP failed!",
-			})
-			return
-		}
-		defer resp.Body.Close()
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Request to GCP failed!",
-			})
-			return
-		}
-
-		var result TranslateResponse
-		if err := json.Unmarshal(body, &result); err != nil {
-			log.Println(string(body))
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "TranslateResponse unmarshalling failed!",
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"sentence": result.Data.Translations[0].TranslatedText,
-		})
-	})
 
 	qnaGroup := router.Group("/qna")
 	{

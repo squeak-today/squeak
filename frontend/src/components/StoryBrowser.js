@@ -87,7 +87,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 
 	const handlePageChange = (newPage) => {
 		setCurrentPage(newPage);
-		onParamsSelect("News", filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
+		onParamsSelect(filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
 	};
 
 	return (

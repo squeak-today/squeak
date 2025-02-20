@@ -63,16 +63,6 @@ module "profile_upsert" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
-# Other endpoints
-module "translate" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
-  path_part   = "translate"
-  http_method = "POST"
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
 # QNA endpoints
 module "qna" {
   source      = "./api_gateway"
@@ -143,6 +133,51 @@ module "teacher_classroom_create" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "teacher_classroom_accept" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "accept"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom_reject" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "reject"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# Audio endpoints
+module "audio" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "audio"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "audio_translate" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.audio.resource_id
+  path_part   = "translate"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "audio_tts" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.audio.resource_id
+  path_part   = "tts"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "student" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -168,24 +203,6 @@ module "student_classroom_join" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
-module "teacher_class_accept" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = module.teacher_classroom.resource_id
-  path_part   = "accept"
-  http_method = "POST"
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
-module "teacher_classroom_reject" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = module.teacher_classroom.resource_id
-  path_part   = "reject"
-  http_method = "POST"
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
 # Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
   statement_id  = "${terraform.workspace}-AllowExecutionFromAPIGateway"
@@ -195,10 +212,93 @@ resource "aws_lambda_permission" "allow_apigateway" {
   source_arn    = "${aws_api_gateway_rest_api.story_api.execution_arn}/*/*"
 }
 
-# Deploy
+resource "aws_cloudwatch_log_group" "api_gateway" {
+  name              = "/aws/apigateway/${terraform.workspace}-StoryAPI"
+  retention_in_days = 7
+}
+
+resource "aws_iam_role" "api_gateway_cloudwatch" {
+  name = "${terraform.workspace}-api-gateway-cloudwatch"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "api_gateway_cloudwatch" {
+  name = "${terraform.workspace}-api-gateway-cloudwatch"
+  role = aws_iam_role.api_gateway_cloudwatch.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_api_gateway_stage" "api_stage" {
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.story_api.id
+  stage_name    = terraform.workspace
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.api_gateway.arn
+    format = jsonencode({
+      requestId            = "$context.requestId"
+      sourceIp             = "$context.identity.sourceIp"
+      requestTime          = "$context.requestTime"
+      protocol             = "$context.protocol"
+      httpMethod           = "$context.httpMethod"
+      resourcePath         = "$context.resourcePath"
+      routeKey             = "$context.routeKey"
+      status               = "$context.status"
+      responseLength       = "$context.responseLength"
+      integrationError     = "$context.integration.error"
+      integrationStatus    = "$context.integration.status"
+      integrationLatency   = "$context.integration.latency"
+      integrationRequestId = "$context.integration.requestId"
+      errorMessage         = "$context.error.message"
+      errorMessageString   = "$context.error.messageString"
+    })
+  }
+
+  depends_on = [
+    aws_api_gateway_deployment.api_deployment
+  ]
+}
+
+resource "aws_api_gateway_account" "api_gateway" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway_cloudwatch.arn
+}
+
 resource "aws_api_gateway_deployment" "api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
-  stage_name  = terraform.workspace
 
   depends_on = [
     module.story,
@@ -208,7 +308,6 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.news_query,
     module.profile,
     module.profile_upsert,
-    module.translate,
     module.qna,
     module.qna_evaluate,
     module.progress,
@@ -217,10 +316,13 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.teacher,
     module.teacher_classroom,
     module.teacher_classroom_create,
+    module.teacher_classroom_accept,
+    module.teacher_classroom_reject,
     module.student,
     module.student_classroom,
     module.student_classroom_join,
-    module.teacher_class_accept,
-    module.teacher_classroom_reject
+    module.audio,
+    module.audio_translate,
+    module.audio_tts
   ]
 }
