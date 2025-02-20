@@ -263,6 +263,10 @@ resource "aws_api_gateway_stage" "api_stage" {
   rest_api_id   = aws_api_gateway_rest_api.story_api.id
   stage_name    = terraform.workspace
 
+  depends_on = [
+    aws_api_gateway_deployment.api_deployment
+  ]
+
   lifecycle {
     create_before_destroy = true
   }
@@ -288,9 +292,6 @@ resource "aws_api_gateway_stage" "api_stage" {
     })
   }
 
-  depends_on = [
-    aws_api_gateway_deployment.api_deployment
-  ]
 }
 
 resource "aws_api_gateway_account" "api_gateway" {
@@ -326,3 +327,4 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.audio_tts
   ]
 }
+

@@ -456,14 +456,16 @@ func init() {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
 			}
-			accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
-				return
-			}
-			if !accepted {
-				c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
-				return
+			if classroomID != "" {
+				accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
+					return
+				}
+				if !accepted {
+					c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
+					return
+				}
 			}
 
 			// Get the record from supabase db
@@ -586,14 +588,16 @@ func init() {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
 			}
-			accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
-				return
-			}
-			if !accepted {
-				c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
-				return
+			if classroomID != "" {
+				accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
+					return
+				}
+				if !accepted {
+					c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
+					return
+				}
 			}
 
 			// Get the record from supabase db
