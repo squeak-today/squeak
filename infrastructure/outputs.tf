@@ -96,6 +96,8 @@ output "api_gateway_url_student_classroom_accept" {
 output "api_gateway_url_teacher_classroom_reject" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/teacher/classroom/reject"
   description = "Teacher Classroom Reject URL for Story API"
+}
+
 output "api_gateway_url_audio" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/audio"
   description = "Audio base URL for Story API"
