@@ -37,7 +37,7 @@ ALTER TABLE classrooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE accepted_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 
-CREATE INDEX classrooms_teacher_id_idx ON classrooms(teacher_id);
-CREATE INDEX accepted_content_classroom_id_idx ON accepted_content(classroom_id);
-CREATE INDEX students_classroom_id_idx ON students(classroom_id);
-CREATE INDEX students_user_id_idx ON students(user_id); 
+CREATE INDEX IF NOT EXISTS classrooms_teacher_id_idx ON classrooms(teacher_id);
+CREATE INDEX IF NOT EXISTS accepted_content_classroom_id_idx ON accepted_content(classroom_id);
+CREATE INDEX IF NOT EXISTS students_classroom_id_idx ON students(classroom_id);
+CREATE INDEX IF NOT EXISTS students_user_id_idx ON students(user_id); 
