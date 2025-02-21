@@ -3,49 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabase';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
-import styled from 'styled-components';
 import TeacherStoryBrowser from '../components/TeacherStoryBrowser';
-
-const Section = styled.section`
-  margin-bottom: 2rem;
-`;
-
-const SectionTitle = styled.h2`
-  font-family: 'Lora', serif;
-  font-size: 2rem;
-  color: #000;
-  margin-bottom: 1rem;
-`;
-
-// Modified to include text-align center
-const ToggleButton = styled.button`
-  background-color: rgba(250, 212, 143, 0.5);
-  color: black;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  font-family: 'Lora', serif;
-  cursor: pointer;
-  margin-bottom: 1rem;
-  &:hover {
-    background-color: #e0a700;
-  }
-`;
-
-// Added a container for centering the button
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-`;
-
-export const DateHeader = styled.h1`
-	font-family: 'Lora', serif;
-	text-align: center;
-	margin-bottom: 1em;
-	font-size: 2em;
-	font-weight: 600;
-`;
+import {
+  Section,
+  ToggleButton,
+  ButtonContainer,
+  DateHeader,
+  ClassroomInfoContainer,
+  ClassroomInfoText
+} from '../styles/TeacherDashboardPageStyles';
 
 const formatDate = () => {
 	const date = new Date();
@@ -72,7 +38,7 @@ function TeacherDashboard() {
   const [loading, setLoading] = useState(true);
   const [classroomInfo, setClassroomInfo] = useState(null);
   const [stories, setStories] = useState([]);
-  const [showClassroomInfo, setShowClassroomInfo] = useState(false);
+  const [showClassroomInfo, setShowClassroomInfo] = useState(true);
   const apiBase = process.env.REACT_APP_API_BASE;
 
   useEffect(() => {
@@ -257,21 +223,25 @@ function TeacherDashboard() {
   return (
     <BasicPage showLogout onLogout={handleLogout}>
       <Section>
-        <DateHeader>Today is {formatDate()}...</DateHeader>
-            <Section>
-                <ButtonContainer>
-                        <ToggleButton onClick={() => setShowClassroomInfo(prev => !prev)}>
-                        {showClassroomInfo ? 'Hide Classroom Info' : 'Show Classroom Info'}
-                        </ToggleButton>
-                    </ButtonContainer>
-                    {showClassroomInfo && classroomInfo && (
-                    <div style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', background: '#fff' }}>
-                        <p><strong>Classroom ID:</strong> {classroomInfo.classroom_id}</p>
-                        <p><strong>Students Count:</strong> {classroomInfo.students_count}</p>
-                    </div>
-                    )}
-            </Section>
-            
+        <Section>
+          <ButtonContainer>
+            <ToggleButton onClick={() => setShowClassroomInfo(prev => !prev)}>
+              {showClassroomInfo ? 'Hide Classroom Info' : 'Show Classroom Info'}
+            </ToggleButton>
+          </ButtonContainer>
+          {showClassroomInfo && classroomInfo && (
+            <ClassroomInfoContainer>
+              <ClassroomInfoText>
+                <strong>Classroom ID:</strong> {classroomInfo.classroom_id}
+              </ClassroomInfoText>
+              <ClassroomInfoText>
+                <strong>Students Count:</strong> {classroomInfo.students_count}
+              </ClassroomInfoText>
+            </ClassroomInfoContainer>
+          )}
+        </Section>
+
+        <DateHeader>Whitelist News Articles</DateHeader>
         <TeacherStoryBrowser 
           stories={stories}
           onParamsSelect={handleParamsSelect}
@@ -283,6 +253,5 @@ function TeacherDashboard() {
     </BasicPage>
   );
 }
-
 
 export default TeacherDashboard;

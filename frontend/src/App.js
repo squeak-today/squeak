@@ -6,9 +6,8 @@ import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import Read from './pages/Read';
 import Welcome from './pages/Welcome';
-import Teacher from './pages/Teacher'
-import BecomeTeacher from './pages/BecomeTeacher';
 import TeacherDashboard from './pages/TeacherDashboard';
+import BecomeTeacher from './pages/BecomeTeacher';
 import TeacherRead from './pages/TeacherRead';
 import BecomeStudent from './pages/BecomeStudent';
 
@@ -19,9 +18,7 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Home />} />
 					
-					// Teacher Routes
-					<Route path="/teacher" element={<Teacher />} />
-					<Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+					<Route path="/teacher" element={<TeacherDashboard />} />
 					<Route path="/teacher/become" element={<BecomeTeacher />} />
 					<Route path="/student" element={<BecomeStudent />} />
 
