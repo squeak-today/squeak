@@ -17,9 +17,10 @@ const SectionTitle = styled.h2`
   margin-bottom: 1rem;
 `;
 
+// Modified to include text-align center
 const ToggleButton = styled.button`
-  background-color: #3c8dbb;
-  color: white;
+  background-color: rgba(250, 212, 143, 0.5);
+  color: black;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 6px;
@@ -27,9 +28,43 @@ const ToggleButton = styled.button`
   cursor: pointer;
   margin-bottom: 1rem;
   &:hover {
-    background-color: #2a6a8a;
+    background-color: #e0a700;
   }
 `;
+
+// Added a container for centering the button
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+`;
+
+export const DateHeader = styled.h1`
+	font-family: 'Lora', serif;
+	text-align: center;
+	margin-bottom: 1em;
+	font-size: 2em;
+	font-weight: 600;
+`;
+
+const formatDate = () => {
+	const date = new Date();
+	const month = date.toLocaleDateString('en-US', { month: 'long' });
+	const day = date.getDate();
+	const year = date.getFullYear();
+
+	const getOrdinal = (n) => {
+		if (n > 3 && n < 21) return 'th';
+		switch (n % 10) {
+			case 1: return 'st';
+			case 2: return 'nd';
+			case 3: return 'rd';
+			default: return 'th';
+		}
+	};
+
+	return `${month} ${day}${getOrdinal(day)}, ${year}`;
+};
 
 function TeacherDashboard() {
   const navigate = useNavigate();
@@ -66,7 +101,7 @@ function TeacherDashboard() {
         if (!classroomRes.ok) throw new Error('Failed to fetch classroom info');
         const classroomData = await classroomRes.json();
         setClassroomInfo(classroomData);
-        // Fetch initial stories (with default filters).
+        // Fetch initial stories (default filters: language=any, cefr=any, subject=any, page=1, pagesize=6)
         fetchStories(jwt, 'any', 'any', 'any', 1, 6);
       } catch (error) {
         console.error("Error:", error);
@@ -76,9 +111,9 @@ function TeacherDashboard() {
       }
     }
 
-    async function fetchStories(jwt, language, level, topic, page, limit) {
+    async function fetchStories(jwt, language, cefr, subject, page, pagesize) {
       try {
-        const queryParams = new URLSearchParams({ language, level, topic, page, limit }).toString();
+        const queryParams = new URLSearchParams({ language, cefr, subject, page, pagesize }).toString();
         const storyRes = await fetch(`${apiBase}story/query?${queryParams}`, {
           headers: { 'Authorization': `Bearer ${jwt}` },
         });
@@ -92,13 +127,22 @@ function TeacherDashboard() {
             ...item, 
             content_type: 'Story', 
             id: Number(item.id),
-            tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+            // Use learn.js mapping for tags
+            language: item.language,
+            topic: item.topic,
+            cefr_level: item.cefr_level,
+            preview_text: item.preview_text,
+            date_created: item.date_created
           })),
           ...newsData.map(item => ({ 
             ...item, 
             content_type: 'News', 
             id: Number(item.id),
-            tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+            language: item.language,
+            topic: item.topic,
+            cefr_level: item.cefr_level,
+            preview_text: item.preview_text,
+            date_created: item.date_created
           })),
         ];
         setStories(merged);
@@ -111,17 +155,18 @@ function TeacherDashboard() {
     verifyTeacherAndFetch();
   }, [apiBase, navigate, showNotification]);
 
-  const handleParamsSelect = (language, level, topic, page, limit) => {
+  const handleParamsSelect = (language, cefr, subject, page, pagesize) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) return;
       const jwt = session.access_token;
-      fetchStories(jwt, language, level, topic, page, limit);
+      fetchStories(jwt, language, cefr, subject, page, pagesize);
     });
   };
 
-  const fetchStories = async (jwt, language, level, topic, page, limit) => {
+  // Note: Using the same fetchStories function from above.
+  const fetchStories = async (jwt, language, cefr, subject, page, pagesize) => {
     try {
-      const queryParams = new URLSearchParams({ language, level, topic, page, limit }).toString();
+      const queryParams = new URLSearchParams({ language, cefr, subject, page, pagesize }).toString();
       const storyRes = await fetch(`${apiBase}story/query?${queryParams}`, {
         headers: { 'Authorization': `Bearer ${jwt}` },
       });
@@ -135,13 +180,21 @@ function TeacherDashboard() {
           ...item, 
           content_type: 'Story', 
           id: Number(item.id),
-          tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+          language: item.language,
+          topic: item.topic,
+          cefr_level: item.cefr_level,
+          preview_text: item.preview_text,
+          date_created: item.date_created
         })),
         ...newsData.map(item => ({ 
           ...item, 
           content_type: 'News', 
           id: Number(item.id),
-          tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+          language: item.language,
+          topic: item.topic,
+          cefr_level: item.cefr_level,
+          preview_text: item.preview_text,
+          date_created: item.date_created
         })),
       ];
       setStories(merged);
@@ -152,8 +205,18 @@ function TeacherDashboard() {
   };
 
   const handleViewContent = (story) => {
-    navigate(`/read/${story.type}/${story.id}`);
+    navigate(`/teacher/read/${story.content_type.toLowerCase()}/${story.id}`);
   };
+
+  const handleLogout = async () => {
+    try {
+        await supabase.auth.signOut();
+        navigate('/');
+    } catch (error) {
+        console.error('Error signing out:', error);
+        showNotification('Error signing out. Please try again.');
+    }
+};
 
   const handleAcceptStory = async (story) => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -192,21 +255,23 @@ function TeacherDashboard() {
     );
 
   return (
-    <BasicPage>
+    <BasicPage showLogout onLogout={handleLogout}>
       <Section>
-        <ToggleButton onClick={() => setShowClassroomInfo(prev => !prev)}>
-          {showClassroomInfo ? 'Hide Classroom Info' : 'Show Classroom Info'}
-        </ToggleButton>
-        {showClassroomInfo && classroomInfo && (
-          <div style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', background: '#fff' }}>
-            <p><strong>Classroom ID:</strong> {classroomInfo.classroom_id}</p>
-            <p><strong>Students Count:</strong> {classroomInfo.students_count}</p>
-          </div>
-        )}
-      </Section>
-
-      <Section>
-        <SectionTitle>Available Stories</SectionTitle>
+        <DateHeader>Today is {formatDate()}...</DateHeader>
+            <Section>
+                <ButtonContainer>
+                        <ToggleButton onClick={() => setShowClassroomInfo(prev => !prev)}>
+                        {showClassroomInfo ? 'Hide Classroom Info' : 'Show Classroom Info'}
+                        </ToggleButton>
+                    </ButtonContainer>
+                    {showClassroomInfo && classroomInfo && (
+                    <div style={{ border: '1px solid #ccc', padding: '1rem', borderRadius: '8px', background: '#fff' }}>
+                        <p><strong>Classroom ID:</strong> {classroomInfo.classroom_id}</p>
+                        <p><strong>Students Count:</strong> {classroomInfo.students_count}</p>
+                    </div>
+                    )}
+            </Section>
+            
         <TeacherStoryBrowser 
           stories={stories}
           onParamsSelect={handleParamsSelect}
@@ -218,5 +283,6 @@ function TeacherDashboard() {
     </BasicPage>
   );
 }
+
 
 export default TeacherDashboard;

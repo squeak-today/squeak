@@ -86,8 +86,8 @@ const NoContentMessage = styled.div`
 
 const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAccept, defaultLanguage }) => {
   const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
-  const [filterLevel, setFilterLevel] = useState('any');
-  const [filterTopic, setFilterTopic] = useState('any');
+  const [filterCefr, setFilterCefr] = useState('any');
+  const [filterSubject, setFilterSubject] = useState('any');
   const [currentPage, setCurrentPage] = useState(1);
   const storiesPerPage = 6;
 
@@ -97,13 +97,11 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    onParamsSelect(filterLanguage, filterLevel, filterTopic, newPage, storiesPerPage);
+    onParamsSelect(filterLanguage, filterCefr, filterSubject, newPage, storiesPerPage);
   };
-
 
   return (
     <Container>
-      <Header>Browse Stories</Header>
       <FilterContainer>
         <div style={{ flex: 1 }}>
           <FilterLabel>Language</FilterLabel>
@@ -112,7 +110,7 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
             onChange={(e) => { 
               setFilterLanguage(e.target.value); 
               setCurrentPage(1);
-              onParamsSelect(e.target.value, filterLevel, filterTopic, 1, storiesPerPage); 
+              onParamsSelect(e.target.value, filterCefr, filterSubject, 1, storiesPerPage); 
             }}
           >
             <option value="any">Any Language</option>
@@ -122,13 +120,13 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
         </div>
 
         <div style={{ flex: 1 }}>
-          <FilterLabel>Reading Level</FilterLabel>
+          <FilterLabel>CEFR Level</FilterLabel>
           <FilterSelect 
-            value={filterLevel} 
+            value={filterCefr} 
             onChange={(e) => { 
-              setFilterLevel(e.target.value); 
+              setFilterCefr(e.target.value); 
               setCurrentPage(1);
-              onParamsSelect(filterLanguage, e.target.value, filterTopic, 1, storiesPerPage); 
+              onParamsSelect(filterLanguage, e.target.value, filterSubject, 1, storiesPerPage); 
             }}
           >
             <option value="any">Any Level</option>
@@ -144,11 +142,11 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
         <div style={{ flex: 1 }}>
           <FilterLabel>Topic</FilterLabel>
           <FilterSelect 
-            value={filterTopic} 
+            value={filterSubject} 
             onChange={(e) => { 
-              setFilterTopic(e.target.value); 
+              setFilterSubject(e.target.value); 
               setCurrentPage(1);
-              onParamsSelect(filterLanguage, filterLevel, e.target.value, 1, storiesPerPage); 
+              onParamsSelect(filterLanguage, filterCefr, e.target.value, 1, storiesPerPage); 
             }}
           >
             <option value="any">Any Topic</option>
@@ -170,7 +168,6 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
       )}
 
       {stories.length > 0 && (
-        
         <PaginationContainer>
           <PageButton 
             onClick={() => handlePageChange(currentPage - 1)} 
