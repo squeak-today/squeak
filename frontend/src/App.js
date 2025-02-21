@@ -10,6 +10,7 @@ import Teacher from './pages/Teacher'
 import BecomeTeacher from './pages/BecomeTeacher';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherRead from './pages/TeacherRead';
+import BecomeStudent from './pages/BecomeStudent';
 
 function App() {
 	return (
@@ -22,6 +23,7 @@ function App() {
 					<Route path="/teacher" element={<Teacher />} />
 					<Route path="/teacher/dashboard" element={<TeacherDashboard />} />
 					<Route path="/teacher/become" element={<BecomeTeacher />} />
+					<Route path="/student" element={<BecomeStudent />} />
 
 					<Route path="/auth/:mode" element={<Auth />} />
 					<Route 
