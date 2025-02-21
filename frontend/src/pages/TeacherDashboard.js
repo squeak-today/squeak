@@ -30,6 +30,32 @@ const ToggleButton = styled.button`
     background-color: #2a6a8a;
   }
 `;
+export const DateHeader = styled.h1`
+	font-family: 'Lora', serif;
+	text-align: center;
+	margin-bottom: 1em;
+	font-size: 2em;
+	font-weight: 600;
+`;
+
+const formatDate = () => {
+	const date = new Date();
+	const month = date.toLocaleDateString('en-US', { month: 'long' });
+	const day = date.getDate();
+	const year = date.getFullYear();
+
+	const getOrdinal = (n) => {
+		if (n > 3 && n < 21) return 'th';
+		switch (n % 10) {
+			case 1: return 'st';
+			case 2: return 'nd';
+			case 3: return 'rd';
+			default: return 'th';
+		}
+	};
+
+	return `${month} ${day}${getOrdinal(day)}, ${year}`;
+};
 
 function TeacherDashboard() {
   const navigate = useNavigate();
@@ -173,6 +199,16 @@ function TeacherDashboard() {
     navigate(`/teacher/read/${story.content_type.toLowerCase()}/${story.id}`);
   };
 
+  const handleLogout = async () => {
+    try {
+        await supabase.auth.signOut();
+        navigate('/');
+    } catch (error) {
+        console.error('Error signing out:', error);
+        showNotification('Error signing out. Please try again.');
+    }
+};
+
   const handleAcceptStory = async (story) => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
@@ -210,7 +246,7 @@ function TeacherDashboard() {
     );
 
   return (
-    <BasicPage>
+    <BasicPage showLogout onLogout={handleLogout}>
       <Section>
         <ToggleButton onClick={() => setShowClassroomInfo(prev => !prev)}>
           {showClassroomInfo ? 'Hide Classroom Info' : 'Show Classroom Info'}
@@ -224,7 +260,7 @@ function TeacherDashboard() {
       </Section>
 
       <Section>
-        <SectionTitle>Available Stories</SectionTitle>
+      <DateHeader>Today is {formatDate()}...</DateHeader>
         <TeacherStoryBrowser 
           stories={stories}
           onParamsSelect={handleParamsSelect}
@@ -236,5 +272,6 @@ function TeacherDashboard() {
     </BasicPage>
   );
 }
+
 
 export default TeacherDashboard;

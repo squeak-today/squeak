@@ -114,8 +114,8 @@ const AcceptButton = styled.button`
   position: absolute;
   bottom: 1em;
   right: 1em;
-  background-color: #28a745;
-  color: white;
+  background-color: rgba(250, 212, 143, 0.5);
+  color: black;
   border: none;
   border-radius: 6px;
   padding: 0.5em 1em;
@@ -124,7 +124,7 @@ const AcceptButton = styled.button`
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #218838;
+    background-color: #e0a700;
   }
 `;
 

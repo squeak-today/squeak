@@ -102,7 +102,6 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
 
   return (
     <Container>
-      <Header>Browse Stories</Header>
       <FilterContainer>
         <div style={{ flex: 1 }}>
           <FilterLabel>Language</FilterLabel>
