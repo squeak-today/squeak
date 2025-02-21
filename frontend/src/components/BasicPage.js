@@ -19,7 +19,14 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi'; 
 import { AiOutlineMenu } from 'react-icons/ai';  // hamburger/waffle icon
 
-function BasicPage({ children, showLogout, onLogout, showGetStarted, showTeach = false }) {
+function BasicPage({ 
+  children, 
+  showLogout, 
+  onLogout, 
+  showGetStarted, 
+  showTeach = false,
+  showJoinClassroom = false 
+}) {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
@@ -51,6 +58,11 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted, showTeach =
                     Teach
                   </HeaderText>
                 )}
+                {showJoinClassroom && (
+                  <HeaderText onClick={() => navigate('/learn')}>
+                    Join Classroom
+                  </HeaderText>
+                )}
                 <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
                   Contact Us
                 </HeaderText>
@@ -75,6 +87,16 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted, showTeach =
                   }}
                 >
                   Teach
+                </MenuText>
+              )}
+              {showJoinClassroom && (
+                <MenuText
+                  onClick={() => {
+                    navigate('/learn');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Join Classroom
                 </MenuText>
               )}
               <MenuText

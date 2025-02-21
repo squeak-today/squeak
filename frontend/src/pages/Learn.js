@@ -61,6 +61,7 @@ function Learn() {
 
 	const [progress, setProgress] = useState(null);
 
+	const [isStudent, setIsStudent] = useState(false);
 	const [isTeacher, setIsTeacher] = useState(false);
 
 	const handleStoryBlockClick = async (story) => {
@@ -283,6 +284,25 @@ function Learn() {
 		}
 	}, [apiBase]);
 
+	const checkStudentStatus = useCallback(async () => {
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			const jwt = session?.access_token;
+			
+			const response = await fetch(`${apiBase}student`, {
+				headers: {
+					'Authorization': `Bearer ${jwt}`
+				}
+			});
+			
+			const data = await response.json();
+			setIsStudent(data.classroom_id !== "");
+		} catch (error) {
+			console.error('Error checking student status:', error);
+			setIsStudent(false);
+		}
+	}, [apiBase]);
+
 	useEffect(() => {
 		const initializeBrowser = async (defaultLanguage) => {
 			try {
@@ -298,10 +318,10 @@ function Learn() {
 				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
 				await fetchProgress();
 				await initializeBrowser(profileData.learning_language);
-				await checkTeacherStatus()
+				await checkStudentStatus();
+				await checkTeacherStatus();
 			}
 		};
-
 
 		const checkWelcomeStatus = async () => {
 			const { data: { session } } = await supabase.auth.getSession();
@@ -321,7 +341,12 @@ function Learn() {
 	}, []);
 
 	return (
-		<BasicPage showLogout onLogout={handleLogout} showTeach={isTeacher}>
+		<BasicPage 
+			showLogout 
+			onLogout={handleLogout} 
+			showTeach={isTeacher || (!isStudent && !isTeacher)}
+			showJoinClassroom={!isStudent && !isTeacher}
+		>
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<BrowserBox>
 				<LearnPageLayout>

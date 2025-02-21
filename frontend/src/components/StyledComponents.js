@@ -492,6 +492,7 @@ export const HeaderText = styled.span`
   font-weight: 400;
   color: #000000;
   cursor: pointer;
+  margin-right: 1.5rem;
 
   @media (max-width: 768px) {
     font-size: 0em; /* Adjusted size for smaller screens */
