@@ -59,7 +59,7 @@ function BasicPage({
                   </HeaderText>
                 )}
                 {showJoinClassroom && (
-                  <HeaderText onClick={() => navigate('/learn')}>
+                  <HeaderText onClick={() => navigate('/student/become')}>
                     Join Classroom
                   </HeaderText>
                 )}
@@ -92,7 +92,7 @@ function BasicPage({
               {showJoinClassroom && (
                 <MenuText
                   onClick={() => {
-                    navigate('/learn');
+                    navigate('/student/become');
                     setIsMobileMenuOpen(false);
                   }}
                 >

@@ -7,6 +7,7 @@ import {
   AuthTitle,
   AuthText,
   AuthButton,
+  AuthInput
 } from "../styles/AuthPageStyles";
 import BasicPage from "../components/BasicPage";
 import { useNotification } from "../context/NotificationContext";
@@ -122,15 +123,13 @@ function BecomeStudent() {
         <AuthContainer>
           <AuthTitle>Join a Classroom</AuthTitle>
           <AuthText>
-            It appears you haven't joined a classroom yet. Enter your Classroom
-            ID below to join and start learning.
+            Ask your teacher for the Squeak Classroom ID. After, you can start reading any content your teacher has approved!
           </AuthText>
-          <input
+          <AuthInput
             type="text"
             placeholder="Classroom ID"
             value={classroomID}
             onChange={(e) => setClassroomID(e.target.value)}
-            style={{ padding: "8px", margin: "10px 0", width: "100%" }}
           />
           <AuthButton
             onClick={handleJoinClassroom}

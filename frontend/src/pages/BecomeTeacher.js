@@ -84,7 +84,7 @@ function BecomeTeacher() {
         );
       } else {
         showNotification("Classroom created successfully!", "success");
-        navigate("/teacher/dashboard");
+        navigate("/teacher");
       }
     } catch (error) {
       console.error("Error creating classroom:", error);
@@ -116,6 +116,9 @@ function BecomeTeacher() {
             It looks like you haven't set up a teacher account yet.
           </AuthText>
           <AuthText>To start teaching, please create your classroom.</AuthText>
+          <AuthText style={{ marginTop: '1rem', marginBottom: '2rem', fontWeight: 'bold' }}>
+            After making your classroom, you can see your dashboard by clicking 'Teach' at the top!
+          </AuthText>
           <AuthButton onClick={handleBecomeTeacher} disabled={loading}>
             {loading ? "Creating Classroom..." : "Create Classroom"}
           </AuthButton>

@@ -20,7 +20,7 @@ function App() {
 					
 					<Route path="/teacher" element={<TeacherDashboard />} />
 					<Route path="/teacher/become" element={<BecomeTeacher />} />
-					<Route path="/student" element={<BecomeStudent />} />
+					<Route path="/student/become" element={<BecomeStudent />} />
 
 					<Route path="/auth/:mode" element={<Auth />} />
 					<Route 
