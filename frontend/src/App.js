@@ -40,7 +40,7 @@ function App() {
 							</ProtectedRoute>
 						} 
 					/>
-										<Route 
+					<Route 
 						path="/teacher/read/:type/:id" 
 						element={
 							<ProtectedRoute>
