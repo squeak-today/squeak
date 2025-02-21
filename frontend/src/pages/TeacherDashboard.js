@@ -66,7 +66,7 @@ function TeacherDashboard() {
         if (!classroomRes.ok) throw new Error('Failed to fetch classroom info');
         const classroomData = await classroomRes.json();
         setClassroomInfo(classroomData);
-        // Fetch initial stories (with default filters).
+        // Fetch initial stories (default filters: language=any, cefr=any, subject=any, page=1, pagesize=6)
         fetchStories(jwt, 'any', 'any', 'any', 1, 6);
       } catch (error) {
         console.error("Error:", error);
@@ -76,9 +76,9 @@ function TeacherDashboard() {
       }
     }
 
-    async function fetchStories(jwt, language, level, topic, page, limit) {
+    async function fetchStories(jwt, language, cefr, subject, page, pagesize) {
       try {
-        const queryParams = new URLSearchParams({ language, level, topic, page, limit }).toString();
+        const queryParams = new URLSearchParams({ language, cefr, subject, page, pagesize }).toString();
         const storyRes = await fetch(`${apiBase}story/query?${queryParams}`, {
           headers: { 'Authorization': `Bearer ${jwt}` },
         });
@@ -92,13 +92,22 @@ function TeacherDashboard() {
             ...item, 
             content_type: 'Story', 
             id: Number(item.id),
-            tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+            // Use learn.js mapping for tags
+            language: item.language,
+            topic: item.topic,
+            cefr_level: item.cefr_level,
+            preview_text: item.preview_text,
+            date_created: item.date_created
           })),
           ...newsData.map(item => ({ 
             ...item, 
             content_type: 'News', 
             id: Number(item.id),
-            tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+            language: item.language,
+            topic: item.topic,
+            cefr_level: item.cefr_level,
+            preview_text: item.preview_text,
+            date_created: item.date_created
           })),
         ];
         setStories(merged);
@@ -111,17 +120,18 @@ function TeacherDashboard() {
     verifyTeacherAndFetch();
   }, [apiBase, navigate, showNotification]);
 
-  const handleParamsSelect = (language, level, topic, page, limit) => {
+  const handleParamsSelect = (language, cefr, subject, page, pagesize) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) return;
       const jwt = session.access_token;
-      fetchStories(jwt, language, level, topic, page, limit);
+      fetchStories(jwt, language, cefr, subject, page, pagesize);
     });
   };
 
-  const fetchStories = async (jwt, language, level, topic, page, limit) => {
+  // Note: Using the same fetchStories function from above.
+  const fetchStories = async (jwt, language, cefr, subject, page, pagesize) => {
     try {
-      const queryParams = new URLSearchParams({ language, level, topic, page, limit }).toString();
+      const queryParams = new URLSearchParams({ language, cefr, subject, page, pagesize }).toString();
       const storyRes = await fetch(`${apiBase}story/query?${queryParams}`, {
         headers: { 'Authorization': `Bearer ${jwt}` },
       });
@@ -135,13 +145,21 @@ function TeacherDashboard() {
           ...item, 
           content_type: 'Story', 
           id: Number(item.id),
-          tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+          language: item.language,
+          topic: item.topic,
+          cefr_level: item.cefr_level,
+          preview_text: item.preview_text,
+          date_created: item.date_created
         })),
         ...newsData.map(item => ({ 
           ...item, 
           content_type: 'News', 
           id: Number(item.id),
-          tags: Array.isArray(item.tags) ? item.tags : (item.tags ? [item.tags] : [])
+          language: item.language,
+          topic: item.topic,
+          cefr_level: item.cefr_level,
+          preview_text: item.preview_text,
+          date_created: item.date_created
         })),
       ];
       setStories(merged);
@@ -152,7 +170,7 @@ function TeacherDashboard() {
   };
 
   const handleViewContent = (story) => {
-    navigate(`/teacher/read/${story.type}/${story.id}`);
+    navigate(`/teacher/read/${story.content_type.toLowerCase()}/${story.id}`);
   };
 
   const handleAcceptStory = async (story) => {
