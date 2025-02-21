@@ -9,6 +9,7 @@ import Welcome from './pages/Welcome';
 import Teacher from './pages/Teacher'
 import BecomeTeacher from './pages/BecomeTeacher';
 import TeacherDashboard from './pages/TeacherDashboard';
+import TeacherRead from './pages/TeacherRead';
 
 function App() {
 	return (
@@ -36,6 +37,14 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<Read />
+							</ProtectedRoute>
+						} 
+					/>
+										<Route 
+						path="/teacher/read/:type/:id" 
+						element={
+							<ProtectedRoute>
+								<TeacherRead />
 							</ProtectedRoute>
 						} 
 					/>

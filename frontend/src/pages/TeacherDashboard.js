@@ -152,7 +152,7 @@ function TeacherDashboard() {
   };
 
   const handleViewContent = (story) => {
-    navigate(`/read/${story.type}/${story.id}`);
+    navigate(`/teacher/read/${story.type}/${story.id}`);
   };
 
   const handleAcceptStory = async (story) => {
