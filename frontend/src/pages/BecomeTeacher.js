@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../lib/supabase";
 import {
@@ -15,7 +15,42 @@ function BecomeTeacher() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
+  const [statusChecked, setStatusChecked] = useState(false);
   const apiBase = process.env.REACT_APP_API_BASE;
+
+  // Check if the user is already a student.
+  useEffect(() => {
+    const checkStudentStatus = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session) {
+          const jwt = session.access_token;
+          const res = await fetch(`${apiBase}student`, {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            // If a classroom_id exists, the user is already a student.
+            if (data.classroom_id) {
+              showNotification("You are already a student and cannot become a teacher.", "error");
+              navigate("/learn");
+              return;
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error checking student status:", error);
+      } finally {
+        setStatusChecked(true);
+      }
+    };
+
+    checkStudentStatus();
+  }, [apiBase, navigate, showNotification]);
 
   const handleBecomeTeacher = async () => {
     setLoading(true);
@@ -58,6 +93,19 @@ function BecomeTeacher() {
       setLoading(false);
     }
   };
+
+  // Wait until the student status has been checked
+  if (!statusChecked) {
+    return (
+      <BasicPage>
+        <AuthBox>
+          <AuthContainer>
+            <AuthTitle>Loading...</AuthTitle>
+          </AuthContainer>
+        </AuthBox>
+      </BasicPage>
+    );
+  }
 
   return (
     <BasicPage>
