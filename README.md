@@ -169,6 +169,7 @@ That branch should be used as your Supabase testing environment.
 | `/audio/tts` | `POST` | Convert text to speech audio. |
 | `/teacher` | `GET` | Check if the authenticated user is a teacher. |
 | `/teacher/classroom` | `GET` | Get the classroom information for the authenticated teacher. |
+| `/teacher/classroom/content` | `GET` | Query content for a classroom. |
 | `/teacher/classroom/create` | `POST` | Create a new classroom for the authenticated teacher. |
 | `/teacher/classroom/accept` | `POST` | Accept content for a classroom. |
 | `/teacher/classroom/reject` | `POST` | Reject content from a classroom. |
@@ -549,6 +550,43 @@ Get the classroom information for the authenticated teacher.
     "students_count": 5
 }
 ```
+
+### **GET** `/teacher/classroom/content`
+> https://api.squeak.today/teacher/classroom/content
+
+Query content for a classroom with optional whitelist status filtering.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | Yes | Language filter (e.g., `French`, or `any` for all) |
+| `cefr` | `string` | Yes | CEFR level filter (e.g., `B2`, or `any` for all) |
+| `subject` | `string` | Yes | Subject/topic filter (e.g., `Politics`, or `any` for all) |
+| `page` | `int` | No | Page number for pagination. Default `1` |
+| `pagesize` | `int` | No | Number of items per page. Default `10` |
+| `whitelist` | `string` | No | Filter by whitelist status (`accepted`, `rejected`, or `none`) |
+| `content_type` | `string` | No | Type of content to return (`Story`, `News`, or `All`) |
+
+### Response
+> `200 Successful`
+```json
+[
+    {
+        "id": "32",
+        "title": "A very cool title",
+        "language": "French",
+        "topic": "Politics",
+        "cefr_level": "A1",
+        "preview_text": "The first part of the content...",
+        "created_at": "2025-01-13T04:03:12.846956Z",
+        "date_created": "2024-12-15",
+        "content_type": "Story",  // Only present when content_type=All
+        "pages": 5  // Only present for Story content type
+    }
+    ...
+]
+```
+
+The response includes an array of content items. When `content_type=All`, each item includes a `content_type` field indicating whether it's a "Story" or "News" article. Story items also include a `pages` field indicating the number of pages.
 
 ### **POST** `/teacher/classroom/create`
 > https://api.squeak.today/teacher/classroom/create
