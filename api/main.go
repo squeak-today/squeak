@@ -153,6 +153,80 @@ func init() {
 				})
 			})
 
+			classroomGroup.GET("/content", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				
+				isTeacher, err := dbClient.CheckAccountType(userID, "teacher")
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
+					return
+				}
+				if !isTeacher {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Only teachers can access this endpoint."})
+					return
+				}
+				language := c.Query("language")
+				cefr := c.Query("cefr")
+				subject := c.Query("subject")
+				page := c.Query("page")
+				pagesize := c.Query("pagesize")
+
+				whitelistStatus := c.Query("whitelist")
+				contentType := c.Query("content_type")
+
+				if page == "" {
+					page = "1"
+				}
+				if pagesize == "" {
+					pagesize = "10"
+				}
+
+				pageNum, err := strconv.Atoi(page)
+				if err != nil || pageNum < 1 {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+					return
+				}
+
+				pageSizeNum, err := strconv.Atoi(pagesize)
+				if err != nil || pageSizeNum < 1 {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+					return
+				}
+
+				classroom_id, _, err := dbClient.GetClassroomByTeacherId(userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+					return
+				}
+
+				params := supabase.QueryParams{
+					Language: language,
+					CEFR:     cefr,
+					Subject:  subject,
+					Page:     pageNum,
+					PageSize: pageSizeNum,
+					ClassroomID: classroom_id,
+					WhitelistStatus: whitelistStatus,
+				}
+
+				var results []map[string]interface{}
+				if contentType == "All" {
+					results, err = dbClient.QueryAllContent(params)
+				} else if contentType == "Story" {
+					results, err = dbClient.QueryStories(params)
+				} else {
+					results, err = dbClient.QueryNews(params)
+				}
+
+				if err != nil {
+					log.Printf("Failed to query content: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
+					return
+				}
+
+				c.JSON(http.StatusOK, results)
+			})
+
 			classroomGroup.POST("/create", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
 				var infoBody struct {
@@ -553,6 +627,7 @@ func init() {
 
 			if classroomID != "" {
 				params.ClassroomID = classroomID
+				params.WhitelistStatus = "accepted"
 			}
 
 			results, err := dbClient.QueryNews(params)
@@ -722,6 +797,7 @@ func init() {
 
 			if classroomID != "" {
 				params.ClassroomID = classroomID
+				params.WhitelistStatus = "accepted"
 			}
 			results, err := dbClient.QueryStories(params)
 			if err != nil {

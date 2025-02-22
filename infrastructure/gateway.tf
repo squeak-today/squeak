@@ -124,6 +124,14 @@ module "teacher_classroom" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "teacher_classroom_content" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "content"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "teacher_classroom_create" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -316,6 +324,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.progress_increment,
     module.teacher,
     module.teacher_classroom,
+    module.teacher_classroom_content,
     module.teacher_classroom_create,
     module.teacher_classroom_accept,
     module.teacher_classroom_reject,

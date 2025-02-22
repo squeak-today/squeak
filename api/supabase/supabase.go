@@ -142,146 +142,163 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 
 	// helper func to build the select part of the query
 	buildSelect := func(tableAlias string) string {
-		// For stories, include pages column, and use NULL for news
+		baseSelect := fmt.Sprintf(`
+			SELECT 
+				%[1]s.id, 
+				%[1]s.title, 
+				%[1]s.language, 
+				%[1]s.topic, 
+				%[1]s.cefr_level, 
+				%[1]s.preview_text, 
+				%[1]s.created_at, 
+				%[1]s.date_created`, tableAlias)
+
 		if contentType == "All" {
-			return fmt.Sprintf(`
-				SELECT 
-					%[1]s.id, 
-					%[1]s.title, 
-					%[1]s.language, 
-					%[1]s.topic, 
-					%[1]s.cefr_level, 
-					%[1]s.preview_text, 
-					%[1]s.created_at, 
-					%[1]s.date_created,
-					CASE 
-						WHEN '%[1]s' = 'n' THEN NULL 
-						ELSE %[1]s.pages 
-					END as pages,
-					CASE 
-						WHEN '%[1]s' = 'n' THEN 'News'::text 
-						ELSE 'Story'::text 
-					END as content_type`, tableAlias)
+			return baseSelect + fmt.Sprintf(`,
+				(
+					SELECT pages 
+					FROM stories 
+					WHERE stories.id = %[1]s.id 
+					AND '%[1]s' = 'stories'
+				) as pages,
+				CASE 
+					WHEN '%[1]s' = 'stories' THEN 'Story'::text 
+					ELSE 'News'::text 
+				END as content_type`, tableAlias)
 		}
-		if tableAlias == "n" && contentType == "News" {
-			return "SELECT n.id, n.title, n.language, n.topic, n.cefr_level, n.preview_text, n.created_at, n.date_created"
+
+		if contentType == "News" {
+			return baseSelect
 		}
-		return "SELECT n.id, n.title, n.language, n.topic, n.cefr_level, n.preview_text, n.created_at, n.date_created, n.pages"
+
+		return baseSelect + fmt.Sprintf(`, %[1]s.pages`, tableAlias)
 	}
 
 	if params.ClassroomID != "" {
 		if params.WhitelistStatus == "rejected" {
 			if contentType == "All" {
 				baseQuery = fmt.Sprintf(`
-					(
-						%s
-						FROM stories n
-						WHERE NOT EXISTS (
-							SELECT 1 FROM accepted_content ac 
-							WHERE ac.classroom_id = $1 
-							AND ac.story_id = n.id
+					SELECT * FROM (
+						(
+							%s
+							FROM stories stories
+							WHERE NOT EXISTS (
+								SELECT 1 FROM accepted_content ac 
+								WHERE ac.classroom_id = $1 
+								AND ac.story_id = stories.id
+							)
 						)
-					)
-					UNION ALL
-					(
-						%s
-						FROM news n
-						WHERE NOT EXISTS (
-							SELECT 1 FROM accepted_content ac 
-							WHERE ac.classroom_id = $1 
-							AND ac.news_id = n.id
+						UNION ALL
+						(
+							%s
+							FROM news news
+							WHERE NOT EXISTS (
+								SELECT 1 FROM accepted_content ac 
+								WHERE ac.classroom_id = $1 
+								AND ac.news_id = news.id
+							)
 						)
-					)`, buildSelect("n"), buildSelect("n"))
+					) combined_results
+					WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
+				queryParams = append(queryParams, params.ClassroomID)
+				paramCount = 2
 			} else if contentType == "Story" {
 				baseQuery = fmt.Sprintf(`
 					%s
-					FROM stories n
+					FROM stories stories
 					WHERE NOT EXISTS (
 						SELECT 1 FROM accepted_content ac 
 						WHERE ac.classroom_id = $1 
-						AND ac.story_id = n.id
-					)`, buildSelect("n"))
+						AND ac.story_id = stories.id
+					)`, buildSelect("stories"))
 			} else {
 				baseQuery = fmt.Sprintf(`
 					%s
-					FROM news n
+					FROM news news
 					WHERE NOT EXISTS (
 						SELECT 1 FROM accepted_content ac 
 						WHERE ac.classroom_id = $1 
-						AND ac.news_id = n.id
-					)`, buildSelect("n"))
+						AND ac.news_id = news.id
+					)`, buildSelect("news"))
 			}
-			queryParams = append(queryParams, params.ClassroomID)
-			paramCount = 2
 		} else if params.WhitelistStatus == "accepted" {
 			if contentType == "All" {
 				baseQuery = fmt.Sprintf(`
-					(
-						%s
-						FROM stories n
-						INNER JOIN accepted_content ac ON n.id = ac.story_id 
-						WHERE ac.classroom_id = $1
-					)
-					UNION ALL
-					(
-						%s
-						FROM news n
-						INNER JOIN accepted_content ac ON n.id = ac.news_id 
-						WHERE ac.classroom_id = $1
-					)`, buildSelect("n"), buildSelect("n"))
+					SELECT * FROM (
+						(
+							%s
+							FROM stories stories
+							INNER JOIN accepted_content ac ON stories.id = ac.story_id 
+							WHERE ac.classroom_id = $1
+						)
+						UNION ALL
+						(
+							%s
+							FROM news news
+							INNER JOIN accepted_content ac ON news.id = ac.news_id 
+							WHERE ac.classroom_id = $1
+						)
+					) combined_results
+					WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
 			} else if contentType == "Story" {
 				baseQuery = fmt.Sprintf(`
 					%s
-					FROM stories n
-					INNER JOIN accepted_content ac ON n.id = ac.story_id 
-					WHERE ac.classroom_id = $1`, buildSelect("n"))
+					FROM stories stories
+					INNER JOIN accepted_content ac ON stories.id = ac.story_id 
+					WHERE ac.classroom_id = $1`, buildSelect("stories"))
 			} else {
 				baseQuery = fmt.Sprintf(`
 					%s
-					FROM news n
-					INNER JOIN accepted_content ac ON n.id = ac.news_id 
-					WHERE ac.classroom_id = $1`, buildSelect("n"))
+					FROM news news
+					INNER JOIN accepted_content ac ON news.id = ac.news_id 
+					WHERE ac.classroom_id = $1`, buildSelect("news"))
 			}
 			queryParams = append(queryParams, params.ClassroomID)
 			paramCount = 2
 		} else {
 			if contentType == "All" {
 				baseQuery = fmt.Sprintf(`
-					(
-						%s
-						FROM stories n
-						WHERE 1=1
-					)
-					UNION ALL
-					(
-						%s
-						FROM news n
-						WHERE 1=1
-					)`, buildSelect("n"), buildSelect("n"))
+					SELECT * FROM (
+						(
+							%s
+							FROM stories stories
+							WHERE 1=1
+						)
+						UNION ALL
+						(
+							%s
+							FROM news news
+							WHERE 1=1
+						)
+					) combined_results
+					WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
 			} else if contentType == "Story" {
-				baseQuery = fmt.Sprintf(`%s FROM stories n WHERE 1=1`, buildSelect("n"))
+				baseQuery = fmt.Sprintf(`%s FROM stories stories WHERE 1=1`, buildSelect("stories"))
 			} else {
-				baseQuery = fmt.Sprintf(`%s FROM news n WHERE 1=1`, buildSelect("n"))
+				baseQuery = fmt.Sprintf(`%s FROM news news WHERE 1=1`, buildSelect("news"))
 			}
 		}
 	} else {
 		if contentType == "All" {
 			baseQuery = fmt.Sprintf(`
-				(
-					%s
-					FROM stories n
-					WHERE 1=1
-				)
-				UNION ALL
-				(
-					%s
-					FROM news n
-					WHERE 1=1
-				)`, buildSelect("n"), buildSelect("n"))
+				SELECT * FROM (
+					(
+						%s
+						FROM stories stories
+						WHERE 1=1
+					)
+					UNION ALL
+					(
+						%s
+						FROM news news
+						WHERE 1=1
+					)
+				) combined_results
+				WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
 		} else if contentType == "Story" {
-			baseQuery = fmt.Sprintf(`%s FROM stories n WHERE 1=1`, buildSelect("n"))
+			baseQuery = fmt.Sprintf(`%s FROM stories stories WHERE 1=1`, buildSelect("stories"))
 		} else {
-			baseQuery = fmt.Sprintf(`%s FROM news n WHERE 1=1`, buildSelect("n"))
+			baseQuery = fmt.Sprintf(`%s FROM news news WHERE 1=1`, buildSelect("news"))
 		}
 	}
 
@@ -307,6 +324,7 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 	baseQuery += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
 	queryParams = append(queryParams, params.PageSize, (params.Page-1)*params.PageSize)
 
+	fmt.Println(baseQuery)
 	rows, err := c.db.Query(baseQuery, queryParams...)
 	if err != nil {
 		return nil, fmt.Errorf("query execution failed: %v", err)
