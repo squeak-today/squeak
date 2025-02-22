@@ -117,7 +117,12 @@ function TeacherDashboard() {
   };
 
   const handleViewContent = (story) => {
-    navigate(`/teacher/read/${story.content_type.toLowerCase()}/${story.id}`);
+    navigate(`/read/${story.content_type.toLowerCase()}/${story.id}`, {
+        state: {
+            backTo: '/teacher',
+            backText: 'Back to Teacher Dashboard'
+        }
+    });
   };
 
   const handleLogout = async () => {

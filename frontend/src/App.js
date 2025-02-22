@@ -8,7 +8,6 @@ import Read from './pages/Read';
 import Welcome from './pages/Welcome';
 import TeacherDashboard from './pages/TeacherDashboard';
 import BecomeTeacher from './pages/BecomeTeacher';
-import TeacherRead from './pages/TeacherRead';
 import BecomeStudent from './pages/BecomeStudent';
 
 function App() {
@@ -36,14 +35,6 @@ function App() {
 						element={
 							<ProtectedRoute>
 								<Read />
-							</ProtectedRoute>
-						} 
-					/>
-					<Route 
-						path="/teacher/read/:type/:id" 
-						element={
-							<ProtectedRoute>
-								<TeacherRead />
 							</ProtectedRoute>
 						} 
 					/>
