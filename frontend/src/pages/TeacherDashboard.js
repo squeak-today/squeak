@@ -67,8 +67,8 @@ function TeacherDashboard() {
         if (!classroomRes.ok) throw new Error('Failed to fetch classroom info');
         const classroomData = await classroomRes.json();
         setClassroomInfo(classroomData);
-        // Fetch initial stories (default filters: language=any, cefr=any, subject=any, page=1, pagesize=6)
-        fetchStories(jwt, 'any', 'any', 'any', 1, 6);
+        // Fetch initial content (default filters)
+        fetchContent(jwt, 'any', 'any', 'any', 1, 6, 'accepted');
       } catch (error) {
         console.error("Error:", error);
         showNotification("Error verifying teacher or fetching data.", "error");
@@ -77,96 +77,42 @@ function TeacherDashboard() {
       }
     }
 
-    async function fetchStories(jwt, language, cefr, subject, page, pagesize) {
-      try {
-        const queryParams = new URLSearchParams({ language, cefr, subject, page, pagesize }).toString();
-        const storyRes = await fetch(`${apiBase}story/query?${queryParams}`, {
-          headers: { 'Authorization': `Bearer ${jwt}` },
-        });
-        const newsRes = await fetch(`${apiBase}news/query?${queryParams}`, {
-          headers: { 'Authorization': `Bearer ${jwt}` },
-        });
-        const storyData = storyRes.ok ? await storyRes.json() : [];
-        const newsData = newsRes.ok ? await newsRes.json() : [];
-        const merged = [
-          ...storyData.map(item => ({ 
-            ...item, 
-            content_type: 'Story', 
-            id: Number(item.id),
-            // Use learn.js mapping for tags
-            language: item.language,
-            topic: item.topic,
-            cefr_level: item.cefr_level,
-            preview_text: item.preview_text,
-            date_created: item.date_created
-          })),
-          ...newsData.map(item => ({ 
-            ...item, 
-            content_type: 'News', 
-            id: Number(item.id),
-            language: item.language,
-            topic: item.topic,
-            cefr_level: item.cefr_level,
-            preview_text: item.preview_text,
-            date_created: item.date_created
-          })),
-        ];
-        setStories(merged);
-      } catch (error) {
-        console.error("Error fetching stories:", error);
-        showNotification("Error fetching stories.", "error");
-      }
-    }
-
     verifyTeacherAndFetch();
-  }, [apiBase, navigate, showNotification]);
+  }, [apiBase, navigate]);
 
-  const handleParamsSelect = (language, cefr, subject, page, pagesize) => {
+  const handleParamsSelect = (language, cefr, subject, page, pagesize, whitelist) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) return;
       const jwt = session.access_token;
-      fetchStories(jwt, language, cefr, subject, page, pagesize);
+      fetchContent(jwt, language, cefr, subject, page, pagesize, whitelist);
     });
   };
 
-  // Note: Using the same fetchStories function from above.
-  const fetchStories = async (jwt, language, cefr, subject, page, pagesize) => {
+  const fetchContent = async (jwt, language, cefr, subject, page, pagesize, whitelist) => {
     try {
-      const queryParams = new URLSearchParams({ language, cefr, subject, page, pagesize }).toString();
-      const storyRes = await fetch(`${apiBase}story/query?${queryParams}`, {
+      const queryParams = new URLSearchParams({ 
+        language, 
+        cefr, 
+        subject, 
+        page, 
+        pagesize,
+        whitelist,
+        content_type: 'All'
+      }).toString();
+
+      const res = await fetch(`${apiBase}teacher/classroom/content?${queryParams}`, {
         headers: { 'Authorization': `Bearer ${jwt}` },
       });
-      const newsRes = await fetch(`${apiBase}news/query?${queryParams}`, {
-        headers: { 'Authorization': `Bearer ${jwt}` },
-      });
-      const storyData = storyRes.ok ? await storyRes.json() : [];
-      const newsData = newsRes.ok ? await newsRes.json() : [];
-      const merged = [
-        ...storyData.map(item => ({ 
-          ...item, 
-          content_type: 'Story', 
-          id: Number(item.id),
-          language: item.language,
-          topic: item.topic,
-          cefr_level: item.cefr_level,
-          preview_text: item.preview_text,
-          date_created: item.date_created
-        })),
-        ...newsData.map(item => ({ 
-          ...item, 
-          content_type: 'News', 
-          id: Number(item.id),
-          language: item.language,
-          topic: item.topic,
-          cefr_level: item.cefr_level,
-          preview_text: item.preview_text,
-          date_created: item.date_created
-        })),
-      ];
-      setStories(merged);
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch content');
+      }
+
+      const contentData = await res.json();
+      setStories(contentData); // API already returns items with content_type field
     } catch (error) {
-      console.error("Error fetching stories:", error);
-      showNotification("Error fetching stories.", "error");
+      console.error("Error fetching content:", error);
+      showNotification("Error fetching content.", "error");
     }
   };
 
@@ -198,17 +144,54 @@ function TeacherDashboard() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${jwt}`,
         },
-        body: JSON.stringify({ content_type: story.content_type, content_id: story.id }),
+        body: JSON.stringify({ 
+          content_type: story.content_type, 
+          content_id: parseInt(story.id, 10)
+        }),
       });
       if (!res.ok) {
         const errData = await res.json();
         throw new Error(errData.error || 'Failed to accept content');
       }
       showNotification("Story accepted successfully", "success");
-      // Remove accepted story from list.
       setStories(prev => prev.filter(s => s.id !== story.id));
     } catch (error) {
       console.error("Error accepting story:", error);
+      showNotification(error.message, "error");
+    }
+  };
+
+  const handleRejectStory = async (story) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      showNotification("You are not logged in.", "error");
+      return;
+    }
+    const jwt = session.access_token;
+    console.log({ 
+      content_type: story.content_type, 
+      content_id: parseInt(story.id, 10)
+    });
+    try {
+      const res = await fetch(`${apiBase}teacher/classroom/reject`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${jwt}`,
+        },
+        body: JSON.stringify({ 
+          content_type: story.content_type, 
+          content_id: parseInt(story.id, 10)
+        }),
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to reject content');
+      }
+      showNotification("Story rejected successfully", "success");
+      setStories(prev => prev.filter(s => s.id !== story.id));
+    } catch (error) {
+      console.error("Error rejecting story:", error);
       showNotification(error.message, "error");
     }
   };
@@ -241,12 +224,13 @@ function TeacherDashboard() {
           )}
         </Section>
 
-        <DateHeader>Whitelist News Articles</DateHeader>
+        <DateHeader>Manage Classroom Content</DateHeader>
         <TeacherStoryBrowser 
           stories={stories}
           onParamsSelect={handleParamsSelect}
           onStoryBlockClick={handleViewContent}
           onAccept={handleAcceptStory}
+          onReject={handleRejectStory}
           defaultLanguage="any"
         />
       </Section>

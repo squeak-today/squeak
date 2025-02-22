@@ -7,8 +7,11 @@ import {
   Preview,
   TagContainer,
   Tag,
-  AcceptButton
+  AcceptButton,
+  RejectButton
 } from '../styles/components/TeacherStoryBlockStyles';
+
+import styled from 'styled-components';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -28,7 +31,16 @@ const formatDate = (dateString) => {
   return `${month} ${day}${getOrdinal(day)}, ${year}`;
 };
 
-const TeacherStoryBlock = ({ story, onStoryBlockClick, onAccept }) => {
+const TeacherStoryBlock = ({ story, onStoryBlockClick, onAccept, onReject, status }) => {
+  const handleAction = (e) => {
+    e.stopPropagation();
+    if (status === 'rejected') {
+      onAccept(story);
+    } else {
+      onReject(story);
+    }
+  };
+
   // Expect story properties: title, preview_text, language, topic, cefr_level, date_created
   return (
     <StoryBlockContainer onClick={() => onStoryBlockClick(story)}>
@@ -44,14 +56,15 @@ const TeacherStoryBlock = ({ story, onStoryBlockClick, onAccept }) => {
       <ContentWrapper>
         <Preview>{story.preview_text}</Preview>
       </ContentWrapper>
-      <AcceptButton
-        onClick={(e) => {
-          e.stopPropagation();
-          onAccept(story);
-        }}
-      >
-        Accept
-      </AcceptButton>
+      {status === 'rejected' ? (
+        <AcceptButton onClick={handleAction}>
+          Accept
+        </AcceptButton>
+      ) : (
+        <RejectButton onClick={handleAction}>
+          Reject
+        </RejectButton>
+      )}
     </StoryBlockContainer>
   );
 };

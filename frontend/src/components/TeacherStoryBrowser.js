@@ -12,10 +12,11 @@ import {
   NoContentMessage
 } from '../styles/components/TeacherStoryBrowserStyles';
 
-const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAccept, defaultLanguage }) => {
+const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAccept, onReject, defaultLanguage }) => {
   const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
   const [filterCefr, setFilterCefr] = useState('any');
   const [filterSubject, setFilterSubject] = useState('any');
+  const [filterStatus, setFilterStatus] = useState('accepted');
   const [currentPage, setCurrentPage] = useState(1);
   const storiesPerPage = 6;
 
@@ -25,12 +26,26 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    onParamsSelect(filterLanguage, filterCefr, filterSubject, newPage, storiesPerPage);
+    onParamsSelect(filterLanguage, filterCefr, filterSubject, newPage, storiesPerPage, filterStatus);
   };
 
   return (
     <Container>
       <FilterContainer>
+      <div style={{ flex: 1 }}>
+          <FilterLabel>Status</FilterLabel>
+          <FilterSelect
+            value={filterStatus}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setCurrentPage(1);
+              onParamsSelect(filterLanguage, filterCefr, filterSubject, 1, storiesPerPage, e.target.value);
+            }}
+          >
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+          </FilterSelect>
+        </div>
         <div style={{ flex: 1 }}>
           <FilterLabel>Language</FilterLabel>
           <FilterSelect 
@@ -38,7 +53,7 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
             onChange={(e) => { 
               setFilterLanguage(e.target.value); 
               setCurrentPage(1);
-              onParamsSelect(e.target.value, filterCefr, filterSubject, 1, storiesPerPage); 
+              onParamsSelect(e.target.value, filterCefr, filterSubject, 1, storiesPerPage, filterStatus); 
             }}
           >
             <option value="any">Any Language</option>
@@ -54,7 +69,7 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
             onChange={(e) => { 
               setFilterCefr(e.target.value); 
               setCurrentPage(1);
-              onParamsSelect(filterLanguage, e.target.value, filterSubject, 1, storiesPerPage); 
+              onParamsSelect(filterLanguage, e.target.value, filterSubject, 1, storiesPerPage, filterStatus); 
             }}
           >
             <option value="any">Any Level</option>
@@ -74,7 +89,7 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
             onChange={(e) => { 
               setFilterSubject(e.target.value); 
               setCurrentPage(1);
-              onParamsSelect(filterLanguage, filterCefr, e.target.value, 1, storiesPerPage); 
+              onParamsSelect(filterLanguage, filterCefr, e.target.value, 1, storiesPerPage, filterStatus); 
             }}
           >
             <option value="any">Any Topic</option>
@@ -90,6 +105,8 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
           stories={stories} 
           onStoryBlockClick={onStoryBlockClick}
           onAccept={onAccept}
+          onReject={onReject}
+          status={filterStatus}
         />
       ) : (
         <NoContentMessage>No stories found for these filters!</NoContentMessage>

@@ -43,4 +43,12 @@ export const AcceptButton = styled.button`
   &:hover {
     background-color: #e0a700;
   }
+`;
+
+export const RejectButton = styled(AcceptButton)`
+  background-color: #ffcdd2;
+  color: #c62828;
+  &:hover {
+    background-color: #ef9a9a;
+  }
 `; 

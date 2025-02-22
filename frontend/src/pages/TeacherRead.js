@@ -387,7 +387,7 @@ function TeacherRead() {
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
-                <BackButton onClick={() => navigate('/teacher/dashboard')}>
+                <BackButton onClick={() => navigate('/teacher')}>
                     ← Back to Browse
                 </BackButton>
                 <ReadPageLayout>
