@@ -1,4 +1,6 @@
+import styled from 'styled-components';
 import {
+  Container as BaseContainer,
   FilterContainer,
   FilterLabel,
   FilterSelect,
@@ -8,18 +10,7 @@ import {
   NoContentMessage
 } from './StoryBrowserStyles';
 
-import styled from 'styled-components';
-
-export {
-  FilterLabel,
-  FilterSelect,
-  PaginationContainer,
-  PageButton,
-  DisclaimerText,
-  NoContentMessage
-};
-
-export const Container = styled.div`
+export const Container = styled(BaseContainer)`
   max-width: 900px;
   margin: 0 auto;
   padding: 1.5em;
@@ -41,4 +32,13 @@ export const TeacherFilterContainer = styled(FilterContainer)`
     grid-template-columns: 1fr 1fr;
     gap: 1em;
   }
-`; 
+`;
+
+export {
+  FilterLabel,
+  FilterSelect, 
+  PaginationContainer,
+  PageButton,
+  DisclaimerText,
+  NoContentMessage
+};
