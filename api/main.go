@@ -40,6 +40,37 @@ func getUserIDFromToken(c *gin.Context) string {
 	return ""
 }
 
+// checkIsRequiredRole -> true if is the correct role
+// only X can access
+func checkIsCorrectRole(c *gin.Context, dbClient *supabase.Client, userID string, role string) bool {
+	isRole, err := dbClient.CheckAccountType(userID, role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
+		return false
+	}
+	if !isRole {
+		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("Only %ss can access this endpoint.", role)})
+		return false
+	}
+	return true
+}
+
+// checkNotForbiddenRole -> true if NOT the forbidden role 
+// everyone but X can access
+func checkNotForbiddenRole(c *gin.Context, dbClient *supabase.Client, userID string, role string) bool {
+	isRole, err := dbClient.CheckAccountType(userID, role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
+		return false
+	}
+	if isRole {
+		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("%ss cannot access this endpoint.", role)})
+		return false
+	}
+	return true
+}
+
+
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if os.Getenv("WORKSPACE") == "dev" && c.GetHeader("Authorization") == "Bearer dev-token" {
@@ -128,18 +159,17 @@ func init() {
 	{
 		teacherGroup.GET("", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
-			exists, err := dbClient.GetTeacherInfo(userID)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get teacher info"})
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{"exists": exists})
+			isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+			if !isTeacher { return }
+			c.JSON(http.StatusOK, gin.H{"exists": isTeacher})
 		})
 
 		classroomGroup := teacherGroup.Group("/classroom")
 		{
 			classroomGroup.GET("", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
 				
 				classroom_id, students_count, err := dbClient.GetClassroomByTeacherId(userID)
 				if err != nil {
@@ -156,15 +186,9 @@ func init() {
 			classroomGroup.GET("/content", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
 				
-				isTeacher, err := dbClient.CheckAccountType(userID, "teacher")
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
-					return
-				}
-				if !isTeacher {
-					c.JSON(http.StatusBadRequest, gin.H{"error": "Only teachers can access this endpoint."})
-					return
-				}
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
+
 				language := c.Query("language")
 				cefr := c.Query("cefr")
 				subject := c.Query("subject")
@@ -229,6 +253,10 @@ func init() {
 
 			classroomGroup.POST("/create", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
+
+				isNotStudent := checkNotForbiddenRole(c, dbClient, userID, "student")
+				if !isNotStudent { return }
+
 				var infoBody struct {
 					StudentsCount int `json:"students_count"`
 				}
@@ -241,7 +269,7 @@ func init() {
 				classroom_id, err := dbClient.CreateClassroom(userID, infoBody.StudentsCount)
 				if err != nil {
 					log.Printf("Failed to create classroom: %v", err)
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create classroom"})
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					return
 				}
 	
@@ -250,6 +278,9 @@ func init() {
 
 			classroomGroup.POST("/accept", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
+
 				var infoBody struct {
 					ContentType string `json:"content_type"`
 					ContentID   int    `json:"content_id"`
@@ -291,6 +322,9 @@ func init() {
 
 			classroomGroup.POST("/reject", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
+
 				var infoBody struct {
 					ContentType string `json:"content_type"`
 					ContentID   int    `json:"content_id"`
@@ -335,6 +369,10 @@ func init() {
 	{
 		studentGroup.GET("", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
+			
+			isStudent := checkIsCorrectRole(c, dbClient, userID, "student")
+			if !isStudent { return }
+
 			studentID, classroomID, err := dbClient.CheckStudentStatus(userID)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
@@ -347,6 +385,8 @@ func init() {
 		{
 			classroomGroup.GET("", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
+				isStudent := checkIsCorrectRole(c, dbClient, userID, "student")
+				if !isStudent { return }
 				_, classroomID, err := dbClient.CheckStudentStatus(userID)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
@@ -366,6 +406,10 @@ func init() {
 
 			classroomGroup.POST("/join", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
+				
+				isNotTeacher := checkNotForbiddenRole(c, dbClient, userID, "teacher")
+				if !isNotTeacher { return }
+
 				var infoBody struct {
 					ClassroomID string `json:"classroom_id"`
 				}

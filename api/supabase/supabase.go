@@ -776,8 +776,13 @@ func (c *Client) CreateClassroom(userID string, student_count int) (string, erro
 	err := c.db.QueryRow(`
 		INSERT INTO classrooms (teacher_id, student_count)
 		VALUES ($1, $2)
+		ON CONFLICT (teacher_id) DO NOTHING
 		RETURNING id
 	`, userID, student_count).Scan(&classroomID)
+
+	if err == sql.ErrNoRows {
+		return "", fmt.Errorf("failed to create classroom: Teacher already has a classroom")
+	}
 
 	if err != nil {
 		return "", fmt.Errorf("failed to create classroom: %v", err)
