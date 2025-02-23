@@ -1,78 +1,15 @@
-import styled from 'styled-components';
-import StoryList from './StoryList';
 import { useState, useEffect } from 'react';
+import StoryList from './StoryList';
 import { AVAILABLE_TOPICS } from '../lib/topics';
-
-const FilterContainer = styled.div`
-	display: flex;
-	gap: 1em;
-	margin-bottom: 1.25em;
-	padding-left: 1.5em;
-	padding-right: 1.5em;
-	max-width: 800px;
-	margin: 0 auto 1.25em;
-
-	@media (max-width: 800px) {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 1em;
-  }
-`;
-
-const FilterLabel = styled.label`
-	display: block;
-	margin-bottom: 0.3em;
-	font-family: 'Lora', serif;
-`;
-
-const FilterSelect = styled.select`
-	padding: 0.5em;
-	border: 1px solid #e0e0e0;
-	border-radius: 5px;
-	font-family: 'Lora', serif;
-	width: 100%;
-	background: white;
-	cursor: pointer;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const PaginationContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	gap: 0.5em;
-	margin-top: 0.5em;
-`;
-
-const PageButton = styled.button`
-	padding: 0.5em 1em;
-	border: 1px solid #e0e0e0;
-	border-radius: 10px;
-	background: white;
-	cursor: pointer;
-	font-family: 'Lora', serif;
-
-	&:disabled {
-		background: #eee;
-		cursor: not-allowed;
-	}
-`;
-
-const DisclaimerText = styled.p`
-	color: #999;
-	font-size: 0.75rem;
-	text-align: center;
-	margin-top: 2rem;
-	font-family: 'Lora', serif;
-	font-style: italic;
-`;
-
-const NoContentMessage = styled.div`
-	text-align: center;
-	padding: 2em;
-	color: #666;
-	font-family: 'Lora', serif;
-	font-style: italic;
-`;
+import {
+	FilterContainer,
+	FilterLabel,
+	FilterSelect,
+	PaginationContainer,
+	PageButton,
+	DisclaimerText,
+	NoContentMessage
+} from '../styles/components/StoryBrowserStyles';
 
 const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLanguage }) => {
 	const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
@@ -166,7 +103,7 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 					</PageButton>
 					<PageButton 
 						onClick={() => handlePageChange(currentPage + 1)} 
-						disabled={stories.length < storiesPerPage} // if we got fewer stories than the page size, we're on the last page
+						disabled={stories.length < storiesPerPage}
 					>
 						Next
 					</PageButton>

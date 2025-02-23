@@ -1,4 +1,4 @@
-import supabase from '../lib/supabase';
+import supabase from '../../lib/supabase';
 
 const apiBase = process.env.REACT_APP_API_BASE;
 

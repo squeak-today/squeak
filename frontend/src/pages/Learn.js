@@ -61,6 +61,9 @@ function Learn() {
 
 	const [progress, setProgress] = useState(null);
 
+	const [isStudent, setIsStudent] = useState(false);
+	const [isTeacher, setIsTeacher] = useState(false);
+
 	const handleStoryBlockClick = async (story) => {
 		navigate(`/read/${story.type}/${story.id}`);
 	}
@@ -262,23 +265,63 @@ function Learn() {
 		}
 	}, [fetchRecommendations, fetchProgress, showNotification, apiBase]);
 
-	useEffect(() => {
-		const initializeProfile = async () => {
-			const profileData = await handleGetProfile();
-			if (profileData) {
-				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
-				await fetchProgress();
-				await initializeBrowser(profileData.learning_language);
-			}
-		};
+	const checkTeacherStatus = useCallback(async () => {
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			const jwt = session?.access_token;
+			
+			const response = await fetch(`${apiBase}teacher`, {
+				headers: {
+					'Authorization': `Bearer ${jwt}`
+				}
+			});
+			
+			const data = await response.json();
+			setIsTeacher(data.exists);
+		} catch (error) {
+			console.error('Error checking teacher status:', error);
+			setIsTeacher(false);
+		}
+	}, [apiBase]);
 
+	const checkStudentStatus = useCallback(async () => {
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			const jwt = session?.access_token;
+			
+			const response = await fetch(`${apiBase}student`, {
+				headers: {
+					'Authorization': `Bearer ${jwt}`
+				}
+			});
+			
+			const data = await response.json();
+			setIsStudent(data.classroom_id !== "");
+		} catch (error) {
+			console.error('Error checking student status:', error);
+			setIsStudent(false);
+		}
+	}, [apiBase]);
+
+	useEffect(() => {
 		const initializeBrowser = async (defaultLanguage) => {
 			try {
 				await handleListNews(defaultLanguage, 'any', 'any', 1, 6);
 			} catch (error) {
 				console.error('Failed to fetch initial stories:', error);
 			}
-		}
+		};
+
+		const initializeProfile = async () => {
+			const profileData = await handleGetProfile();
+			if (profileData) {
+				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
+				await fetchProgress();
+				await initializeBrowser(profileData.learning_language);
+				await checkStudentStatus();
+				await checkTeacherStatus();
+			}
+		};
 
 		const checkWelcomeStatus = async () => {
 			const { data: { session } } = await supabase.auth.getSession();
@@ -298,7 +341,12 @@ function Learn() {
 	}, []);
 
 	return (
-		<BasicPage showLogout onLogout={handleLogout}>
+		<BasicPage 
+			showLogout 
+			onLogout={handleLogout} 
+			showTeach={isTeacher || (!isStudent && !isTeacher)}
+			showJoinClassroom={!isStudent && !isTeacher}
+		>
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<BrowserBox>
 				<LearnPageLayout>

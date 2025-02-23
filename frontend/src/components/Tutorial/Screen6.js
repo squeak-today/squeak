@@ -12,8 +12,8 @@ import {
   CheckAnswersButton,
   ExplanationText,
 } from '../../styles/ReadPageStyles';
-import { useTranslation } from '../../hooks/useTranslation';
-import { useTTS } from '../../hooks/useTTS';
+import { useTranslation } from '../../services/hooks/useTranslation';
+import { useTTS } from '../../services/hooks/useTTS';
 import { TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../../lib/lang_codes';
 
 // Headings as paragraphs with desired font sizes

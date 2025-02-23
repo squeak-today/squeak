@@ -19,7 +19,14 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi'; 
 import { AiOutlineMenu } from 'react-icons/ai';  // hamburger/waffle icon
 
-function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
+function BasicPage({ 
+  children, 
+  showLogout, 
+  onLogout, 
+  showGetStarted, 
+  showTeach = false,
+  showJoinClassroom = false 
+}) {
   const navigate = useNavigate();
 
   const handleGetStarted = () => {
@@ -46,6 +53,16 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
           <ButtonContainer>
             {showLogout && (
               <>
+                {showTeach && (
+                  <HeaderText onClick={() => navigate('/teacher')}>
+                    Teach
+                  </HeaderText>
+                )}
+                {showJoinClassroom && (
+                  <HeaderText onClick={() => navigate('/student/become')}>
+                    Join Classroom
+                  </HeaderText>
+                )}
                 <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
                   Contact Us
                 </HeaderText>
@@ -62,6 +79,26 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
             )}
 
             <MobileMenu isOpen={isMobileMenuOpen}>
+              {showTeach && (
+                <MenuText
+                  onClick={() => {
+                    navigate('/teacher');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Teach
+                </MenuText>
+              )}
+              {showJoinClassroom && (
+                <MenuText
+                  onClick={() => {
+                    navigate('/student/become');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Join Classroom
+                </MenuText>
+              )}
               <MenuText
                 onClick={() => {
                   window.open('/contact-support.html', '_blank');
@@ -82,16 +119,15 @@ function BasicPage({ children, showLogout, onLogout, showGetStarted }) {
             
             {showGetStarted && (
               <>
-              <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
-              Contact Us
-              </HeaderText>
-              <HeaderButton onClick={handleGetStarted}>
-                Get Started
-                <span className="arrow-icon">
-                  <FiArrowRight size={24} />
-                </span>
-              </HeaderButton>
-              
+                <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
+                  Contact Us
+                </HeaderText>
+                <HeaderButton onClick={handleGetStarted}>
+                  Get Started
+                  <span className="arrow-icon">
+                    <FiArrowRight size={24} />
+                  </span>
+                </HeaderButton>
               </>
             )}
           </ButtonContainer>

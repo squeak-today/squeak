@@ -6,6 +6,9 @@ import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import Read from './pages/Read';
 import Welcome from './pages/Welcome';
+import TeacherDashboard from './pages/TeacherDashboard';
+import BecomeTeacher from './pages/BecomeTeacher';
+import BecomeStudent from './pages/BecomeStudent';
 
 function App() {
 	return (
@@ -13,6 +16,11 @@ function App() {
 			<Router>
 				<Routes>
 					<Route path="/" element={<Home />} />
+					
+					<Route path="/teacher" element={<TeacherDashboard />} />
+					<Route path="/teacher/become" element={<BecomeTeacher />} />
+					<Route path="/student/become" element={<BecomeStudent />} />
+
 					<Route path="/auth/:mode" element={<Auth />} />
 					<Route 
 						path="/learn" 
