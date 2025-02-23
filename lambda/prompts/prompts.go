@@ -34,7 +34,8 @@ func CreateNewsArticlePrompt(language string, cefr string, query string, web_res
 	sb.WriteString("Using this information, write a " + languageUpper + "news article that matches the writing complexity of " + cefr + " on the CEFR scale. ")
 	sb.WriteString(cefr + " writing " + cefrPrompts[cefr] + " ")
 	sb.WriteString("Your article must include a title styled like a newspaper headline. Use markdown headers for titles, subtitles, and section titles.\n")
-	sb.WriteString("Provide the article without preamble or other comment.\n\n")
+	sb.WriteString("Do NOT include any placeholders, such as bracketed information or instructions for the user to fill in. ")
+	sb.WriteString("Provide a finished article immediately ready for publishing to readers. Do NOT add preamble or comments that is not article content.\n\n")
 	sb.WriteString(web_results)
 
 	prompt := sb.String()
