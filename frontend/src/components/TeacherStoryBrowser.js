@@ -1,5 +1,6 @@
 import TeacherStoryList from './TeacherStoryList';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useTeacher } from '../services/hooks/useTeacher'
 import { AVAILABLE_TOPICS } from '../lib/topics';
 import {
   Container,
@@ -12,49 +13,74 @@ import {
   NoContentMessage
 } from '../styles/components/TeacherStoryBrowserStyles';
 
-const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAccept, onReject, defaultLanguage }) => {
-  const [filterLanguage, setFilterLanguage] = useState(defaultLanguage);
-  const [filterCefr, setFilterCefr] = useState('any');
-  const [filterSubject, setFilterSubject] = useState('any');
-  const [filterStatus, setFilterStatus] = useState('accepted');
-  const [currentPage, setCurrentPage] = useState(1);
-  const storiesPerPage = 6;
+const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
+  const contentPerPage = 6;
+
+  const {
+    content,
+    currentFilters,
+    updateContentFilters,
+    fetchContent,
+    acceptStory,
+    rejectStory
+  } = useTeacher();
 
   useEffect(() => {
-    setFilterLanguage(defaultLanguage);
-  }, [defaultLanguage]);
+    updateContentFilters({
+      ...currentFilters,
+      language: defaultLanguage,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchContent(currentFilters);
+  }, [currentFilters, fetchContent]);
 
   const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    onParamsSelect(filterLanguage, filterCefr, filterSubject, newPage, storiesPerPage, filterStatus);
+    updateContentFilters({
+      ...currentFilters,
+      page: newPage
+    });
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    updateContentFilters({
+      ...currentFilters,
+      [filterType]: value,
+      page: 1
+    });
+  };
+
+  const handleAccept = async (story) => {
+    await acceptStory(story);
+    await fetchContent();
+  };
+
+  const handleReject = async (story) => {
+    await rejectStory(story);
+    await fetchContent();
   };
 
   return (
     <Container>
       <FilterContainer>
-      <div style={{ flex: 1 }}>
+        <div style={{ flex: 1 }}>
           <FilterLabel>Status</FilterLabel>
           <FilterSelect
-            value={filterStatus}
-            onChange={(e) => {
-              setFilterStatus(e.target.value);
-              setCurrentPage(1);
-              onParamsSelect(filterLanguage, filterCefr, filterSubject, 1, storiesPerPage, e.target.value);
-            }}
+            value={currentFilters.whitelist}
+            onChange={(e) => handleFilterChange('whitelist', e.target.value)}
           >
             <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
           </FilterSelect>
         </div>
+
         <div style={{ flex: 1 }}>
           <FilterLabel>Language</FilterLabel>
           <FilterSelect 
-            value={filterLanguage} 
-            onChange={(e) => { 
-              setFilterLanguage(e.target.value); 
-              setCurrentPage(1);
-              onParamsSelect(e.target.value, filterCefr, filterSubject, 1, storiesPerPage, filterStatus); 
-            }}
+            value={currentFilters.language} 
+            onChange={(e) => handleFilterChange('language', e.target.value)}
           >
             <option value="any">Any Language</option>
             <option value="Spanish">Spanish</option>
@@ -65,12 +91,8 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
         <div style={{ flex: 1 }}>
           <FilterLabel>CEFR Level</FilterLabel>
           <FilterSelect 
-            value={filterCefr} 
-            onChange={(e) => { 
-              setFilterCefr(e.target.value); 
-              setCurrentPage(1);
-              onParamsSelect(filterLanguage, e.target.value, filterSubject, 1, storiesPerPage, filterStatus); 
-            }}
+            value={currentFilters.cefr} 
+            onChange={(e) => handleFilterChange('cefr', e.target.value)}
           >
             <option value="any">Any Level</option>
             <option value="A1">A1 (Beginner)</option>
@@ -85,12 +107,8 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
         <div style={{ flex: 1 }}>
           <FilterLabel>Topic</FilterLabel>
           <FilterSelect 
-            value={filterSubject} 
-            onChange={(e) => { 
-              setFilterSubject(e.target.value); 
-              setCurrentPage(1);
-              onParamsSelect(filterLanguage, filterCefr, e.target.value, 1, storiesPerPage, filterStatus); 
-            }}
+            value={currentFilters.subject} 
+            onChange={(e) => handleFilterChange('subject', e.target.value)}
           >
             <option value="any">Any Topic</option>
             {AVAILABLE_TOPICS.map(topic => (
@@ -100,37 +118,34 @@ const TeacherStoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, onAcc
         </div>
       </FilterContainer>
       
-      {stories.length > 0 ? (
+      {content.length > 0 ? (
         <TeacherStoryList 
-          stories={stories} 
-          onStoryBlockClick={onStoryBlockClick}
-          onAccept={onAccept}
-          onReject={onReject}
-          status={filterStatus}
+          stories={content} 
+          onAccept={handleAccept}
+          onReject={handleReject}
+          status={currentFilters.whitelist}
         />
       ) : (
         <NoContentMessage>No stories found for these filters!</NoContentMessage>
       )}
 
-      {stories.length > 0 && (
-        <PaginationContainer>
-          <PageButton 
-            onClick={() => handlePageChange(currentPage - 1)} 
-            disabled={currentPage === 1}
-          >
-            Previous
-          </PageButton>
-          <PageButton disabled>
-            Page {currentPage}
-          </PageButton>
-          <PageButton 
-            onClick={() => handlePageChange(currentPage + 1)} 
-            disabled={stories.length < storiesPerPage}
-          >
-            Next
-          </PageButton>
-        </PaginationContainer>
-      )}
+      <PaginationContainer>
+        <PageButton 
+          onClick={() => handlePageChange(currentFilters.page - 1)} 
+          disabled={currentFilters.page === 1}
+        >
+          Previous
+        </PageButton>
+        <PageButton disabled>
+          Page {currentFilters.page}
+        </PageButton>
+        <PageButton 
+          onClick={() => handlePageChange(currentFilters.page + 1)} 
+          disabled={content.length < contentPerPage}
+        >
+          Next
+        </PageButton>
+      </PaginationContainer>
 
       <DisclaimerText>
         Content may be AI-assisted. Please verify important details from official sources.

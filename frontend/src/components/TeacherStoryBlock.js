@@ -10,8 +10,7 @@ import {
   AcceptButton,
   RejectButton
 } from '../styles/components/TeacherStoryBlockStyles';
-
-import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -31,7 +30,9 @@ const formatDate = (dateString) => {
   return `${month} ${day}${getOrdinal(day)}, ${year}`;
 };
 
-const TeacherStoryBlock = ({ story, onStoryBlockClick, onAccept, onReject, status }) => {
+const TeacherStoryBlock = ({ story, onAccept, onReject, status }) => {
+  const navigate = useNavigate();
+
   const handleAction = (e) => {
     e.stopPropagation();
     if (status === 'rejected') {
@@ -41,9 +42,18 @@ const TeacherStoryBlock = ({ story, onStoryBlockClick, onAccept, onReject, statu
     }
   };
 
+  const handleClick = (story) => {
+    navigate(`/read/${story.content_type.toLowerCase()}/${story.id}`, {
+        state: {
+            backTo: '/teacher',
+            backText: 'Back to Teacher Dashboard'
+        }
+    });
+  };
+
   // Expect story properties: title, preview_text, language, topic, cefr_level, date_created
   return (
-    <StoryBlockContainer onClick={() => onStoryBlockClick(story)}>
+    <StoryBlockContainer onClick={() => handleClick(story)}>
       <TopSection>
         <TagContainer>
           <Tag cefr={story.cefr_level}>{story.cefr_level}</Tag>

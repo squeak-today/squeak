@@ -1,4 +1,4 @@
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BasicPage from '../components/BasicPage';
 import StoryReader from '../components/StoryReader';
@@ -24,9 +24,8 @@ const DEFAULT_CONTENT = {
     content: '',
 };
 
-function Read() {
+function TeacherRead({ onBack }) {
     const { type, id } = useParams();
-    const { state } = useLocation();
 
     const navigate = useNavigate();
     const { showNotification } = useNotification();
@@ -388,7 +387,7 @@ function Read() {
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
-                <BackButton onClick={() => navigate(state?.backTo || '/learn')}>
+                <BackButton onClick={onBack()}>
                     ← Back to Browse
                 </BackButton>
                 <ReadPageLayout>
@@ -432,4 +431,4 @@ function Read() {
     );
 }
 
-export default Read; 
+export default TeacherRead; 

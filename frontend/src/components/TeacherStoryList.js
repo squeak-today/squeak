@@ -11,14 +11,13 @@ const ListContainer = styled.div`
   gap: 1em;
 `;
 
-const TeacherStoryList = ({ stories, onStoryBlockClick, onAccept, onReject, status }) => {
+const TeacherStoryList = ({ stories, onAccept, onReject, status }) => {
   return (
     <ListContainer>
       {stories.map((story) => (
         <TeacherStoryBlock
           key={story.id}
           story={story}
-          onStoryBlockClick={onStoryBlockClick}
           onAccept={onAccept}
           onReject={onReject}
           status={status}
