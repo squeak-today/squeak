@@ -14,6 +14,7 @@ import {
   ButtonContainer,
   SubHeading,
   MainHeading,
+  SectionHeading,
   SmallText,
   LandingImage,
   Highlight,
@@ -25,9 +26,7 @@ import {
   TranslateContent,
   HeroButton,
   TeacherHeroButton,
-  TeacherHeading,
-  TranslateHeading
-} from '../styles/LandingPageStyles';
+} from '../styles/pages/LandingPageStyles';
 
 function Home() {
   const navigate = useNavigate();
@@ -73,9 +72,9 @@ function Home() {
       <TeacherSection>
         <TeacherContent>
           <TeacherTextContent>
-            <TeacherHeading>
+            <SectionHeading>
               Squeak for <Highlight>Teachers</Highlight>
-            </TeacherHeading>
+            </SectionHeading>
             <SubHeading>
               Teachers, we're here to help. Squeak offers content your students will enjoy with practice for vocabulary, grammar, speaking, and more. With <strong>Classrooms</strong>, students only see what you approve.
             </SubHeading>
@@ -93,9 +92,9 @@ function Home() {
       <TranslateFeatureSection>
         <TranslateContent>
           <TextContent>
-            <TranslateHeading>
+            <SectionHeading>
               Translate with just a <Highlight>click</Highlight>
-            </TranslateHeading>
+            </SectionHeading>
             <SubHeading>
               No need to pull out the dictionary to learn a new word! Just click, translate, and read on.
             </SubHeading>

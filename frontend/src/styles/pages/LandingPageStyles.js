@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { Button } from '../components/Button';
+import { Heading } from '../components/Heading';
+import { theme } from '../theme';
 
 export const HomeContent = styled.div`
   display: flex;
@@ -43,45 +46,18 @@ export const ButtonContainer = styled.div`
   }
 `;
 
-export const SubHeading = styled.p`
-  font-family: 'Lora', serif;
-  font-size: 1.5rem;
-  color: #333333;
-  text-align: left;
-  margin-top: 1vh;
-
-  @media (max-width: 768px) {
-    font-size: 1rem;
-    max-width: 36ch;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-  }
+export const MainHeading = styled(Heading)`
+  font-size: ${theme.typography.fontSize.xxl};
 `;
 
-export const MainHeading = styled.h1`
-  font-family: 'Lora', serif;
-  font-weight: 400;
-  font-size: 3.5em;
-  color: #000000;
-  line-height: 1.15;
-  max-width: 14ch;
-  text-align: left;
-  white-space: normal;
-  margin: 0;
+export const SectionHeading = styled(Heading)`
+  font-size: ${theme.typography.fontSize.xl};
+`;
 
-  @media (max-width: 768px) {
-    font-size: 2.5em;
-    max-width: 20ch;
-    text-align: center;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 2.2em;
-    max-width: 24ch;
-    text-align: center;
-  }
+export const SubHeading = styled(Heading)`
+  font-size: ${theme.typography.fontSize.lg};
+  color: ${theme.colors.text.secondary};
+  margin: 1vh 0;
 `;
 
 export const SmallText = styled.p`
@@ -173,57 +149,10 @@ export const TranslateContent = styled.div`
   }
 `;
 
-export const TranslationCard = styled.div`
-  background-color: #2e3d38;
-  color: #fdfdfd;
-  border-radius: 8px;
-  padding: 1.5rem;
-  width: 100%;
-`;
-
-export const TranslationCardHeading = styled.h3`
-  font-size: 1.5rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-export const Arrow = styled.span`
-  font-weight: normal;
-  font-size: 1.2rem;
-`;
-
-export const TranslationDetails = styled.div`
-  p {
-    margin-bottom: 0.5rem;
-    
-    strong {
-      color: #ffefc3;
-    }
-  }
-`;
-
-export const HeroButton = styled.button`
+export const HeroButton = styled(Button)`
   width: 8em;
   aspect-ratio: 7 / 1.5;
-  font-family: 'Lora', serif;
   font-size: 1.5em;
-  border-radius: 10px;
-  background: #fad48f;
-  border: none;
-  color: #000000;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  text-decoration: none;
-
-  &:hover {
-    background: #f3c87d;
-  }
 
   @media (max-width: 768px) {
     font-size: 1.5em;
@@ -240,7 +169,7 @@ export const HeroButton = styled.button`
   }
 `;
 
-export const TeacherHeroButton = styled(HeroButton)`
+export const TeacherHeroButton = styled(Button)`
   width: 12.5em;
   height: 2em;
   font-size: 1.5em;
@@ -259,22 +188,3 @@ export const TeacherHeroButton = styled(HeroButton)`
     max-width: 90vw;
   }
 `;
-
-export const TeacherHeading = styled(MainHeading)`
-  max-width: 20ch;
-  font-size: 3.2em;
-
-  @media (max-width: 768px) {
-    font-size: 2.3em;
-    max-width: 24ch;
-  }
-`;
-
-export const TranslateHeading = styled(MainHeading)`
-  font-size: 3.2em;
-
-  @media (max-width: 768px) {
-    font-size: 2.4em;
-    max-width: 22ch;
-  }
-`; 
