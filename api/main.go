@@ -370,9 +370,6 @@ func init() {
 		studentGroup.GET("", func(c *gin.Context) {
 			userID := getUserIDFromToken(c)
 			
-			isStudent := checkIsCorrectRole(c, dbClient, userID, "student")
-			if !isStudent { return }
-
 			studentID, classroomID, err := dbClient.CheckStudentStatus(userID)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
