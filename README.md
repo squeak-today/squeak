@@ -501,6 +501,7 @@ Translates a given sentence between specified languages.
     "sentence": "The translated sentence."
 }
 ```
+
 ### **POST** `/audio/tts`
 > https://api.squeak.today/audio/tts
 
@@ -523,6 +524,8 @@ Converts text to speech using Google Cloud Text-to-Speech API.
     "audio_content": "base64-encoded audio content"
 }
 ```
+
+The `audio_content` is a base64-encoded string of the audio file in MP3 format. You can decode this to get the actual audio bytes.
 
 ### **GET** `/teacher`
 > https://api.squeak.today/teacher
