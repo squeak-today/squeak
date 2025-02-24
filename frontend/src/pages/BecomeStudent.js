@@ -7,8 +7,10 @@ import {
   AuthTitle,
   AuthText,
   AuthButton,
-  AuthInput
 } from "../styles/AuthPageStyles";
+import {
+  ClassroomInput
+} from "../styles/BecomeStudentStyles";
 import BasicPage from "../components/BasicPage";
 import { useNotification } from "../context/NotificationContext";
 
@@ -125,7 +127,7 @@ function BecomeStudent() {
           <AuthText>
             Ask your teacher for the Squeak Classroom ID. After, you can start reading any content your teacher has approved!
           </AuthText>
-          <AuthInput
+          <ClassroomInput
             type="text"
             placeholder="Classroom ID"
             value={classroomID}

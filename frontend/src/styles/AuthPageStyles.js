@@ -88,18 +88,19 @@ export const AuthForm = styled.form`
 
 export const AuthInput = styled.input`
 	width: 100%;
-	padding: 0.75rem;
-	margin: 0.5rem 0 1.5rem;
+	padding: 0.5em;
 	border: 1px solid #e0e0e0;
-	border-radius: 6px;
+	border-radius: 5px;
 	font-family: 'Lora', serif;
-	font-size: 1rem;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	font-size: 16px;
+	background: white;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	box-sizing: border-box;
 
 	&:focus {
 		outline: none;
-		border-color: #fad48f;
-		box-shadow: 0 0 0 2px rgba(250, 212, 143, 0.2);
+		border-color: #666;
+		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 	}
 
 	&::placeholder {
