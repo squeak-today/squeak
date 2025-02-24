@@ -77,7 +77,7 @@ function Home() {
               Squeak for <Highlight>Teachers</Highlight>
             </TeacherHeading>
             <SubHeading>
-              Teachers, we're here to help. Squeak offers content your students will enjoy with practice for vocabulary, grammar, speaking, and more.
+              Teachers, we're here to help. Squeak offers content your students will enjoy with practice for vocabulary, grammar, speaking, and more. With <strong>Classrooms</strong>, students only see what you approve.
             </SubHeading>
             <ButtonContainer>
               <TeacherHeroButton onClick={() => navigate('/teacher/dashboard')}>
