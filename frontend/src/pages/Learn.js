@@ -64,6 +64,8 @@ function Learn() {
 	const [isStudent, setIsStudent] = useState(false);
 	const [isTeacher, setIsTeacher] = useState(false);
 
+	const [isInitializing, setIsInitializing] = useState(true);
+
 	const handleStoryBlockClick = async (story) => {
 		navigate(`/read/${story.type}/${story.id}`);
 	}
@@ -335,8 +337,17 @@ function Learn() {
 			}
 		};
 
-		initializeProfile();
-		checkWelcomeStatus();
+		const init = async () => {
+			try {
+				await initializeProfile();
+				await checkWelcomeStatus();
+			} catch (error) {
+				console.error('Error initializing profile:', error);
+			} finally {
+				setIsInitializing(false);
+			}
+		}
+		init();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -346,6 +357,7 @@ function Learn() {
 			onLogout={handleLogout} 
 			showTeach={isTeacher || (!isStudent && !isTeacher)}
 			showJoinClassroom={!isStudent && !isTeacher}
+			isLoading={isInitializing}
 		>
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<BrowserBox>
