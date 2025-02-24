@@ -52,6 +52,7 @@ export const Title = styled.h2`
 export const ContentWrapper = styled.div`
   margin-right: 0;
   margin-top: 0.5em;
+  margin-bottom: 1.25em;
   padding-right: 0.5em;
 `;
 
