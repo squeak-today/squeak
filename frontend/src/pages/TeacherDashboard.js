@@ -19,6 +19,8 @@ function TeacherDashboard() {
   const { showNotification } = useNotification();
   const [showClassroomInfo, setShowClassroomInfo] = useState(true);
 
+  const [isInitializing, setIsInitializing] = useState(true);
+
   const {
     classroomInfo,
     verifyTeacher,
@@ -26,7 +28,16 @@ function TeacherDashboard() {
   } = useTeacher();
 
   useEffect(() => {
-    if (verifyTeacher()) { fetchClassroomInfo(); }
+    const init = async () => {
+      try {
+        if (verifyTeacher()) { fetchClassroomInfo(); }
+      } catch (error) {
+        console.error('Error fetching classroom info:', error);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+    init();
   }, [verifyTeacher, fetchClassroomInfo, navigate]);
 
   const handleLogout = async () => {
@@ -40,7 +51,7 @@ function TeacherDashboard() {
 };
 
   return (
-    <BasicPage showLogout onLogout={handleLogout}>
+    <BasicPage showLogout onLogout={handleLogout} isLoading={isInitializing}>
       <Section>
         <Section>
           <ButtonContainer>
