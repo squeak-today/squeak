@@ -14,6 +14,12 @@ import {
   LogoText,
   MenuText,
 } from './StyledComponents';
+import {
+  LoadingOverlay,
+  LoadingLogo,
+  LoadingText,
+  Spinner
+} from '../styles/BasicPageStyles';
 import logo from '../assets/drawing_400.png';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi'; 
@@ -25,7 +31,8 @@ function BasicPage({
   onLogout, 
   showGetStarted, 
   showTeach = false,
-  showJoinClassroom = false 
+  showJoinClassroom = false,
+  isLoading = false
 }) {
   const navigate = useNavigate();
 
@@ -40,7 +47,17 @@ function BasicPage({
   };
 
   return (
+    <>
     <TransitionWrapper>
+      {isLoading && (
+        <LoadingOverlay>
+          <LoadingLogo src={logo} alt="Squeak Logo" />
+          <Spinner />
+          <LoadingText>Loading...</LoadingText>
+        </LoadingOverlay>
+      )}
+    </TransitionWrapper>
+    {!isLoading && (<TransitionWrapper>
       <PageContainer>
         <NavHeader>
           <HeaderLogo
@@ -149,7 +166,8 @@ function BasicPage({
           <FooterText>© 2025 Squeak. All rights reserved.</FooterText>
         </FooterContainer>
       </PageContainer>
-    </TransitionWrapper>
+    </TransitionWrapper>)}
+    </>
   );
 }
 
