@@ -9,8 +9,8 @@ import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import { FiArrowRight } from 'react-icons/fi';
 import {
-  HomeContent,
-  TextContent,
+  HomeContainer,
+  ContentContainer,
   ButtonContainer,
   SubHeading,
   MainHeading,
@@ -18,14 +18,12 @@ import {
   SmallText,
   LandingImage,
   Highlight,
-  TeacherSection,
-  TeacherContent,
-  TeacherTextContent,
-  WizardHat,
-  TranslateFeatureSection,
-  TranslateContent,
+  Section,
   HeroButton,
   TeacherHeroButton,
+  WizardHat,
+  SectionContentWrapper,
+  DemoVideo,
 } from '../styles/pages/LandingPageStyles';
 
 function Home() {
@@ -45,8 +43,8 @@ function Home() {
 
   return (
     <BasicPage showGetStarted>
-      <HomeContent>
-        <TextContent>
+      <HomeContainer>
+        <ContentContainer>
           <MainHeading>Learn Languages Reading What You Love</MainHeading>
           <SubHeading>
             Engaging news and stories at your level, making language learning
@@ -61,17 +59,17 @@ function Home() {
               I already have an account
             </SmallText>
           </ButtonContainer>
-        </TextContent>
+        </ContentContainer>
         <div></div>
         <LandingImage
           src={landingDrawing}
           alt="Squeak Mouse Drawing"
         />
-      </HomeContent>
+      </HomeContainer>
 
-      <TeacherSection>
-        <TeacherContent>
-          <TeacherTextContent>
+      <Section>
+        <SectionContentWrapper>
+          <ContentContainer>
             <SectionHeading>
               Squeak for <Highlight>Teachers</Highlight>
             </SectionHeading>
@@ -84,35 +82,27 @@ function Home() {
                 <FiArrowRight size={24} />
               </TeacherHeroButton>
             </ButtonContainer>
-          </TeacherTextContent>
+          </ContentContainer>
           <WizardHat src={wizardHat} alt="Wizard Hat" />
-        </TeacherContent>
-      </TeacherSection>
+        </SectionContentWrapper>
+      </Section>
 
-      <TranslateFeatureSection>
-        <TranslateContent>
-          <TextContent>
+      <Section>
+        <SectionContentWrapper>
+          <ContentContainer>
             <SectionHeading>
               Translate with just a <Highlight>click</Highlight>
             </SectionHeading>
             <SubHeading>
               No need to pull out the dictionary to learn a new word! Just click, translate, and read on.
             </SubHeading>
-          </TextContent>
-          <video autoPlay loop muted playsInline
-            style={{
-              width: '100%',
-              maxWidth: '500px',
-              height: 'auto',
-              borderRadius: '12px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}
-          >
+          </ContentContainer>
+          <DemoVideo autoPlay loop muted playsInline>
             <source src={clickVideo} type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
-        </TranslateContent>
-      </TranslateFeatureSection>
+          </DemoVideo>
+        </SectionContentWrapper>
+      </Section>
     </BasicPage>
   );
 }
