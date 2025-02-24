@@ -3,6 +3,7 @@
 import { useNavigate } from 'react-router-dom';
 import landingDrawing from '../assets/mouse_pencil.png';
 import wizardHat from '../assets/WizardHat.png';
+import clickVideo from '../assets/clickVideo.mp4';
 import { useEffect } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
@@ -22,10 +23,6 @@ import {
   WizardHat,
   TranslateFeatureSection,
   TranslateContent,
-  TranslationCard,
-  TranslationCardHeading,
-  Arrow,
-  TranslationDetails,
   HeroButton,
   TeacherHeroButton,
   TeacherHeading,
@@ -103,15 +100,18 @@ function Home() {
               No need to pull out the dictionary to learn a new word! Just click, translate, and read on.
             </SubHeading>
           </TextContent>
-          <TranslationCard>
-            <TranslationCardHeading>
-              Bienvenue <Arrow>→</Arrow> Welcome
-            </TranslationCardHeading>
-            <TranslationDetails>
-              <p><strong>Original:</strong> Bienvenue sur Squeak!</p>
-              <p><strong>Translated:</strong> Welcome to Squeak!</p>
-            </TranslationDetails>
-          </TranslationCard>
+          <video autoPlay loop muted playsInline
+            style={{
+              width: '100%',
+              maxWidth: '500px',
+              height: 'auto',
+              borderRadius: '12px',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }}
+          >
+            <source src={clickVideo} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </TranslateContent>
       </TranslateFeatureSection>
     </BasicPage>

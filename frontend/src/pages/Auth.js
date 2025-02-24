@@ -103,7 +103,7 @@ function Auth() {
               const user = data.user;
               if (user.identities && user.identities.length === 0) {
                 showNotification(
-                  "An account with this email already exists. Log in instead!" +
+                  "An account with this email already exists. Log in instead! " +
                   "If you haven’t verified your email, please check your inbox (or spam folder) for a verification link.",
                   "error"
                 );
