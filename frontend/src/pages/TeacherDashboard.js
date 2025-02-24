@@ -30,7 +30,8 @@ function TeacherDashboard() {
   useEffect(() => {
     const init = async () => {
       try {
-        if (verifyTeacher()) { fetchClassroomInfo(); }
+        if (await verifyTeacher()) { await fetchClassroomInfo(); }
+        else { navigate('/teacher/become'); }
       } catch (error) {
         console.error('Error fetching classroom info:', error);
       } finally {

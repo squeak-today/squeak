@@ -19,6 +19,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
   const {
     content,
     currentFilters,
+    verifyTeacher,
     updateContentFilters,
     fetchContent,
     acceptStory,
@@ -34,8 +35,13 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
   }, []);
 
   useEffect(() => {
-    fetchContent(currentFilters);
-  }, [currentFilters, fetchContent]);
+    const init = async () => {
+      if (await verifyTeacher()) {
+        await fetchContent(currentFilters);
+      }
+    }
+    init();
+  }, [currentFilters, verifyTeacher, fetchContent]);
 
   const handlePageChange = (newPage) => {
     updateContentFilters({
