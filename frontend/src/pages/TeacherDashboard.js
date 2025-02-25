@@ -38,7 +38,7 @@ function TeacherDashboard() {
         setIsInitializing(false);
       }
     };
-    init();
+    init(); // only call once
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
