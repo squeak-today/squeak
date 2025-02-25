@@ -25,7 +25,14 @@ import {
   DemoVideo,
   BackgroundImage,
   AnimatedWord,
+  SmallSection,
+  SchoolsText,
+  LogoContainer,
+  SchoolLogo,
 } from '../styles/pages/LandingPageStyles';
+import tdsb from '../assets/schools/tdsb.png';
+import uw from '../assets/schools/uw.png';
+import wlu from '../assets/schools/wlu.png';
 
 function Home() {
   const navigate = useNavigate();
@@ -43,6 +50,12 @@ function Home() {
   };
 
   const headingWords = "Learn Languages Reading What You Love.".split(" ");
+
+  const schoolLogos = [
+    { id: 1, src: tdsb, alt: "Toronto District School Board" },
+    { id: 2, src: uw, alt: "University of Waterloo" },
+    { id: 3, src: wlu, alt: "Wilfrid Laurier University" },
+  ];
 
   return (
     <BasicPage showGetStarted>
@@ -73,6 +86,19 @@ function Home() {
           </ButtonContainer>
         </ContentContainer>
       </HomeContainer>
+
+      <SmallSection>
+        <SchoolsText>Used by students at...</SchoolsText>
+        <LogoContainer>
+          {schoolLogos.map(logo => (
+            <SchoolLogo
+              key={logo.id}
+              src={logo.src}
+              alt={logo.alt}
+            />
+          ))}
+        </LogoContainer>
+      </SmallSection>
 
       <Section>
         <SectionContentWrapper>

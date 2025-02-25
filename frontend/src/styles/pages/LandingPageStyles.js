@@ -63,7 +63,12 @@ export const Section = styled.section`
   justify-content: center;
   width: 100%;
   min-height: 60vh;
-  padding: 3rem 0;
+`;
+
+export const SmallSection = styled(Section)`
+  min-height: 5vh;
+  flex-direction: column;
+  align-items: center;
 `;
 
 export const SectionContentWrapper = styled.div`
@@ -197,4 +202,34 @@ export const DemoVideo = styled.video`
   height: auto;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+export const SchoolsText = styled.p`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.lg};
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.md};
+  text-align: center;
+`;
+
+export const LogoContainer = styled.div`
+  display: flex;
+  gap: ${theme.spacing.xl};
+  align-items: center;
+  justify-content: center;
+  padding: ${theme.spacing.md} 0;
+`;
+
+export const SchoolLogo = styled.img`
+  height: 3rem;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+  filter: grayscale(100%);
+
+  &:hover {
+    opacity: 1;
+    filter: none;
+  }
 `;

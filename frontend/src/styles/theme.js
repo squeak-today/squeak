@@ -19,7 +19,8 @@ export const theme = {
   },
   spacing: {
     sm: '0.5rem',
-    md: '1rem'
+    md: '1rem',
+    xl: '4rem'
   },
   breakpoints: {
     mobile: '480px',
