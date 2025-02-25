@@ -27,7 +27,7 @@ function TeacherDashboard() {
     fetchClassroomInfo,
   } = useTeacher();
 
-  useEffect(() => { // only call once
+  useEffect(() => {
     const init = async () => {
       try {
         if (await verifyTeacher()) { await fetchClassroomInfo(); }
