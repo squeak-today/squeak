@@ -792,13 +792,32 @@ func (c *Client) CreateClassroom(userID string, student_count int) (string, erro
 }
 
 func (c *Client) AddStudentToClassroom(classroomID string, studentID string) error {
-	_, err := c.db.Exec(`
+	tx, err := c.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %v", err)
+	}
+	_, err = tx.Exec(`
 		INSERT INTO students (user_id, classroom_id)
 		VALUES ($1, $2)
 	`, studentID, classroomID)
-
 	if err != nil {
+		tx.Rollback()
 		return fmt.Errorf("failed to add student to classroom: %v", err)
+	}
+
+	_, err = tx.Exec(`
+		UPDATE classrooms
+		SET student_count = student_count + 1
+		WHERE id = $1
+	`, classroomID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to update student count: %v", err)
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %v", err)
 	}
 
 	return nil
