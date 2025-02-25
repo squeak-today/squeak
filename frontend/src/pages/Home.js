@@ -16,7 +16,6 @@ import {
   MainHeading,
   SectionHeading,
   SmallText,
-  LandingImage,
   Highlight,
   Section,
   HeroButton,
@@ -24,6 +23,8 @@ import {
   WizardHat,
   SectionContentWrapper,
   DemoVideo,
+  BackgroundImage,
+  AnimatedWord,
 } from '../styles/pages/LandingPageStyles';
 
 function Home() {
@@ -41,14 +42,25 @@ function Home() {
     navigate('/auth/signup');
   };
 
+  const headingWords = "Learn Languages Reading What You Love.".split(" ");
+
   return (
     <BasicPage showGetStarted>
       <HomeContainer>
+        <BackgroundImage
+          src={landingDrawing}
+          alt="Squeak Mouse Drawing"
+        />
         <ContentContainer>
-          <MainHeading>Learn Languages Reading What You Love</MainHeading>
+          <MainHeading>
+            {headingWords.map((word, index) => (
+              <AnimatedWord key={index} $delay={0.5 + (index * 0.15)}>
+                {word}
+              </AnimatedWord>
+            ))}
+          </MainHeading>
           <SubHeading>
-            Engaging news and stories at your level, making language learning
-            fun, stress-free, and truly rewarding.
+            Bring your classroom to life with content tailored to your students' interests and skill level.
           </SubHeading>
           <ButtonContainer>
             <HeroButton onClick={handleGetStarted}>
@@ -60,11 +72,6 @@ function Home() {
             </SmallText>
           </ButtonContainer>
         </ContentContainer>
-        <div></div>
-        <LandingImage
-          src={landingDrawing}
-          alt="Squeak Mouse Drawing"
-        />
       </HomeContainer>
 
       <Section>

@@ -1,49 +1,60 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { Button } from '../components/Button';
 import { Heading } from '../components/Heading';
 import { theme } from '../theme';
 
 export const HomeContainer = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
-  max-width: 75%;
-  height: 82vh;
-  margin: 0 auto;
+  min-height: 90vh;
+  width: 100vw;
+  overflow: hidden;
+  box-sizing: border-box;
+`;
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    max-width: 90%;
-    height: auto;
-    padding: 20px;
-  }
+export const BackgroundImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  height: 100%;
+  max-height: 600px;
+  object-fit: contain;
+  mask-image: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.8) 20%,
+    rgba(0, 0, 0, 0.1) 60%,
+    rgba(0, 0, 0, 0) 80%
+  );
+  z-index: 1;
 `;
 
 export const ContentContainer = styled.div`
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 10px;
-  max-width: 50%;
+  text-align: center;
+  max-width: 90vw;
+  margin: 0 auto;
+  margin-top: 30vh;
 
-  @media (max-width: 768px) {
-    max-width: 95%;
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    margin-top: 40vh;
+    max-width: 90vw;
   }
 `;
 
 export const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-
-  @media (max-width: 768px) {
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-  }
+  align-items: center;
+  margin-top: 1rem;
 `;
 
 export const Section = styled.section`
@@ -64,15 +75,40 @@ export const SectionContentWrapper = styled.div`
   width: 100%;
   margin: 0 auto;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     flex-direction: column;
     text-align: center;
     gap: 2rem;
   }
 `;
 
+const fadeInFromTop = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+export const AnimatedWord = styled.span`
+  display: inline-block;
+  opacity: 0;
+  animation: ${fadeInFromTop} 0.5s ease forwards;
+  animation-delay: ${props => props.$delay}s;
+`;
+
 export const MainHeading = styled(Heading)`
+  font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.xxl};
+  text-align: center;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3em;
 `;
 
 export const SectionHeading = styled(Heading)`
@@ -82,7 +118,13 @@ export const SectionHeading = styled(Heading)`
 export const SubHeading = styled(Heading)`
   font-size: ${theme.typography.fontSize.lg};
   color: ${theme.colors.text.secondary};
+  text-align: center;
   margin: 1vh 0;
+  max-width: 40vw;
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    max-width: 80vw;
+  }
 `;
 
 export const SmallText = styled.p`
@@ -99,7 +141,7 @@ export const HeroButton = styled(Button)`
   aspect-ratio: 7 / 1.5;
   font-size: 1.5em;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     font-size: 1.5em;
     aspect-ratio: 7 / 1.5;
     max-width: 40vw;
@@ -120,7 +162,7 @@ export const TeacherHeroButton = styled(Button)`
   font-size: 1.5em;
   white-space: nowrap;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     width: auto;
     padding: 0 2em;
     font-size: 1.2em;
@@ -131,18 +173,6 @@ export const TeacherHeroButton = styled(Button)`
     padding: 0 1.5em;
     font-size: 1.1em;
     max-width: 90vw;
-  }
-`;
-
-export const LandingImage = styled.img`
-  height: auto;
-  max-height: 25em;
-  aspect-ratio: 1 / 1;
-
-  @media (max-width: 768px) {
-    order: -1;
-    width: 80%;
-    margin: 0 auto;
   }
 `;
 
