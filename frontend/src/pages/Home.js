@@ -107,7 +107,7 @@ function Home() {
 
       <TitledSection>
         <SectionHeading>
-          Built for the Classroom.
+          Built for the <Highlight>Classroom</Highlight>
         </SectionHeading>
         <SubHeading>
           We designed Squeak to teach languages the right way - through enjoyable and understandable content.
