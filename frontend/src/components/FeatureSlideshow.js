@@ -8,37 +8,45 @@ import {
   MenuDescription,
   InlineContentArea
 } from '../styles/components/FeatureSlideshowStyles';
+import DemoVideo from './DemoVideo';
+import clickVideo from '../assets/clickVideo.mp4';
 
 const features = [
   {
     id: 1,
     title: "Tailored to skill level",
     description: "All content on Squeak is sorted into 6 difficulty levels for content with just the right amount of challenge.",
-    content: "More details..."
+    content: <DemoVideo src={clickVideo} />
   },
   {
     id: 2,
     title: "Real World Language",
     description: "Daily news articles sourced from real sources, and stories that teacher common situations, slang, and patterns.",
-    content: "More details..."
+    content: <DemoVideo src={clickVideo} />
   },
   {
     id: 3,
     title: "Made For Teachers",
     description: "A full platform for teachers to track their students' progress, and approve or reject content to their needs.",
-    content: "More details..."
+    content: <DemoVideo src={clickVideo} />
   },
   {
     id: 4,
     title: "Practical and Effective Exercises",
     description: "Students practice writing and speaking skills by answering vocabulary and understanding questions about content.",
-    content: "More details..."
+    content: <DemoVideo src={clickVideo} />
   },
   {
     id: 5,
     title: "Interactive Storybooks",
     description: "Stories are filled with interactive elements to learn vocabulary and grammar along the way.",
-    content: "More details..."
+    content: <DemoVideo src={clickVideo} />
+  },
+  {
+    id: 6,
+    title: "Learn Instantly With a Click",
+    description: "Click words to see translations, sentence translations, grammar context explanations, and more.",
+    content: <DemoVideo src={clickVideo} />
   }
 ];
 

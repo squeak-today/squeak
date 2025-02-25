@@ -67,6 +67,10 @@ export const ContentArea = styled.div`
   border-radius: 12px;
   border: 1px solid ${theme.colors.border};
   box-shadow: ${theme.elevation.base};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     display: none;
@@ -77,9 +81,10 @@ export const InlineContentArea = styled(ContentArea)`
   display: none;
   box-shadow: none;
   border: none;
+  min-height: unset;
   
   @media (max-width: ${theme.breakpoints.tablet}) {
-    display: ${props => props.$isActive ? 'block' : 'none'};
+    display: ${props => props.$isActive ? 'flex' : 'none'};
     margin-top: ${theme.spacing.md};
   }
 `; 

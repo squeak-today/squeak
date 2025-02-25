@@ -25,7 +25,6 @@ import {
   TeacherHeroButton,
   WizardHat,
   SectionContentWrapper,
-  DemoVideo,
   BackgroundImage,
   AnimatedWord,
   SmallSection,
@@ -38,6 +37,7 @@ import uw from '../assets/schools/uw.png';
 import wlu from '../assets/schools/wlu.png';
 import FeatureSlideshow from '../components/FeatureSlideshow';
 import FAQ from '../components/FAQ';
+import DemoVideo from '../components/DemoVideo';
 
 function Home() {
   const navigate = useNavigate();
@@ -152,10 +152,7 @@ function Home() {
               No need to pull out the dictionary to learn a new word! Just click, translate, and read on.
             </SectionSubHeading>
           </ContentContainer>
-          <DemoVideo autoPlay loop muted playsInline>
-            <source src={clickVideo} type="video/mp4" />
-            Your browser does not support the video tag.
-          </DemoVideo>
+          <DemoVideo src={clickVideo} />
         </SectionContentWrapper>
       </Section>
     </BasicPage>
