@@ -47,7 +47,7 @@ function BecomeStudent() {
           const data = await res.json();
           // If a classroom_id exists, the student has already joined a classroom.
           if (data.classroom_id) {
-            navigate("/learn");
+            navigate('/learn');
             return;
           }
         } else {
@@ -57,6 +57,7 @@ function BecomeStudent() {
       } catch (error) {
         console.error("Error checking student status:", error);
         showNotification("Error checking student status.", "error");
+        navigate("/learn");
       } finally {
         setStatusChecked(true);
         setLoading(false);

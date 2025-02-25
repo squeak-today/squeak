@@ -34,6 +34,7 @@ function TeacherDashboard() {
         else { navigate('/teacher/become'); }
       } catch (error) {
         console.error('Error fetching classroom info:', error);
+        navigate('/learn');
       } finally {
         setIsInitializing(false);
       }
