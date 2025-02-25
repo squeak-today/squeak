@@ -39,7 +39,8 @@ function TeacherDashboard() {
       }
     };
     init();
-  }, [verifyTeacher, fetchClassroomInfo, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogout = async () => {
     try {
