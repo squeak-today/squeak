@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { translationService } from '../services/translationService';
-import { useNotification } from '../context/NotificationContext';
+import { translationService } from '../lib/translationService';
+import { useNotification } from '../../context/NotificationContext';
 
 export const useTranslation = () => {
   const [isTranslating, setIsTranslating] = useState(false);

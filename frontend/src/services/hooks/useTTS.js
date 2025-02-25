@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { ttsService } from '../services/ttsService';
-import { useNotification } from '../context/NotificationContext';
+import { ttsService } from '../lib/ttsService';
+import { useNotification } from '../../context/NotificationContext';
 
 export const useTTS = () => {
   const [isLoading, setIsLoading] = useState(false);

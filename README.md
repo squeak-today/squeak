@@ -167,6 +167,15 @@ That branch should be used as your Supabase testing environment.
 | `/audio` | `GET` | Health check for audio services. |
 | `/audio/translate` | `POST` | Translation of given sentence to target language. |
 | `/audio/tts` | `POST` | Convert text to speech audio. |
+| `/teacher` | `GET` | Check if the authenticated user is a teacher. |
+| `/teacher/classroom` | `GET` | Get the classroom information for the authenticated teacher. |
+| `/teacher/classroom/content` | `GET` | Query content for a classroom. |
+| `/teacher/classroom/create` | `POST` | Create a new classroom for the authenticated teacher. |
+| `/teacher/classroom/accept` | `POST` | Accept content for a classroom. |
+| `/teacher/classroom/reject` | `POST` | Reject content from a classroom. |
+| `/student` | `GET` | Get the authenticated user's student information. |
+| `/student/classroom` | `GET` | Get the classroom information for the authenticated student. |
+| `/student/classroom/join` | `POST` | Join a classroom as a student. |
 
 ### **GET** `/story`
 > https://api.squeak.today/story
@@ -517,3 +526,165 @@ Converts text to speech using Google Cloud Text-to-Speech API.
 ```
 
 The `audio_content` is a base64-encoded string of the audio file in MP3 format. You can decode this to get the actual audio bytes.
+
+### **GET** `/teacher`
+> https://api.squeak.today/teacher
+
+Check if the authenticated user is a teacher.
+
+### Response
+> `200 Successful`
+```json
+{
+    "exists": true
+}
+```
+
+### **GET** `/teacher/classroom`
+> https://api.squeak.today/teacher/classroom
+
+Get the classroom information for the authenticated teacher.
+
+### Response
+> `200 Successful`
+```json
+{
+    "classroom_id": "XXX",
+    "students_count": 5
+}
+```
+
+### **GET** `/teacher/classroom/content`
+> https://api.squeak.today/teacher/classroom/content
+
+Query content for a classroom with optional whitelist status filtering.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `language` | `string` | Yes | Language filter (e.g., `French`, or `any` for all) |
+| `cefr` | `string` | Yes | CEFR level filter (e.g., `B2`, or `any` for all) |
+| `subject` | `string` | Yes | Subject/topic filter (e.g., `Politics`, or `any` for all) |
+| `page` | `int` | No | Page number for pagination. Default `1` |
+| `pagesize` | `int` | No | Number of items per page. Default `10` |
+| `whitelist` | `string` | No | Filter by whitelist status (`accepted`, `rejected`, or `none`) |
+| `content_type` | `string` | No | Type of content to return (`Story`, `News`, or `All`) |
+
+### Response
+> `200 Successful`
+```json
+[
+    {
+        "id": "32",
+        "title": "A very cool title",
+        "language": "French",
+        "topic": "Politics",
+        "cefr_level": "A1",
+        "preview_text": "The first part of the content...",
+        "created_at": "2025-01-13T04:03:12.846956Z",
+        "date_created": "2024-12-15",
+        "content_type": "Story",  // Only present when content_type=All
+        "pages": 5  // Only present for Story content type
+    }
+    ...
+]
+```
+
+The response includes an array of content items. When `content_type=All`, each item includes a `content_type` field indicating whether it's a "Story" or "News" article. Story items also include a `pages` field indicating the number of pages.
+
+### **POST** `/teacher/classroom/create`
+> https://api.squeak.today/teacher/classroom/create
+
+Create a new classroom for the authenticated teacher.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `students_count` | `int` | Yes | Number of students in the classroom. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "classroom_id": "XXX"
+}
+```
+
+### **POST** `/teacher/classroom/accept`
+> https://api.squeak.today/teacher/classroom/accept
+
+Accept content for a classroom. Only the teacher of the classroom can accept content.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `content_type` | `string` | Yes | Type of content, either `Story` or `News`. |
+| `content_id` | `int` | Yes | ID of the content to accept. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "message": "Content accepted successfully"
+}
+```
+
+### **POST** `/teacher/classroom/reject`
+> https://api.squeak.today/teacher/classroom/reject
+
+Reject content from a classroom. Only the teacher of the classroom can reject content.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `content_type` | `string` | Yes | Type of content, either `Story` or `News`. |
+| `content_id` | `int` | Yes | ID of the content to reject. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "message": "Content rejected successfully"
+}
+```
+
+### **GET** `/student`
+> https://api.squeak.today/student
+
+Get the authenticated user's student information.
+
+### Response
+> `200 Successful`
+```json
+{
+    "student_id": "XXX",
+    "classroom_id": "YYY"
+}
+```
+
+### **GET** `/student/classroom`
+> https://api.squeak.today/student/classroom
+
+Get the classroom information for the authenticated student.
+
+### Response
+> `200 Successful`
+```json
+{
+    "teacher_id": "XXX",
+    "students_count": 5
+}
+```
+
+### **POST** `/student/classroom/join`
+> https://api.squeak.today/student/classroom/join
+
+Join a classroom as a student.
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `classroom_id` | `string` | Yes | ID of the classroom to join. |
+
+### Response
+> `200 Successful`
+```json
+{
+    "message": "Student added to classroom"
+}
+```

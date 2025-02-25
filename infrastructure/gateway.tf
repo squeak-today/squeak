@@ -107,6 +107,58 @@ module "progress_streak" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+# Classroom endpoints
+module "teacher" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "teacher"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher.resource_id
+  path_part   = "classroom"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom_content" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "content"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom_create" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "create"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom_accept" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "accept"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom_reject" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "reject"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 # Audio endpoints
 module "audio" {
   source      = "./api_gateway"
@@ -130,6 +182,31 @@ module "audio_tts" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
   parent_id   = module.audio.resource_id
   path_part   = "tts"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "student" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "student"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "student_classroom" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.student.resource_id
+  path_part   = "classroom"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "student_classroom_join" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.student_classroom.resource_id
+  path_part   = "join"
   http_method = "POST"
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
@@ -194,6 +271,10 @@ resource "aws_api_gateway_stage" "api_stage" {
   rest_api_id   = aws_api_gateway_rest_api.story_api.id
   stage_name    = terraform.workspace
 
+  depends_on = [
+    aws_api_gateway_deployment.api_deployment
+  ]
+
   lifecycle {
     create_before_destroy = true
   }
@@ -219,9 +300,6 @@ resource "aws_api_gateway_stage" "api_stage" {
     })
   }
 
-  depends_on = [
-    aws_api_gateway_deployment.api_deployment
-  ]
 }
 
 resource "aws_api_gateway_account" "api_gateway" {
@@ -244,8 +322,18 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.progress,
     module.progress_streak,
     module.progress_increment,
+    module.teacher,
+    module.teacher_classroom,
+    module.teacher_classroom_content,
+    module.teacher_classroom_create,
+    module.teacher_classroom_accept,
+    module.teacher_classroom_reject,
+    module.student,
+    module.student_classroom,
+    module.student_classroom_join,
     module.audio,
     module.audio_translate,
     module.audio_tts
   ]
 }
+

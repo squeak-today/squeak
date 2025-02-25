@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BasicPage from '../components/BasicPage';
 import StoryReader from '../components/StoryReader';
@@ -8,8 +8,8 @@ import SidePanel from '../components/SidePanel';
 import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import TranslationPanel from '../components/TranslationPanel';
-import { useTranslation } from '../hooks/useTranslation';
-import { useTTS } from '../hooks/useTTS';
+import { useTranslation } from '../services/hooks/useTranslation';
+import { useTTS } from '../services/hooks/useTTS';
 
 import { LANGUAGE_CODES_REVERSE, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 
@@ -26,6 +26,7 @@ const DEFAULT_CONTENT = {
 
 function Read() {
     const { type, id } = useParams();
+    const { state } = useLocation();
 
     const navigate = useNavigate();
     const { showNotification } = useNotification();
@@ -71,10 +72,13 @@ function Read() {
                         'Authorization': `Bearer ${jwt}`
                     }
                 });
+                const metadata = await metadataResponse.json();
+                if (metadata.error === 'Content not accepted in classroom') {
+                    throw new Error('Content not accepted in your classroom');
+                }
                 if (!metadataResponse.ok) {
                     throw new Error('Failed to fetch content');
                 }
-                const metadata = await metadataResponse.json();
                 
                 setContentData({
                     id: id,
@@ -96,7 +100,7 @@ function Read() {
                 }
             } catch (error) {
                 console.error('Error loading metadata:', error);
-                showNotification('Failed to load metadata. Please try again later.', 'error');
+                showNotification('Failed to load metadata: ' + error.message, 'error');
             } finally {
                 setIsLoading(false);
             }
@@ -384,7 +388,7 @@ function Read() {
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
-                <BackButton onClick={() => navigate('/learn')}>
+                <BackButton onClick={() => navigate(state?.backTo || '/learn')}>
                     ← Back to Browse
                 </BackButton>
                 <ReadPageLayout>

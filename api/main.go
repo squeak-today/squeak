@@ -40,6 +40,37 @@ func getUserIDFromToken(c *gin.Context) string {
 	return ""
 }
 
+// checkIsRequiredRole -> true if is the correct role
+// only X can access
+func checkIsCorrectRole(c *gin.Context, dbClient *supabase.Client, userID string, role string) bool {
+	isRole, err := dbClient.CheckAccountType(userID, role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
+		return false
+	}
+	if !isRole {
+		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("Only %ss can access this endpoint.", role)})
+		return false
+	}
+	return true
+}
+
+// checkNotForbiddenRole -> true if NOT the forbidden role 
+// everyone but X can access
+func checkNotForbiddenRole(c *gin.Context, dbClient *supabase.Client, userID string, role string) bool {
+	isRole, err := dbClient.CheckAccountType(userID, role)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
+		return false
+	}
+	if isRole {
+		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("%ss cannot access this endpoint.", role)})
+		return false
+	}
+	return true
+}
+
+
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if os.Getenv("WORKSPACE") == "dev" && c.GetHeader("Authorization") == "Bearer dev-token" {
@@ -123,6 +154,279 @@ func init() {
 			authMiddleware()(c)
 		}
 	})
+
+	teacherGroup := router.Group("/teacher")
+	{
+		teacherGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+			isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+			if !isTeacher { return }
+			c.JSON(http.StatusOK, gin.H{"exists": isTeacher})
+		})
+
+		classroomGroup := teacherGroup.Group("/classroom")
+		{
+			classroomGroup.GET("", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
+				
+				classroom_id, students_count, err := dbClient.GetClassroomByTeacherId(userID)
+				if err != nil {
+					log.Printf("Failed to get classroom: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+					return
+				}
+				c.JSON(http.StatusOK, gin.H{
+					"classroom_id": classroom_id,
+					"students_count": students_count,
+				})
+			})
+
+			classroomGroup.GET("/content", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
+
+				language := c.Query("language")
+				cefr := c.Query("cefr")
+				subject := c.Query("subject")
+				page := c.Query("page")
+				pagesize := c.Query("pagesize")
+
+				whitelistStatus := c.Query("whitelist")
+				contentType := c.Query("content_type")
+
+				if page == "" {
+					page = "1"
+				}
+				if pagesize == "" {
+					pagesize = "10"
+				}
+
+				pageNum, err := strconv.Atoi(page)
+				if err != nil || pageNum < 1 {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+					return
+				}
+
+				pageSizeNum, err := strconv.Atoi(pagesize)
+				if err != nil || pageSizeNum < 1 {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+					return
+				}
+
+				classroom_id, _, err := dbClient.GetClassroomByTeacherId(userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+					return
+				}
+
+				params := supabase.QueryParams{
+					Language: language,
+					CEFR:     cefr,
+					Subject:  subject,
+					Page:     pageNum,
+					PageSize: pageSizeNum,
+					ClassroomID: classroom_id,
+					WhitelistStatus: whitelistStatus,
+				}
+
+				var results []map[string]interface{}
+				if contentType == "All" {
+					results, err = dbClient.QueryAllContent(params)
+				} else if contentType == "Story" {
+					results, err = dbClient.QueryStories(params)
+				} else {
+					results, err = dbClient.QueryNews(params)
+				}
+
+				if err != nil {
+					log.Printf("Failed to query content: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
+					return
+				}
+
+				c.JSON(http.StatusOK, results)
+			})
+
+			classroomGroup.POST("/create", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+
+				isNotStudent := checkNotForbiddenRole(c, dbClient, userID, "student")
+				if !isNotStudent { return }
+
+				var infoBody struct {
+					StudentsCount int `json:"students_count"`
+				}
+		
+				if err := c.ShouldBindJSON(&infoBody); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+					return
+				}
+	
+				classroom_id, err := dbClient.CreateClassroom(userID, infoBody.StudentsCount)
+				if err != nil {
+					log.Printf("Failed to create classroom: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					return
+				}
+	
+				c.JSON(http.StatusOK, gin.H{"classroom_id": classroom_id})
+			})
+
+			classroomGroup.POST("/accept", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
+
+				var infoBody struct {
+					ContentType string `json:"content_type"`
+					ContentID   int    `json:"content_id"`
+				}
+			
+				if err := c.ShouldBindJSON(&infoBody); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+					return
+				}
+			
+				// Verify content type is valid
+				if infoBody.ContentType != "Story" && infoBody.ContentType != "News" {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid content type"})
+					return
+				}
+			
+				// Get classroom ID for teacher
+				classroomID, _, err := dbClient.GetClassroomByTeacherId(userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+					return
+				}
+			
+				classroomIDInt, err := strconv.Atoi(classroomID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid classroom ID format"})
+					return
+				}
+			
+				err = dbClient.AcceptContent(classroomIDInt, infoBody.ContentType, infoBody.ContentID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to accept content"})
+					return
+				}
+			
+				c.JSON(http.StatusOK, gin.H{"message": "Content accepted successfully"})
+			})
+
+
+			classroomGroup.POST("/reject", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { return }
+
+				var infoBody struct {
+					ContentType string `json:"content_type"`
+					ContentID   int    `json:"content_id"`
+				}
+			
+				if err := c.ShouldBindJSON(&infoBody); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+					return
+				}
+			
+				// Verify content type is valid
+				if infoBody.ContentType != "Story" && infoBody.ContentType != "News" {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid content type"})
+					return
+				}
+			
+				// Get classroom ID for teacher
+				classroomID, _, err := dbClient.GetClassroomByTeacherId(userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+					return
+				}
+			
+				classroomIDInt, err := strconv.Atoi(classroomID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid classroom ID format"})
+					return
+				}
+			
+				err = dbClient.RejectContent(classroomIDInt, infoBody.ContentType, infoBody.ContentID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reject content"})
+					return
+				}
+			
+				c.JSON(http.StatusOK, gin.H{"message": "Content rejected successfully"})
+			})
+		}
+	}
+
+	studentGroup := router.Group("/student")
+	{
+		studentGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
+			
+			studentID, classroomID, err := dbClient.CheckStudentStatus(userID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{"student_id": studentID, "classroom_id": classroomID})
+		})
+
+		classroomGroup := studentGroup.Group("/classroom")
+		{
+			classroomGroup.GET("", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				isStudent := checkIsCorrectRole(c, dbClient, userID, "student")
+				if !isStudent { return }
+				_, classroomID, err := dbClient.CheckStudentStatus(userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+					return
+				}
+				teacher_id, students_count, err := dbClient.GetClassroomById(classroomID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom by ID"})
+					return
+				}
+
+				c.JSON(http.StatusOK, gin.H{
+					"teacher_id": teacher_id,
+					"students_count": students_count,
+				})
+			})
+
+			classroomGroup.POST("/join", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				
+				isNotTeacher := checkNotForbiddenRole(c, dbClient, userID, "teacher")
+				if !isNotTeacher { return }
+
+				var infoBody struct {
+					ClassroomID string `json:"classroom_id"`
+				}
+
+				if err := c.ShouldBindJSON(&infoBody); err != nil {
+					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+					return
+				}
+				
+				err := dbClient.AddStudentToClassroom(infoBody.ClassroomID, userID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add student to classroom"})
+					return
+				}
+
+				c.JSON(http.StatusOK, gin.H{"message": "Student added to classroom"})
+			})
+		}
+	}
+
 
 	audioGroup := router.Group("/audio")
 	{
@@ -254,11 +558,29 @@ func init() {
 	newsGroup := router.Group("/news")
 	{
 		newsGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			id := c.Query("id")
 
 			if id == "" {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "ID parameter is required"})
 				return
+			}
+
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+			if classroomID != "" {
+				accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
+					return
+				}
+				if !accepted {
+					c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
+					return
+				}
 			}
 
 			// Get the record from supabase db
@@ -304,6 +626,7 @@ func init() {
 		})
 
 		newsGroup.GET("/query", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			language := c.Query("language")
 			cefr := c.Query("cefr")
 			subject := c.Query("subject")
@@ -337,6 +660,17 @@ func init() {
 				PageSize: pageSizeNum,
 			}
 
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+
+			if classroomID != "" {
+				params.ClassroomID = classroomID
+				params.WhitelistStatus = "accepted"
+			}
+
 			results, err := dbClient.QueryNews(params)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
@@ -350,6 +684,7 @@ func init() {
 	storyGroup := router.Group("/story")
 	{
 		storyGroup.GET("", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			id := c.Query("id")
 			page := c.Query("page")
 
@@ -362,6 +697,23 @@ func init() {
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Page parameter incorrect"})
 				return
+			}
+
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+			if classroomID != "" {
+				accepted, err := dbClient.CheckAcceptedContent(classroomID, "News", id)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check accepted content"})
+					return
+				}
+				if !accepted {
+					c.JSON(http.StatusForbidden, gin.H{"error": "Content not accepted in classroom"})
+					return
+				}
 			}
 
 			// Get the record from supabase db
@@ -444,6 +796,7 @@ func init() {
 		})
 
 		storyGroup.GET("/query", func(c *gin.Context) {
+			userID := getUserIDFromToken(c)
 			language := c.Query("language")
 			cefr := c.Query("cefr")
 			subject := c.Query("subject")
@@ -477,6 +830,16 @@ func init() {
 				PageSize: pageSizeNum,
 			}
 
+			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
+				return
+			}
+
+			if classroomID != "" {
+				params.ClassroomID = classroomID
+				params.WhitelistStatus = "accepted"
+			}
 			results, err := dbClient.QueryStories(params)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
