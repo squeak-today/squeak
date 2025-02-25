@@ -8,7 +8,7 @@ export const HomeContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 90vh;
+  min-height: 75vh;
   width: 100vw;
   overflow: hidden;
   box-sizing: border-box;
@@ -26,7 +26,7 @@ export const BackgroundImage = styled.img`
   mask-image: linear-gradient(to bottom, 
     rgba(0, 0, 0, 1) 0%,
     rgba(0, 0, 0, 0.8) 20%,
-    rgba(0, 0, 0, 0.1) 60%,
+    rgba(0, 0, 0, 0.25) 40%,
     rgba(0, 0, 0, 0) 80%
   );
   z-index: 1;
@@ -37,9 +37,6 @@ export const ContentContainer = styled.div`
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
   max-width: 90vw;
   margin: 0 auto;
   margin-top: 30vh;
@@ -50,10 +47,15 @@ export const ContentContainer = styled.div`
   }
 `;
 
+export const CenteredContentContainer = styled(ContentContainer)`
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`;
+
 export const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
   margin-top: 1rem;
 `;
 
@@ -63,12 +65,19 @@ export const Section = styled.section`
   justify-content: center;
   width: 100%;
   min-height: 60vh;
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const TitledSection = styled(Section)`
+  flex-direction: column;
+  margin-top: 8rem;
 `;
 
 export const SmallSection = styled(Section)`
   min-height: 5vh;
   flex-direction: column;
   align-items: center;
+  margin: 0rem 0;
 `;
 
 export const SectionContentWrapper = styled.div`
@@ -116,14 +125,27 @@ export const MainHeading = styled(Heading)`
   gap: 0.3em;
 `;
 
-export const SectionHeading = styled(Heading)`
-  font-size: ${theme.typography.fontSize.xl};
-`;
-
 export const SubHeading = styled(Heading)`
   font-size: ${theme.typography.fontSize.lg};
   color: ${theme.colors.text.secondary};
   text-align: center;
+  margin: 1vh 0;
+  max-width: 40vw;
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    max-width: 80vw;
+  }
+`;
+
+export const SectionHeading = styled(Heading)`
+  text-align: left;
+  font-size: ${theme.typography.fontSize.xl};
+`;
+
+export const SectionSubHeading = styled(Heading)`
+  font-size: ${theme.typography.fontSize.lg};
+  color: ${theme.colors.text.secondary};
+  text-align: left;
   margin: 1vh 0;
   max-width: 40vw;
 

@@ -3,8 +3,15 @@ export const theme = {
     text: {
       primary: '#000000',
       secondary: '#333333'
-    }
+    },
+    selected: 'fad48f',
+    background: '#f5f5f5',
+    border: '#e0e0e0'
   },   
+  elevation: {
+    base: '0 2px 4px rgba(0, 0, 0, 0.15)',
+    hover: '0 4px 6px rgba(0, 0, 0, 0.15)'
+  },
   typography: {
     fontFamily: {
       primary: "'Lora', serif",
@@ -12,6 +19,7 @@ export const theme = {
     },
     fontSize: {
       base: '1rem',
+      md: '1.25rem',
       lg: '1.5rem',
       xl: '3rem',
       xxl: '3.5rem'

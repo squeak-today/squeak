@@ -11,13 +11,16 @@ import { FiArrowRight } from 'react-icons/fi';
 import {
   HomeContainer,
   ContentContainer,
+  CenteredContentContainer,
   ButtonContainer,
   SubHeading,
   MainHeading,
   SectionHeading,
+  SectionSubHeading,
   SmallText,
   Highlight,
   Section,
+  TitledSection,
   HeroButton,
   TeacherHeroButton,
   WizardHat,
@@ -33,6 +36,7 @@ import {
 import tdsb from '../assets/schools/tdsb.png';
 import uw from '../assets/schools/uw.png';
 import wlu from '../assets/schools/wlu.png';
+import FeatureSlideshow from '../components/FeatureSlideshow';
 
 function Home() {
   const navigate = useNavigate();
@@ -64,7 +68,7 @@ function Home() {
           src={landingDrawing}
           alt="Squeak Mouse Drawing"
         />
-        <ContentContainer>
+        <CenteredContentContainer>
           <MainHeading>
             {headingWords.map((word, index) => (
               <AnimatedWord key={index} $delay={0.5 + (index * 0.15)}>
@@ -84,7 +88,7 @@ function Home() {
               I already have an account
             </SmallText>
           </ButtonContainer>
-        </ContentContainer>
+        </CenteredContentContainer>
       </HomeContainer>
 
       <SmallSection>
@@ -100,15 +104,22 @@ function Home() {
         </LogoContainer>
       </SmallSection>
 
+      <TitledSection>
+        <SectionHeading>
+          Built for the Classroom
+        </SectionHeading>
+        <FeatureSlideshow />
+      </TitledSection>
+
       <Section>
         <SectionContentWrapper>
           <ContentContainer>
             <SectionHeading>
               Squeak for <Highlight>Teachers</Highlight>
             </SectionHeading>
-            <SubHeading>
+            <SectionSubHeading>
               Teachers, we're here to help. Squeak offers content your students will enjoy with practice for vocabulary, grammar, speaking, and more. With <strong>Classrooms</strong>, students only see what you approve.
-            </SubHeading>
+            </SectionSubHeading>
             <ButtonContainer>
               <TeacherHeroButton onClick={() => navigate('/teacher/dashboard')}>
                 Get started as a Teacher
@@ -126,9 +137,9 @@ function Home() {
             <SectionHeading>
               Translate with just a <Highlight>click</Highlight>
             </SectionHeading>
-            <SubHeading>
+            <SectionSubHeading>
               No need to pull out the dictionary to learn a new word! Just click, translate, and read on.
-            </SubHeading>
+            </SectionSubHeading>
           </ContentContainer>
           <DemoVideo autoPlay loop muted playsInline>
             <source src={clickVideo} type="video/mp4" />
