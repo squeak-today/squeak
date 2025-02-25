@@ -24,10 +24,12 @@ export const BackgroundImage = styled.img`
   max-height: 600px;
   object-fit: contain;
   mask-image: linear-gradient(to bottom, 
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 0.8) 20%,
-    rgba(0, 0, 0, 0.25) 40%,
-    rgba(0, 0, 0, 0) 80%
+    rgba(0, 0, 0, 1.0) 0%,
+    rgba(0, 0, 0, 1.0) 20%,
+    rgba(0, 0, 0, 0.75) 40%,
+    rgba(0, 0, 0, 0.04) 50%,
+    rgba(0, 0, 0, 0) 75%,
+    rgba(0, 0, 0, 0) 100%
   );
   z-index: 1;
 `;
@@ -65,7 +67,7 @@ export const Section = styled.section`
   justify-content: center;
   width: 100%;
   min-height: 60vh;
-  margin-bottom: ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.sm};
 `;
 
 export const TitledSection = styled(Section)`
@@ -140,6 +142,10 @@ export const SubHeading = styled(Heading)`
 export const SectionHeading = styled(Heading)`
   text-align: left;
   font-size: ${theme.typography.fontSize.xl};
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    text-align: center;
+  }
 `;
 
 export const SectionSubHeading = styled(Heading)`

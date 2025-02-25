@@ -4,7 +4,7 @@ import { theme } from '../theme';
 
 export const Container = styled(BaseContainer)`
   width: 100vw;
-  margin: ${theme.spacing.xl};
+  margin: ${theme.spacing.md};
   background-color: ${theme.colors.background};
   border-radius: 20px;
   padding: ${theme.spacing.xl};

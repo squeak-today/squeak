@@ -5,7 +5,7 @@ export const theme = {
       secondary: '#333333'
     },
     selected: 'fad48f',
-    background: '#f5f5f5',
+    background: '#fbfbfb',
     border: '#e0e0e0'
   },   
   elevation: {
@@ -28,6 +28,7 @@ export const theme = {
   spacing: {
     sm: '0.5rem',
     md: '1rem',
+    lg: '2rem',
     xl: '4rem'
   },
   breakpoints: {

@@ -37,6 +37,7 @@ import tdsb from '../assets/schools/tdsb.png';
 import uw from '../assets/schools/uw.png';
 import wlu from '../assets/schools/wlu.png';
 import FeatureSlideshow from '../components/FeatureSlideshow';
+import FAQ from '../components/FAQ';
 
 function Home() {
   const navigate = useNavigate();
@@ -106,9 +107,19 @@ function Home() {
 
       <TitledSection>
         <SectionHeading>
-          Built for the Classroom
+          Built for the Classroom.
         </SectionHeading>
+        <SubHeading>
+          We designed Squeak to teach languages the right way - through enjoyable and understandable content.
+        </SubHeading>
         <FeatureSlideshow />
+      </TitledSection>
+
+      <TitledSection>
+        <SectionHeading>
+          FAQs
+        </SectionHeading>
+        <FAQ />
       </TitledSection>
 
       <Section>
