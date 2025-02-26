@@ -118,6 +118,81 @@
                 }
             }
         },
+        "/profile": {
+            "get": {
+                "description": "Get the user's profile information",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get user profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetProfileResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile/upsert": {
+            "post": {
+                "description": "Create or update the user's profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Upsert user profile",
+                "parameters": [
+                    {
+                        "description": "Profile information",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpsertProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UpsertProfileResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/progress": {
             "get": {
                 "description": "Get the user's progress for today",
@@ -686,9 +761,13 @@
                 "error"
             ],
             "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "PROFILE_NOT_FOUND"
+                },
                 "error": {
                     "type": "string",
-                    "example": "error message"
+                    "example": "Something went wrong"
                 }
             }
         },
@@ -702,6 +781,43 @@
                 "students_count": {
                     "type": "integer",
                     "example": 10
+                }
+            }
+        },
+        "models.GetProfileResponse": {
+            "type": "object",
+            "required": [
+                "daily_questions_goal",
+                "interested_topics",
+                "learning_language",
+                "skill_level",
+                "username"
+            ],
+            "properties": {
+                "daily_questions_goal": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "interested_topics": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"NBA\"]"
+                    ]
+                },
+                "learning_language": {
+                    "type": "string",
+                    "example": "French"
+                },
+                "skill_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "connortbot"
                 }
             }
         },
@@ -931,6 +1047,60 @@
                 "sentence": {
                     "type": "string",
                     "example": "Bonjour, comment allez-vous?"
+                }
+            }
+        },
+        "models.UpsertProfileRequest": {
+            "type": "object",
+            "required": [
+                "daily_questions_goal",
+                "interested_topics",
+                "learning_language",
+                "skill_level",
+                "username"
+            ],
+            "properties": {
+                "daily_questions_goal": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "interested_topics": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "[\"NBA\"]"
+                    ]
+                },
+                "learning_language": {
+                    "type": "string",
+                    "example": "French"
+                },
+                "skill_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "johndoe"
+                }
+            }
+        },
+        "models.UpsertProfileResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "message"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 123
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Profile updated successfully"
                 }
             }
         }

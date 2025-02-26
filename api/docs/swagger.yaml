@@ -92,8 +92,11 @@ definitions:
     type: object
   models.ErrorResponse:
     properties:
+      code:
+        example: PROFILE_NOT_FOUND
+        type: string
       error:
-        example: error message
+        example: Something went wrong
         type: string
     required:
     - error
@@ -106,6 +109,33 @@ definitions:
       students_count:
         example: 10
         type: integer
+    type: object
+  models.GetProfileResponse:
+    properties:
+      daily_questions_goal:
+        example: 3
+        type: integer
+      interested_topics:
+        example:
+        - '["NBA"]'
+        items:
+          type: string
+        type: array
+      learning_language:
+        example: French
+        type: string
+      skill_level:
+        example: B1
+        type: string
+      username:
+        example: connortbot
+        type: string
+    required:
+    - daily_questions_goal
+    - interested_topics
+    - learning_language
+    - skill_level
+    - username
     type: object
   models.GetStudentClassroomResponse:
     properties:
@@ -269,6 +299,45 @@ definitions:
         example: Bonjour, comment allez-vous?
         type: string
     type: object
+  models.UpsertProfileRequest:
+    properties:
+      daily_questions_goal:
+        example: 3
+        type: integer
+      interested_topics:
+        example:
+        - '["NBA"]'
+        items:
+          type: string
+        type: array
+      learning_language:
+        example: French
+        type: string
+      skill_level:
+        example: B1
+        type: string
+      username:
+        example: johndoe
+        type: string
+    required:
+    - daily_questions_goal
+    - interested_topics
+    - learning_language
+    - skill_level
+    - username
+    type: object
+  models.UpsertProfileResponse:
+    properties:
+      id:
+        example: 123
+        type: integer
+      message:
+        example: Profile updated successfully
+        type: string
+    required:
+    - id
+    - message
+    type: object
 host: api.squeak.today
 info:
   contact: {}
@@ -347,6 +416,55 @@ paths:
       summary: Text to speech
       tags:
       - audio
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the user's profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetProfileResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get user profile
+      tags:
+      - profile
+  /profile/upsert:
+    post:
+      consumes:
+      - application/json
+      description: Create or update the user's profile
+      parameters:
+      - description: Profile information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpsertProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UpsertProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Upsert user profile
+      tags:
+      - profile
   /progress:
     get:
       consumes:
