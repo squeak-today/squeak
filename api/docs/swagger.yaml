@@ -1,5 +1,53 @@
 basePath: /
 definitions:
+  models.ClassroomContentItem:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content_type:
+        example: News
+        type: string
+      created_at:
+        example: "2025-02-26T13:01:13.390612Z"
+        type: string
+      date_created:
+        example: "2025-02-26"
+        type: string
+      id:
+        example: "2479"
+        type: string
+      language:
+        example: French
+        type: string
+      pages:
+        example: 10
+        type: integer
+      preview_text:
+        example: |-
+          # L'actualité musicale en bref
+
+          ## Un flot de nouveautés...
+        type: string
+      title:
+        example: |-
+          # L'actualité musicale en bref
+
+          ## Un fl...
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - created_at
+    - date_created
+    - id
+    - language
+    - preview_text
+    - title
+    - topic
+    type: object
   models.ErrorResponse:
     properties:
       error:
@@ -59,7 +107,68 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.GetClassroomInfoResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get classroom info
+      tags:
+      - teacher
+  /teacher/classroom/content:
+    get:
+      consumes:
+      - application/json
+      description: Query classroom content
+      parameters:
+      - description: Language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: CEFR
+        in: query
+        name: cefr
+        required: true
+        type: string
+      - description: Subject
+        in: query
+        name: subject
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: Page size
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      - description: Whitelist status
+        in: query
+        name: whitelist
+        required: true
+        type: string
+      - description: Content type
+        in: query
+        name: content_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ClassroomContentItem'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Query classroom content
       tags:
       - teacher
 securityDefinitions:

@@ -21,11 +21,13 @@ Our repo consists of X parts:
 - `/stories`
 - `/supabase`
 - `/infrastructure`
-- 3 lambda functions, `/queue_filler`, `/api` and `/lambda`
+- As a lambda, `/api`
+- Two other lambda functions, `/queue_filler` and `/lambda`
 
 ### Prerequisites
 - Python 3.11.11
 - Node.js 18.20.5
+- NPX 10.8.2
 - Golang 1.23.4
 - Terraform CLI
 
@@ -36,6 +38,29 @@ And for credentials:
 - Supabase CLI [optional]
 
 Also, make sure you're on your own branch.
+
+### `/api`
+Contains the Go implementation and code for the backend lambda API.
+The API follows the OpenAPI spec, and annotations for each handler are in `/handlers`.
+High level overview:
+- `/docs` Contains auto generated code and spec files by swagger
+- `/handlers` Implementations for the endpoints
+- `/models` Type declarations for errors and API responses (the types are used in the swagger annotations)
+- `main.go`
+- and then other modules as helpers, e.g `supabase`
+
+Install swaggo with:
+```shell
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+This installs `swag` as a
+To update the `docs` folder and the respective markdown documentation for the API:
+```shell
+cd api
+swag fmt
+swag init
+npx swagger-markdown -i ./swagger.yaml -o ../API.md
+```
 
 ### `/supabase`
 This contains migrations for the Supabase database.

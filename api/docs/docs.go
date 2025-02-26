@@ -63,12 +63,156 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.GetClassroomInfoResponse"
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/teacher/classroom/content": {
+            "get": {
+                "description": "Query classroom content",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Query classroom content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "CEFR",
+                        "name": "cefr",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject",
+                        "name": "subject",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page size",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Whitelist status",
+                        "name": "whitelist",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content type",
+                        "name": "content_type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ClassroomContentItem"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
                     }
                 }
             }
         }
     },
     "definitions": {
+        "models.ClassroomContentItem": {
+            "type": "object",
+            "required": [
+                "cefr_level",
+                "created_at",
+                "date_created",
+                "id",
+                "language",
+                "preview_text",
+                "title",
+                "topic"
+            ],
+            "properties": {
+                "cefr_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "content_type": {
+                    "type": "string",
+                    "example": "News"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-02-26T13:01:13.390612Z"
+                },
+                "date_created": {
+                    "type": "string",
+                    "example": "2025-02-26"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "2479"
+                },
+                "language": {
+                    "type": "string",
+                    "example": "French"
+                },
+                "pages": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "preview_text": {
+                    "type": "string",
+                    "example": "# L'actualité musicale en bref\n\n## Un flot de nouveautés..."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "# L'actualité musicale en bref\n\n## Un fl..."
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "Music"
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type": "object",
             "properties": {
