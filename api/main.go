@@ -34,6 +34,7 @@ import (
 	"story-api/gemini"
 	"story-api/supabase"
 
+	"story-api/handlers/student"
 	"story-api/handlers/teacher"
 )
 
@@ -68,7 +69,7 @@ func checkIsCorrectRole(c *gin.Context, dbClient *supabase.Client, userID string
 	return true
 }
 
-// checkNotForbiddenRole -> true if NOT the forbidden role 
+// checkNotForbiddenRole -> true if NOT the forbidden role
 // everyone but X can access
 func checkNotForbiddenRole(c *gin.Context, dbClient *supabase.Client, userID string, role string) bool {
 	isRole, err := dbClient.CheckAccountType(userID, role)
@@ -82,7 +83,6 @@ func checkNotForbiddenRole(c *gin.Context, dbClient *supabase.Client, userID str
 	}
 	return true
 }
-
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -183,68 +183,17 @@ func init() {
 		}
 	}
 
+	studentHandler := student.New(dbClient)
 	studentGroup := router.Group("/student")
 	{
-		studentGroup.GET("", func(c *gin.Context) {
-			userID := getUserIDFromToken(c)
-			
-			studentID, classroomID, err := dbClient.CheckStudentStatus(userID)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{"student_id": studentID, "classroom_id": classroomID})
-		})
+		studentGroup.GET("", studentHandler.CheckStudentStatus)
 
 		classroomGroup := studentGroup.Group("/classroom")
 		{
-			classroomGroup.GET("", func(c *gin.Context) {
-				userID := getUserIDFromToken(c)
-				isStudent := checkIsCorrectRole(c, dbClient, userID, "student")
-				if !isStudent { return }
-				_, classroomID, err := dbClient.CheckStudentStatus(userID)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
-					return
-				}
-				teacher_id, students_count, err := dbClient.GetClassroomById(classroomID)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom by ID"})
-					return
-				}
-
-				c.JSON(http.StatusOK, gin.H{
-					"teacher_id": teacher_id,
-					"students_count": students_count,
-				})
-			})
-
-			classroomGroup.POST("/join", func(c *gin.Context) {
-				userID := getUserIDFromToken(c)
-				
-				isNotTeacher := checkNotForbiddenRole(c, dbClient, userID, "teacher")
-				if !isNotTeacher { return }
-
-				var infoBody struct {
-					ClassroomID string `json:"classroom_id"`
-				}
-
-				if err := c.ShouldBindJSON(&infoBody); err != nil {
-					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-					return
-				}
-				
-				err := dbClient.AddStudentToClassroom(infoBody.ClassroomID, userID)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add student to classroom"})
-					return
-				}
-
-				c.JSON(http.StatusOK, gin.H{"message": "Student added to classroom"})
-			})
+			classroomGroup.GET("", studentHandler.GetClassroomInfo)
+			classroomGroup.POST("/join", studentHandler.JoinClassroom)
 		}
 	}
-
 
 	audioGroup := router.Group("/audio")
 	{
@@ -384,7 +333,7 @@ func init() {
 				return
 			}
 
-			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
@@ -478,7 +427,7 @@ func init() {
 				PageSize: pageSizeNum,
 			}
 
-			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
@@ -517,7 +466,7 @@ func init() {
 				return
 			}
 
-			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
@@ -648,7 +597,7 @@ func init() {
 				PageSize: pageSizeNum,
 			}
 
-			_, classroomID, err := dbClient.CheckStudentStatus(userID);
+			_, classroomID, err := dbClient.CheckStudentStatus(userID)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check student status"})
 				return
