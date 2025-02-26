@@ -20,6 +20,12 @@ definitions:
     required:
     - message
     type: object
+  models.AudioHealthResponse:
+    properties:
+      status:
+        example: live
+        type: string
+    type: object
   models.ClassroomContentItem:
     properties:
       cefr_level:
@@ -89,6 +95,8 @@ definitions:
       error:
         example: error message
         type: string
+    required:
+    - error
     type: object
   models.GetClassroomInfoResponse:
     properties:
@@ -98,6 +106,54 @@ definitions:
       students_count:
         example: 10
         type: integer
+    type: object
+  models.GetStudentClassroomResponse:
+    properties:
+      students_count:
+        example: 10
+        type: integer
+      teacher_id:
+        example: "789"
+        type: string
+    required:
+    - students_count
+    - teacher_id
+    type: object
+  models.IncrementProgressResponse:
+    properties:
+      date:
+        example: "2025-02-26T00:00:00Z"
+        type: string
+      goal_met:
+        example: true
+        type: boolean
+      questions_completed:
+        example: 5
+        type: integer
+      user_id:
+        example: "123"
+        type: string
+    required:
+    - date
+    - goal_met
+    - questions_completed
+    - user_id
+    type: object
+  models.JoinClassroomRequest:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    type: object
+  models.JoinClassroomResponse:
+    properties:
+      message:
+        example: Student added to classroom successfully
+        type: string
+    required:
+    - message
     type: object
   models.RejectContentRequest:
     properties:
@@ -119,11 +175,99 @@ definitions:
     required:
     - message
     type: object
+  models.StreakResponse:
+    properties:
+      completed_today:
+        example: true
+        type: boolean
+      streak:
+        example: 7
+        type: integer
+    required:
+    - completed_today
+    - streak
+    type: object
+  models.StudentStatusResponse:
+    properties:
+      classroom_id:
+        example: "456"
+        type: string
+      student_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    - student_id
+    type: object
   models.TeacherStatusResponse:
     properties:
       exists:
         example: true
         type: boolean
+    type: object
+  models.TextToSpeechRequest:
+    properties:
+      language_code:
+        example: en-US
+        type: string
+      text:
+        example: Hello, how are you?
+        type: string
+      voice_name:
+        example: en-US-Standard-A
+        type: string
+    required:
+    - language_code
+    - text
+    - voice_name
+    type: object
+  models.TextToSpeechResponse:
+    properties:
+      audio_content:
+        example: base64-encoded-audio-content
+        type: string
+    type: object
+  models.TodayProgressResponse:
+    properties:
+      date:
+        example: "2025-02-26T00:00:00Z"
+        type: string
+      goal_met:
+        example: true
+        type: boolean
+      questions_completed:
+        example: 5
+        type: integer
+      user_id:
+        example: "123"
+        type: string
+    required:
+    - date
+    - goal_met
+    - questions_completed
+    - user_id
+    type: object
+  models.TranslateRequest:
+    properties:
+      sentence:
+        example: Hello, how are you?
+        type: string
+      source:
+        example: en
+        type: string
+      target:
+        example: fr
+        type: string
+    required:
+    - sentence
+    - source
+    - target
+    type: object
+  models.TranslateResponse:
+    properties:
+      sentence:
+        example: Bonjour, comment allez-vous?
+        type: string
     type: object
 host: api.squeak.today
 info:
@@ -132,6 +276,196 @@ info:
   title: Squeak API
   version: "1.0"
 paths:
+  /audio:
+    get:
+      consumes:
+      - application/json
+      description: Check if the audio service is live
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AudioHealthResponse'
+      summary: Check audio service health
+      tags:
+      - audio
+  /audio/translate:
+    post:
+      consumes:
+      - application/json
+      description: Translate text from source language to target language
+      parameters:
+      - description: Translation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.TranslateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TranslateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Translate text
+      tags:
+      - audio
+  /audio/tts:
+    post:
+      consumes:
+      - application/json
+      description: Convert text to speech audio
+      parameters:
+      - description: Text to speech request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.TextToSpeechRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TextToSpeechResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Text to speech
+      tags:
+      - audio
+  /progress:
+    get:
+      consumes:
+      - application/json
+      description: Get the user's progress for today
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TodayProgressResponse'
+      summary: Get today's progress
+      tags:
+      - progress
+  /progress/increment:
+    get:
+      consumes:
+      - application/json
+      description: Increment the number of questions completed for today
+      parameters:
+      - description: Amount to increment by
+        in: query
+        name: amount
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IncrementProgressResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Increment questions completed
+      tags:
+      - progress
+  /progress/streak:
+    get:
+      consumes:
+      - application/json
+      description: Get the user's current streak and completion status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StreakResponse'
+      summary: Get streak information
+      tags:
+      - progress
+  /student:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user is a student and get their classroom info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StudentStatusResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check user student status
+      tags:
+      - student
+  /student/classroom:
+    get:
+      consumes:
+      - application/json
+      description: Get classroom info for the student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetStudentClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get classroom info
+      tags:
+      - student
+  /student/classroom/join:
+    post:
+      consumes:
+      - application/json
+      description: Join a classroom as a student
+      parameters:
+      - description: Join classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.JoinClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JoinClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Join classroom
+      tags:
+      - student
   /teacher:
     get:
       consumes:

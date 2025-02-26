@@ -15,6 +15,297 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/audio": {
+            "get": {
+                "description": "Check if the audio service is live",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audio"
+                ],
+                "summary": "Check audio service health",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AudioHealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/audio/translate": {
+            "post": {
+                "description": "Translate text from source language to target language",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audio"
+                ],
+                "summary": "Translate text",
+                "parameters": [
+                    {
+                        "description": "Translation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TranslateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TranslateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/audio/tts": {
+            "post": {
+                "description": "Convert text to speech audio",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audio"
+                ],
+                "summary": "Text to speech",
+                "parameters": [
+                    {
+                        "description": "Text to speech request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TextToSpeechRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TextToSpeechResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/progress": {
+            "get": {
+                "description": "Get the user's progress for today",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "progress"
+                ],
+                "summary": "Get today's progress",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TodayProgressResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/progress/increment": {
+            "get": {
+                "description": "Increment the number of questions completed for today",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "progress"
+                ],
+                "summary": "Increment questions completed",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Amount to increment by",
+                        "name": "amount",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.IncrementProgressResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/progress/streak": {
+            "get": {
+                "description": "Get the user's current streak and completion status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "progress"
+                ],
+                "summary": "Get streak information",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.StreakResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student": {
+            "get": {
+                "description": "Check if the user is a student and get their classroom info",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "Check user student status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.StudentStatusResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/classroom": {
+            "get": {
+                "description": "Get classroom info for the student",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "Get classroom info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetStudentClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/student/classroom/join": {
+            "post": {
+                "description": "Join a classroom as a student",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "student"
+                ],
+                "summary": "Join classroom",
+                "parameters": [
+                    {
+                        "description": "Join classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.JoinClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JoinClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teacher": {
             "get": {
                 "description": "Check if the user is a teacher",
@@ -307,6 +598,15 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AudioHealthResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "live"
+                }
+            }
+        },
         "models.ClassroomContentItem": {
             "type": "object",
             "required": [
@@ -388,6 +688,9 @@ const docTemplate = `{
         },
         "models.ErrorResponse": {
             "type": "object",
+            "required": [
+                "error"
+            ],
             "properties": {
                 "error": {
                     "type": "string",
@@ -405,6 +708,74 @@ const docTemplate = `{
                 "students_count": {
                     "type": "integer",
                     "example": 10
+                }
+            }
+        },
+        "models.GetStudentClassroomResponse": {
+            "type": "object",
+            "required": [
+                "students_count",
+                "teacher_id"
+            ],
+            "properties": {
+                "students_count": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "teacher_id": {
+                    "type": "string",
+                    "example": "789"
+                }
+            }
+        },
+        "models.IncrementProgressResponse": {
+            "type": "object",
+            "required": [
+                "date",
+                "goal_met",
+                "questions_completed",
+                "user_id"
+            ],
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "example": "2025-02-26T00:00:00Z"
+                },
+                "goal_met": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "questions_completed": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.JoinClassroomRequest": {
+            "type": "object",
+            "required": [
+                "classroom_id"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.JoinClassroomResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Student added to classroom successfully"
                 }
             }
         },
@@ -437,12 +808,135 @@ const docTemplate = `{
                 }
             }
         },
+        "models.StreakResponse": {
+            "type": "object",
+            "required": [
+                "completed_today",
+                "streak"
+            ],
+            "properties": {
+                "completed_today": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "streak": {
+                    "type": "integer",
+                    "example": 7
+                }
+            }
+        },
+        "models.StudentStatusResponse": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "student_id"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "456"
+                },
+                "student_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
         "models.TeacherStatusResponse": {
             "type": "object",
             "properties": {
                 "exists": {
                     "type": "boolean",
                     "example": true
+                }
+            }
+        },
+        "models.TextToSpeechRequest": {
+            "type": "object",
+            "required": [
+                "language_code",
+                "text",
+                "voice_name"
+            ],
+            "properties": {
+                "language_code": {
+                    "type": "string",
+                    "example": "en-US"
+                },
+                "text": {
+                    "type": "string",
+                    "example": "Hello, how are you?"
+                },
+                "voice_name": {
+                    "type": "string",
+                    "example": "en-US-Standard-A"
+                }
+            }
+        },
+        "models.TextToSpeechResponse": {
+            "type": "object",
+            "properties": {
+                "audio_content": {
+                    "type": "string",
+                    "example": "base64-encoded-audio-content"
+                }
+            }
+        },
+        "models.TodayProgressResponse": {
+            "type": "object",
+            "required": [
+                "date",
+                "goal_met",
+                "questions_completed",
+                "user_id"
+            ],
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "example": "2025-02-26T00:00:00Z"
+                },
+                "goal_met": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "questions_completed": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.TranslateRequest": {
+            "type": "object",
+            "required": [
+                "sentence",
+                "source",
+                "target"
+            ],
+            "properties": {
+                "sentence": {
+                    "type": "string",
+                    "example": "Hello, how are you?"
+                },
+                "source": {
+                    "type": "string",
+                    "example": "en"
+                },
+                "target": {
+                    "type": "string",
+                    "example": "fr"
+                }
+            }
+        },
+        "models.TranslateResponse": {
+            "type": "object",
+            "properties": {
+                "sentence": {
+                    "type": "string",
+                    "example": "Bonjour, comment allez-vous?"
                 }
             }
         }

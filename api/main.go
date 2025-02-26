@@ -29,11 +29,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
 
-	"database/sql"
 	"story-api/audio"
 	"story-api/gemini"
 	"story-api/supabase"
 
+	"story-api/handlers/audiohandler"
+	"story-api/handlers/profilehandler"
+	"story-api/handlers/progresshandler"
 	"story-api/handlers/student"
 	"story-api/handlers/teacher"
 )
@@ -52,36 +54,6 @@ func getUserIDFromToken(c *gin.Context) string {
 		return userID
 	}
 	return ""
-}
-
-// checkIsRequiredRole -> true if is the correct role
-// only X can access
-func checkIsCorrectRole(c *gin.Context, dbClient *supabase.Client, userID string, role string) bool {
-	isRole, err := dbClient.CheckAccountType(userID, role)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
-		return false
-	}
-	if !isRole {
-		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("Only %ss can access this endpoint.", role)})
-		return false
-	}
-	return true
-}
-
-// checkNotForbiddenRole -> true if NOT the forbidden role
-// everyone but X can access
-func checkNotForbiddenRole(c *gin.Context, dbClient *supabase.Client, userID string, role string) bool {
-	isRole, err := dbClient.CheckAccountType(userID, role)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check account type"})
-		return false
-	}
-	if isRole {
-		c.JSON(http.StatusForbidden, gin.H{"error": fmt.Sprintf("%ss cannot access this endpoint.", role)})
-		return false
-	}
-	return true
 }
 
 func authMiddleware() gin.HandlerFunc {
@@ -195,131 +167,27 @@ func init() {
 		}
 	}
 
+	audioHandler := audiohandler.New(dbClient, audioClient)
 	audioGroup := router.Group("/audio")
 	{
-		audioGroup.GET("", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"status": "live",
-			})
-		})
-
-		audioGroup.POST("/translate", func(c *gin.Context) {
-			var infoBody struct {
-				Sentence string `json:"sentence"`
-				Source   string `json:"source"`
-				Target   string `json:"target"`
-			}
-
-			if err := c.ShouldBindJSON(&infoBody); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-				return
-			}
-
-			translatedText, err := audioClient.Translate(infoBody.Sentence, infoBody.Source, infoBody.Target)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": fmt.Sprintf("Translation failed: %v", err),
-				})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"sentence": translatedText,
-			})
-		})
-
-		audioGroup.POST("/tts", func(c *gin.Context) {
-			var infoBody struct {
-				Text         string `json:"text"`
-				LanguageCode string `json:"language_code"`
-				VoiceName    string `json:"voice_name"`
-			}
-
-			if err := c.ShouldBindJSON(&infoBody); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-				return
-			}
-
-			audioContent, err := audioClient.TextToSpeech(infoBody.Text, infoBody.LanguageCode, infoBody.VoiceName)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": fmt.Sprintf("Text-to-speech failed: %v", err),
-				})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"audio_content": audioContent,
-			})
-		})
+		audioGroup.GET("", audioHandler.CheckHealth)
+		audioGroup.POST("/translate", audioHandler.Translate)
+		audioGroup.POST("/tts", audioHandler.TextToSpeech)
 	}
 
+	progressHandler := progresshandler.New(dbClient)
 	progressGroup := router.Group("/progress")
 	{
-		progressGroup.GET("", func(c *gin.Context) {
-			userID := getUserIDFromToken(c)
+		progressGroup.GET("", progressHandler.GetTodayProgress)
+		progressGroup.GET("/streak", progressHandler.GetStreak)
+		progressGroup.GET("/increment", progressHandler.IncrementProgress)
+	}
 
-			progress, err := dbClient.GetTodayProgress(userID)
-			if err != nil {
-				log.Printf("Failed to get progress: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get progress"})
-				return
-			}
-
-			c.JSON(http.StatusOK, progress)
-		})
-
-		progressGroup.GET("/streak", func(c *gin.Context) {
-			userID := getUserIDFromToken(c)
-
-			streak, completedToday, err := dbClient.GetProgressStreak(userID)
-			if err != nil {
-				log.Printf("Failed to get streak: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get streak"})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"streak":          streak,
-				"completed_today": completedToday,
-			})
-		})
-
-		progressGroup.GET("/increment", func(c *gin.Context) {
-			userID := getUserIDFromToken(c)
-			amount := c.Query("amount")
-
-			if amount == "" {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Amount parameter is required"})
-				return
-			}
-
-			amountInt, err := strconv.Atoi(amount)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid amount parameter"})
-				return
-			}
-			if amountInt < 0 {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Amount parameter must be non-negative"})
-				return
-			}
-
-			err = dbClient.IncrementQuestionsCompleted(userID, amountInt)
-			if err != nil {
-				log.Printf("Failed to increment progress: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to increment progress"})
-				return
-			}
-
-			progress, err := dbClient.GetTodayProgress(userID)
-			if err != nil {
-				log.Printf("Failed to get updated progress: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get updated progress"})
-				return
-			}
-
-			c.JSON(http.StatusOK, progress)
-		})
+	profileHandler := profilehandler.New(dbClient)
+	profileGroup := router.Group("/profile")
+	{
+		profileGroup.GET("", profileHandler.GetProfile)
+		profileGroup.POST("/upsert", profileHandler.UpsertProfile)
 	}
 
 	newsGroup := router.Group("/news")
@@ -614,57 +482,6 @@ func init() {
 			}
 
 			c.JSON(http.StatusOK, results)
-		})
-	}
-
-	profileGroup := router.Group("/profile")
-	{
-		profileGroup.GET("", func(c *gin.Context) {
-			userID := getUserIDFromToken(c)
-
-			profile, err := dbClient.GetProfile(userID)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					c.JSON(http.StatusNotFound, gin.H{
-						"error": "Failed to retrieve profile",
-						"code":  "PROFILE_NOT_FOUND",
-					})
-					return
-				}
-				log.Printf("Failed to retrieve profile: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve profile"})
-				return
-			}
-
-			c.JSON(http.StatusOK, profile)
-		})
-
-		profileGroup.POST("/upsert", func(c *gin.Context) {
-			userID := getUserIDFromToken(c)
-
-			var profile Profile
-			if err := c.ShouldBindJSON(&profile); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-				return
-			}
-
-			if profile.Username == "" || profile.LearningLanguage == "" || profile.SkillLevel == "" {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Username, learning language, and skill level are required"})
-				return
-			}
-
-			id, err := dbClient.UpsertProfile(userID, &profile)
-			if err != nil {
-				log.Println(err)
-				if strings.Contains(err.Error(), "unique constraint") {
-					c.JSON(http.StatusConflict, gin.H{"error": "Username already taken"})
-					return
-				}
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save profile"})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully", "id": id})
 		})
 	}
 

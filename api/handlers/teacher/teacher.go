@@ -1,6 +1,7 @@
 package teacher
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"story-api/handlers"
@@ -150,15 +151,21 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 		return
 	}
 
-	// type check
-	var typedResults models.QueryClassroomContentResponse
-	if err := c.ShouldBindJSON(results); err != nil {
-		log.Printf("Failed to bind response: %v", err)
+	jsonData, err := json.Marshal(results)
+	if err != nil {
+		log.Printf("Failed to marshal results: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to process results"})
+		return
+	}
+
+	var response models.QueryClassroomContentResponse
+	if err := json.Unmarshal(jsonData, &response); err != nil {
+		log.Printf("Failed to unmarshal to response type: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to process response"})
 		return
 	}
 
-	c.JSON(http.StatusOK, typedResults)
+	c.JSON(http.StatusOK, response)
 }
 
 //	@Summary		Create classroom
