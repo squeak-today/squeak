@@ -23,3 +23,11 @@ type ClassroomContentItem struct {
 }
 
 type QueryClassroomContentResponse []ClassroomContentItem
+
+type CreateClassroomRequest struct {
+	StudentsCount int `json:"students_count" binding:"required" example:"10"`
+}
+
+type CreateClassroomResponse struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
+}

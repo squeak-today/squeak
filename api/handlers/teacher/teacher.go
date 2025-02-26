@@ -3,10 +3,10 @@ package teacher
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"story-api/handlers"
 	"story-api/models"
 	"story-api/supabase"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -52,8 +52,10 @@ func (h *TeacherHandler) CheckTeacherStatus(c *gin.Context) {
 func (h *TeacherHandler) GetClassroomInfo(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
-	if !isTeacher { return }
-	
+	if !isTeacher {
+		return
+	}
+
 	classroom_id, students_count, err := h.DBClient.GetClassroomByTeacherId(userID)
 	if err != nil {
 		log.Printf("Failed to get classroom: %v", err)
@@ -61,7 +63,7 @@ func (h *TeacherHandler) GetClassroomInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, models.GetClassroomInfoResponse{
-		ClassroomID: classroom_id,
+		ClassroomID:   classroom_id,
 		StudentsCount: students_count,
 	})
 }
@@ -83,9 +85,11 @@ func (h *TeacherHandler) GetClassroomInfo(c *gin.Context) {
 //	@Router			/teacher/classroom/content [get]
 func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
-	
+
 	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
-	if !isTeacher { return }
+	if !isTeacher {
+		return
+	}
 
 	language := c.Query("language")
 	cefr := c.Query("cefr")
@@ -96,24 +100,28 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 	whitelistStatus := c.Query("whitelist")
 	contentType := c.Query("content_type")
 
-	if page == "" { page = "1" }
-	if pagesize == "" { pagesize = "10" }
+	if page == "" {
+		page = "1"
+	}
+	if pagesize == "" {
+		pagesize = "10"
+	}
 
 	pageNum, err := strconv.Atoi(page)
 	if err != nil || pageNum < 1 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid page number"})
 		return
 	}
 
 	pageSizeNum, err := strconv.Atoi(pagesize)
 	if err != nil || pageSizeNum < 1 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid page size"})
 		return
 	}
 
 	classroom_id, _, err := h.DBClient.GetClassroomByTeacherId(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
 		return
 	}
 
@@ -138,9 +146,50 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("Failed to query content: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Query execution failed"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Query execution failed"})
 		return
 	}
 
-	c.JSON(http.StatusOK, results)
+	// type check
+	var typedResults models.QueryClassroomContentResponse
+	if err := c.ShouldBindJSON(results); err != nil {
+		log.Printf("Failed to bind response: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to process response"})
+		return
+	}
+
+	c.JSON(http.StatusOK, typedResults)
+}
+
+//	@Summary		Create classroom
+//	@Description	Create classroom
+//	@Tags			teacher
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.CreateClassroomRequest	true	"Create classroom request"
+//	@Success		200		{object}	models.CreateClassroomResponse
+//	@Failure		403		{object}	models.ErrorResponse
+//	@Router			/teacher/classroom/create [post]
+func (h *TeacherHandler) CreateClassroom(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+
+	isNotStudent := h.CheckNotForbiddenRole(c, userID, "student")
+	if !isNotStudent {
+		return
+	}
+
+	var infoBody models.CreateClassroomRequest
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	classroom_id, err := h.DBClient.CreateClassroom(userID, infoBody.StudentsCount)
+	if err != nil {
+		log.Printf("Failed to create classroom: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.CreateClassroomResponse{ClassroomID: classroom_id})
 }
