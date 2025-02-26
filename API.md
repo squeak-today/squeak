@@ -49,6 +49,30 @@ Get classroom info
 | 200 | OK | [models.GetClassroomInfoResponse](#modelsgetclassroominforesponse) |
 | 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
 
+### /teacher/classroom/accept
+
+#### POST
+##### Summary
+
+Accept content
+
+##### Description
+
+Accept content
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Accept content request | Yes | [models.AcceptContentRequest](#modelsacceptcontentrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.AcceptContentResponse](#modelsacceptcontentresponse) |
+| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /teacher/classroom/content
 
 #### GET
@@ -79,8 +103,69 @@ Query classroom content
 | 200 | OK | [ [models.ClassroomContentItem](#modelsclassroomcontentitem) ] |
 | 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
 
+### /teacher/classroom/create
+
+#### POST
+##### Summary
+
+Create classroom
+
+##### Description
+
+Create classroom
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Create classroom request | Yes | [models.CreateClassroomRequest](#modelscreateclassroomrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.CreateClassroomResponse](#modelscreateclassroomresponse) |
+| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
+
+### /teacher/classroom/reject
+
+#### POST
+##### Summary
+
+Accept content
+
+##### Description
+
+Accept content
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Reject content request | Yes | [models.RejectContentRequest](#modelsrejectcontentrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.RejectContentResponse](#modelsrejectcontentresponse) |
+| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
+
 ---
 ### Models
+
+#### models.AcceptContentRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| content_id | integer | *Example:* `123` | Yes |
+| content_type | string | *Example:* `"News"` | Yes |
+
+#### models.AcceptContentResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| message | string | *Example:* `"Content accepted successfully"` | Yes |
 
 #### models.ClassroomContentItem
 
@@ -97,6 +182,18 @@ Query classroom content
 | title | string | *Example:* `"# L'actualité musicale en bref\n\n## Un fl..."` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
 
+#### models.CreateClassroomRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| students_count | integer | *Example:* `10` | Yes |
+
+#### models.CreateClassroomResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| classroom_id | string | *Example:* `"123"` | Yes |
+
 #### models.ErrorResponse
 
 | Name | Type | Description | Required |
@@ -109,6 +206,19 @@ Query classroom content
 | ---- | ---- | ----------- | -------- |
 | classroom_id | string | *Example:* `"123"` | No |
 | students_count | integer | *Example:* `10` | No |
+
+#### models.RejectContentRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| content_id | integer | *Example:* `123` | Yes |
+| content_type | string | *Example:* `"News"` | Yes |
+
+#### models.RejectContentResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| message | string | *Example:* `"Content rejected successfully"` | Yes |
 
 #### models.TeacherStatusResponse
 

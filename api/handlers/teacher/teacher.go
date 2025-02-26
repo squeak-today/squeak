@@ -193,3 +193,101 @@ func (h *TeacherHandler) CreateClassroom(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.CreateClassroomResponse{ClassroomID: classroom_id})
 }
+
+//	@Summary		Accept content
+//	@Description	Accept content
+//	@Tags			teacher
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.AcceptContentRequest	true	"Accept content request"	
+//	@Success		200		{object}	models.AcceptContentResponse
+//	@Failure		403		{object}	models.ErrorResponse
+//	@Router			/teacher/classroom/accept [post]
+func (h *TeacherHandler) AcceptContent(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+	if !isTeacher { return } 
+
+	var infoBody models.AcceptContentRequest
+
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	// Verify content type is valid
+	if infoBody.ContentType != "Story" && infoBody.ContentType != "News" {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid content type"})
+		return
+	}
+
+	// Get classroom ID for teacher
+	classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
+		return
+	}
+
+	classroomIDInt, err := strconv.Atoi(classroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom ID format"})
+		return
+	}
+
+	err = h.DBClient.AcceptContent(classroomIDInt, infoBody.ContentType, infoBody.ContentID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to accept content"})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.AcceptContentResponse{Message: "Content accepted successfully"})
+}
+
+//	@Summary		Accept content
+//	@Description	Accept content
+//	@Tags			teacher
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.RejectContentRequest	true	"Reject content request"	
+//	@Success		200		{object}	models.RejectContentResponse
+//	@Failure		403		{object}	models.ErrorResponse
+//	@Router			/teacher/classroom/reject [post]
+func (h *TeacherHandler) RejectContent(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+	if !isTeacher { return }
+
+	var infoBody models.RejectContentRequest
+
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	// Verify content type is valid
+	if infoBody.ContentType != "Story" && infoBody.ContentType != "News" {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid content type"})
+		return
+	}
+
+	// Get classroom ID for teacher
+	classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
+		return
+	}
+
+	classroomIDInt, err := strconv.Atoi(classroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom ID format"})
+		return
+	}
+
+	err = h.DBClient.RejectContent(classroomIDInt, infoBody.ContentType, infoBody.ContentID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to reject content"})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.RejectContentResponse{Message: "Content rejected successfully"})
+}

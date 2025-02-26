@@ -31,3 +31,24 @@ type CreateClassroomRequest struct {
 type CreateClassroomResponse struct {
 	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 }
+
+type AcceptContentRequest struct {
+	ContentType string `json:"content_type" binding:"required" example:"News"`
+	ContentID   int    `json:"content_id" binding:"required" example:"123"`
+}
+
+type AcceptContentResponse struct {
+	Message string `json:"message" binding:"required" example:"Content accepted successfully"`
+}
+
+type RejectContentRequest struct {
+	ContentType string `json:"content_type" binding:"required" example:"News"`
+	ContentID   int    `json:"content_id" binding:"required" example:"123"`
+}
+
+type RejectContentResponse struct {
+	Message string `json:"message" binding:"required" example:"Content rejected successfully"`
+}
+
+
+

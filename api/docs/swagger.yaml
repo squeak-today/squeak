@@ -1,5 +1,25 @@
 basePath: /
 definitions:
+  models.AcceptContentRequest:
+    properties:
+      content_id:
+        example: 123
+        type: integer
+      content_type:
+        example: News
+        type: string
+    required:
+    - content_id
+    - content_type
+    type: object
+  models.AcceptContentResponse:
+    properties:
+      message:
+        example: Content accepted successfully
+        type: string
+    required:
+    - message
+    type: object
   models.ClassroomContentItem:
     properties:
       cefr_level:
@@ -48,6 +68,22 @@ definitions:
     - title
     - topic
     type: object
+  models.CreateClassroomRequest:
+    properties:
+      students_count:
+        example: 10
+        type: integer
+    required:
+    - students_count
+    type: object
+  models.CreateClassroomResponse:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    type: object
   models.ErrorResponse:
     properties:
       error:
@@ -62,6 +98,26 @@ definitions:
       students_count:
         example: 10
         type: integer
+    type: object
+  models.RejectContentRequest:
+    properties:
+      content_id:
+        example: 123
+        type: integer
+      content_type:
+        example: News
+        type: string
+    required:
+    - content_id
+    - content_type
+    type: object
+  models.RejectContentResponse:
+    properties:
+      message:
+        example: Content rejected successfully
+        type: string
+    required:
+    - message
     type: object
   models.TeacherStatusResponse:
     properties:
@@ -112,6 +168,32 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get classroom info
+      tags:
+      - teacher
+  /teacher/classroom/accept:
+    post:
+      consumes:
+      - application/json
+      description: Accept content
+      parameters:
+      - description: Accept content request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AcceptContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AcceptContentResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Accept content
       tags:
       - teacher
   /teacher/classroom/content:
@@ -169,6 +251,58 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Query classroom content
+      tags:
+      - teacher
+  /teacher/classroom/create:
+    post:
+      consumes:
+      - application/json
+      description: Create classroom
+      parameters:
+      - description: Create classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create classroom
+      tags:
+      - teacher
+  /teacher/classroom/reject:
+    post:
+      consumes:
+      - application/json
+      description: Accept content
+      parameters:
+      - description: Reject content request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RejectContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RejectContentResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Accept content
       tags:
       - teacher
 securityDefinitions:

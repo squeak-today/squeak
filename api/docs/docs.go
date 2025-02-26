@@ -73,6 +73,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/teacher/classroom/accept": {
+            "post": {
+                "description": "Accept content",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Accept content",
+                "parameters": [
+                    {
+                        "description": "Accept content request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AcceptContentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AcceptContentResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teacher/classroom/content": {
             "get": {
                 "description": "Query classroom content",
@@ -155,9 +195,118 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/teacher/classroom/create": {
+            "post": {
+                "description": "Create classroom",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Create classroom",
+                "parameters": [
+                    {
+                        "description": "Create classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/teacher/classroom/reject": {
+            "post": {
+                "description": "Accept content",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Accept content",
+                "parameters": [
+                    {
+                        "description": "Reject content request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.RejectContentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.RejectContentResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "models.AcceptContentRequest": {
+            "type": "object",
+            "required": [
+                "content_id",
+                "content_type"
+            ],
+            "properties": {
+                "content_id": {
+                    "type": "integer",
+                    "example": 123
+                },
+                "content_type": {
+                    "type": "string",
+                    "example": "News"
+                }
+            }
+        },
+        "models.AcceptContentResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Content accepted successfully"
+                }
+            }
+        },
         "models.ClassroomContentItem": {
             "type": "object",
             "required": [
@@ -213,6 +362,30 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateClassroomRequest": {
+            "type": "object",
+            "required": [
+                "students_count"
+            ],
+            "properties": {
+                "students_count": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "models.CreateClassroomResponse": {
+            "type": "object",
+            "required": [
+                "classroom_id"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -232,6 +405,35 @@ const docTemplate = `{
                 "students_count": {
                     "type": "integer",
                     "example": 10
+                }
+            }
+        },
+        "models.RejectContentRequest": {
+            "type": "object",
+            "required": [
+                "content_id",
+                "content_type"
+            ],
+            "properties": {
+                "content_id": {
+                    "type": "integer",
+                    "example": 123
+                },
+                "content_type": {
+                    "type": "string",
+                    "example": "News"
+                }
+            }
+        },
+        "models.RejectContentResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Content rejected successfully"
                 }
             }
         },

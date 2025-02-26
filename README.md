@@ -62,6 +62,11 @@ swag init
 npx swagger-markdown -i ./swagger.yaml -o ../API.md
 ```
 
+Checklist for adding new endpoints
+- [ ] Swagger annotations
+- [ ] Define request body types (for POST) and response body types in models
+- [ ] Use types in handler itself on binding
+
 ### `/supabase`
 This contains migrations for the Supabase database.
 To make an isolated environment for your branch, go to the Supabase dashboard.
