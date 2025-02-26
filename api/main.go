@@ -1,3 +1,14 @@
+// Package main API.
+//
+//	@title						Squeak API
+//	@version					1.0
+//	@description				Backend API for Squeak Platform
+//	@host						api.squeak.today
+//	@BasePath					/
+//	@securityDefinitions.apiKey	Bearer
+//	@in							header
+//	@name						Authorization
+//	@description				JWT Authorization header using Bearer
 package main
 
 import (
@@ -22,6 +33,8 @@ import (
 	"story-api/audio"
 	"story-api/gemini"
 	"story-api/supabase"
+
+	"story-api/handlers/teacher"
 )
 
 type Profile = supabase.Profile
@@ -155,33 +168,14 @@ func init() {
 		}
 	})
 
+	teacherHandler := teacher.New(dbClient)
 	teacherGroup := router.Group("/teacher")
 	{
-		teacherGroup.GET("", func(c *gin.Context) {
-			userID := getUserIDFromToken(c)
-			isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
-			if !isTeacher { return }
-			c.JSON(http.StatusOK, gin.H{"exists": isTeacher})
-		})
+		teacherGroup.GET("", teacherHandler.CheckTeacherStatus)
 
 		classroomGroup := teacherGroup.Group("/classroom")
 		{
-			classroomGroup.GET("", func(c *gin.Context) {
-				userID := getUserIDFromToken(c)
-				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
-				if !isTeacher { return }
-				
-				classroom_id, students_count, err := dbClient.GetClassroomByTeacherId(userID)
-				if err != nil {
-					log.Printf("Failed to get classroom: %v", err)
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
-					return
-				}
-				c.JSON(http.StatusOK, gin.H{
-					"classroom_id": classroom_id,
-					"students_count": students_count,
-				})
-			})
+			classroomGroup.GET("", teacherHandler.GetClassroomInfo)
 
 			classroomGroup.GET("/content", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)

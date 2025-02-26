@@ -1,0 +1,71 @@
+basePath: /
+definitions:
+  models.ErrorResponse:
+    properties:
+      error:
+        example: error message
+        type: string
+    type: object
+  models.GetClassroomInfoResponse:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+      students_count:
+        example: 10
+        type: integer
+    type: object
+  models.TeacherStatusResponse:
+    properties:
+      exists:
+        example: true
+        type: boolean
+    type: object
+host: api.squeak.today
+info:
+  contact: {}
+  description: Backend API for Squeak Platform
+  title: Squeak API
+  version: "1.0"
+paths:
+  /teacher:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user is a teacher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TeacherStatusResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check user teacher status
+      tags:
+      - teacher
+  /teacher/classroom:
+    get:
+      consumes:
+      - application/json
+      description: Get classroom info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetClassroomInfoResponse'
+      summary: Get classroom info
+      tags:
+      - teacher
+securityDefinitions:
+  Bearer:
+    description: JWT Authorization header using Bearer
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
