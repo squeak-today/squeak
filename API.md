@@ -613,8 +613,8 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | No |
-| students_count | integer | *Example:* `10` | No |
+| classroom_id | string | *Example:* `"123"` | Yes |
+| students_count | integer | *Example:* `10` | Yes |
 
 #### models.GetNewsResponse
 
@@ -748,7 +748,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| exists | boolean | *Example:* `true` | No |
+| exists | boolean | *Example:* `true` | Yes |
 
 #### models.TextToSpeechRequest
 

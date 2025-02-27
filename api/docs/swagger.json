@@ -1105,6 +1105,10 @@
         },
         "models.GetClassroomInfoResponse": {
             "type": "object",
+            "required": [
+                "classroom_id",
+                "students_count"
+            ],
             "properties": {
                 "classroom_id": {
                     "type": "string",
@@ -1494,6 +1498,9 @@
         },
         "models.TeacherStatusResponse": {
             "type": "object",
+            "required": [
+                "exists"
+            ],
             "properties": {
                 "exists": {
                     "type": "boolean",

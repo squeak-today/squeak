@@ -141,6 +141,9 @@ definitions:
       students_count:
         example: 10
         type: integer
+    required:
+    - classroom_id
+    - students_count
     type: object
   models.GetNewsResponse:
     properties:
@@ -422,6 +425,8 @@ definitions:
       exists:
         example: true
         type: boolean
+    required:
+    - exists
     type: object
   models.TextToSpeechRequest:
     properties:

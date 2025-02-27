@@ -1111,6 +1111,10 @@ const docTemplate = `{
         },
         "models.GetClassroomInfoResponse": {
             "type": "object",
+            "required": [
+                "classroom_id",
+                "students_count"
+            ],
             "properties": {
                 "classroom_id": {
                     "type": "string",
@@ -1500,6 +1504,9 @@ const docTemplate = `{
         },
         "models.TeacherStatusResponse": {
             "type": "object",
+            "required": [
+                "exists"
+            ],
             "properties": {
                 "exists": {
                     "type": "boolean",

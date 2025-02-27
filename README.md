@@ -52,15 +52,16 @@ High level overview:
 Install swaggo with:
 ```shell
 go install github.com/swaggo/swag/cmd/swag@latest
+npm install swagger-markdown
+npm install api-spec-converter
 ```
 This installs `swag` as a
-To update the `docs` folder and the respective markdown documentation for the API:
+You can then run:
 ```shell
-cd api
-swag fmt
-swag init
-npx swagger-markdown -i ./swagger.yaml -o ../API.md
+./gen-swagger.sh
 ```
+
+A better UI other than the genrated docs can also be generated through `https://editor.swagger.io/`.
 
 Checklist for adding new endpoints
 - [ ] Swagger annotations
