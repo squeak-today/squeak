@@ -363,7 +363,7 @@ func init() {
 				c.JSON(http.StatusOK, gin.H{"message": "Content rejected successfully"})
 			})
 
-			classroomGroup.GET("/students/profiles", func(c *gin.Context) {
+			classroomGroup.GET("/profiles", func(c *gin.Context) {
 				userID := getUserIDFromToken(c)
 				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
 				if !isTeacher { 
