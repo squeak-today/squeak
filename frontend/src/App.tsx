@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NotificationProvider } from './context/NotificationContext';
 import Home from './pages/Home';
@@ -10,7 +11,7 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import BecomeTeacher from './pages/BecomeTeacher';
 import BecomeStudent from './pages/BecomeStudent';
 
-function App() {
+const App: React.FC = () => {
 	return (
 		<NotificationProvider>
 			<Router>
@@ -47,6 +48,6 @@ function App() {
 			</Router>
 		</NotificationProvider>
 	);
-}
+};
 
-export default App;
+export default App; 
