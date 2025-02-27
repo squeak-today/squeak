@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTeacherAPI } from '../services/hooks/useTeacherAPI';
-import supabase from '../services/lib/supabase';
+import { useTeacherAPI } from '../hooks/useTeacherAPI';
+import supabase from '../lib/supabase';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
 import TeacherStoryBrowser from '../components/TeacherStoryBrowser';

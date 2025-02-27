@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import supabase from '../services/lib/supabase';
+import supabase from '../lib/supabase';
 
 function ProtectedRoute({ children }) {
     const navigate = useNavigate();

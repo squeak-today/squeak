@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { getAPIClient } from '../lib/clients/apiClient';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 export function useAudioAPI() {
     const { jwtToken } = useAuth();

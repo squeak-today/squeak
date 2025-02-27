@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import StoryList from './StoryList';
-import { AVAILABLE_TOPICS } from '../services/lib/topics';
+import { AVAILABLE_TOPICS } from '../lib/topics';
 import {
 	FilterContainer,
 	FilterLabel,

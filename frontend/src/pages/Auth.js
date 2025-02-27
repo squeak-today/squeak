@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import supabase from '../services/lib/supabase';
+import supabase from '../lib/supabase';
 import { Subtitle } from '../components/StyledComponents';
 import { AuthBox, AuthContainer, AuthForm, AuthInput, AuthButton, AuthToggle, AuthTitle, ToggleButton, AuthText, Slider, ToggleContainer } from '../styles/AuthPageStyles';
 import { useState } from 'react';

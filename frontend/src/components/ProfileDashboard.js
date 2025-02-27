@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FaPencilAlt, FaCheck, FaTimes, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import MultiSelect from './MultiSelect';
-import { AVAILABLE_TOPICS } from '../services/lib/topics';
+import { AVAILABLE_TOPICS } from '../lib/topics';
 
 const Header = styled.div`
     display: flex;

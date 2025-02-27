@@ -5,7 +5,7 @@ import landingDrawing from '../assets/mouse_pencil.png';
 import wizardHat from '../assets/WizardHat.png';
 import clickVideo from '../assets/clickVideo.mp4';
 import { useEffect } from 'react';
-import supabase from '../services/lib/supabase';
+import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import { FiArrowRight } from 'react-icons/fi';
 import {

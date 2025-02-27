@@ -5,12 +5,12 @@ import StoryReader from '../components/StoryReader';
 import { useNotification } from '../context/NotificationContext';
 import { ReadPageLayout, ReaderPanel, BackButton } from '../styles/ReadPageStyles';
 import SidePanel from '../components/SidePanel';
-import supabase from '../services/lib/supabase';
+import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import TranslationPanel from '../components/TranslationPanel';
-import { useAudioAPI } from '../services/hooks/useAudioAPI';
+import { useAudioAPI } from '../hooks/useAudioAPI';
 
-import { LANGUAGE_CODES_REVERSE, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../services/lib/lang_codes';
+import { LANGUAGE_CODES_REVERSE, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 
 const DEFAULT_CONTENT = {
     id: '',
