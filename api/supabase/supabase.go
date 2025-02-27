@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v4"
@@ -28,6 +29,7 @@ type QueryParams struct {
 
 // Add these near the top with other type definitions
 type Profile struct {
+	UserID			   string   `json:"user_id"`
 	Username           string   `json:"username"`
 	LearningLanguage   string   `json:"learning_language"`
 	SkillLevel         string   `json:"skill_level"`
@@ -881,4 +883,82 @@ func (c *Client) RejectContent(classroomID int, contentType string, contentID in
 	}
 
 	return nil
+}
+
+// GetStudentUserIDsByClassroom retrieves all student user IDs for a classroom
+func (c *Client) GetStudentUserIDsByClassroom(classroomID int) ([]string, error) {
+    query := `
+        SELECT user_id 
+        FROM students 
+        WHERE classroom_id = $1`
+    
+    rows, err := c.db.Query(query, classroomID)
+    if err != nil {
+        return nil, fmt.Errorf("database error querying student IDs: %v", err)
+    }
+    defer rows.Close()
+    
+    var userIDs []string
+    for rows.Next() {
+        var userID string
+        if err := rows.Scan(&userID); err != nil {
+            return nil, fmt.Errorf("error scanning user ID: %v", err)
+        }
+        userIDs = append(userIDs, userID)
+    }
+    
+    if err := rows.Err(); err != nil {
+        return nil, fmt.Errorf("error iterating student rows: %v", err)
+    }
+    
+    return userIDs, nil
+}
+
+// GetProfilesByUserIDs retrieves profiles for multiple user IDs
+func (c *Client) GetProfilesByUserIDs(userIDs []string) ([]*Profile, error) {
+    if len(userIDs) == 0 {
+        return []*Profile{}, nil
+    }
+    
+    // Create the placeholder string for the IN clause
+    placeholders := make([]string, len(userIDs))
+    args := make([]interface{}, len(userIDs))
+    for i, id := range userIDs {
+        placeholders[i] = fmt.Sprintf("$%d", i+1)
+        args[i] = id
+    }
+    
+    query := fmt.Sprintf(`
+        SELECT username, learning_language, skill_level, interested_topics, daily_questions_goal
+        FROM profiles
+        WHERE user_id IN (%s)`, strings.Join(placeholders, ", "))
+    
+    rows, err := c.db.Query(query, args...)
+    if err != nil {
+        return nil, fmt.Errorf("database error querying profiles: %v", err)
+    }
+    defer rows.Close()
+    
+    var profiles []*Profile
+    for rows.Next() {
+        var profile Profile
+        
+        if err := rows.Scan(
+            &profile.Username,
+            &profile.LearningLanguage,
+            &profile.SkillLevel,
+            pq.Array(&profile.InterestedTopics),
+            &profile.DailyQuestionsGoal,
+        ); err != nil {
+            return nil, fmt.Errorf("error scanning profile: %v", err)
+        }
+        
+        profiles = append(profiles, &profile)
+    }
+    
+    if err := rows.Err(); err != nil {
+        return nil, fmt.Errorf("error iterating profile rows: %v", err)
+    }
+    
+    return profiles, nil
 }

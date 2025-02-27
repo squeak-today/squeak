@@ -362,6 +362,49 @@ func init() {
 			
 				c.JSON(http.StatusOK, gin.H{"message": "Content rejected successfully"})
 			})
+
+			classroomGroup.GET("/students/profiles", func(c *gin.Context) {
+				userID := getUserIDFromToken(c)
+				isTeacher := checkIsCorrectRole(c, dbClient, userID, "teacher")
+				if !isTeacher { 
+					return 
+				}
+			
+				// Get classroom ID for the teacher
+				classroomID, _, err := dbClient.GetClassroomByTeacherId(userID)
+				if err != nil {
+					log.Printf("Failed to get classroom: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+					return
+				}
+			
+				classroomIDInt, err := strconv.Atoi(classroomID)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid classroom ID format"})
+					return
+				}
+			
+				// Get all student user IDs in the classroom
+				studentUserIDs, err := dbClient.GetStudentUserIDsByClassroom(classroomIDInt)
+				if err != nil {
+					log.Printf("Failed to get student IDs: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get student IDs"})
+					return
+				}
+			
+				// Get profiles for all students
+				profiles, err := dbClient.GetProfilesByUserIDs(studentUserIDs)
+				if err != nil {
+					log.Printf("Failed to get student profiles: %v", err)
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get student profiles"})
+					return
+				}
+			
+				c.JSON(http.StatusOK, gin.H{
+					"count": len(profiles),
+					"profiles": profiles,
+				})
+			})
 		}
 	}
 

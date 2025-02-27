@@ -33,4 +33,15 @@ CREATE POLICY "Users can delete own profile"
     ON profiles FOR DELETE
     USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Teachers can view student profiles" ON profiles;
+CREATE POLICY "Teachers can view student profiles"
+ON profiles FOR SELECT
+USING (
+    EXISTS (
+        SELECT 1 FROM classrooms c
+        JOIN students s ON s.classroom_id = c.id
+        WHERE c.teacher_id = auth.uid() AND s.user_id = profiles.user_id
+    )
+);
+
 CREATE INDEX IF NOT EXISTS profiles_user_id_idx ON profiles(user_id); 
