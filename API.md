@@ -648,7 +648,7 @@ Accept content
 | cefr_level | string | *Example:* `"B1"` | Yes |
 | content_type | string | *Example:* `"News"` | Yes |
 | id | string | *Example:* `"123"` | Yes |
-| question_type | string | *Example:* `"vocab"` | Yes |
+| question_type | string | *Enum:* `"vocab"`, `"understanding"`<br>*Example:* `"vocab"` | Yes |
 
 #### models.GetQuestionResponse
 

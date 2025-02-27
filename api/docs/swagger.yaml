@@ -228,6 +228,9 @@ definitions:
         example: "123"
         type: string
       question_type:
+        enum:
+        - vocab
+        - understanding
         example: vocab
         type: string
     required:

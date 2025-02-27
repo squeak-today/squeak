@@ -1332,8 +1332,11 @@ export interface components {
             content_type: string;
             /** @example 123 */
             id: string;
-            /** @example vocab */
-            question_type: string;
+            /**
+             * @example vocab
+             * @enum {string}
+             */
+            question_type: "vocab" | "understanding";
         };
         "models.GetQuestionResponse": {
             /** @example What does 'bonjour' mean? */

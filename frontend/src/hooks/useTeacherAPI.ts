@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { getAPIClient } from '../lib/clients/apiClient';
 import { useAuth } from '../context/AuthContext';
+import { components } from '../lib/clients/types';
 
 export function useTeacherAPI() {
     const { jwtToken } = useAuth();
@@ -36,19 +37,13 @@ export function useTeacherAPI() {
         return data;
     }, [client]);
 
-    const acceptContent = useCallback(async (content: {
-        content_type: string;
-        content_id: number;
-    }) => {
+    const acceptContent = useCallback(async (content: components['schemas']['models.AcceptContentRequest']) => {
         const { data, error } = await client.POST('/teacher/classroom/accept', { body: content })
         if (error) { throw error; }
         return data;
     }, [client])
 
-    const rejectContent = useCallback(async (content: {
-        content_type: string;
-        content_id: number;
-    }) => {
+    const rejectContent = useCallback(async (content: components['schemas']['models.RejectContentRequest']) => {
         const { data, error } = await client.POST('/teacher/classroom/reject', { body: content })
         if (error) { throw error; }
         return data;

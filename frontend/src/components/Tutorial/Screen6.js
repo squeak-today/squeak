@@ -131,7 +131,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
 
   const handleWordClick = async (e, word, sourceLang, sentence) => {
     try {
-      const translationData = await translate(word, sourceLang);
+      const translationData = await translate({ sentence: word, source: sourceLang, target: "en" });
       const translation = translationData.sentence;
       if (translation) {
         setTooltip({
@@ -150,7 +150,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
 
   const handleSentenceToggle = async () => {
     try {
-      const translationData = await translate(tooltip.originalSentence, sourceLanguage);
+      const translationData = await translate({ sentence: tooltip.originalSentence, source: sourceLanguage, target: "en" });
       const translation = translationData.sentence;
       setTooltip(prev => ({ ...prev, sentenceTranslation: translation }));
     } catch (error) {
@@ -184,7 +184,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
   const handlePlayTTS = async (text) => {
     try {
       const langCode = TTS_LANGUAGE_CODES[sourceLanguage];
-      const audioContent = await tts(langCode, text, TTS_VOICE_IDS[langCode]);
+      const audioContent = await tts({ language_code: langCode, text, voice_name: TTS_VOICE_IDS[langCode] });
       const audio = new Audio(`data:audio/mp3;base64,${audioContent.audio_content}`);
       await audio.play();
     } catch (error) {

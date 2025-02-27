@@ -1244,6 +1244,10 @@ const docTemplate = `{
                 },
                 "question_type": {
                     "type": "string",
+                    "enum": [
+                        "vocab",
+                        "understanding"
+                    ],
                     "example": "vocab"
                 }
             }

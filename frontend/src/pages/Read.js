@@ -111,7 +111,7 @@ function Read() {
 
     const handleWordClick = async (e, word, sourceLang, sentence) => {
         try {
-            const translationData = await translate(word, sourceLang);
+            const translationData = await translate({ sentence: word, source: sourceLang, target: "en" });
             const translation = translationData.sentence;
             if (translation) {
                 setTooltip({
@@ -129,7 +129,7 @@ function Read() {
     };
 
     const handleSentenceToggle = async () => {
-        const translationData = await translate(tooltip.originalSentence, sourceLanguage);
+        const translationData = await translate({ sentence: tooltip.originalSentence, source: sourceLanguage, target: "en" });
         const translation = translationData.sentence;
         setTooltip(prev => ({ ...prev, sentenceTranslation: translation }));
     };
@@ -379,7 +379,7 @@ function Read() {
         try {
             setIsPlayingTTS(true);
             const langCode = TTS_LANGUAGE_CODES[contentData.tags[0]];
-            const audioContent = await tts(langCode, text, TTS_VOICE_IDS[langCode]);
+            const audioContent = await tts({ language_code: langCode, text, voice_name: TTS_VOICE_IDS[langCode] });
             const audio = new Audio(`data:audio/mp3;base64,${audioContent.audio_content}`);
             await audio.play();
         } catch (error) {
