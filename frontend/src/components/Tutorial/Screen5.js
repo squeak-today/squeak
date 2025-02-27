@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import NextButton from './NextButton';
-import { AVAILABLE_TOPICS } from '../../lib/topics';
+import { AVAILABLE_TOPICS } from '../../services/lib/topics';
 
 const ALL_TOPICS = AVAILABLE_TOPICS;
 

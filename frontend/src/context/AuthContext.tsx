@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import supabase from '../lib/supabase';
+import supabase from '../services/lib/supabase';
 
 const AuthContext = createContext<{
     jwtToken: string | null;

@@ -4,7 +4,7 @@ import StoryBrowser from '../components/StoryBrowser';
 import WelcomeModal from '../components/WelcomeModal';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
-import supabase from '../lib/supabase';
+import supabase from '../services/lib/supabase';
 import BasicPage from '../components/BasicPage';
 import ProfileDashboard from '../components/ProfileDashboard';
 import NewsRecommendations from '../components/NewsRecommendations';

@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { getAPIClient } from '../../lib/clients/apiClient';
+import { getAPIClient } from '../lib/clients/apiClient';
 import { useAuth } from '../../context/AuthContext';
 
 export function useTeacherAPI() {

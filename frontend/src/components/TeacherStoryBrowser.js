@@ -2,7 +2,7 @@ import TeacherStoryList from './TeacherStoryList';
 import { useEffect, useState, useCallback } from 'react';
 import { useTeacherAPI } from '../services/hooks/useTeacherAPI';
 import { useNotification } from '../context/NotificationContext';
-import { AVAILABLE_TOPICS } from '../lib/topics';
+import { AVAILABLE_TOPICS } from '../services/lib/topics';
 import {
   Container,
   TeacherFilterContainer as FilterContainer,

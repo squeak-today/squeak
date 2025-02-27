@@ -13,7 +13,7 @@ import {
   ExplanationText,
 } from '../../styles/ReadPageStyles';
 import { useAudioAPI } from '../../services/hooks/useAudioAPI';
-import { TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../../lib/lang_codes';
+import { TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../../services/lib/lang_codes';
 
 // Headings as paragraphs with desired font sizes
 const MainHeading = styled.p`

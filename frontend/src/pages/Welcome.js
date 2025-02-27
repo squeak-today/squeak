@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
-import supabase from '../lib/supabase';
+import supabase from '../services/lib/supabase';
 import BasicPage from '../components/BasicPage';
 import Screen1 from '../components/Tutorial/Screen1';
 // import Screen2 from '../components/Tutorial/Screen2';
