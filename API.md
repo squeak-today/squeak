@@ -80,6 +80,60 @@ Convert text to speech audio
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
+### /news
+
+#### GET
+##### Summary
+
+Get news content
+
+##### Description
+
+Get news content by ID
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | query | Content ID | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GetNewsResponse](#modelsgetnewsresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
+### /news/query
+
+#### GET
+##### Summary
+
+Get news content
+
+##### Description
+
+Get news content by ID
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| language | query | Language | Yes | string |
+| cefr | query | CEFR | Yes | string |
+| subject | query | Subject | Yes | string |
+| page | query | Page | Yes | string |
+| pagesize | query | Page size | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [ [models.NewsItem](#modelsnewsitem) ] |
+
+---
 ### /profile
 
 #### GET
@@ -181,6 +235,57 @@ Get the user's current streak and completion status
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.StreakResponse](#modelsstreakresponse) |
+
+---
+### /story
+
+#### GET
+##### Summary
+
+Get story page content
+
+##### Description
+
+Get story content by ID
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | query | Content ID | Yes | string |
+| page | query | Page | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GetStoryPageResponse](#modelsgetstorypageresponse) |
+| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+
+### /story/context
+
+#### GET
+##### Summary
+
+Get story QNA context
+
+##### Description
+
+Get story QNA context by ID
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| id | query | Content ID | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GetStoryQNAContextResponse](#modelsgetstoryqnacontextresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
 ### /student
@@ -445,6 +550,21 @@ Accept content
 | classroom_id | string | *Example:* `"123"` | No |
 | students_count | integer | *Example:* `10` | No |
 
+#### models.GetNewsResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| cefr_level | string | *Example:* `"B1"` | Yes |
+| content | string | *Example:* `"Le contenu complet de l'article..."` | Yes |
+| content_type | string | *Example:* `"News"` | Yes |
+| date_created | string | *Example:* `"2024-02-26"` | Yes |
+| dictionary | [storage.Dictionary](#storagedictionary) |  | Yes |
+| language | string | *Example:* `"French"` | Yes |
+| preview_text | string | *Example:* `"Un résumé des nouvelles musicales..."` | Yes |
+| sources | [ [storage.Source](#storagesource) ] |  | Yes |
+| title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
+| topic | string | *Example:* `"Music"` | Yes |
+
 #### models.GetProfileResponse
 
 | Name | Type | Description | Required |
@@ -454,6 +574,26 @@ Accept content
 | learning_language | string | *Example:* `"French"` | Yes |
 | skill_level | string | *Example:* `"B1"` | Yes |
 | username | string | *Example:* `"connortbot"` | Yes |
+
+#### models.GetStoryPageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| cefr_level | string | *Example:* `"B1"` | Yes |
+| content | string | *Example:* `"Le contenu complet de l'article..."` | Yes |
+| content_type | string | *Example:* `"Story"` | Yes |
+| date_created | string | *Example:* `"2024-02-26"` | Yes |
+| language | string | *Example:* `"French"` | Yes |
+| pages | integer | *Example:* `10` | Yes |
+| preview_text | string | *Example:* `"Un résumé des nouvelles musicales..."` | Yes |
+| title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
+| topic | string | *Example:* `"Music"` | Yes |
+
+#### models.GetStoryQNAContextResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| context | string | *Example:* `"Le contexte de l'histoire..."` | Yes |
 
 #### models.GetStudentClassroomResponse
 
@@ -482,6 +622,19 @@ Accept content
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | message | string | *Example:* `"Student added to classroom successfully"` | Yes |
+
+#### models.NewsItem
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| cefr_level | string | *Example:* `"B1"` | Yes |
+| created_at | string | *Example:* `"2024-02-26T13:01:13.390612Z"` | Yes |
+| date_created | string | *Example:* `"2024-02-26"` | Yes |
+| id | string | *Example:* `"123"` | Yes |
+| language | string | *Example:* `"French"` | Yes |
+| preview_text | string | *Example:* `"Un résumé des nouvelles musicales..."` | Yes |
+| title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
+| topic | string | *Example:* `"Music"` | Yes |
 
 #### models.RejectContentRequest
 
@@ -569,3 +722,18 @@ Accept content
 | ---- | ---- | ----------- | -------- |
 | id | integer | *Example:* `123` | Yes |
 | message | string | *Example:* `"Profile updated successfully"` | Yes |
+
+#### storage.Dictionary
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| translations | { **"sentences"**: object, **"words"**: object } |  | No |
+
+#### storage.Source
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| content | string |  | No |
+| score | number |  | No |
+| title | string |  | No |
+| url | string |  | No |

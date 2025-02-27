@@ -124,6 +124,119 @@ const docTemplate = `{
                 }
             }
         },
+        "/news": {
+            "get": {
+                "description": "Get news content by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "news"
+                ],
+                "summary": "Get news content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Content ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetNewsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/news/query": {
+            "get": {
+                "description": "Get news content by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "news"
+                ],
+                "summary": "Get news content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "CEFR",
+                        "name": "cefr",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject",
+                        "name": "subject",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page size",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.NewsItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "description": "Get the user's profile information",
@@ -278,6 +391,95 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.StreakResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/story": {
+            "get": {
+                "description": "Get story content by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "story"
+                ],
+                "summary": "Get story page content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Content ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetStoryPageResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/story/context": {
+            "get": {
+                "description": "Get story QNA context by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "story"
+                ],
+                "summary": "Get story QNA context",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Content ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetStoryQNAContextResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -790,6 +992,64 @@ const docTemplate = `{
                 }
             }
         },
+        "models.GetNewsResponse": {
+            "type": "object",
+            "required": [
+                "cefr_level",
+                "content",
+                "content_type",
+                "date_created",
+                "dictionary",
+                "language",
+                "preview_text",
+                "sources",
+                "title",
+                "topic"
+            ],
+            "properties": {
+                "cefr_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "content": {
+                    "type": "string",
+                    "example": "Le contenu complet de l'article..."
+                },
+                "content_type": {
+                    "type": "string",
+                    "example": "News"
+                },
+                "date_created": {
+                    "type": "string",
+                    "example": "2024-02-26"
+                },
+                "dictionary": {
+                    "$ref": "#/definitions/storage.Dictionary"
+                },
+                "language": {
+                    "type": "string",
+                    "example": "French"
+                },
+                "preview_text": {
+                    "type": "string",
+                    "example": "Un résumé des nouvelles musicales..."
+                },
+                "sources": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/storage.Source"
+                    }
+                },
+                "title": {
+                    "type": "string",
+                    "example": "L'actualité musicale en bref"
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "Music"
+                }
+            }
+        },
         "models.GetProfileResponse": {
             "type": "object",
             "required": [
@@ -824,6 +1084,70 @@ const docTemplate = `{
                 "username": {
                     "type": "string",
                     "example": "connortbot"
+                }
+            }
+        },
+        "models.GetStoryPageResponse": {
+            "type": "object",
+            "required": [
+                "cefr_level",
+                "content",
+                "content_type",
+                "date_created",
+                "language",
+                "pages",
+                "preview_text",
+                "title",
+                "topic"
+            ],
+            "properties": {
+                "cefr_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "content": {
+                    "type": "string",
+                    "example": "Le contenu complet de l'article..."
+                },
+                "content_type": {
+                    "type": "string",
+                    "example": "Story"
+                },
+                "date_created": {
+                    "type": "string",
+                    "example": "2024-02-26"
+                },
+                "language": {
+                    "type": "string",
+                    "example": "French"
+                },
+                "pages": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "preview_text": {
+                    "type": "string",
+                    "example": "Un résumé des nouvelles musicales..."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "L'actualité musicale en bref"
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "Music"
+                }
+            }
+        },
+        "models.GetStoryQNAContextResponse": {
+            "type": "object",
+            "required": [
+                "context"
+            ],
+            "properties": {
+                "context": {
+                    "type": "string",
+                    "example": "Le contexte de l'histoire..."
                 }
             }
         },
@@ -892,6 +1216,53 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Student added to classroom successfully"
+                }
+            }
+        },
+        "models.NewsItem": {
+            "type": "object",
+            "required": [
+                "cefr_level",
+                "created_at",
+                "date_created",
+                "id",
+                "language",
+                "preview_text",
+                "title",
+                "topic"
+            ],
+            "properties": {
+                "cefr_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-02-26T13:01:13.390612Z"
+                },
+                "date_created": {
+                    "type": "string",
+                    "example": "2024-02-26"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "language": {
+                    "type": "string",
+                    "example": "French"
+                },
+                "preview_text": {
+                    "type": "string",
+                    "example": "Un résumé des nouvelles musicales..."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "L'actualité musicale en bref"
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "Music"
                 }
             }
         },
@@ -1107,6 +1478,45 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Profile updated successfully"
+                }
+            }
+        },
+        "storage.Dictionary": {
+            "type": "object",
+            "properties": {
+                "translations": {
+                    "type": "object",
+                    "properties": {
+                        "sentences": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "words": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "storage.Source": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         }

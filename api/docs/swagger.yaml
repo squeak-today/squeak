@@ -110,6 +110,50 @@ definitions:
         example: 10
         type: integer
     type: object
+  models.GetNewsResponse:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content:
+        example: Le contenu complet de l'article...
+        type: string
+      content_type:
+        example: News
+        type: string
+      date_created:
+        example: "2024-02-26"
+        type: string
+      dictionary:
+        $ref: '#/definitions/storage.Dictionary'
+      language:
+        example: French
+        type: string
+      preview_text:
+        example: Un résumé des nouvelles musicales...
+        type: string
+      sources:
+        items:
+          $ref: '#/definitions/storage.Source'
+        type: array
+      title:
+        example: L'actualité musicale en bref
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - content
+    - content_type
+    - date_created
+    - dictionary
+    - language
+    - preview_text
+    - sources
+    - title
+    - topic
+    type: object
   models.GetProfileResponse:
     properties:
       daily_questions_goal:
@@ -136,6 +180,54 @@ definitions:
     - learning_language
     - skill_level
     - username
+    type: object
+  models.GetStoryPageResponse:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content:
+        example: Le contenu complet de l'article...
+        type: string
+      content_type:
+        example: Story
+        type: string
+      date_created:
+        example: "2024-02-26"
+        type: string
+      language:
+        example: French
+        type: string
+      pages:
+        example: 10
+        type: integer
+      preview_text:
+        example: Un résumé des nouvelles musicales...
+        type: string
+      title:
+        example: L'actualité musicale en bref
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - content
+    - content_type
+    - date_created
+    - language
+    - pages
+    - preview_text
+    - title
+    - topic
+    type: object
+  models.GetStoryQNAContextResponse:
+    properties:
+      context:
+        example: Le contexte de l'histoire...
+        type: string
+    required:
+    - context
     type: object
   models.GetStudentClassroomResponse:
     properties:
@@ -184,6 +276,42 @@ definitions:
         type: string
     required:
     - message
+    type: object
+  models.NewsItem:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      created_at:
+        example: "2024-02-26T13:01:13.390612Z"
+        type: string
+      date_created:
+        example: "2024-02-26"
+        type: string
+      id:
+        example: "123"
+        type: string
+      language:
+        example: French
+        type: string
+      preview_text:
+        example: Un résumé des nouvelles musicales...
+        type: string
+      title:
+        example: L'actualité musicale en bref
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - created_at
+    - date_created
+    - id
+    - language
+    - preview_text
+    - title
+    - topic
     type: object
   models.RejectContentRequest:
     properties:
@@ -338,6 +466,31 @@ definitions:
     - id
     - message
     type: object
+  storage.Dictionary:
+    properties:
+      translations:
+        properties:
+          sentences:
+            additionalProperties:
+              type: string
+            type: object
+          words:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    type: object
+  storage.Source:
+    properties:
+      content:
+        type: string
+      score:
+        type: number
+      title:
+        type: string
+      url:
+        type: string
+    type: object
 host: api.squeak.today
 info:
   contact: {}
@@ -416,6 +569,82 @@ paths:
       summary: Text to speech
       tags:
       - audio
+  /news:
+    get:
+      consumes:
+      - application/json
+      description: Get news content by ID
+      parameters:
+      - description: Content ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetNewsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get news content
+      tags:
+      - news
+  /news/query:
+    get:
+      consumes:
+      - application/json
+      description: Get news content by ID
+      parameters:
+      - description: Language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: CEFR
+        in: query
+        name: cefr
+        required: true
+        type: string
+      - description: Subject
+        in: query
+        name: subject
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: Page size
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.NewsItem'
+            type: array
+      summary: Get news content
+      tags:
+      - news
   /profile:
     get:
       consumes:
@@ -520,6 +749,65 @@ paths:
       summary: Get streak information
       tags:
       - progress
+  /story:
+    get:
+      consumes:
+      - application/json
+      description: Get story content by ID
+      parameters:
+      - description: Content ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetStoryPageResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get story page content
+      tags:
+      - story
+  /story/context:
+    get:
+      consumes:
+      - application/json
+      description: Get story QNA context by ID
+      parameters:
+      - description: Content ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetStoryQNAContextResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get story QNA context
+      tags:
+      - story
   /student:
     get:
       consumes:
