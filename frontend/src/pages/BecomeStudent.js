@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import supabase from "../lib/supabase";
+import { useAuth } from "../context/AuthContext";
 import {
   AuthBox,
   AuthContainer,
@@ -14,6 +14,8 @@ import {
 import BasicPage from "../components/BasicPage";
 import { useNotification } from "../context/NotificationContext";
 
+import { useStudentAPI } from "../hooks/useStudentAPI";
+
 function BecomeStudent() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
@@ -23,15 +25,15 @@ function BecomeStudent() {
   const [statusChecked, setStatusChecked] = useState(false);
   const apiBase = process.env.REACT_APP_API_BASE;
 
+  const { jwtToken } = useAuth();
+  const { getStudentStatus, joinClassroom } = useStudentAPI();
+
   // Check if the student already exists (i.e. has a classroom)
   useEffect(() => {
     const checkStudentStatus = async () => {
       setLoading(true);
       try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) {
+        if (!jwtToken) {
           showNotification(
             "You must be logged in to join a classroom.",
             "error"
@@ -39,20 +41,11 @@ function BecomeStudent() {
           navigate("/login");
           return;
         }
-        const jwt = session.access_token;
-        const res = await fetch(`${apiBase}student`, {
-          headers: { Authorization: `Bearer ${jwt}` },
-        });
-        if (res.ok) {
-          const data = await res.json();
-          // If a classroom_id exists, the student has already joined a classroom.
-          if (data.classroom_id) {
-            navigate("/learn");
-            return;
-          }
-        } else {
-          // Handle any errors from checking status if needed.
-          console.error("Error checking student status");
+        const data = await getStudentStatus();
+        // If a classroom_id exists, the student has already joined a classroom.
+        if (data.classroom_id) {
+          navigate("/learn");
+          return;
         }
       } catch (error) {
         console.error("Error checking student status:", error);
@@ -64,40 +57,15 @@ function BecomeStudent() {
     };
 
     checkStudentStatus();
-  }, [apiBase, navigate, showNotification]);
+  }, [jwtToken, apiBase, navigate, getStudentStatus, showNotification]);
 
   // Handler to join a classroom
   const handleJoinClassroom = async () => {
     setLoading(true);
     try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        showNotification(
-          "You must be logged in to join a classroom.",
-          "error"
-        );
-        navigate("/login");
-        return;
-      }
-      const jwt = session.access_token;
-      const res = await fetch(`${apiBase}student/classroom/join`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt}`,
-        },
-        body: JSON.stringify({ classroom_id: classroomID }),
-      });
-
-      const resData = await res.json();
-      if (!res.ok) {
-        showNotification(resData.error || "Failed to join classroom", "error");
-      } else {
-        showNotification("Successfully joined classroom!", "success");
-        navigate("/learn");
-      }
+      await joinClassroom({ classroom_id: classroomID });
+      showNotification("Successfully joined classroom!", "success");
+      navigate("/learn");
     } catch (error) {
       console.error("Error joining classroom:", error);
       showNotification("Error joining classroom.", "error");

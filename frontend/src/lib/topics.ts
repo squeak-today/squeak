@@ -9,4 +9,4 @@ export const AVAILABLE_TOPICS = [
     'NBA',
     'NFL',
     'Football'
-];
+] as const;
