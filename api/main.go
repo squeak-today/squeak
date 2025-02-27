@@ -16,7 +16,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 
 	"net/http"
@@ -30,33 +29,22 @@ import (
 	_ "github.com/lib/pq"
 
 	"story-api/audio"
-	"story-api/gemini"
 	"story-api/supabase"
 
 	"story-api/handlers/audiohandler"
+	"story-api/handlers/newshandler"
 	"story-api/handlers/profilehandler"
 	"story-api/handlers/progresshandler"
+	"story-api/handlers/qnahandler"
+	"story-api/handlers/storyhandler"
 	"story-api/handlers/student"
 	"story-api/handlers/teacher"
-	"story-api/handlers/newshandler"
-	"story-api/handlers/storyhandler"
 )
 
 type Profile = supabase.Profile
 
 var ginLambda *ginadapter.GinLambda
 var dbClient *supabase.Client
-
-func getUserIDFromToken(c *gin.Context) string {
-	value, exists := c.Get("sub")
-	if !exists {
-		return ""
-	}
-	if userID, ok := value.(string); ok {
-		return userID
-	}
-	return ""
-}
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -207,167 +195,11 @@ func init() {
 		storyGroup.GET("/query", storyHandler.GetStoryQuery)
 	}
 
+	qnaHandler := qnahandler.New(dbClient)
 	qnaGroup := router.Group("/qna")
 	{
-		qnaGroup.POST("", func(c *gin.Context) {
-			var infoBody struct {
-				ContentType  string `json:"content_type"`
-				ID           string `json:"id"`
-				CEFRLevel    string `json:"cefr_level"`
-				QuestionType string `json:"question_type"`
-			}
-
-			if err := c.ShouldBindJSON(&infoBody); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-				return
-			}
-
-			// Validate ContentType
-			if infoBody.ContentType != "News" && infoBody.ContentType != "Story" {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Content type must be either 'News' or 'Story'"})
-				return
-			}
-
-			// Validate ID is numeric
-			if _, err := strconv.Atoi(infoBody.ID); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "ID must be a valid number"})
-				return
-			}
-
-			// Validate Question Type
-			if infoBody.QuestionType != "vocab" && infoBody.QuestionType != "understanding" {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Question type must be either 'vocab' or 'understanding'"})
-				return
-			}
-
-			questionData, err := dbClient.GetContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel)
-			if err != nil {
-				log.Printf("Failed to retrieve question: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve question"})
-				return
-			}
-
-			if questionData == nil {
-				if infoBody.ContentType == "Story" {
-					c.JSON(http.StatusNotFound, gin.H{"error": "No questions found for this story!"})
-					return
-				}
-
-				// Step 1: Get the record from supabase db
-				contentRecord, err := dbClient.GetContentByID(infoBody.ContentType, infoBody.ID)
-				if err != nil {
-					log.Printf("Failed to retrieve content record in DB: %v", err)
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content"})
-					return
-				}
-				if contentRecord == nil {
-					c.JSON(http.StatusNotFound, gin.H{"error": "Content not found"})
-					return
-				}
-
-				// Step 2: Get the content from s3
-				contentData, err := pullContent(
-					contentRecord["language"].(string),
-					contentRecord["cefr_level"].(string),
-					contentRecord["topic"].(string),
-					infoBody.ContentType,
-					contentRecord["date_created"].(string),
-				)
-				if err != nil {
-					log.Printf("Failed to pull content from S3 bucket: %v", err)
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve content data during new question generation"})
-					return
-				}
-				contentString := contentData.Content
-
-				// Step 3: generate the question
-				apiKey := os.Getenv("GEMINI_API_KEY")
-				geminiClient, err := gemini.NewGeminiClient(apiKey)
-				if err != nil {
-					log.Printf("Failed to create Gemini client: %v", err)
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to initialize gemini client"})
-					return
-				}
-				defer geminiClient.Client.Close()
-
-				var generatedQuestion string
-				var genErr error
-				if infoBody.QuestionType == "vocab" {
-					generatedQuestion, genErr = geminiClient.CreateVocabQuestion(infoBody.CEFRLevel, contentString)
-				} else {
-					generatedQuestion, genErr = geminiClient.CreateUnderstandingQuestion(infoBody.CEFRLevel, contentString)
-				}
-				if genErr != nil {
-					log.Printf("Failed to generate question: %v", genErr)
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate question"})
-					return
-				}
-
-				// Step 4: save question to db
-				err = dbClient.CreateContentQuestion(infoBody.ContentType, infoBody.ID, infoBody.QuestionType, infoBody.CEFRLevel, generatedQuestion)
-				if err != nil {
-					log.Printf("Failed to save question to database: %v", err)
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save question to database"})
-					return
-				}
-
-				c.JSON(http.StatusOK, gin.H{
-					"question": generatedQuestion,
-				})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"question": questionData["question"],
-			})
-		})
-
-		qnaGroup.POST("/evaluate", func(c *gin.Context) {
-			var infoBody struct {
-				CEFR     string `json:"cefr"`
-				Content  string `json:"content"`
-				Question string `json:"question"`
-				Answer   string `json:"answer"`
-			}
-
-			if err := c.ShouldBindJSON(&infoBody); err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-				return
-			}
-
-			apiKey := os.Getenv("GEMINI_API_KEY")
-			geminiClient, err := gemini.NewGeminiClient(apiKey)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to create Gemini client: %v", err)})
-				return
-			}
-			defer geminiClient.Client.Close()
-
-			evaluation, err := geminiClient.EvaluateQNA(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Evaluation with Gemini failed"})
-				return
-			}
-
-			// take only first 4 characters of evaluation, as its either PASS or FAIL
-			evaluationScore := ""
-			if len(evaluation) >= 4 {
-				evaluationScore = evaluation[:4]
-			} else {
-				evaluationScore = evaluation
-			}
-
-			explanation, err := geminiClient.GenerateQNAExplanation(infoBody.CEFR, infoBody.Content, infoBody.Question, infoBody.Answer, evaluationScore)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Explanation with Gemini failed"})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"evaluation":  evaluationScore,
-				"explanation": explanation,
-			})
-		})
+		qnaGroup.POST("", qnaHandler.GetQuestion)
+		qnaGroup.POST("/evaluate", qnaHandler.EvaluateAnswer)
 	}
 
 	ginLambda = ginadapter.New(router)

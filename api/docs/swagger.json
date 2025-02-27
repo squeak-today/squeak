@@ -390,6 +390,92 @@
                 }
             }
         },
+        "/qna": {
+            "post": {
+                "description": "Get an existing question or generate a new one for the given content",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "qna"
+                ],
+                "summary": "Get or generate a question",
+                "parameters": [
+                    {
+                        "description": "Question request parameters",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.GetQuestionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.GetQuestionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/qna/evaluate": {
+            "post": {
+                "description": "Evaluate a user's answer to a question",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "qna"
+                ],
+                "summary": "Evaluate an answer",
+                "parameters": [
+                    {
+                        "description": "Answer evaluation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EvaluateAnswerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EvaluateAnswerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/story": {
             "get": {
                 "description": "Get story content by ID",
@@ -973,6 +1059,50 @@
                 }
             }
         },
+        "models.EvaluateAnswerRequest": {
+            "type": "object",
+            "required": [
+                "answer",
+                "cefr",
+                "content",
+                "question"
+            ],
+            "properties": {
+                "answer": {
+                    "type": "string",
+                    "example": "Hello"
+                },
+                "cefr": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "content": {
+                    "type": "string",
+                    "example": "Bonjour, comment ça va?"
+                },
+                "question": {
+                    "type": "string",
+                    "example": "What does 'bonjour' mean?"
+                }
+            }
+        },
+        "models.EvaluateAnswerResponse": {
+            "type": "object",
+            "required": [
+                "evaluation",
+                "explanation"
+            ],
+            "properties": {
+                "evaluation": {
+                    "type": "string",
+                    "example": "PASS"
+                },
+                "explanation": {
+                    "type": "string",
+                    "example": "Perfect!"
+                }
+            }
+        },
         "models.GetClassroomInfoResponse": {
             "type": "object",
             "properties": {
@@ -1078,6 +1208,45 @@
                 "username": {
                     "type": "string",
                     "example": "connortbot"
+                }
+            }
+        },
+        "models.GetQuestionRequest": {
+            "type": "object",
+            "required": [
+                "cefr_level",
+                "content_type",
+                "id",
+                "question_type"
+            ],
+            "properties": {
+                "cefr_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "content_type": {
+                    "type": "string",
+                    "example": "News"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "question_type": {
+                    "type": "string",
+                    "example": "vocab"
+                }
+            }
+        },
+        "models.GetQuestionResponse": {
+            "type": "object",
+            "required": [
+                "question"
+            ],
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "example": "What does 'bonjour' mean?"
                 }
             }
         },

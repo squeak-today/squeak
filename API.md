@@ -237,6 +237,56 @@ Get the user's current streak and completion status
 | 200 | OK | [models.StreakResponse](#modelsstreakresponse) |
 
 ---
+### /qna
+
+#### POST
+##### Summary
+
+Get or generate a question
+
+##### Description
+
+Get an existing question or generate a new one for the given content
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Question request parameters | Yes | [models.GetQuestionRequest](#modelsgetquestionrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.GetQuestionResponse](#modelsgetquestionresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+
+### /qna/evaluate
+
+#### POST
+##### Summary
+
+Evaluate an answer
+
+##### Description
+
+Evaluate a user's answer to a question
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Answer evaluation request | Yes | [models.EvaluateAnswerRequest](#modelsevaluateanswerrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.EvaluateAnswerResponse](#modelsevaluateanswerresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+---
 ### /story
 
 #### GET
@@ -543,6 +593,22 @@ Accept content
 | code | string | *Example:* `"PROFILE_NOT_FOUND"` | No |
 | error | string | *Example:* `"Something went wrong"` | Yes |
 
+#### models.EvaluateAnswerRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| answer | string | *Example:* `"Hello"` | Yes |
+| cefr | string | *Example:* `"B1"` | Yes |
+| content | string | *Example:* `"Bonjour, comment ça va?"` | Yes |
+| question | string | *Example:* `"What does 'bonjour' mean?"` | Yes |
+
+#### models.EvaluateAnswerResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| evaluation | string | *Example:* `"PASS"` | Yes |
+| explanation | string | *Example:* `"Perfect!"` | Yes |
+
 #### models.GetClassroomInfoResponse
 
 | Name | Type | Description | Required |
@@ -574,6 +640,21 @@ Accept content
 | learning_language | string | *Example:* `"French"` | Yes |
 | skill_level | string | *Example:* `"B1"` | Yes |
 | username | string | *Example:* `"connortbot"` | Yes |
+
+#### models.GetQuestionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| cefr_level | string | *Example:* `"B1"` | Yes |
+| content_type | string | *Example:* `"News"` | Yes |
+| id | string | *Example:* `"123"` | Yes |
+| question_type | string | *Example:* `"vocab"` | Yes |
+
+#### models.GetQuestionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| question | string | *Example:* `"What does 'bonjour' mean?"` | Yes |
 
 #### models.GetStoryPageResponse
 

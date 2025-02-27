@@ -101,6 +101,38 @@ definitions:
     required:
     - error
     type: object
+  models.EvaluateAnswerRequest:
+    properties:
+      answer:
+        example: Hello
+        type: string
+      cefr:
+        example: B1
+        type: string
+      content:
+        example: Bonjour, comment ça va?
+        type: string
+      question:
+        example: What does 'bonjour' mean?
+        type: string
+    required:
+    - answer
+    - cefr
+    - content
+    - question
+    type: object
+  models.EvaluateAnswerResponse:
+    properties:
+      evaluation:
+        example: PASS
+        type: string
+      explanation:
+        example: Perfect!
+        type: string
+    required:
+    - evaluation
+    - explanation
+    type: object
   models.GetClassroomInfoResponse:
     properties:
       classroom_id:
@@ -180,6 +212,34 @@ definitions:
     - learning_language
     - skill_level
     - username
+    type: object
+  models.GetQuestionRequest:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content_type:
+        example: News
+        type: string
+      id:
+        example: "123"
+        type: string
+      question_type:
+        example: vocab
+        type: string
+    required:
+    - cefr_level
+    - content_type
+    - id
+    - question_type
+    type: object
+  models.GetQuestionResponse:
+    properties:
+      question:
+        example: What does 'bonjour' mean?
+        type: string
+    required:
+    - question
     type: object
   models.GetStoryPageResponse:
     properties:
@@ -749,6 +809,62 @@ paths:
       summary: Get streak information
       tags:
       - progress
+  /qna:
+    post:
+      consumes:
+      - application/json
+      description: Get an existing question or generate a new one for the given content
+      parameters:
+      - description: Question request parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.GetQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetQuestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get or generate a question
+      tags:
+      - qna
+  /qna/evaluate:
+    post:
+      consumes:
+      - application/json
+      description: Evaluate a user's answer to a question
+      parameters:
+      - description: Answer evaluation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.EvaluateAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EvaluateAnswerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Evaluate an answer
+      tags:
+      - qna
   /story:
     get:
       consumes:
