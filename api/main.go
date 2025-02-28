@@ -138,6 +138,7 @@ func init() {
 		classroomGroup := teacherGroup.Group("/classroom")
 		{
 			classroomGroup.GET("", teacherHandler.GetClassroomInfo)
+			classroomGroup.GET("/profiles", teacherHandler.GetStudentProfiles)
 			classroomGroup.GET("/content", teacherHandler.QueryClassroomContent)
 			classroomGroup.POST("/create", teacherHandler.CreateClassroom)
 			classroomGroup.POST("/accept", teacherHandler.AcceptContent)

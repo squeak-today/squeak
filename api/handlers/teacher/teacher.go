@@ -69,6 +69,69 @@ func (h *TeacherHandler) GetClassroomInfo(c *gin.Context) {
 	})
 }
 
+// @Summary      Get student profiles for a teacher’s classroom
+// @Description  Retrieves a list of student profiles for the classroom associated with the teacher
+// @Tags         teacher
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.GetStudentProfilesResponse  "Successful response"
+// @Failure      500  {object}  models.ErrorResponse             "Internal error"
+// @Router       /teacher/classroom/profiles [get]
+func (h *TeacherHandler) GetStudentProfiles(c *gin.Context) {
+    userID := h.GetUserIDFromToken(c)
+    isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+    if !isTeacher { 
+        return 
+    }
+
+    // Get classroom ID for the teacher
+    classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
+    if err != nil {
+        log.Printf("Failed to get classroom: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get classroom"})
+        return
+    }
+
+    classroomIDInt, err := strconv.Atoi(classroomID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid classroom ID format"})
+        return
+    }
+
+    // Get all student user IDs in the classroom
+    studentUserIDs, err := h.DBClient.GetStudentUserIDsByClassroom(classroomIDInt)
+    if err != nil {
+        log.Printf("Failed to get student IDs: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get student IDs"})
+        return
+    }
+
+    // Get profiles for all students
+    profiles, err := h.DBClient.GetProfilesByUserIDs(studentUserIDs)
+    if err != nil {
+        log.Printf("Failed to get student profiles: %v", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get student profiles"})
+        return
+    }
+
+	// Convert []*supabase.Profile to []models.GetProfileResponse
+	convertedProfiles := make([]models.GetProfileResponse, len(profiles))
+	for i, p := range profiles {
+		convertedProfiles[i] = models.GetProfileResponse{
+			Username:           p.Username,
+			LearningLanguage:   p.LearningLanguage,
+			SkillLevel:         p.SkillLevel,
+			InterestedTopics:   p.InterestedTopics,
+			DailyQuestionsGoal: p.DailyQuestionsGoal,
+		}
+	}
+
+    c.JSON(http.StatusOK, models.GetStudentProfilesResponse{
+        Count:    len(profiles),
+        Profiles: convertedProfiles,
+    })
+}
+
 //	@Summary		Query classroom content
 //	@Description	Query classroom content
 //	@Tags			teacher
@@ -167,6 +230,7 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
+
 
 //	@Summary		Create classroom
 //	@Description	Create classroom

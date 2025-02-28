@@ -50,5 +50,8 @@ type RejectContentResponse struct {
 	Message string `json:"message" binding:"required" example:"Content rejected successfully"`
 }
 
-
+type GetStudentProfilesResponse struct {
+    Count    int                 `json:"count" binding:"required" example:"3"`
+    Profiles []GetProfileResponse `json:"profiles" binding:"required"`
+}
 
