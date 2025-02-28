@@ -1,0 +1,1178 @@
+basePath: /
+definitions:
+  models.AcceptContentRequest:
+    properties:
+      content_id:
+        example: 123
+        type: integer
+      content_type:
+        example: News
+        type: string
+    required:
+    - content_id
+    - content_type
+    type: object
+  models.AcceptContentResponse:
+    properties:
+      message:
+        example: Content accepted successfully
+        type: string
+    required:
+    - message
+    type: object
+  models.AudioHealthResponse:
+    properties:
+      status:
+        example: live
+        type: string
+    type: object
+  models.ClassroomContentItem:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content_type:
+        example: News
+        type: string
+      created_at:
+        example: "2025-02-26T13:01:13.390612Z"
+        type: string
+      date_created:
+        example: "2025-02-26"
+        type: string
+      id:
+        example: "2479"
+        type: string
+      language:
+        example: French
+        type: string
+      pages:
+        example: 10
+        type: integer
+      preview_text:
+        example: |-
+          # L'actualité musicale en bref
+
+          ## Un flot de nouveautés...
+        type: string
+      title:
+        example: |-
+          # L'actualité musicale en bref
+
+          ## Un fl...
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - created_at
+    - date_created
+    - id
+    - language
+    - preview_text
+    - title
+    - topic
+    type: object
+  models.CreateClassroomRequest:
+    properties:
+      students_count:
+        example: 10
+        type: integer
+    required:
+    - students_count
+    type: object
+  models.CreateClassroomResponse:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    type: object
+  models.ErrorResponse:
+    properties:
+      code:
+        example: PROFILE_NOT_FOUND
+        type: string
+      error:
+        example: Something went wrong
+        type: string
+    required:
+    - error
+    type: object
+  models.EvaluateAnswerRequest:
+    properties:
+      answer:
+        example: Hello
+        type: string
+      cefr:
+        example: B1
+        type: string
+      content:
+        example: Bonjour, comment ça va?
+        type: string
+      question:
+        example: What does 'bonjour' mean?
+        type: string
+    required:
+    - answer
+    - cefr
+    - content
+    - question
+    type: object
+  models.EvaluateAnswerResponse:
+    properties:
+      evaluation:
+        example: PASS
+        type: string
+      explanation:
+        example: Perfect!
+        type: string
+    required:
+    - evaluation
+    - explanation
+    type: object
+  models.GetClassroomInfoResponse:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+      students_count:
+        example: 10
+        type: integer
+    required:
+    - classroom_id
+    - students_count
+    type: object
+  models.GetNewsResponse:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content:
+        example: Le contenu complet de l'article...
+        type: string
+      content_type:
+        example: News
+        type: string
+      date_created:
+        example: "2024-02-26"
+        type: string
+      dictionary:
+        $ref: '#/definitions/storage.Dictionary'
+      language:
+        example: French
+        type: string
+      preview_text:
+        example: Un résumé des nouvelles musicales...
+        type: string
+      sources:
+        items:
+          $ref: '#/definitions/storage.Source'
+        type: array
+      title:
+        example: L'actualité musicale en bref
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - content
+    - content_type
+    - date_created
+    - dictionary
+    - language
+    - preview_text
+    - sources
+    - title
+    - topic
+    type: object
+  models.GetProfileResponse:
+    properties:
+      daily_questions_goal:
+        example: 3
+        type: integer
+      interested_topics:
+        example:
+        - '["NBA"]'
+        items:
+          type: string
+        type: array
+      learning_language:
+        example: French
+        type: string
+      skill_level:
+        example: B1
+        type: string
+      username:
+        example: connortbot
+        type: string
+    required:
+    - daily_questions_goal
+    - interested_topics
+    - learning_language
+    - skill_level
+    - username
+    type: object
+  models.GetQuestionRequest:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content_type:
+        example: News
+        type: string
+      id:
+        example: "123"
+        type: string
+      question_type:
+        enum:
+        - vocab
+        - understanding
+        example: vocab
+        type: string
+    required:
+    - cefr_level
+    - content_type
+    - id
+    - question_type
+    type: object
+  models.GetQuestionResponse:
+    properties:
+      question:
+        example: What does 'bonjour' mean?
+        type: string
+    required:
+    - question
+    type: object
+  models.GetStoryPageResponse:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      content:
+        example: Le contenu complet de l'article...
+        type: string
+      content_type:
+        example: Story
+        type: string
+      date_created:
+        example: "2024-02-26"
+        type: string
+      language:
+        example: French
+        type: string
+      pages:
+        example: 10
+        type: integer
+      preview_text:
+        example: Un résumé des nouvelles musicales...
+        type: string
+      title:
+        example: L'actualité musicale en bref
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - content
+    - content_type
+    - date_created
+    - language
+    - pages
+    - preview_text
+    - title
+    - topic
+    type: object
+  models.GetStoryQNAContextResponse:
+    properties:
+      context:
+        example: Le contexte de l'histoire...
+        type: string
+    required:
+    - context
+    type: object
+  models.GetStudentClassroomResponse:
+    properties:
+      students_count:
+        example: 10
+        type: integer
+      teacher_id:
+        example: "789"
+        type: string
+    required:
+    - students_count
+    - teacher_id
+    type: object
+  models.IncrementProgressResponse:
+    properties:
+      date:
+        example: "2025-02-26T00:00:00Z"
+        type: string
+      goal_met:
+        example: true
+        type: boolean
+      questions_completed:
+        example: 5
+        type: integer
+      user_id:
+        example: "123"
+        type: string
+    required:
+    - date
+    - goal_met
+    - questions_completed
+    - user_id
+    type: object
+  models.JoinClassroomRequest:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    type: object
+  models.JoinClassroomResponse:
+    properties:
+      message:
+        example: Student added to classroom successfully
+        type: string
+    required:
+    - message
+    type: object
+  models.NewsItem:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      created_at:
+        example: "2024-02-26T13:01:13.390612Z"
+        type: string
+      date_created:
+        example: "2024-02-26"
+        type: string
+      id:
+        example: "123"
+        type: string
+      language:
+        example: French
+        type: string
+      preview_text:
+        example: Un résumé des nouvelles musicales...
+        type: string
+      title:
+        example: L'actualité musicale en bref
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - created_at
+    - date_created
+    - id
+    - language
+    - preview_text
+    - title
+    - topic
+    type: object
+  models.RejectContentRequest:
+    properties:
+      content_id:
+        example: 123
+        type: integer
+      content_type:
+        example: News
+        type: string
+    required:
+    - content_id
+    - content_type
+    type: object
+  models.RejectContentResponse:
+    properties:
+      message:
+        example: Content rejected successfully
+        type: string
+    required:
+    - message
+    type: object
+  models.StreakResponse:
+    properties:
+      completed_today:
+        example: true
+        type: boolean
+      streak:
+        example: 7
+        type: integer
+    required:
+    - completed_today
+    - streak
+    type: object
+  models.StudentStatusResponse:
+    properties:
+      classroom_id:
+        example: "456"
+        type: string
+      student_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    - student_id
+    type: object
+  models.TeacherStatusResponse:
+    properties:
+      exists:
+        example: true
+        type: boolean
+    required:
+    - exists
+    type: object
+  models.TextToSpeechRequest:
+    properties:
+      language_code:
+        example: en-US
+        type: string
+      text:
+        example: Hello, how are you?
+        type: string
+      voice_name:
+        example: en-US-Standard-A
+        type: string
+    required:
+    - language_code
+    - text
+    - voice_name
+    type: object
+  models.TextToSpeechResponse:
+    properties:
+      audio_content:
+        example: base64-encoded-audio-content
+        type: string
+    type: object
+  models.TodayProgressResponse:
+    properties:
+      date:
+        example: "2025-02-26T00:00:00Z"
+        type: string
+      goal_met:
+        example: true
+        type: boolean
+      questions_completed:
+        example: 5
+        type: integer
+      user_id:
+        example: "123"
+        type: string
+    required:
+    - date
+    - goal_met
+    - questions_completed
+    - user_id
+    type: object
+  models.TranslateRequest:
+    properties:
+      sentence:
+        example: Hello, how are you?
+        type: string
+      source:
+        example: en
+        type: string
+      target:
+        example: fr
+        type: string
+    required:
+    - sentence
+    - source
+    - target
+    type: object
+  models.TranslateResponse:
+    properties:
+      sentence:
+        example: Bonjour, comment allez-vous?
+        type: string
+    type: object
+  models.UpsertProfileRequest:
+    properties:
+      daily_questions_goal:
+        example: 3
+        type: integer
+      interested_topics:
+        example:
+        - '["NBA"]'
+        items:
+          type: string
+        type: array
+      learning_language:
+        example: French
+        type: string
+      skill_level:
+        example: B1
+        type: string
+      username:
+        example: johndoe
+        type: string
+    required:
+    - daily_questions_goal
+    - interested_topics
+    - learning_language
+    - skill_level
+    - username
+    type: object
+  models.UpsertProfileResponse:
+    properties:
+      id:
+        example: 123
+        type: integer
+      message:
+        example: Profile updated successfully
+        type: string
+    required:
+    - id
+    - message
+    type: object
+  storage.Dictionary:
+    properties:
+      translations:
+        properties:
+          sentences:
+            additionalProperties:
+              type: string
+            type: object
+          words:
+            additionalProperties:
+              type: string
+            type: object
+        type: object
+    type: object
+  storage.Source:
+    properties:
+      content:
+        type: string
+      score:
+        type: number
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+host: api.squeak.today
+info:
+  contact: {}
+  description: Backend API for Squeak Platform
+  title: Squeak API
+  version: "1.0"
+paths:
+  /audio:
+    get:
+      consumes:
+      - application/json
+      description: Check if the audio service is live
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AudioHealthResponse'
+      summary: Check audio service health
+      tags:
+      - audio
+  /audio/translate:
+    post:
+      consumes:
+      - application/json
+      description: Translate text from source language to target language
+      parameters:
+      - description: Translation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.TranslateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TranslateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Translate text
+      tags:
+      - audio
+  /audio/tts:
+    post:
+      consumes:
+      - application/json
+      description: Convert text to speech audio
+      parameters:
+      - description: Text to speech request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.TextToSpeechRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TextToSpeechResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Text to speech
+      tags:
+      - audio
+  /news:
+    get:
+      consumes:
+      - application/json
+      description: Get news content by ID
+      parameters:
+      - description: Content ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetNewsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get news content
+      tags:
+      - news
+  /news/query:
+    get:
+      consumes:
+      - application/json
+      description: Get news content by ID
+      parameters:
+      - description: Language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: CEFR
+        in: query
+        name: cefr
+        required: true
+        type: string
+      - description: Subject
+        in: query
+        name: subject
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: Page size
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.NewsItem'
+            type: array
+      summary: Get news content
+      tags:
+      - news
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the user's profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetProfileResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get user profile
+      tags:
+      - profile
+  /profile/upsert:
+    post:
+      consumes:
+      - application/json
+      description: Create or update the user's profile
+      parameters:
+      - description: Profile information
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpsertProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UpsertProfileResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Upsert user profile
+      tags:
+      - profile
+  /progress:
+    get:
+      consumes:
+      - application/json
+      description: Get the user's progress for today
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TodayProgressResponse'
+      summary: Get today's progress
+      tags:
+      - progress
+  /progress/increment:
+    get:
+      consumes:
+      - application/json
+      description: Increment the number of questions completed for today
+      parameters:
+      - description: Amount to increment by
+        in: query
+        name: amount
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IncrementProgressResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Increment questions completed
+      tags:
+      - progress
+  /progress/streak:
+    get:
+      consumes:
+      - application/json
+      description: Get the user's current streak and completion status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StreakResponse'
+      summary: Get streak information
+      tags:
+      - progress
+  /qna:
+    post:
+      consumes:
+      - application/json
+      description: Get an existing question or generate a new one for the given content
+      parameters:
+      - description: Question request parameters
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.GetQuestionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetQuestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get or generate a question
+      tags:
+      - qna
+  /qna/evaluate:
+    post:
+      consumes:
+      - application/json
+      description: Evaluate a user's answer to a question
+      parameters:
+      - description: Answer evaluation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.EvaluateAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.EvaluateAnswerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Evaluate an answer
+      tags:
+      - qna
+  /story:
+    get:
+      consumes:
+      - application/json
+      description: Get story content by ID
+      parameters:
+      - description: Content ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetStoryPageResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get story page content
+      tags:
+      - story
+  /story/context:
+    get:
+      consumes:
+      - application/json
+      description: Get story QNA context by ID
+      parameters:
+      - description: Content ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetStoryQNAContextResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get story QNA context
+      tags:
+      - story
+  /student:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user is a student and get their classroom info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.StudentStatusResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check user student status
+      tags:
+      - student
+  /student/classroom:
+    get:
+      consumes:
+      - application/json
+      description: Get classroom info for the student
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetStudentClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get classroom info
+      tags:
+      - student
+  /student/classroom/join:
+    post:
+      consumes:
+      - application/json
+      description: Join a classroom as a student
+      parameters:
+      - description: Join classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.JoinClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JoinClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Join classroom
+      tags:
+      - student
+  /teacher:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user is a teacher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TeacherStatusResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check user teacher status
+      tags:
+      - teacher
+  /teacher/classroom:
+    get:
+      consumes:
+      - application/json
+      description: Get classroom info
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.GetClassroomInfoResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get classroom info
+      tags:
+      - teacher
+  /teacher/classroom/accept:
+    post:
+      consumes:
+      - application/json
+      description: Accept content
+      parameters:
+      - description: Accept content request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AcceptContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AcceptContentResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Accept content
+      tags:
+      - teacher
+  /teacher/classroom/content:
+    get:
+      consumes:
+      - application/json
+      description: Query classroom content
+      parameters:
+      - description: Language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: CEFR
+        in: query
+        name: cefr
+        required: true
+        type: string
+      - description: Subject
+        in: query
+        name: subject
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: Page size
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      - description: Whitelist status
+        in: query
+        name: whitelist
+        required: true
+        type: string
+      - description: Content type
+        in: query
+        name: content_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ClassroomContentItem'
+            type: array
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Query classroom content
+      tags:
+      - teacher
+  /teacher/classroom/create:
+    post:
+      consumes:
+      - application/json
+      description: Create classroom
+      parameters:
+      - description: Create classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create classroom
+      tags:
+      - teacher
+  /teacher/classroom/reject:
+    post:
+      consumes:
+      - application/json
+      description: Accept content
+      parameters:
+      - description: Reject content request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RejectContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RejectContentResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Accept content
+      tags:
+      - teacher
+securityDefinitions:
+  Bearer:
+    description: JWT Authorization header using Bearer
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
