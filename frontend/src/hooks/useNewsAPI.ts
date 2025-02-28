@@ -1,23 +1,23 @@
-import { useCallback, useMemo } from 'react';
-import { getAPIClient } from '../lib/clients/apiClient';
-import { useAuth } from '../context/AuthContext';
+import { useCallback } from 'react';
+import { useAuthenticatedAPI } from './useAuthenticatedAPI';
+import { components } from '../lib/clients/types';
 
 export function useNewsAPI() {
-    const { jwtToken } = useAuth();
-    if (!jwtToken) { throw new Error('No valid session found'); }
-    const client = useMemo(() => getAPIClient(jwtToken), [jwtToken]);
-
+    const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
+    
     const getNews = useCallback(async (params: {
         id: string;
     }) => {
-        const { data, error } = await client.GET('/news', {
-            params: {
-                query: { ...params }
+        return requireAuth(async () => {
+            const { data, error } = await client!.GET('/news', {
+                params: {
+                    query: { ...params }
             }
-        });
-        if (error) { throw error; }
-        return data;
-    }, [client]);
+            });
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth]);
 
     const queryNews = useCallback(async (params: {
         language: string;
@@ -26,14 +26,16 @@ export function useNewsAPI() {
         page: string;
         pagesize: string;
     }) => {
-        const { data, error } = await client.GET('/news/query', {
-            params: {
-                query: { ...params }
+        return requireAuth(async () => {
+            const { data, error } = await client!.GET('/news/query', {
+                params: {
+                    query: { ...params }
             }
-        });
-        if (error) { throw error; }
-        return data;
-    }, [client]);
+            });
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth]);
 
-    return { getNews, queryNews };
+    return { isAuthenticated, getNews, queryNews };
 }

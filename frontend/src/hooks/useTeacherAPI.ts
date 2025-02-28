@@ -1,24 +1,25 @@
-import { useCallback, useMemo } from 'react';
-import { getAPIClient } from '../lib/clients/apiClient';
-import { useAuth } from '../context/AuthContext';
+import { useCallback } from 'react';
+import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import { components } from '../lib/clients/types';
 
 export function useTeacherAPI() {
-    const { jwtToken } = useAuth();
-    if (!jwtToken) { throw new Error('No valid session found'); }
-    const client = useMemo(() => getAPIClient(jwtToken), [jwtToken]);
+    const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
     
     const verifyTeacher = useCallback(async () => {
-        const { data, error } = await client.GET('/teacher', {})
-        if (error) { throw error; }
-        return data;
-    }, [client])
+        return requireAuth(async () => {
+            const { data, error } = await client!.GET('/teacher', {})
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth])
 
     const getClassroomInfo = useCallback(async () => {
-        const { data, error } = await client.GET('/teacher/classroom', {})
-        if (error) { throw error; }
-        return data;
-    }, [client])
+        return requireAuth(async () => {
+            const { data, error } = await client!.GET('/teacher/classroom', {})
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth])
 
     const fetchContent = useCallback(async (params: {
         language: string;
@@ -28,28 +29,35 @@ export function useTeacherAPI() {
         pagesize: string;
         whitelist: string;
     }) => {
-        const { data, error } = await client.GET('/teacher/classroom/content', {
-            params: {
-                query: { ...params, content_type: 'All' }
-            }
-        });
-        if (error) { throw error; }
-        return data;
-    }, [client]);
+        return requireAuth(async () => {
+            const { data, error } = await client!.GET('/teacher/classroom/content', {
+                params: {
+                    query: { ...params, content_type: 'All' }
+                }
+            });
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth]);
 
     const acceptContent = useCallback(async (content: components['schemas']['models.AcceptContentRequest']) => {
-        const { data, error } = await client.POST('/teacher/classroom/accept', { body: content })
-        if (error) { throw error; }
-        return data;
-    }, [client])
+        return requireAuth(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/accept', { body: content })
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth])
 
     const rejectContent = useCallback(async (content: components['schemas']['models.RejectContentRequest']) => {
-        const { data, error } = await client.POST('/teacher/classroom/reject', { body: content })
-        if (error) { throw error; }
-        return data;
-    }, [client])
+        return requireAuth(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/reject', { body: content })
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth])
 
     return {
+        isAuthenticated,
         verifyTeacher,
         getClassroomInfo,
         fetchContent,
