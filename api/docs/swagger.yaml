@@ -4,12 +4,12 @@ definitions:
     properties:
       content_id:
         example: 123
+        minimum: 0
         type: integer
       content_type:
         example: News
         type: string
     required:
-    - content_id
     - content_type
     type: object
   models.AcceptContentResponse:
@@ -25,6 +25,8 @@ definitions:
       status:
         example: live
         type: string
+    required:
+    - status
     type: object
   models.ClassroomContentItem:
     properties:
@@ -66,10 +68,12 @@ definitions:
         type: string
     required:
     - cefr_level
+    - content_type
     - created_at
     - date_created
     - id
     - language
+    - pages
     - preview_text
     - title
     - topic
@@ -78,9 +82,8 @@ definitions:
     properties:
       students_count:
         example: 10
+        minimum: 0
         type: integer
-    required:
-    - students_count
     type: object
   models.CreateClassroomResponse:
     properties:
@@ -140,10 +143,10 @@ definitions:
         type: string
       students_count:
         example: 10
+        minimum: 0
         type: integer
     required:
     - classroom_id
-    - students_count
     type: object
   models.GetNewsResponse:
     properties:
@@ -193,6 +196,7 @@ definitions:
     properties:
       daily_questions_goal:
         example: 3
+        minimum: 0
         type: integer
       interested_topics:
         example:
@@ -210,7 +214,6 @@ definitions:
         example: connortbot
         type: string
     required:
-    - daily_questions_goal
     - interested_topics
     - learning_language
     - skill_level
@@ -299,12 +302,12 @@ definitions:
     properties:
       students_count:
         example: 10
+        minimum: 0
         type: integer
       teacher_id:
         example: "789"
         type: string
     required:
-    - students_count
     - teacher_id
     type: object
   models.IncrementProgressResponse:
@@ -317,6 +320,7 @@ definitions:
         type: boolean
       questions_completed:
         example: 5
+        minimum: 0
         type: integer
       user_id:
         example: "123"
@@ -324,7 +328,6 @@ definitions:
     required:
     - date
     - goal_met
-    - questions_completed
     - user_id
     type: object
   models.JoinClassroomRequest:
@@ -383,12 +386,12 @@ definitions:
     properties:
       content_id:
         example: 123
+        minimum: 0
         type: integer
       content_type:
         example: News
         type: string
     required:
-    - content_id
     - content_type
     type: object
   models.RejectContentResponse:
@@ -406,10 +409,10 @@ definitions:
         type: boolean
       streak:
         example: 7
+        minimum: 0
         type: integer
     required:
     - completed_today
-    - streak
     type: object
   models.StudentStatusResponse:
     properties:
@@ -452,6 +455,8 @@ definitions:
       audio_content:
         example: base64-encoded-audio-content
         type: string
+    required:
+    - audio_content
     type: object
   models.TodayProgressResponse:
     properties:
@@ -463,6 +468,7 @@ definitions:
         type: boolean
       questions_completed:
         example: 5
+        minimum: 0
         type: integer
       user_id:
         example: "123"
@@ -470,7 +476,6 @@ definitions:
     required:
     - date
     - goal_met
-    - questions_completed
     - user_id
     type: object
   models.TranslateRequest:
@@ -499,6 +504,7 @@ definitions:
     properties:
       daily_questions_goal:
         example: 3
+        minimum: 0
         type: integer
       interested_topics:
         example:
@@ -516,7 +522,6 @@ definitions:
         example: johndoe
         type: string
     required:
-    - daily_questions_goal
     - interested_topics
     - learning_language
     - skill_level
@@ -526,12 +531,12 @@ definitions:
     properties:
       id:
         example: 123
+        minimum: 0
         type: integer
       message:
         example: Profile updated successfully
         type: string
     required:
-    - id
     - message
     type: object
   storage.Dictionary:

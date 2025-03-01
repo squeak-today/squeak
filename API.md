@@ -544,7 +544,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| content_id | integer | *Example:* `123` | Yes |
+| content_id | integer | *Example:* `123` | No |
 | content_type | string | *Example:* `"News"` | Yes |
 
 #### models.AcceptContentResponse
@@ -557,19 +557,19 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| status | string | *Example:* `"live"` | No |
+| status | string | *Example:* `"live"` | Yes |
 
 #### models.ClassroomContentItem
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | cefr_level | string | *Example:* `"B1"` | Yes |
-| content_type | string | *Example:* `"News"` | No |
+| content_type | string | *Example:* `"News"` | Yes |
 | created_at | string | *Example:* `"2025-02-26T13:01:13.390612Z"` | Yes |
 | date_created | string | *Example:* `"2025-02-26"` | Yes |
 | id | string | *Example:* `"2479"` | Yes |
 | language | string | *Example:* `"French"` | Yes |
-| pages | integer | *Example:* `10` | No |
+| pages | integer | *Example:* `10` | Yes |
 | preview_text | string | *Example:* `"# L'actualité musicale en bref\n\n## Un flot de nouveautés..."` | Yes |
 | title | string | *Example:* `"# L'actualité musicale en bref\n\n## Un fl..."` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
@@ -578,7 +578,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| students_count | integer | *Example:* `10` | Yes |
+| students_count | integer | *Example:* `10` | No |
 
 #### models.CreateClassroomResponse
 
@@ -614,7 +614,7 @@ Accept content
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | classroom_id | string | *Example:* `"123"` | Yes |
-| students_count | integer | *Example:* `10` | Yes |
+| students_count | integer | *Example:* `10` | No |
 
 #### models.GetNewsResponse
 
@@ -635,7 +635,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| daily_questions_goal | integer | *Example:* `3` | Yes |
+| daily_questions_goal | integer | *Example:* `3` | No |
 | interested_topics | [ string ] | *Example:* `["[\"NBA\"]"]` | Yes |
 | learning_language | string | *Example:* `"French"` | Yes |
 | skill_level | string | *Example:* `"B1"` | Yes |
@@ -680,7 +680,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| students_count | integer | *Example:* `10` | Yes |
+| students_count | integer | *Example:* `10` | No |
 | teacher_id | string | *Example:* `"789"` | Yes |
 
 #### models.IncrementProgressResponse
@@ -689,7 +689,7 @@ Accept content
 | ---- | ---- | ----------- | -------- |
 | date | string | *Example:* `"2025-02-26T00:00:00Z"` | Yes |
 | goal_met | boolean | *Example:* `true` | Yes |
-| questions_completed | integer | *Example:* `5` | Yes |
+| questions_completed | integer | *Example:* `5` | No |
 | user_id | string | *Example:* `"123"` | Yes |
 
 #### models.JoinClassroomRequest
@@ -721,7 +721,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| content_id | integer | *Example:* `123` | Yes |
+| content_id | integer | *Example:* `123` | No |
 | content_type | string | *Example:* `"News"` | Yes |
 
 #### models.RejectContentResponse
@@ -735,7 +735,7 @@ Accept content
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | completed_today | boolean | *Example:* `true` | Yes |
-| streak | integer | *Example:* `7` | Yes |
+| streak | integer | *Example:* `7` | No |
 
 #### models.StudentStatusResponse
 
@@ -762,7 +762,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| audio_content | string | *Example:* `"base64-encoded-audio-content"` | No |
+| audio_content | string | *Example:* `"base64-encoded-audio-content"` | Yes |
 
 #### models.TodayProgressResponse
 
@@ -770,7 +770,7 @@ Accept content
 | ---- | ---- | ----------- | -------- |
 | date | string | *Example:* `"2025-02-26T00:00:00Z"` | Yes |
 | goal_met | boolean | *Example:* `true` | Yes |
-| questions_completed | integer | *Example:* `5` | Yes |
+| questions_completed | integer | *Example:* `5` | No |
 | user_id | string | *Example:* `"123"` | Yes |
 
 #### models.TranslateRequest
@@ -791,7 +791,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| daily_questions_goal | integer | *Example:* `3` | Yes |
+| daily_questions_goal | integer | *Example:* `3` | No |
 | interested_topics | [ string ] | *Example:* `["[\"NBA\"]"]` | Yes |
 | learning_language | string | *Example:* `"French"` | Yes |
 | skill_level | string | *Example:* `"B1"` | Yes |
@@ -801,7 +801,7 @@ Accept content
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | integer | *Example:* `123` | Yes |
+| id | integer | *Example:* `123` | No |
 | message | string | *Example:* `"Profile updated successfully"` | Yes |
 
 #### storage.Dictionary

@@ -33,5 +33,5 @@ export function useAudioAPI() {
         })
     }, [client, requireAuth]);
 
-    return { pingAudio, translate, tts };
+    return { isAuthenticated, pingAudio, translate, tts };
 }
