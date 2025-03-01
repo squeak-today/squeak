@@ -58,11 +58,12 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
     } catch (error) {
       showNotification('Error loading content', 'error');
     }
-  }, [fetchContent, currentFilters, isTeacher, showNotification]);
+  // eslint-disable-next-line
+  }, [currentFilters, isTeacher, showNotification]);
 
   const handleAccept = useCallback(async (story) => {
     try {
-      await acceptContent(story);
+      await acceptContent({ content_id: parseInt(story.id), content_type: story.content_type });
       showNotification('Content accepted successfully', 'success');
       await loadContent();
     } catch (error) {
@@ -72,7 +73,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
 
   const handleReject = useCallback(async (story) => {
     try {
-      await rejectContent(story);
+      await rejectContent({ content_id: parseInt(story.id), content_type: story.content_type });
       showNotification('Content rejected successfully', 'success');
       await loadContent();
     } catch (error) {

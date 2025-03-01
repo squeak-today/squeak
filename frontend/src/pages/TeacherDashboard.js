@@ -21,19 +21,23 @@ function TeacherDashboard() {
   const [showClassroomInfo, setShowClassroomInfo] = useState(true);
   const [isInitializing, setIsInitializing] = useState(true);
   const {
+    isAuthenticated,
     verifyTeacher,
     getClassroomInfo
   } = useTeacherAPI();
 
   useEffect(() => {
+    if (!isInitializing) return;
     const init = async () => {
       try {
-        let data = await verifyTeacher();
-        if (data.exists) {
-          data = await getClassroomInfo();
-          setClassroomInfo(data);
+        if (isAuthenticated) {
+          let data = await verifyTeacher();
+          if (data.exists) {
+            data = await getClassroomInfo();
+            setClassroomInfo(data);
+          }
+          else { navigate('/teacher/become'); }
         }
-        else { navigate('/teacher/become'); }
       } catch (error) {
         console.error('Error fetching classroom info:', error);
         showNotification('Error loading dashboard', 'error');
