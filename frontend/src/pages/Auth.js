@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
 
+import { useProfileAPI } from '../hooks/useProfileAPI';
+
 function Auth() {
     const { mode } = useParams();
     const navigate = useNavigate();
@@ -17,6 +19,8 @@ function Auth() {
     const [signupSuccess, setSignupSuccess] = useState(false);
     const [showResetForm, setShowResetForm] = useState(false);
     const { showNotification } = useNotification();
+
+    const { getProfile } = useProfileAPI();
 
     const apiBase = process.env.REACT_APP_API_BASE;
 
@@ -39,18 +43,8 @@ function Auth() {
           supabase.auth.getSession().then(async ({ data: { session } }) => {
             if (session) {
               try {
-                const jwt = session.access_token;
-                const response = await fetch(`${apiBase}profile`, {
-                  headers: { 'Authorization': `Bearer ${jwt}` }
-                });
-                const data = await response.json();
-                if (data.code === "PROFILE_NOT_FOUND") {
-                  navigate('/welcome');
-                } else {
-                  navigate('/learn');
-                }
+                await getProfile();
               } catch (error) {
-                console.error("Error fetching profile:", error);
                 navigate('/welcome');
               }
             }

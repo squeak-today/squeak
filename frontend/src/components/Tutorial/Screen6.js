@@ -12,8 +12,7 @@ import {
   CheckAnswersButton,
   ExplanationText,
 } from '../../styles/ReadPageStyles';
-import { useTranslation } from '../../services/hooks/useTranslation';
-import { useTTS } from '../../services/hooks/useTTS';
+import { useAudioAPI } from '../../hooks/useAudioAPI';
 import { TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../../lib/lang_codes';
 
 // Headings as paragraphs with desired font sizes
@@ -105,8 +104,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
     originalSentence: '',
     sentenceTranslation: '',
   });
-  const { translate } = useTranslation();
-  const { speak, isLoading: isPlayingTTS } = useTTS();
+  const { translate, tts } = useAudioAPI();
 
   // Normalize sourceLanguage.
   if(sourceLanguage.toLowerCase().trim() === "french"){
@@ -133,7 +131,8 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
 
   const handleWordClick = async (e, word, sourceLang, sentence) => {
     try {
-      const translation = await translate(word, sourceLang);
+      const translationData = await translate({ sentence: word, source: sourceLang, target: "en" });
+      const translation = translationData.sentence;
       if (translation) {
         setTooltip({
           show: true,
@@ -151,7 +150,8 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
 
   const handleSentenceToggle = async () => {
     try {
-      const translation = await translate(tooltip.originalSentence, sourceLanguage);
+      const translationData = await translate({ sentence: tooltip.originalSentence, source: sourceLanguage, target: "en" });
+      const translation = translationData.sentence;
       setTooltip(prev => ({ ...prev, sentenceTranslation: translation }));
     } catch (error) {
       console.error('Error toggling sentence translation:', error);
@@ -184,7 +184,9 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
   const handlePlayTTS = async (text) => {
     try {
       const langCode = TTS_LANGUAGE_CODES[sourceLanguage];
-      await speak(text, langCode, TTS_VOICE_IDS[langCode]);
+      const audioContent = await tts({ language_code: langCode, text, voice_name: TTS_VOICE_IDS[langCode] });
+      const audio = new Audio(`data:audio/mp3;base64,${audioContent.audio_content}`);
+      await audio.play();
     } catch (error) {
       console.error('Error playing TTS:', error);
       showNotification('Failed to play audio', 'error');
@@ -268,7 +270,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
             onClose={() => setTooltip(prev => ({ ...prev, show: false }))}
             handleSentenceToggle={handleSentenceToggle}
             onPlayTTS={handlePlayTTS}
-            isPlayingTTS={isPlayingTTS}
+            isPlayingTTS={false}
           />
         )}
       </Container>

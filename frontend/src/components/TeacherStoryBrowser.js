@@ -1,6 +1,7 @@
 import TeacherStoryList from './TeacherStoryList';
-import { useEffect } from 'react';
-import { useTeacher } from '../services/hooks/useTeacher'
+import { useEffect, useState, useCallback } from 'react';
+import { useTeacherAPI } from '../hooks/useTeacherAPI';
+import { useNotification } from '../context/NotificationContext';
 import { AVAILABLE_TOPICS } from '../lib/topics';
 import {
   Container,
@@ -15,58 +16,86 @@ import {
 
 const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
   const contentPerPage = 6;
+  const [content, setContent] = useState([]);
+  const [isTeacher, setIsTeacher] = useState(false);
+  const [currentFilters, setCurrentFilters] = useState({
+    language: defaultLanguage,
+    cefr: 'any',
+    subject: 'any',
+    page: 1,
+    pagesize: 6,
+    whitelist: 'accepted'
+  });
 
+  const { showNotification } = useNotification();
   const {
-    content,
-    currentFilters,
     verifyTeacher,
-    updateContentFilters,
     fetchContent,
-    acceptStory,
-    rejectStory
-  } = useTeacher();
+    acceptContent,
+    rejectContent
+  } = useTeacherAPI();
 
-  useEffect(() => {
-    updateContentFilters({
-      ...currentFilters,
-      language: defaultLanguage,
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handlePageChange = useCallback((newPage) => {
+    setCurrentFilters(prev => ({
+      ...prev,
+      page: newPage
+    }));
   }, []);
 
-  useEffect(() => {
-    const init = async () => {
-      if (await verifyTeacher()) {
-        await fetchContent(currentFilters);
-      }
-    }
-    init();
-  }, [currentFilters, verifyTeacher, fetchContent]);
-
-  const handlePageChange = (newPage) => {
-    updateContentFilters({
-      ...currentFilters,
-      page: newPage
-    });
-  };
-
-  const handleFilterChange = (filterType, value) => {
-    updateContentFilters({
-      ...currentFilters,
+  const handleFilterChange = useCallback((filterType, value) => {
+    setCurrentFilters(prev => ({
+      ...prev,
       [filterType]: value,
       page: 1
-    });
-  };
+    }));
+  }, []);
 
-  const handleAccept = async (story) => {
-    await acceptStory(story);
-    await fetchContent();
-  };
+  const loadContent = useCallback(async () => {
+    if (!isTeacher) return;
+    try {
+      const contentData = await fetchContent(currentFilters);
+      setContent(contentData);
+    } catch (error) {
+      showNotification('Error loading content', 'error');
+    }
+  // eslint-disable-next-line
+  }, [currentFilters, isTeacher, showNotification]);
 
-  const handleReject = async (story) => {
-    await rejectStory(story);
-    await fetchContent();
-  };
+  const handleAccept = useCallback(async (story) => {
+    try {
+      await acceptContent({ content_id: parseInt(story.id), content_type: story.content_type });
+      showNotification('Content accepted successfully', 'success');
+      await loadContent();
+    } catch (error) {
+      showNotification('Error accepting content', 'error');
+    }
+  }, [acceptContent, showNotification, loadContent]);
+
+  const handleReject = useCallback(async (story) => {
+    try {
+      await rejectContent({ content_id: parseInt(story.id), content_type: story.content_type });
+      showNotification('Content rejected successfully', 'success');
+      await loadContent();
+    } catch (error) {
+      showNotification('Error rejecting content', 'error');
+    }
+  }, [rejectContent, showNotification, loadContent]);
+
+  useEffect(() => {
+    const checkTeacherStatus = async () => {
+      try {
+        const result = await verifyTeacher();
+        setIsTeacher(result.exists);
+      } catch (error) {
+        showNotification('Error verifying teacher status', 'error');
+      }
+    };
+    checkTeacherStatus();
+  }, [verifyTeacher, showNotification]);
+
+  useEffect(() => {
+    loadContent();
+  }, [loadContent]);
 
   return (
     <Container>

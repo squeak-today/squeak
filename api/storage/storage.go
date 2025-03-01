@@ -1,4 +1,4 @@
-package main
+package storage
 
 import (
 	"context"
@@ -80,7 +80,7 @@ func buildS3Key(language string, cefr string, subject string, contentType string
 	)
 }
 
-func pullContent(language string, cefrLevel string, subject string, contentType string, dateCreated string) (News, error) {
+func PullContent(language string, cefrLevel string, subject string, contentType string, dateCreated string) (News, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	if err != nil {
 		log.Printf("unable to load SDK config, %v", err)
@@ -127,7 +127,7 @@ func buildS3PageKey(language string, cefr string, subject string, id string, pag
 	)
 }
 
-func pullStoryByPage(language string, cefrLevel string, subject string, id string, page int) (Story, error) {
+func PullStoryByPage(language string, cefrLevel string, subject string, id string, page int) (Story, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	if err != nil {
 		log.Printf("unable to load SDK config, %v", err)
@@ -166,7 +166,7 @@ func buildS3QNAContextKey(language string, cefr string, subject string, id strin
 	)
 }
 
-func pullStoryQNAContext(language string, cefrLevel string, subject string, id string) (string, error) {
+func PullStoryQNAContext(language string, cefrLevel string, subject string, id string) (string, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-east-2"))
 	if err != nil {
 		log.Printf("unable to load SDK config, %v", err)
