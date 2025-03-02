@@ -19,15 +19,15 @@ export const MenuList = styled.div`
 
 export const MenuItem = styled.div`
   padding: 1.5rem;
-  background: ${props => props.$isActive ? '#fad48f' : 'white'};
+  background: ${props => props.$isActive ? '#FADEA7' : 'white'};
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.4s ease-in-out;
-  border: 1px solid ${props => props.$isActive ? '#f5c168' : theme.colors.border};
+  border: 1px solid ${props => props.$isActive ? '#FADEA7' : theme.colors.border};
   box-shadow: ${props => props.$isActive ? theme.elevation.hover : theme.elevation.base};
 
   &:hover {
-    background: ${props => props.$isActive ? '#fad48f' : '#f5f5f5'};
+    background: ${props => props.$isActive ? '#FADEA7' : '#f5f5f5'};
     box-shadow: ${theme.elevation.hover};
     transform: translateY(-2px);
   }

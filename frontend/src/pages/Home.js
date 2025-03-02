@@ -1,5 +1,4 @@
 // Home.jsx
-
 import { useNavigate } from 'react-router-dom';
 import landingDrawing from '../assets/mouse_pencil.png';
 import wizardHat from '../assets/WizardHat.png';
@@ -7,7 +6,6 @@ import clickVideo from '../assets/clickVideo.mp4';
 import { useEffect } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
-import { FiArrowRight } from 'react-icons/fi';
 import {
   HomeContainer,
   ContentContainer,
@@ -17,7 +15,7 @@ import {
   MainHeading,
   SectionHeading,
   SectionSubHeading,
-  SmallText,
+  AccountButton,
   Highlight,
   Section,
   TitledSection,
@@ -35,6 +33,9 @@ import {
 import tdsb from '../assets/schools/tdsb.png';
 import uw from '../assets/schools/uw.png';
 import wlu from '../assets/schools/wlu.png';
+import mac from '../assets/schools/mac.png';
+import ddsb from '../assets/schools/ddsb.png';
+import uwo from '../assets/schools/uwo.png';
 import FeatureSlideshow from '../components/FeatureSlideshow';
 import FAQ from '../components/FAQ';
 import DemoVideo from '../components/DemoVideo';
@@ -60,6 +61,9 @@ function Home() {
     { id: 1, src: tdsb, alt: "Toronto District School Board" },
     { id: 2, src: uw, alt: "University of Waterloo" },
     { id: 3, src: wlu, alt: "Wilfrid Laurier University" },
+    { id: 4, src: mac, alt: "Mcmaster University" },
+    { id: 5, src: ddsb, alt: "Durham District School Board" },
+    { id: 6, src: uwo, alt: "Western University" },
   ];
 
   return (
@@ -78,16 +82,15 @@ function Home() {
             ))}
           </MainHeading>
           <SubHeading>
-            Bring your classroom to life with content tailored to your students' interests and skill level.
+            We’ve learned everything through stories, why try to learn a language in any other way?
           </SubHeading>
           <ButtonContainer>
             <HeroButton onClick={handleGetStarted}>
               Get Started
-              <FiArrowRight size={24} />
             </HeroButton>
-            <SmallText onClick={() => navigate('/auth/login')}>
+            <AccountButton onClick={() => navigate('/auth/login')}>
               I already have an account
-            </SmallText>
+            </AccountButton>
           </ButtonContainer>
         </CenteredContentContainer>
       </HomeContainer>
@@ -115,16 +118,11 @@ function Home() {
         <FeatureSlideshow />
       </TitledSection>
 
-      <TitledSection>
-        <SectionHeading>
-          FAQs
-        </SectionHeading>
-        <FAQ />
-      </TitledSection>
+      
 
       <Section>
         <SectionContentWrapper>
-          <ContentContainer>
+          <ContentContainer style={{marginTop: "0vh"}}>
             <SectionHeading>
               Squeak for <Highlight>Teachers</Highlight>
             </SectionHeading>
@@ -134,7 +132,6 @@ function Home() {
             <ButtonContainer>
               <TeacherHeroButton onClick={() => navigate('/teacher/dashboard')}>
                 Get started as a Teacher
-                <FiArrowRight size={24} />
               </TeacherHeroButton>
             </ButtonContainer>
           </ContentContainer>
@@ -144,7 +141,7 @@ function Home() {
 
       <Section>
         <SectionContentWrapper>
-          <ContentContainer>
+          <ContentContainer  style={{marginTop: "0vh"}}>
             <SectionHeading>
               Translate with just a <Highlight>click</Highlight>
             </SectionHeading>
@@ -152,9 +149,18 @@ function Home() {
               No need to pull out the dictionary to learn a new word! Just click, translate, and read on.
             </SectionSubHeading>
           </ContentContainer>
-          <DemoVideo src={clickVideo} />
+          <DemoVideo src={clickVideo} width="50%" />
         </SectionContentWrapper>
       </Section>
+
+      <TitledSection>
+        <SectionHeading>
+          FAQs
+        </SectionHeading>
+        <FAQ />
+      </TitledSection>
+
+      
     </BasicPage>
   );
 }

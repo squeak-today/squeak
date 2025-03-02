@@ -41,7 +41,8 @@ export const ContentContainer = styled.div`
   flex-direction: column;
   max-width: 90vw;
   margin: 0 auto;
-  margin-top: 30vh;
+  margin-top: 50vh;
+  height: 100%;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     margin-top: 40vh;
@@ -57,8 +58,10 @@ export const CenteredContentContainer = styled(ContentContainer)`
 
 export const ButtonContainer = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin-top: 1rem;
+  gap: 2em;
+
 `;
 
 export const Section = styled.section`
@@ -79,7 +82,7 @@ export const SmallSection = styled(Section)`
   min-height: 5vh;
   flex-direction: column;
   align-items: center;
-  margin: 0rem 0;
+  margin-top: 10vh;
 `;
 
 export const SectionContentWrapper = styled.div`
@@ -90,6 +93,7 @@ export const SectionContentWrapper = styled.div`
   max-width: 75%;
   width: 100%;
   margin: 0 auto;
+  min-height: 60vh;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     flex-direction: column;
@@ -117,7 +121,6 @@ export const AnimatedWord = styled.span`
 `;
 
 export const MainHeading = styled(Heading)`
-  font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.xxl};
   text-align: center;
   margin-bottom: 1rem;
@@ -129,10 +132,11 @@ export const MainHeading = styled(Heading)`
 
 export const SubHeading = styled(Heading)`
   font-size: ${theme.typography.fontSize.lg};
+  font-family: ${theme.typography.fontFamily.secondary};
   color: ${theme.colors.text.secondary};
   text-align: center;
   margin: 1vh 0;
-  max-width: 40vw;
+  max-width: 60vw;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     max-width: 80vw;
@@ -142,6 +146,7 @@ export const SubHeading = styled(Heading)`
 export const SectionHeading = styled(Heading)`
   text-align: left;
   font-size: ${theme.typography.fontSize.xl};
+
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     text-align: center;
@@ -160,19 +165,32 @@ export const SectionSubHeading = styled(Heading)`
   }
 `;
 
-export const SmallText = styled.p`
-  font-family: ${theme.typography.fontFamily.primary};
-  font-weight: 400;
-  font-size: 1.1em;
-  color: ${theme.colors.text.secondary};
-  text-decoration: underline;
-  cursor: pointer;
+export const AccountButton = styled(Button)`
+  width: 15em;
+  font-size: 1.25em;
+  aspect-ratio: 7 / 1;
+  background: #ECE9DF;
+
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: 1.5em;
+    aspect-ratio: 7 / 1.5;
+    max-width: 40vw;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    font-size: 1.5em;
+    aspect-ratio: 7 / 1.5;
+    max-height: 2.5em;
+    max-width: 192px;
+  }
 `;
 
 export const HeroButton = styled(Button)`
-  width: 8em;
-  aspect-ratio: 7 / 1.5;
-  font-size: 1.5em;
+  width: 9em;
+  font-size: 1.25em;
+  aspect-ratio: 7 / 1;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     font-size: 1.5em;
@@ -190,9 +208,9 @@ export const HeroButton = styled(Button)`
 `;
 
 export const TeacherHeroButton = styled(Button)`
-  width: 12.5em;
+  width: 14em;
   height: 2em;
-  font-size: 1.5em;
+  font-size: 1.25em;
   white-space: nowrap;
 
   @media (max-width: ${theme.breakpoints.tablet}) {

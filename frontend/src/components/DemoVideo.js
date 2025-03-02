@@ -3,15 +3,15 @@ import styled from 'styled-components';
 import { theme } from '../styles/theme';
 
 const VideoContainer = styled.video`
-  width: 100%;
+  width: ${(props) => props.width || "100%"};
   height: auto;
   border-radius: 12px;
   box-shadow: ${theme.elevation.base};
 `;
 
-const DemoVideo = ({ src }) => {
+const DemoVideo = ({ src, width }) => {
   return (
-    <VideoContainer autoPlay loop muted playsInline>
+    <VideoContainer width={width} autoPlay loop muted playsInline>
       <source src={src} type="video/mp4" />
       Your browser does not support the video tag.
     </VideoContainer>
