@@ -935,12 +935,12 @@ const docTemplate = `{
         "models.AcceptContentRequest": {
             "type": "object",
             "required": [
-                "content_id",
                 "content_type"
             ],
             "properties": {
                 "content_id": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 123
                 },
                 "content_type": {
@@ -963,6 +963,9 @@ const docTemplate = `{
         },
         "models.AudioHealthResponse": {
             "type": "object",
+            "required": [
+                "status"
+            ],
             "properties": {
                 "status": {
                     "type": "string",
@@ -974,10 +977,12 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cefr_level",
+                "content_type",
                 "created_at",
                 "date_created",
                 "id",
                 "language",
+                "pages",
                 "preview_text",
                 "title",
                 "topic"
@@ -1027,12 +1032,10 @@ const docTemplate = `{
         },
         "models.CreateClassroomRequest": {
             "type": "object",
-            "required": [
-                "students_count"
-            ],
             "properties": {
                 "students_count": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 10
                 }
             }
@@ -1112,8 +1115,7 @@ const docTemplate = `{
         "models.GetClassroomInfoResponse": {
             "type": "object",
             "required": [
-                "classroom_id",
-                "students_count"
+                "classroom_id"
             ],
             "properties": {
                 "classroom_id": {
@@ -1122,6 +1124,7 @@ const docTemplate = `{
                 },
                 "students_count": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 10
                 }
             }
@@ -1187,7 +1190,6 @@ const docTemplate = `{
         "models.GetProfileResponse": {
             "type": "object",
             "required": [
-                "daily_questions_goal",
                 "interested_topics",
                 "learning_language",
                 "skill_level",
@@ -1196,6 +1198,7 @@ const docTemplate = `{
             "properties": {
                 "daily_questions_goal": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 3
                 },
                 "interested_topics": {
@@ -1331,12 +1334,12 @@ const docTemplate = `{
         "models.GetStudentClassroomResponse": {
             "type": "object",
             "required": [
-                "students_count",
                 "teacher_id"
             ],
             "properties": {
                 "students_count": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 10
                 },
                 "teacher_id": {
@@ -1350,7 +1353,6 @@ const docTemplate = `{
             "required": [
                 "date",
                 "goal_met",
-                "questions_completed",
                 "user_id"
             ],
             "properties": {
@@ -1364,6 +1366,7 @@ const docTemplate = `{
                 },
                 "questions_completed": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 5
                 },
                 "user_id": {
@@ -1446,12 +1449,12 @@ const docTemplate = `{
         "models.RejectContentRequest": {
             "type": "object",
             "required": [
-                "content_id",
                 "content_type"
             ],
             "properties": {
                 "content_id": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 123
                 },
                 "content_type": {
@@ -1475,8 +1478,7 @@ const docTemplate = `{
         "models.StreakResponse": {
             "type": "object",
             "required": [
-                "completed_today",
-                "streak"
+                "completed_today"
             ],
             "properties": {
                 "completed_today": {
@@ -1485,6 +1487,7 @@ const docTemplate = `{
                 },
                 "streak": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 7
                 }
             }
@@ -1542,6 +1545,9 @@ const docTemplate = `{
         },
         "models.TextToSpeechResponse": {
             "type": "object",
+            "required": [
+                "audio_content"
+            ],
             "properties": {
                 "audio_content": {
                     "type": "string",
@@ -1554,7 +1560,6 @@ const docTemplate = `{
             "required": [
                 "date",
                 "goal_met",
-                "questions_completed",
                 "user_id"
             ],
             "properties": {
@@ -1568,6 +1573,7 @@ const docTemplate = `{
                 },
                 "questions_completed": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 5
                 },
                 "user_id": {
@@ -1610,7 +1616,6 @@ const docTemplate = `{
         "models.UpsertProfileRequest": {
             "type": "object",
             "required": [
-                "daily_questions_goal",
                 "interested_topics",
                 "learning_language",
                 "skill_level",
@@ -1619,6 +1624,7 @@ const docTemplate = `{
             "properties": {
                 "daily_questions_goal": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 3
                 },
                 "interested_topics": {
@@ -1647,12 +1653,12 @@ const docTemplate = `{
         "models.UpsertProfileResponse": {
             "type": "object",
             "required": [
-                "id",
                 "message"
             ],
             "properties": {
                 "id": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 123
                 },
                 "message": {

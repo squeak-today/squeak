@@ -1217,7 +1217,7 @@ export interface components {
     schemas: {
         "models.AcceptContentRequest": {
             /** @example 123 */
-            content_id: number;
+            content_id?: number;
             /** @example News */
             content_type: string;
         };
@@ -1227,13 +1227,13 @@ export interface components {
         };
         "models.AudioHealthResponse": {
             /** @example live */
-            status?: string;
+            status: string;
         };
         "models.ClassroomContentItem": {
             /** @example B1 */
             cefr_level: string;
             /** @example News */
-            content_type?: string;
+            content_type: string;
             /** @example 2025-02-26T13:01:13.390612Z */
             created_at: string;
             /** @example 2025-02-26 */
@@ -1243,7 +1243,7 @@ export interface components {
             /** @example French */
             language: string;
             /** @example 10 */
-            pages?: number;
+            pages: number;
             /** @example # L'actualité musicale en bref
              *
              *     ## Un flot de nouveautés... */
@@ -1257,7 +1257,7 @@ export interface components {
         };
         "models.CreateClassroomRequest": {
             /** @example 10 */
-            students_count: number;
+            students_count?: number;
         };
         "models.CreateClassroomResponse": {
             /** @example 123 */
@@ -1289,7 +1289,7 @@ export interface components {
             /** @example 123 */
             classroom_id: string;
             /** @example 10 */
-            students_count: number;
+            students_count?: number;
         };
         "models.GetNewsResponse": {
             /** @example B1 */
@@ -1313,7 +1313,7 @@ export interface components {
         };
         "models.GetProfileResponse": {
             /** @example 3 */
-            daily_questions_goal: number;
+            daily_questions_goal?: number;
             /** @example [
              *       "[\"NBA\"]"
              *     ] */
@@ -1368,7 +1368,7 @@ export interface components {
         };
         "models.GetStudentClassroomResponse": {
             /** @example 10 */
-            students_count: number;
+            students_count?: number;
             /** @example 789 */
             teacher_id: string;
         };
@@ -1378,7 +1378,7 @@ export interface components {
             /** @example true */
             goal_met: boolean;
             /** @example 5 */
-            questions_completed: number;
+            questions_completed?: number;
             /** @example 123 */
             user_id: string;
         };
@@ -1410,7 +1410,7 @@ export interface components {
         };
         "models.RejectContentRequest": {
             /** @example 123 */
-            content_id: number;
+            content_id?: number;
             /** @example News */
             content_type: string;
         };
@@ -1422,7 +1422,7 @@ export interface components {
             /** @example true */
             completed_today: boolean;
             /** @example 7 */
-            streak: number;
+            streak?: number;
         };
         "models.StudentStatusResponse": {
             /** @example 456 */
@@ -1444,7 +1444,7 @@ export interface components {
         };
         "models.TextToSpeechResponse": {
             /** @example base64-encoded-audio-content */
-            audio_content?: string;
+            audio_content: string;
         };
         "models.TodayProgressResponse": {
             /** @example 2025-02-26T00:00:00Z */
@@ -1452,7 +1452,7 @@ export interface components {
             /** @example true */
             goal_met: boolean;
             /** @example 5 */
-            questions_completed: number;
+            questions_completed?: number;
             /** @example 123 */
             user_id: string;
         };
@@ -1470,7 +1470,7 @@ export interface components {
         };
         "models.UpsertProfileRequest": {
             /** @example 3 */
-            daily_questions_goal: number;
+            daily_questions_goal?: number;
             /** @example [
              *       "[\"NBA\"]"
              *     ] */
@@ -1484,7 +1484,7 @@ export interface components {
         };
         "models.UpsertProfileResponse": {
             /** @example 123 */
-            id: number;
+            id?: number;
             /** @example Profile updated successfully */
             message: string;
         };

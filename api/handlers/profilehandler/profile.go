@@ -73,6 +73,7 @@ func (h *ProfileHandler) UpsertProfile(c *gin.Context) {
 
 	var profile models.UpsertProfileRequest
 	if err := c.ShouldBindJSON(&profile); err != nil {
+		log.Println(err)
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
 		return
 	}
@@ -86,6 +87,8 @@ func (h *ProfileHandler) UpsertProfile(c *gin.Context) {
 		Username:         profile.Username,
 		LearningLanguage: profile.LearningLanguage,
 		SkillLevel:       profile.SkillLevel,
+		InterestedTopics: profile.InterestedTopics,
+		DailyQuestionsGoal: profile.DailyQuestionsGoal,
 	}
 
 	id, err := h.DBClient.UpsertProfile(userID, supabaseProfile)

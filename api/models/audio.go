@@ -1,7 +1,7 @@
 package models
 
 type AudioHealthResponse struct {
-	Status string `json:"status" example:"live"`
+	Status string `json:"status" binding:"required" example:"live"`
 }
 
 type TranslateRequest struct {
@@ -21,5 +21,5 @@ type TextToSpeechRequest struct {
 }
 
 type TextToSpeechResponse struct {
-	AudioContent string `json:"audio_content" example:"base64-encoded-audio-content"`
+	AudioContent string `json:"audio_content" binding:"required" example:"base64-encoded-audio-content"`
 }

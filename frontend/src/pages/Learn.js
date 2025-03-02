@@ -9,6 +9,7 @@ import BasicPage from '../components/BasicPage';
 import ProfileDashboard from '../components/ProfileDashboard';
 import NewsRecommendations from '../components/NewsRecommendations';
 import StoryRecommendations from '../components/StoryRecommendations';
+import { useProfileAPI } from '../hooks/useProfileAPI';
 
 const formatDate = () => {
 	const date = new Date();
@@ -65,6 +66,8 @@ function Learn() {
 	const [isTeacher, setIsTeacher] = useState(false);
 
 	const [isInitializing, setIsInitializing] = useState(true);
+
+	const { getProfile, upsertProfile } = useProfileAPI();
 
 	const handleStoryBlockClick = async (story) => {
 		navigate(`/read/${story.type}/${story.id}`);
@@ -126,23 +129,12 @@ function Learn() {
 
 	const handleGetProfile = useCallback(async () => {
 		try {
-			const { data: { session } } = await supabase.auth.getSession();
-			const jwt = session?.access_token;
-			
-			const response = await fetch(`${apiBase}profile`, {
-				headers: {
-					'Authorization': `Bearer ${jwt}`
-				}
-			});
-			
-			const data = await response.json();
+			const data = await getProfile();
 			
 			if (data.code === "PROFILE_NOT_FOUND") {
 				navigate('/welcome');
 				return null;
 			}
-			
-			if (!response.ok) throw new Error('Failed to fetch profile');
 			
 			setProfile(data);
 			return data;
@@ -151,7 +143,7 @@ function Learn() {
 			showNotification('Failed to load profile. Please try again.', 'error');
 			return null;
 		}
-	}, [apiBase, navigate, showNotification]);
+	}, [getProfile, navigate, showNotification]);
 
 	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
 		try {
@@ -237,24 +229,11 @@ function Learn() {
 
 	const handleUpdateProfile = useCallback(async (profileData) => {
 		try {
-			const { data: { session } } = await supabase.auth.getSession();
-			const jwt = session?.access_token;
-			
-			const response = await fetch(`${apiBase}profile/upsert`, {
-				method: 'POST',
-				headers: {
-					'Authorization': `Bearer ${jwt}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(profileData)
-			});
-			
-			const result = await response.json();
+			const result = await upsertProfile(profileData);
 			if (result.error === "Username already taken") {
 				showNotification('Username already taken. Please try again.', 'error');
 				return;
 			}
-			if (!response.ok) throw new Error('Failed to update profile');
 			setProfile(profileData);
 			await fetchRecommendations(profileData.learning_language, profileData.skill_level);
 			await fetchProgress();
@@ -265,7 +244,7 @@ function Learn() {
 			console.error('Error updating profile:', error);
 			showNotification('Failed to update profile. Please try again.', 'error');
 		}
-	}, [fetchRecommendations, fetchProgress, showNotification, apiBase]);
+	}, [upsertProfile, fetchRecommendations, fetchProgress, showNotification]);
 
 	const checkTeacherStatus = useCallback(async () => {
 		try {

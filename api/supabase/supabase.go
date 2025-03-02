@@ -326,7 +326,6 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 	baseQuery += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
 	queryParams = append(queryParams, params.PageSize, (params.Page-1)*params.PageSize)
 
-	fmt.Println(baseQuery)
 	rows, err := c.db.Query(baseQuery, queryParams...)
 	if err != nil {
 		return nil, fmt.Errorf("query execution failed: %v", err)

@@ -32,8 +32,9 @@ func New(dbClient *supabase.Client) *TeacherHandler {
 //	@Router			/teacher [get]
 func (h *TeacherHandler) CheckTeacherStatus(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
-	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
-	if !isTeacher {
+	isTeacher, err := h.DBClient.CheckAccountType(userID, "teacher")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check teacher status"})
 		return
 	}
 	response := models.TeacherStatusResponse{

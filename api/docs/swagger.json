@@ -929,12 +929,12 @@
         "models.AcceptContentRequest": {
             "type": "object",
             "required": [
-                "content_id",
                 "content_type"
             ],
             "properties": {
                 "content_id": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 123
                 },
                 "content_type": {
@@ -957,6 +957,9 @@
         },
         "models.AudioHealthResponse": {
             "type": "object",
+            "required": [
+                "status"
+            ],
             "properties": {
                 "status": {
                     "type": "string",
@@ -968,10 +971,12 @@
             "type": "object",
             "required": [
                 "cefr_level",
+                "content_type",
                 "created_at",
                 "date_created",
                 "id",
                 "language",
+                "pages",
                 "preview_text",
                 "title",
                 "topic"
@@ -1021,12 +1026,10 @@
         },
         "models.CreateClassroomRequest": {
             "type": "object",
-            "required": [
-                "students_count"
-            ],
             "properties": {
                 "students_count": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 10
                 }
             }
@@ -1106,8 +1109,7 @@
         "models.GetClassroomInfoResponse": {
             "type": "object",
             "required": [
-                "classroom_id",
-                "students_count"
+                "classroom_id"
             ],
             "properties": {
                 "classroom_id": {
@@ -1116,6 +1118,7 @@
                 },
                 "students_count": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 10
                 }
             }
@@ -1181,7 +1184,6 @@
         "models.GetProfileResponse": {
             "type": "object",
             "required": [
-                "daily_questions_goal",
                 "interested_topics",
                 "learning_language",
                 "skill_level",
@@ -1190,6 +1192,7 @@
             "properties": {
                 "daily_questions_goal": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 3
                 },
                 "interested_topics": {
@@ -1325,12 +1328,12 @@
         "models.GetStudentClassroomResponse": {
             "type": "object",
             "required": [
-                "students_count",
                 "teacher_id"
             ],
             "properties": {
                 "students_count": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 10
                 },
                 "teacher_id": {
@@ -1344,7 +1347,6 @@
             "required": [
                 "date",
                 "goal_met",
-                "questions_completed",
                 "user_id"
             ],
             "properties": {
@@ -1358,6 +1360,7 @@
                 },
                 "questions_completed": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 5
                 },
                 "user_id": {
@@ -1440,12 +1443,12 @@
         "models.RejectContentRequest": {
             "type": "object",
             "required": [
-                "content_id",
                 "content_type"
             ],
             "properties": {
                 "content_id": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 123
                 },
                 "content_type": {
@@ -1469,8 +1472,7 @@
         "models.StreakResponse": {
             "type": "object",
             "required": [
-                "completed_today",
-                "streak"
+                "completed_today"
             ],
             "properties": {
                 "completed_today": {
@@ -1479,6 +1481,7 @@
                 },
                 "streak": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 7
                 }
             }
@@ -1536,6 +1539,9 @@
         },
         "models.TextToSpeechResponse": {
             "type": "object",
+            "required": [
+                "audio_content"
+            ],
             "properties": {
                 "audio_content": {
                     "type": "string",
@@ -1548,7 +1554,6 @@
             "required": [
                 "date",
                 "goal_met",
-                "questions_completed",
                 "user_id"
             ],
             "properties": {
@@ -1562,6 +1567,7 @@
                 },
                 "questions_completed": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 5
                 },
                 "user_id": {
@@ -1604,7 +1610,6 @@
         "models.UpsertProfileRequest": {
             "type": "object",
             "required": [
-                "daily_questions_goal",
                 "interested_topics",
                 "learning_language",
                 "skill_level",
@@ -1613,6 +1618,7 @@
             "properties": {
                 "daily_questions_goal": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 3
                 },
                 "interested_topics": {
@@ -1641,12 +1647,12 @@
         "models.UpsertProfileResponse": {
             "type": "object",
             "required": [
-                "id",
                 "message"
             ],
             "properties": {
                 "id": {
                     "type": "integer",
+                    "minimum": 0,
                     "example": 123
                 },
                 "message": {

@@ -7,7 +7,7 @@ type StudentStatusResponse struct {
 
 type GetStudentClassroomResponse struct {
 	TeacherID     string `json:"teacher_id" binding:"required" example:"789"`
-	StudentsCount int    `json:"students_count" binding:"required" example:"10"`
+	StudentsCount int   `json:"students_count" binding:"gte=0" example:"10"`
 }
 
 type JoinClassroomRequest struct {

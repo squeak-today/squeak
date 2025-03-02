@@ -24,13 +24,15 @@ function BecomeStudent() {
   // Flag to indicate we've checked the student's status
   const [statusChecked, setStatusChecked] = useState(false);
   const apiBase = process.env.REACT_APP_API_BASE;
+  const [isInitializing, setIsInitializing] = useState(true);
 
   const { jwtToken } = useAuth();
   const { getStudentStatus, joinClassroom } = useStudentAPI();
 
   // Check if the student already exists (i.e. has a classroom)
   useEffect(() => {
-    const checkStudentStatus = async () => {
+    const init = async () => {
+      if (!isInitializing) return;
       setLoading(true);
       try {
         if (!jwtToken) {
@@ -52,11 +54,13 @@ function BecomeStudent() {
         showNotification("Error checking student status.", "error");
       } finally {
         setStatusChecked(true);
+        console.log("Status checked");
         setLoading(false);
+        setIsInitializing(false);
       }
     };
 
-    checkStudentStatus();
+    init();
   }, [jwtToken, apiBase, navigate, getStudentStatus, showNotification]);
 
   // Handler to join a classroom
