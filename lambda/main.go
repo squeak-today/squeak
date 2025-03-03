@@ -51,7 +51,7 @@ func generateTitleAndPreview(text string) (string, string) {
 	rawText := stripmd.Strip(text)
 
 	title := strings.Split(rawText, "\n")[0]
-	titleRunes := []rune(rawText)
+	titleRunes := []rune(title)
 	if len(titleRunes) > 140 { title = string(titleRunes[:140]) + "..." }
 
 	previewText := rawText
