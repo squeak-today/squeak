@@ -69,10 +69,6 @@ function Learn() {
 
 	const { getProfile, upsertProfile } = useProfileAPI();
 
-	const handleStoryBlockClick = async (story) => {
-		navigate(`/read/${story.type}/${story.id}`);
-	}
-
 	const handleListNews = useCallback(async (language, cefrLevel, subject, page, pagesize) => {
 		const tempStories = [];
 		try {
@@ -347,7 +343,6 @@ function Learn() {
 						<StoryBrowser 
 							stories={allStories} 
 							onParamsSelect={handleListNews} 
-							onStoryBlockClick={handleStoryBlockClick}
 							defaultLanguage={profile?.learning_language || 'any'}
 						/>
 						<StoryRecommendations recommendations={storyRecommendations} />

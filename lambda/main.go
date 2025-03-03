@@ -18,6 +18,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"story-gen-lambda/gemini"
+	"story-gen-lambda/stripmd"
 )
 
 type GenerationRequest struct {
@@ -46,19 +47,17 @@ func supabaseInsertContent(db *sql.DB, table string, title, language, topic, cef
     return nil
 }
 
-// temp helper. for now titles are first 30 chars and preview is first 500 chars
 func generateTitleAndPreview(text string) (string, string) {
-	// use runes instead of string slicing, since some characters are multi-byte
-    // such as Chinese characters (though this is a temporary solution anyway,
-    // and it'll be updated for actual titles at some point.)
-	runes := []rune(text)
-	first30 := text
-	previewText := text
-	if len(runes) > 30 { first30 = string(runes[:40]) }
-	if len(runes) > 500 { previewText = string(runes[:500]) }
-	first30 = first30 + "..."
-	previewText = previewText + "..."
-	return first30, previewText
+	rawText := stripmd.Strip(text)
+
+	title := strings.Split(rawText, "\n")[0]
+	titleRunes := []rune(rawText)
+	if len(titleRunes) > 140 { title = string(titleRunes[:140]) + "..." }
+
+	previewText := rawText
+	rawTextRunes := []rune(rawText)
+	if len(rawTextRunes) > 500 { previewText = string(rawTextRunes[:500]) + "..." }
+	return title, previewText
 }
 
 func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
@@ -161,8 +160,8 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 					return err
 				}
 
-				first30, previewText := generateTitleAndPreview(story)
-                err := supabaseInsertContent(db, "stories", first30, language, subject, CEFRLevel, previewText)
+				title, previewText := generateTitleAndPreview(story)
+                err := supabaseInsertContent(db, "stories", title, language, subject, CEFRLevel, previewText)
                 if err != nil {
                     log.Println(err)
                     return err
@@ -196,8 +195,8 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 					return err
 				}
 
-				first30, previewText := generateTitleAndPreview(newsText)
-                err := supabaseInsertContent(db, "news", first30, language, subject, CEFRLevel, previewText)
+				title, previewText := generateTitleAndPreview(newsText)
+                err := supabaseInsertContent(db, "news", title, language, subject, CEFRLevel, previewText)
                 if err != nil {
                     log.Println(err)
                     return err

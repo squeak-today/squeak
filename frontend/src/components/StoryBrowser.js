@@ -85,9 +85,9 @@ const StoryBrowser = ({ stories, onParamsSelect, onStoryBlockClick, defaultLangu
 			</FilterContainer>
 			
 			{stories.length > 0 ? (
-				<StoryList stories={stories} onStoryBlockClick={onStoryBlockClick} />
+				<StoryList stories={stories} />
 			) : (
-				<NoContentMessage>No stories found for these filters!</NoContentMessage>
+				<NoContentMessage>No content found for these filters!</NoContentMessage>
 			)}
 
 			{stories.length > 0 && (
