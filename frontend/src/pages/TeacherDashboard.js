@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTeacher } from '../services/hooks/useTeacher'
+import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import supabase from '../lib/supabase';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
@@ -17,40 +17,47 @@ import {
 function TeacherDashboard() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
+  const [classroomInfo, setClassroomInfo] = useState(null);
   const [showClassroomInfo, setShowClassroomInfo] = useState(true);
-
   const [isInitializing, setIsInitializing] = useState(true);
-
   const {
-    classroomInfo,
+    isAuthenticated,
     verifyTeacher,
-    fetchClassroomInfo,
-  } = useTeacher();
+    getClassroomInfo
+  } = useTeacherAPI();
 
   useEffect(() => {
+    if (!isInitializing) return;
     const init = async () => {
       try {
-        if (await verifyTeacher()) { await fetchClassroomInfo(); }
-        else { navigate('/teacher/become'); }
+        if (isAuthenticated) {
+          let data = await verifyTeacher();
+          if (data.exists) {
+            data = await getClassroomInfo();
+            setClassroomInfo(data);
+          }
+          else { navigate('/teacher/become'); }
+        }
       } catch (error) {
         console.error('Error fetching classroom info:', error);
+        showNotification('Error loading dashboard', 'error');
       } finally {
         setIsInitializing(false);
       }
     };
-    init(); // only call once
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    init();
+  }, [verifyTeacher, getClassroomInfo, navigate, showNotification]);
 
   const handleLogout = async () => {
     try {
         await supabase.auth.signOut();
         navigate('/');
     } catch (error) {
-        console.error('Error signing out:', error);
-        showNotification('Error signing out. Please try again.');
+      console.error('Error signing out:', error);
+      showNotification('Error signing out. Please try again.');
     }
-};
+  };
 
   return (
     <BasicPage showLogout onLogout={handleLogout} isLoading={isInitializing}>

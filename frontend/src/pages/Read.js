@@ -8,8 +8,7 @@ import SidePanel from '../components/SidePanel';
 import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import TranslationPanel from '../components/TranslationPanel';
-import { useTranslation } from '../services/hooks/useTranslation';
-import { useTTS } from '../services/hooks/useTTS';
+import { useAudioAPI } from '../hooks/useAudioAPI';
 
 import { LANGUAGE_CODES_REVERSE, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 
@@ -53,8 +52,8 @@ function Read() {
 
     const apiBase = process.env.REACT_APP_API_BASE;
 
-    const { translate } = useTranslation();
-    const { speak, isLoading: isPlayingTTS } = useTTS();
+    const { translate, tts } = useAudioAPI();
+    const [isPlayingTTS, setIsPlayingTTS] = useState(false);
 
     useEffect(() => {
         const loadInitialMetadata = async () => {
@@ -112,8 +111,8 @@ function Read() {
 
     const handleWordClick = async (e, word, sourceLang, sentence) => {
         try {
-            const translation = await translate(word, sourceLang);
-            
+            const translationData = await translate({ sentence: word, source: sourceLang, target: "en" });
+            const translation = translationData.sentence;
             if (translation) {
                 setTooltip({
                     show: true,
@@ -130,7 +129,8 @@ function Read() {
     };
 
     const handleSentenceToggle = async () => {
-        const translation = await translate(tooltip.originalSentence, sourceLanguage);
+        const translationData = await translate({ sentence: tooltip.originalSentence, source: sourceLanguage, target: "en" });
+        const translation = translationData.sentence;
         setTooltip(prev => ({ ...prev, sentenceTranslation: translation }));
     };
 
@@ -377,11 +377,16 @@ function Read() {
 
     const handlePlayTTS = async (text) => {
         try {
+            setIsPlayingTTS(true);
             const langCode = TTS_LANGUAGE_CODES[contentData.tags[0]];
-            await speak(text, langCode, TTS_VOICE_IDS[langCode]);
+            const audioContent = await tts({ language_code: langCode, text, voice_name: TTS_VOICE_IDS[langCode] });
+            const audio = new Audio(`data:audio/mp3;base64,${audioContent.audio_content}`);
+            await audio.play();
         } catch (error) {
             console.error('Error playing TTS:', error);
             showNotification('Failed to play audio', 'error');
+        } finally {
+            setIsPlayingTTS(false);
         }
     };
 
