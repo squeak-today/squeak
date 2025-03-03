@@ -59,6 +59,7 @@ This installs `swag` as a
 You can then run:
 ```shell
 ./gen-swagger.sh
+./gen-types.sh
 ```
 
 A better UI other than the genrated docs can also be generated through `https://editor.swagger.io/`.
