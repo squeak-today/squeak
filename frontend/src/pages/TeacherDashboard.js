@@ -42,7 +42,7 @@ function TeacherDashboard() {
       } catch (error) {
         console.error('Error fetching classroom info:', error);
         // Handle case where user is not a teacher (API returns error)
-        if (error?.status === 403 || error?.status === 404) {
+        if (error?.status === "403" || error?.status === "404") {
           navigate('/teacher/become');
         } else {
           showNotification('Error loading dashboard', 'error');
