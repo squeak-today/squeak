@@ -1,6 +1,6 @@
 import createClient from "openapi-fetch";
 import type { paths } from "./types";
-const apiBase = process.env.REACT_APP_API_BASE_URL;
+const apiBase = process.env.REACT_APP_API_BASE;
 
 
 export const getAPIClient = (jwtToken: string) => {
