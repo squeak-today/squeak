@@ -130,7 +130,7 @@ function Home() {
               Teachers, we're here to help. Squeak offers content your students will enjoy with practice for vocabulary, grammar, speaking, and more. With <strong>Classrooms</strong>, students only see what you approve.
             </SectionSubHeading>
             <ButtonContainer>
-              <TeacherHeroButton onClick={() => navigate('/teacher/dashboard')}>
+              <TeacherHeroButton onClick={() => navigate('/auth/login')}>
                 Get started as a Teacher
               </TeacherHeroButton>
             </ButtonContainer>
