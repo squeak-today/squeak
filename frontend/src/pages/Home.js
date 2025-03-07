@@ -113,7 +113,7 @@ function Home() {
           Built for the <Highlight>Classroom</Highlight>
         </SectionHeading>
         <SubHeading>
-          We designed Squeak to teach languages the right way - through enjoyable and understandable content.
+          We help teachers deliver languages the right way - enjoyable, understandable, and challenging content.
         </SubHeading>
         <FeatureSlideshow />
       </TitledSection>

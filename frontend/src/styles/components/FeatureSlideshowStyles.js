@@ -49,7 +49,7 @@ export const MenuTitle = styled.h3`
 `;
 
 export const MenuDescription = styled.p`
-  font-family: ${theme.typography.fontFamily.primary};
+  font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
   color: ${theme.colors.text.secondary};
   margin: 0;

@@ -10,13 +10,14 @@ import {
 } from '../styles/components/FeatureSlideshowStyles';
 import DemoVideo from './DemoVideo';
 import clickVideo from '../assets/clickVideo.mp4';
+import FeatureOneContent from './feature_slideshow/FeatureOneContent';
 
 const features = [
   {
     id: 1,
-    title: "Tailored to skill level",
+    title: "Learning For All Levels",
     description: "All content on Squeak is sorted into 6 difficulty levels for content with just the right amount of challenge.",
-    content: <DemoVideo src={clickVideo} />
+    content: <FeatureOneContent />
   },
   {
     id: 2,
@@ -50,7 +51,7 @@ const features = [
   }
 ];
 
-const CYCLE_INTERVAL = 3000; // 3 seconds
+const CYCLE_INTERVAL = 5000; // 5 seconds
 
 const FeatureSlideshow = () => {
   const [activeFeature, setActiveFeature] = useState(features[0]);
