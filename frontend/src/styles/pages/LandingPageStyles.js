@@ -27,7 +27,7 @@ export const BackgroundImage = styled.img`
     rgba(0, 0, 0, 1.0) 0%,
     rgba(0, 0, 0, 1.0) 20%,
     rgba(0, 0, 0, 0.75) 40%,
-    rgba(0, 0, 0, 0.04) 50%,
+    rgba(0, 0, 0, 0.5) 50%,
     rgba(0, 0, 0, 0) 75%,
     rgba(0, 0, 0, 0) 100%
   );
@@ -76,6 +76,12 @@ export const Section = styled.section`
 export const TitledSection = styled(Section)`
   flex-direction: column;
   margin-top: 8rem;
+  margin-bottom: 0rem;
+`;
+
+export const FAQSection = styled(TitledSection)`
+  margin-top: 0rem;
+  margin-bottom: 4rem;
 `;
 
 export const SmallSection = styled(Section)`
@@ -99,6 +105,8 @@ export const SectionContentWrapper = styled.div`
     flex-direction: column;
     text-align: center;
     gap: 2rem;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
@@ -162,6 +170,8 @@ export const SectionSubHeading = styled(Heading)`
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     max-width: 80vw;
+    text-align: center;
+    margin: 1vh auto;
   }
 `;
 
@@ -218,6 +228,8 @@ export const TeacherHeroButton = styled(Button)`
     padding: 0 2em;
     font-size: 1.2em;
     max-width: 80vw;
+    margin: 0 auto;
+    display: block;
   }
 
   @media (max-width: 480px) {
@@ -228,9 +240,17 @@ export const TeacherHeroButton = styled(Button)`
 `;
 
 export const WizardHat = styled.img`
-  width: 250px;
+  width: 40%;
   max-width: 100%;
   height: auto;
+  border-radius: 20px;
+  object-fit: cover;
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    width: 80%;
+    margin: 0 auto;
+    display: block;
+  }
 `;
 
 export const Highlight = styled.span`
@@ -260,10 +280,13 @@ export const SchoolsText = styled.p`
 
 export const LogoContainer = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: ${theme.spacing.xl};
   align-items: center;
   justify-content: center;
   padding: ${theme.spacing.md} 0;
+  width: 80vw;
+  max-width: 1200px;
 `;
 
 export const SchoolLogo = styled.img`
@@ -273,6 +296,7 @@ export const SchoolLogo = styled.img`
   opacity: 0.6;
   transition: opacity 0.3s ease;
   filter: grayscale(100%);
+  margin: ${theme.spacing.xs} 0;
 
   &:hover {
     opacity: 1;

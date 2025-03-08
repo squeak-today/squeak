@@ -1,8 +1,8 @@
 // Home.jsx
 import { useNavigate } from 'react-router-dom';
 import landingDrawing from '../assets/mouse_pencil.png';
-import wizardHat from '../assets/WizardHat.png';
 import clickVideo from '../assets/clickVideo.mp4';
+import teacherAccept from '../assets/teacher_accept.png';
 import { useEffect } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
@@ -19,6 +19,7 @@ import {
   Highlight,
   Section,
   TitledSection,
+  FAQSection,
   HeroButton,
   TeacherHeroButton,
   WizardHat,
@@ -38,7 +39,6 @@ import ddsb from '../assets/schools/ddsb.png';
 import uwo from '../assets/schools/uwo.png';
 import FeatureSlideshow from '../components/FeatureSlideshow';
 import FAQ from '../components/FAQ';
-import DemoVideo from '../components/DemoVideo';
 
 function Home() {
   const navigate = useNavigate();
@@ -82,14 +82,14 @@ function Home() {
             ))}
           </MainHeading>
           <SubHeading>
-            We’ve learned everything through stories, why try to learn a language in any other way?
+            Bring your classroom to life with content tailored to your students' interests and skill level.
           </SubHeading>
           <ButtonContainer>
             <HeroButton onClick={handleGetStarted}>
               Get Started
             </HeroButton>
             <AccountButton onClick={() => navigate('/auth/login')}>
-              I already have an account
+              I have an account
             </AccountButton>
           </ButtonContainer>
         </CenteredContentContainer>
@@ -113,11 +113,10 @@ function Home() {
           Built for the <Highlight>Classroom</Highlight>
         </SectionHeading>
         <SubHeading>
-          We help teachers deliver languages the right way - enjoyable, understandable, and challenging content.
+          We deliver languages the right way - enjoyable, understandable, and challenging content.
         </SubHeading>
         <FeatureSlideshow />
       </TitledSection>
-
       
 
       <Section>
@@ -127,38 +126,24 @@ function Home() {
               Squeak for <Highlight>Teachers</Highlight>
             </SectionHeading>
             <SectionSubHeading>
-              Teachers, we're here to help. Squeak offers content your students will enjoy with practice for vocabulary, grammar, speaking, and more. With <strong>Classrooms</strong>, students only see what you approve.
+              Teachers, we're here to help <strong>you</strong>. With <strong>Classrooms</strong>, approve and reject content, and track student progress.
             </SectionSubHeading>
             <ButtonContainer>
-              <TeacherHeroButton onClick={() => navigate('/auth/login')}>
+              <TeacherHeroButton onClick={() => navigate('/auth/signup')}>
                 Get started as a Teacher
               </TeacherHeroButton>
             </ButtonContainer>
           </ContentContainer>
-          <WizardHat src={wizardHat} alt="Wizard Hat" />
+          <WizardHat src={teacherAccept} alt="Teacher accepting content" />
         </SectionContentWrapper>
       </Section>
 
-      <Section>
-        <SectionContentWrapper>
-          <ContentContainer  style={{marginTop: "0vh"}}>
-            <SectionHeading>
-              Translate with just a <Highlight>click</Highlight>
-            </SectionHeading>
-            <SectionSubHeading>
-              No need to pull out the dictionary to learn a new word! Just click, translate, and read on.
-            </SectionSubHeading>
-          </ContentContainer>
-          <DemoVideo src={clickVideo} width="50%" />
-        </SectionContentWrapper>
-      </Section>
-
-      <TitledSection>
+      <FAQSection>
         <SectionHeading>
           FAQs
         </SectionHeading>
         <FAQ />
-      </TitledSection>
+      </FAQSection>
 
       
     </BasicPage>

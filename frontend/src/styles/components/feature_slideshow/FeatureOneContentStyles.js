@@ -54,17 +54,10 @@ export const Level = styled.div`
 `;
 
 export const LevelInfo = styled.div`
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: ${theme.spacing.sm};
+  display: flex;
   align-items: center;
-`;
-
-export const LevelName = styled.span`
-  font-family: ${theme.typography.fontFamily.secondary};
-  font-weight: 600;
-  color: ${theme.colors.text.secondary};
-  font-size: ${theme.typography.fontSize.base};
+  width: 100%;
+  overflow: hidden;
 `;
 
 export const Example = styled.span`
@@ -72,4 +65,8 @@ export const Example = styled.span`
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
   font-style: italic;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  min-width: 0;
 `; 

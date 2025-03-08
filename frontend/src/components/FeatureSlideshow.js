@@ -12,6 +12,7 @@ import DemoVideo from './DemoVideo';
 import clickVideo from '../assets/clickVideo.mp4';
 import exercisesVideo from '../assets/exercisesVideo.mp4';
 import interactStoryVideo from '../assets/interactStoryVideo.mp4';
+import contentVideo from '../assets/contentVideo.mp4';
 import FeatureOneContent from './feature_slideshow/FeatureOneContent';
 
 const features = [
@@ -25,28 +26,22 @@ const features = [
     id: 2,
     title: "Real World Language",
     description: "Daily news articles sourced from real sources, and stories that teach common situations, slang, and patterns.",
-    content: <DemoVideo src={clickVideo} />
+    content: <DemoVideo src={contentVideo} />
   },
   {
     id: 3,
-    title: "Made For Teachers",
-    description: "A full platform for teachers to track their students' progress, and approve or reject content to their needs.",
-    content: <DemoVideo src={clickVideo} />
-  },
-  {
-    id: 4,
     title: "Practical and Effective Exercises",
     description: "Students practice writing and speaking skills by answering vocabulary and understanding questions about content.",
     content: <DemoVideo src={exercisesVideo} />
   },
   {
-    id: 5,
+    id: 4,
     title: "Interactive Storybooks",
     description: "Stories are filled with interactive elements to learn vocabulary and grammar along the way.",
     content: <DemoVideo src={interactStoryVideo} />
   },
   {
-    id: 6,
+    id: 5,
     title: "Learn Instantly With a Click",
     description: "Click words to see translations, sentence translations, grammar context explanations, and more.",
     content: <DemoVideo src={clickVideo} />
