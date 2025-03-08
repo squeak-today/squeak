@@ -11,7 +11,7 @@ const VideoContainer = styled.video`
 
 const DemoVideo = ({ src, width }) => {
   return (
-    <VideoContainer width={width} autoPlay loop muted playsInline>
+    <VideoContainer key={src}width={width} autoPlay loop muted playsInline>
       <source src={src} type="video/mp4" />
       Your browser does not support the video tag.
     </VideoContainer>

@@ -13,7 +13,7 @@ export const Subtitle = styled.h3`
   text-align: center;
   color: ${theme.colors.text.secondary};
   font-family: ${theme.typography.fontFamily.primary};
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${theme.typography.fontSize.lg};
   font-weight: 500;
   margin-bottom: ${theme.spacing.md};
 `;

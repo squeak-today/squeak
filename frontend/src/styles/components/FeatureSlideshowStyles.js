@@ -49,7 +49,7 @@ export const MenuTitle = styled.h3`
 `;
 
 export const MenuDescription = styled.p`
-  font-family: ${theme.typography.fontFamily.secondary};
+  font-family: ${theme.typography.fontFamily.primary};
   font-size: ${theme.typography.fontSize.base};
   color: ${theme.colors.text.secondary};
   margin: 0;
@@ -71,6 +71,21 @@ export const ContentArea = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 400px;
+  opacity: 1;
+  transition: opacity 0.8s ease-in-out;
+
+  & > * {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     display: none;
