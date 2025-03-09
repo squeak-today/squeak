@@ -32,7 +32,11 @@ import {
   StatLabel,
   GoalAdjuster,
   ActionButton,
-  ActionButtonsContainer
+  ActionButtonsContainer,
+  StreakContainer,
+  StreakValue,
+  StreakLabel,
+  StreakMessage
 } from '../styles/pages/ProfilePageStyles';
 
 type ProfileData = {
@@ -301,26 +305,44 @@ function Profile() {
 
         {isEditing && (
           <ProfileSection>
-            <ProfileLabel>Skill Level</ProfileLabel>
-            <Select
-              value={editedLevel}
-              onChange={(e) => setEditedLevel(e.target.value)}
-            >
-              <option value="A1">A1 (Beginner)</option>
-              <option value="A2">A2 (Elementary)</option>
-              <option value="B1">B1 (Intermediate)</option>
-              <option value="B2">B2 (Upper Intermediate)</option>
-              <option value="C1">C1 (Advanced)</option>
-              <option value="C2">C2 (Proficient)</option>
-            </Select>
+            <div style={{ display: 'flex', gap: theme.spacing.md }}>
+              <div style={{ flex: 1 }}>
+                <ProfileLabel>Language</ProfileLabel>
+                <Select
+                  value={editedLanguage}
+                  onChange={(e) => setEditedLanguage(e.target.value)}
+                >
+                  <option value="spanish">Spanish</option>
+                  <option value="french">French</option>
+                </Select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <ProfileLabel>Skill Level</ProfileLabel>
+                <Select
+                  value={editedLevel}
+                  onChange={(e) => setEditedLevel(e.target.value)}
+                >
+                  <option value="A1">A1 (Beginner)</option>
+                  <option value="A2">A2 (Elementary)</option>
+                  <option value="B1">B1 (Intermediate)</option>
+                  <option value="B2">B2 (Upper Intermediate)</option>
+                  <option value="C1">C1 (Advanced)</option>
+                  <option value="C2">C2 (Proficient)</option>
+                </Select>
+              </div>
+            </div>
           </ProfileSection>
         )}
 
         <MainSection>
           <ProfileSection>
-            <ProfileLabel>Current Streak</ProfileLabel>
-            <StatValue>{progress?.streak || 0} days</StatValue>
-            <StatLabel>Keep it going!</StatLabel>
+            <StreakContainer>
+              <StreakMessage>
+                {(progress?.streak || 0) === 0 ? 'Exciting!' : 'Keep Going!'}
+              </StreakMessage>
+              <StreakValue>{progress?.streak || 0} days</StreakValue>
+              <StreakLabel>Current Streak</StreakLabel>
+            </StreakContainer>
           </ProfileSection>
 
           <ProfileSection>
@@ -343,10 +365,12 @@ function Profile() {
 
         <MainSection>
           <ProfileSection>
-            <ProfileLabel>Daily Goal</ProfileLabel>
-            {isEditing ? renderGoalEditor() : (
-              <StatValue>{profile.daily_questions_goal} questions</StatValue>
-            )}
+            <div style={{ textAlign: 'center' }}>
+              <ProfileLabel>Daily Goal</ProfileLabel>
+              {isEditing ? renderGoalEditor() : (
+                <StatValue>{profile.daily_questions_goal} questions</StatValue>
+              )}
+            </div>
             {renderProgressBar()}
           </ProfileSection>
 

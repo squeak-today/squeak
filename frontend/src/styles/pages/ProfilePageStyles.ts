@@ -137,11 +137,11 @@ export const Select = styled.select`
 `;
 
 export const ProgressBarContainer = styled.div`
-  width: 100%;
-  height: 8px;
+  width: 80%;
+  height: 12px;
   background: ${theme.colors.border};
-  border-radius: 4px;
-  margin-top: ${theme.spacing.md};
+  border-radius: 6px;
+  margin: ${theme.spacing.md} auto 0;
   overflow: hidden;
 `;
 
@@ -176,6 +176,7 @@ export const StatLabel = styled.div`
 export const GoalAdjuster = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: ${theme.spacing.md};
 `;
 
@@ -214,4 +215,38 @@ export const ActionButtonsContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   height: 100%;
+`;
+
+export const StreakContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+`;
+
+export const StreakValue = styled.div`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.xl};
+  color: ${theme.colors.text.primary};
+  font-weight: 500;
+  margin-bottom: ${theme.spacing.sm};
+`;
+
+export const StreakLabel = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  font-weight: 500;
+`;
+
+export const StreakMessage = styled.div`
+  background: ${theme.colors.cefr.beginner.bg};
+  color: ${theme.colors.cefr.beginner.text};
+  padding: ${theme.spacing.sm} ${theme.spacing.sm};
+  border-radius: 12px;
+  font-size: ${theme.typography.fontSize.base};
+  font-family: ${theme.typography.fontFamily.secondary};
+  margin-bottom: ${theme.spacing.sm};
 `; 
