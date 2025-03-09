@@ -342,15 +342,6 @@ function Learn() {
 						/>
 						<StoryRecommendations recommendations={storyRecommendations} />
 					</StoryBrowserContainer>
-					
-					<ProfileDashboardContainer>
-						<ProfileDashboard
-							profile={profile}
-							progress={progress}
-							onGetProfile={handleGetProfile}
-							onUpdateProfile={handleUpdateProfile}
-						/>
-					</ProfileDashboardContainer>
 				</LearnPageLayout>
 			</BrowserBox>
 		</NavPage>
