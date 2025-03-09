@@ -328,11 +328,7 @@ function Learn() {
 	}, []);
 
 	return (
-		<NavPage 
-			showTeach={isTeacher || (!isStudent && !isTeacher)}
-			showJoinClassroom={!isStudent && !isTeacher}
-			isLoading={isInitializing}
-		>
+		<NavPage isLoading={isInitializing}>
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<BrowserBox>
 				<LearnPageLayout>
