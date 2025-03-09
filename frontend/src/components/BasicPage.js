@@ -154,15 +154,6 @@ function BasicPage({
         {children}
 
         <FooterContainer>
-          {/*
-
-
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <FooterLogo src={logo} alt="Squeak Footer Logo" />
-            <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
-          </div>
-
-          */}
           <FooterText>© 2025 Squeak. All rights reserved.</FooterText>
         </FooterContainer>
       </PageContainer>

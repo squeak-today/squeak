@@ -242,6 +242,7 @@ const StoryReader = ({ content, paged, onNeedPages, handleWordClick, sourceLangu
 
         compileNewPages();
         clearUnneededPages();
+    // eslint-disable-next-line
     }, [paged, content]);
 
     const handleNextPage = async () => {
