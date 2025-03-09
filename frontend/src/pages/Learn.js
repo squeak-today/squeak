@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
+import NavPage from '../components/NavPage';
 import ProfileDashboard from '../components/ProfileDashboard';
 import NewsRecommendations from '../components/NewsRecommendations';
 import StoryRecommendations from '../components/StoryRecommendations';
@@ -62,8 +63,8 @@ function Learn() {
 
 	const [progress, setProgress] = useState(null);
 
-	const [isStudent, setIsStudent] = useState(false);
-	const [isTeacher, setIsTeacher] = useState(false);
+	const [isStudent, setIsStudent] = useState(true);
+	const [isTeacher, setIsTeacher] = useState(true);
 
 	const [isInitializing, setIsInitializing] = useState(true);
 
@@ -327,9 +328,7 @@ function Learn() {
 	}, []);
 
 	return (
-		<BasicPage 
-			showLogout 
-			onLogout={handleLogout} 
+		<NavPage 
 			showTeach={isTeacher || (!isStudent && !isTeacher)}
 			showJoinClassroom={!isStudent && !isTeacher}
 			isLoading={isInitializing}
@@ -358,7 +357,7 @@ function Learn() {
 					</ProfileDashboardContainer>
 				</LearnPageLayout>
 			</BrowserBox>
-		</BasicPage>
+		</NavPage>
 	);
 }
 
