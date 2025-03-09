@@ -90,6 +90,13 @@ function NavPage({
           )}
 
           <NavButton
+            className={activeNav === 'profile' ? 'active' : ''}
+            onClick={() => handleNavClick('profile', '/profile')}
+          >
+            Profile
+          </NavButton>
+
+          <NavButton
             className={activeNav === 'contact' ? 'active' : ''}
             onClick={() => window.open('/contact-support.html', '_blank')}
           >

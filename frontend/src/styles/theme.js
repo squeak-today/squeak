@@ -19,7 +19,25 @@ export const theme = {
       advanced: {
         bg: '#FCE8E8',
         text: '#D93026'
+      },
+      A: {
+        bg: '#E6F4EA',
+        text: '#1B873B'
+      },
+      B: {
+        bg: '#FEF7E0',
+        text: '#B95000'
+      },
+      C: {
+        bg: '#FCE8E8',
+        text: '#D93026'
       }
+    },
+    streak: {
+      none: '#f0f0f0',
+      short: '#B3FFB3',  // 5-19 days
+      medium: '#FFD6B3', // 20-59 days
+      long: '#FFB3B3',   // 60+ days
     }
   },
   elevation: {
