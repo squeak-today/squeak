@@ -180,7 +180,7 @@ export const HeaderTitle = styled.h1`
   }
 `;
 export const HeaderButton = styled.button`
-  width: 8em; /* Base width */
+  width: 8.5em; /* Base width */
   aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
   font-family: 'Lora', serif;
   font-size: 1.5em;
