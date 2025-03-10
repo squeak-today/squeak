@@ -32,7 +32,7 @@ export const LearnPageLayout = styled.div`
 export const StoryBrowserContainer = styled.div`
   flex: 1;
   min-width: 0;
-  max-width: 800px;
+  max-width: 60vw;
 `;
 
 export const ProfileDashboardContainer = styled.div`

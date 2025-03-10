@@ -292,6 +292,7 @@ function Learn() {
 
 		const initializeProfile = async () => {
 			const profileData = await handleGetProfile();
+			console.log(profileData);
 			if (profileData) {
 				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
 				await fetchProgress();
@@ -328,11 +329,7 @@ function Learn() {
 	}, []);
 
 	return (
-		<NavPage 
-			showTeach={isTeacher || (!isStudent && !isTeacher)}
-			showJoinClassroom={!isStudent && !isTeacher}
-			isLoading={isInitializing}
-		>
+		<NavPage isLoading={isInitializing}>
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
 			<BrowserBox>
 				<LearnPageLayout>
@@ -346,15 +343,6 @@ function Learn() {
 						/>
 						<StoryRecommendations recommendations={storyRecommendations} />
 					</StoryBrowserContainer>
-					
-					<ProfileDashboardContainer>
-						<ProfileDashboard
-							profile={profile}
-							progress={progress}
-							onGetProfile={handleGetProfile}
-							onUpdateProfile={handleUpdateProfile}
-						/>
-					</ProfileDashboardContainer>
 				</LearnPageLayout>
 			</BrowserBox>
 		</NavPage>

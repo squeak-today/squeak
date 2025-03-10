@@ -10,7 +10,7 @@ export const PageContainer = styled.div`
 export const MainContent = styled.div`
   flex: 1;
   padding: ${theme.spacing.md};
-  margin-left: 20vw;
+  margin-left: 160px;
   position: relative;
 `;
 
@@ -19,6 +19,7 @@ export const Sidebar = styled.nav`
   left: 0;
   top: 0;
   width: 15vw;
+  min-width: 140px;
   height: 100vh;
   background-color: white;
   border-right: 1px solid #e0e0e0;

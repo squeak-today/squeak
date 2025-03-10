@@ -29,8 +29,6 @@ function NavPage({
   children,
   initialActiveNav = 'learn',
   isLoading = false,
-  showTeach = false,
-  showJoinClassroom = false
 }: NavPageProps): JSX.Element {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
@@ -71,23 +69,12 @@ function NavPage({
             Learn
           </NavButton>
 
-          {showTeach && (
-            <NavButton
-              className={activeNav === 'teach' ? 'active' : ''}
-              onClick={() => handleNavClick('teach', '/teacher')}
-            >
-              Teach
-            </NavButton>
-          )}
-
-          {showJoinClassroom && (
-            <NavButton
-              className={activeNav === 'join-class' ? 'active' : ''}
-              onClick={() => handleNavClick('join-class', '/student/become')}
-            >
-              Join Class
-            </NavButton>
-          )}
+          <NavButton
+            className={activeNav === 'profile' ? 'active' : ''}
+            onClick={() => handleNavClick('profile', '/profile')}
+          >
+            Profile
+          </NavButton>
 
           <NavButton
             className={activeNav === 'contact' ? 'active' : ''}
