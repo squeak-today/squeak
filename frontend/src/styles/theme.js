@@ -7,6 +7,14 @@ export const theme = {
     selected: 'fad48f',
     background: '#fbfbfb',
     border: '#e0e0e0',
+    languages: {
+      french: {
+        bg: '#E6F3FF', // Pastel blue
+      },
+      spanish: {
+        bg: '#FFE8D6', // Pastel orange
+      }
+    },
     cefr: {
       beginner: {
         bg: '#E6F4EA',

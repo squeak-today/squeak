@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { FaPencilAlt, FaCheck, FaTimes, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import spanishFlag from '../assets/flags/spanish.png';
+import frenchFlag from '../assets/flags/french.png';
 import NavPage from '../components/NavPage';
 import MultiSelect from '../components/MultiSelect';
 import { AVAILABLE_TOPICS } from '../lib/topics';
@@ -36,7 +38,10 @@ import {
   StreakContainer,
   StreakValue,
   StreakLabel,
-  StreakMessage
+  StreakMessage,
+  BannerContainer,
+  BannerFlag,
+  BannerOverlay
 } from '../styles/pages/ProfilePageStyles';
 
 type ProfileData = {
@@ -59,6 +64,17 @@ type CEFRLevel = 'A' | 'B' | 'C';
 const getCEFRColor = (level: string) => {
   const firstLetter = level.charAt(0) as CEFRLevel;
   return theme.colors.cefr[firstLetter].bg;
+};
+
+const getLanguageBackground = (language: string) => {
+  switch (language) {
+    case 'Spanish':
+      return theme.colors.languages.spanish.bg;
+    case 'French':
+      return theme.colors.languages.french.bg;
+    default:
+      return theme.colors.border;
+  }
 };
 
 function Profile() {
@@ -196,6 +212,17 @@ function Profile() {
     }
   };
 
+  const getLanguageFlag = (language: string) => {
+    switch (language) {
+      case 'Spanish':
+        return spanishFlag;
+      case 'French':
+        return frenchFlag;
+      default:
+        return null;
+    }
+  };
+
   useEffect(() => {
     const initializeProfile = async () => {
       const profileData = await handleGetProfile();
@@ -269,39 +296,48 @@ function Profile() {
   return (
     <NavPage isLoading={isLoading} initialActiveNav="profile">
       <ProfileContainer>
-        <SubTitle>Your Profile</SubTitle>
-        <Header>
-          <UsernameSection>
-            {isEditing ? (
-              <UsernameInput
-                value={editedUsername}
-                onChange={(e) => setEditedUsername(e.target.value)}
+        {profile?.learning_language && (
+          <BannerContainer style={{ background: getLanguageBackground(profile.learning_language) }}>
+            {getLanguageFlag(profile.learning_language) && (
+              <BannerFlag 
+                src={getLanguageFlag(profile.learning_language)!} 
+                alt={`${profile.learning_language} flag`}
               />
-            ) : (
-              <Username>{profile.username}</Username>
             )}
-            <Tag $type="cefr" $color={getCEFRColor(profile.skill_level)}>
-              {profile.skill_level}
-            </Tag>
-            {isTeacher && <Tag $type="teacher">Teacher</Tag>}
-          </UsernameSection>
-          <EditButtons>
-            {isEditing ? (
-              <>
-                <EditButton onClick={handleUpdateProfile} title="Save">
-                  <FaCheck />
-                </EditButton>
-                <EditButton onClick={handleCancel} title="Cancel">
-                  <FaTimes />
-                </EditButton>
-              </>
-            ) : (
-              <EditButton onClick={() => setIsEditing(true)} title="Edit">
-                <FaPencilAlt />
-              </EditButton>
-            )}
-          </EditButtons>
-        </Header>
+            <BannerOverlay>
+              <UsernameSection>
+                {isEditing ? (
+                  <UsernameInput
+                    value={editedUsername}
+                    onChange={(e) => setEditedUsername(e.target.value)}
+                  />
+                ) : (
+                  <Username>{profile.username}</Username>
+                )}
+                <Tag $type="cefr" $color={getCEFRColor(profile.skill_level)}>
+                  {profile.skill_level}
+                </Tag>
+                {isTeacher && <Tag $type="teacher">Teacher</Tag>}
+              </UsernameSection>
+              <EditButtons>
+                {isEditing ? (
+                  <>
+                    <EditButton onClick={handleUpdateProfile} title="Save">
+                      <FaCheck />
+                    </EditButton>
+                    <EditButton onClick={handleCancel} title="Cancel">
+                      <FaTimes />
+                    </EditButton>
+                  </>
+                ) : (
+                  <EditButton onClick={() => setIsEditing(true)} title="Edit">
+                    <FaPencilAlt />
+                  </EditButton>
+                )}
+              </EditButtons>
+            </BannerOverlay>
+          </BannerContainer>
+        )}
 
         {isEditing && (
           <ProfileSection>
@@ -312,8 +348,8 @@ function Profile() {
                   value={editedLanguage}
                   onChange={(e) => setEditedLanguage(e.target.value)}
                 >
-                  <option value="spanish">Spanish</option>
-                  <option value="french">French</option>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
                 </Select>
               </div>
               <div style={{ flex: 1 }}>

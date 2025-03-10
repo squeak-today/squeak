@@ -292,6 +292,7 @@ function Learn() {
 
 		const initializeProfile = async () => {
 			const profileData = await handleGetProfile();
+			console.log(profileData);
 			if (profileData) {
 				await fetchRecommendations(profileData.learning_language, profileData.skill_level);
 				await fetchProgress();

@@ -37,6 +37,10 @@ export const Username = styled.h1`
   margin: 0;
   word-break: break-word;
   max-width: 100%;
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: ${theme.typography.fontSize.xl};
+  }
 `;
 
 export const UsernameInput = styled.input`
@@ -77,6 +81,10 @@ export const MainSection = styled.div`
   display: flex;
   gap: ${theme.spacing.md};
   margin-bottom: ${theme.spacing.lg};
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    flex-direction: column;
+  }
 `;
 
 export const ProfileSection = styled.div`
@@ -232,6 +240,10 @@ export const StreakValue = styled.div`
   color: ${theme.colors.text.primary};
   font-weight: 500;
   margin-bottom: ${theme.spacing.sm};
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: ${theme.typography.fontSize.lg};
+  }
 `;
 
 export const StreakLabel = styled.div`
@@ -249,4 +261,42 @@ export const StreakMessage = styled.div`
   font-size: ${theme.typography.fontSize.base};
   font-family: ${theme.typography.fontFamily.secondary};
   margin-bottom: ${theme.spacing.sm};
+`;
+
+export const BannerContainer = styled.div`
+  width: 100%;
+  height: 40vh;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: ${theme.spacing.lg};
+  box-shadow: ${theme.elevation.base};
+  
+  &:hover {
+    box-shadow: ${theme.elevation.hover};
+  }
+`;
+
+export const BannerFlag = styled.img`
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: 45%;
+  object-fit: contain;
+  border-radius: 16px;
+  box-shadow: ${theme.elevation.base};
+`;
+
+export const BannerOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `; 
