@@ -21,6 +21,14 @@ export function useTeacherAPI() {
         })
     }, [client, requireAuth])
 
+    const getStudentProfiles = useCallback(async () => {
+        return requireAuth(async () => {
+            const { data, error } = await client!.GET('/teacher/classroom/profiles' as any, {})
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth])
+
     const fetchContent = useCallback(async (params: {
         language: string;
         cefr: string;
@@ -60,6 +68,7 @@ export function useTeacherAPI() {
         isAuthenticated,
         verifyTeacher,
         getClassroomInfo,
+        getStudentProfiles,
         fetchContent,
         acceptContent,
         rejectContent

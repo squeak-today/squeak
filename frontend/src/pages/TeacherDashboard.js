@@ -5,6 +5,7 @@ import supabase from '../lib/supabase';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
 import TeacherStoryBrowser from '../components/TeacherStoryBrowser';
+import TeacherStudentProfiles from 'components/TeacherStudentProfile';
 import {
   Section,
   ToggleButton,
@@ -18,12 +19,14 @@ function TeacherDashboard() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [classroomInfo, setClassroomInfo] = useState(null);
+  const [studentProfiles, setStudentProfiles] = useState(null); // New state for profiles
   const [showClassroomInfo, setShowClassroomInfo] = useState(true);
   const [isInitializing, setIsInitializing] = useState(true);
   const {
     isAuthenticated,
     verifyTeacher,
-    getClassroomInfo
+    getClassroomInfo,
+    getStudentProfiles // Add this to destructure
   } = useTeacherAPI();
 
   useEffect(() => {
@@ -35,6 +38,9 @@ function TeacherDashboard() {
           if (data.exists) {
             data = await getClassroomInfo();
             setClassroomInfo(data);
+            // Fetch student profiles on initialization
+            const profilesData = await getStudentProfiles();
+            setStudentProfiles(profilesData);
           } else { 
             navigate('/teacher/become'); 
           }
@@ -48,7 +54,7 @@ function TeacherDashboard() {
     };
   
     init();
-  }, [verifyTeacher, getClassroomInfo, navigate, showNotification, isAuthenticated, isInitializing]);
+  }, [verifyTeacher, getClassroomInfo, getStudentProfiles, navigate, showNotification, isAuthenticated, isInitializing]);
 
   const handleLogout = async () => {
     try {
@@ -77,6 +83,13 @@ function TeacherDashboard() {
               <ClassroomInfoText>
                 <strong>Students Count:</strong> {classroomInfo.students_count}
               </ClassroomInfoText>
+              {/* Add student profiles display */}
+              {studentProfiles && (
+                <>
+                  <DateHeader>Student Profiles</DateHeader>
+                  <TeacherStudentProfiles profiles={studentProfiles.profiles} />
+                </>
+              )}
             </ClassroomInfoContainer>
           )}
         </Section>
