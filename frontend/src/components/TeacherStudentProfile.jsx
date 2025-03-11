@@ -1,33 +1,119 @@
 import React from 'react';
 import styled from 'styled-components';
+import { theme } from '../styles/theme';
+import FrenchFlag from '../assets/vectors/frenchFlag.svg';
+import SpanishFlag from '../assets/vectors/spanishFlag.svg';
 
-// Styled components (adjust as per your design)
 const ProfilesContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: ${theme.spacing.md};
 `;
 
 const ProfileCard = styled.div`
-  border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 5px;
-  width: 300px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 260px;
+  padding: 0;
+  overflow: hidden;
 `;
 
-const ProfileTitle = styled.h2`
-  font-family: 'Lora', serif;
-  font-size: 1.5rem;
-  margin: 0 0 1rem 0;
-  color: #333;
+const ProfileHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${theme.spacing.md} ${theme.spacing.md} ${theme.spacing.sm};
 `;
 
-const ProfileDetail = styled.div`
-  font-family: 'Lora', serif;
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 0.5rem;
+const ProfileName = styled.h3`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: ${theme.colors.text.primary};
 `;
+
+const ProfileAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #673ab7;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-weight: 500;
+`;
+
+const ProfileDetails = styled.div`
+  padding: 0 ${theme.spacing.md} ${theme.spacing.md};
+`;
+
+const DetailRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: ${theme.spacing.sm};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 0.9rem;
+  color: ${theme.colors.text.secondary};
+`;
+
+const LanguageRow = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: ${theme.spacing.sm};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 0.9rem;
+  
+  img {
+    width: 20px;
+    height: auto;
+    margin-left: 8px;
+  }
+`;
+
+const StrongLabel = styled.strong`
+  margin-right: 5px;
+`;
+
+const SkillLevel = styled.span`
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background-color: ${props => {
+    if (props.level === 'Beginner') return theme.colors.cefr.beginner.bg;
+    if (props.level === 'Intermediate') return theme.colors.cefr.intermediate.bg;
+    if (props.level === 'Advanced') return theme.colors.cefr.advanced.bg;
+    return theme.colors.background;
+  }};
+  color: ${props => {
+    if (props.level === 'Beginner') return theme.colors.cefr.beginner.text;
+    if (props.level === 'Intermediate') return theme.colors.cefr.intermediate.text;
+    if (props.level === 'Advanced') return theme.colors.cefr.advanced.text;
+    return theme.colors.text.secondary;
+  }};
+`;
+
+// Helper function to get flag based on language
+const getLanguageFlag = (language) => {
+  if (!language) return null;
+  
+  const lowerCaseLanguage = language.toLowerCase();
+  if (lowerCaseLanguage.includes('french')) {
+    return <img src={FrenchFlag} alt="French flag" />;
+  } else if (lowerCaseLanguage.includes('spanish')) {
+    return <img src={SpanishFlag} alt="Spanish flag" />;
+  }
+  return null;
+};
+
+// Helper function to generate initials
+const getInitials = (name) => {
+  return name ? name.charAt(0).toLowerCase() : '';
+};
 
 const TeacherStudentProfiles = ({ profiles }) => {
   if (!profiles || profiles.length === 0) return <div>No student profiles found.</div>;
@@ -36,19 +122,30 @@ const TeacherStudentProfiles = ({ profiles }) => {
     <ProfilesContainer>
       {profiles.map((profile, index) => (
         <ProfileCard key={index}>
-          <ProfileTitle>{profile.username}</ProfileTitle>
-          <ProfileDetail>
-            <strong>Learning Language:</strong> {profile.learning_language || 'N/A'}
-          </ProfileDetail>
-          <ProfileDetail>
-            <strong>Skill Level:</strong> {profile.skill_level || 'N/A'}
-          </ProfileDetail>
-          <ProfileDetail>
-            <strong>Interested Topics:</strong> {profile.interested_topics?.join(', ') || 'N/A'}
-          </ProfileDetail>
-          <ProfileDetail>
-            <strong>Daily Questions Goal:</strong> {profile.daily_questions_goal || 'N/A'}
-          </ProfileDetail>
+          <ProfileHeader>
+            <ProfileName>{profile.username}</ProfileName>
+            <ProfileAvatar>{getInitials(profile.username)}</ProfileAvatar>
+          </ProfileHeader>
+          
+          <ProfileDetails>
+            <LanguageRow>
+              <StrongLabel>Learning:</StrongLabel> {profile.learning_language || 'N/A'}
+              {getLanguageFlag(profile.learning_language)}
+            </LanguageRow>
+            
+            <DetailRow>
+              <StrongLabel>Level:</StrongLabel> {' '}
+              <SkillLevel level={profile.skill_level}>{profile.skill_level || 'N/A'}</SkillLevel>
+            </DetailRow>
+            
+            <DetailRow>
+              <StrongLabel>Topics:</StrongLabel> {profile.interested_topics?.join(', ') || 'N/A'}
+            </DetailRow>
+            
+            <DetailRow>
+              <StrongLabel>Daily Goal:</StrongLabel> {profile.daily_questions_goal || 'N/A'}
+            </DetailRow>
+          </ProfileDetails>
         </ProfileCard>
       ))}
     </ProfilesContainer>
