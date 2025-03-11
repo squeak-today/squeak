@@ -38,7 +38,7 @@ const ProfileAvatar = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #673ab7;
+  background-color: ${props => props.bgColor || '#673ab7'};
   color: white;
   display: flex;
   align-items: center;
@@ -97,6 +97,26 @@ const SkillLevel = styled.span`
   }};
 `;
 
+// Array of vibrant colors for avatars
+const vibrantColors = [
+  '#FF5252', // Red
+  '#FF4081', // Pink
+  '#E040FB', // Purple
+  '#7C4DFF', // Deep Purple
+  '#536DFE', // Indigo
+  '#448AFF', // Blue
+  '#40C4FF', // Light Blue
+  '#18FFFF', // Cyan
+  '#64FFDA', // Teal
+  '#69F0AE', // Green
+  '#B2FF59', // Light Green
+  '#EEFF41', // Lime
+  '#FFFF00', // Yellow
+  '#FFD740', // Amber
+  '#FFAB40', // Orange
+  '#FF6E40'  // Deep Orange
+];
+
 // Helper function to get flag based on language
 const getLanguageFlag = (language) => {
   if (!language) return null;
@@ -115,6 +135,22 @@ const getInitials = (name) => {
   return name ? name.charAt(0).toLowerCase() : '';
 };
 
+// Helper function to get a deterministic color based on username
+const getAvatarColor = (username) => {
+  if (!username) return vibrantColors[0];
+  
+  // Use the username to generate a deterministic index
+  // This ensures the same user always gets the same color
+  let hash = 0;
+  for (let i = 0; i < username.length; i++) {
+    hash = username.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  // Get a positive index within the array range
+  const index = Math.abs(hash) % vibrantColors.length;
+  return vibrantColors[index];
+};
+
 const TeacherStudentProfiles = ({ profiles }) => {
   if (!profiles || profiles.length === 0) return <div>No student profiles found.</div>;
 
@@ -124,7 +160,9 @@ const TeacherStudentProfiles = ({ profiles }) => {
         <ProfileCard key={index}>
           <ProfileHeader>
             <ProfileName>{profile.username}</ProfileName>
-            <ProfileAvatar>{getInitials(profile.username)}</ProfileAvatar>
+            <ProfileAvatar bgColor={getAvatarColor(profile.username)}>
+              {getInitials(profile.username)}
+            </ProfileAvatar>
           </ProfileHeader>
           
           <ProfileDetails>
