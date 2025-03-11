@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import StoryBlock from './StoryBlock';
-
+import { useNavigate } from 'react-router-dom';
 const ListContainer = styled.div`
     max-width: 800px;
     margin: 0 auto;
@@ -11,7 +11,13 @@ const ListContainer = styled.div`
     gap: 0.1rem;
 `;
 
-const StoryList = ({ stories, onStoryBlockClick }) => {
+const StoryList = ({ stories }) => {
+    const navigate = useNavigate();
+
+    const handleStoryBlockClick = async (story) => {
+        navigate(`/read/${story.type}/${story.id}`);
+    }
+
     return (
         <ListContainer>
             {stories.map((story, index) => (
@@ -23,7 +29,7 @@ const StoryList = ({ stories, onStoryBlockClick }) => {
                     tags={story.tags}
                     difficulty={story.difficulty}
                     date={story.date_created}
-                    onStoryBlockClick={() => { onStoryBlockClick(story) }}
+                    onStoryBlockClick={() => { handleStoryBlockClick(story) }}
                 />
             ))}
         </ListContainer>

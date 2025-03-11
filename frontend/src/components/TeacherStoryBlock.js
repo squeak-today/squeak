@@ -43,7 +43,7 @@ const TeacherStoryBlock = ({ story, onAccept, onReject, status }) => {
   };
 
   const handleClick = (story) => {
-    navigate(`/read/${story.content_type.toLowerCase()}/${story.id}`, {
+    navigate(`/read/${story.content_type}/${story.id}`, {
         state: {
             backTo: '/teacher',
             backText: 'Back to Teacher Dashboard'

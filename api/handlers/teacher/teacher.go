@@ -232,7 +232,6 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-
 //	@Summary		Create classroom
 //	@Description	Create classroom
 //	@Tags			teacher

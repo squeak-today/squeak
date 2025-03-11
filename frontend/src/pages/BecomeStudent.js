@@ -52,6 +52,7 @@ function BecomeStudent() {
       } catch (error) {
         console.error("Error checking student status:", error);
         showNotification("Error checking student status.", "error");
+        navigate("/learn");
       } finally {
         setStatusChecked(true);
         console.log("Status checked");

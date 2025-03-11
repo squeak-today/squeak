@@ -39,35 +39,6 @@ And for credentials:
 
 Also, make sure you're on your own branch.
 
-### `/api`
-Contains the Go implementation and code for the backend lambda API.
-The API follows the OpenAPI spec, and annotations for each handler are in `/handlers`.
-High level overview:
-- `/docs` Contains auto generated code and spec files by swagger
-- `/handlers` Implementations for the endpoints
-- `/models` Type declarations for errors and API responses (the types are used in the swagger annotations)
-- `main.go`
-- and then other modules as helpers, e.g `supabase`
-
-Install swaggo with:
-```shell
-go install github.com/swaggo/swag/cmd/swag@latest
-npm install swagger-markdown
-npm install api-spec-converter
-```
-This installs `swag` as a
-You can then run:
-```shell
-./gen-swagger.sh
-```
-
-A better UI other than the genrated docs can also be generated through `https://editor.swagger.io/`.
-
-Checklist for adding new endpoints
-- [ ] Swagger annotations
-- [ ] Define request body types (for POST) and response body types in models
-- [ ] Use types in handler itself on binding
-
 ### `/supabase`
 This contains migrations for the Supabase database.
 To make an isolated environment for your branch, go to the Supabase dashboard.

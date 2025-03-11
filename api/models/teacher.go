@@ -55,3 +55,4 @@ type GetStudentProfilesResponse struct {
     Profiles []GetProfileResponse `json:"profiles" binding:"required"`
 }
 
+

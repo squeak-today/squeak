@@ -35,19 +35,20 @@ function TeacherDashboard() {
           if (data.exists) {
             data = await getClassroomInfo();
             setClassroomInfo(data);
+          } else { 
+            navigate('/teacher/become'); 
           }
-          else { navigate('/teacher/become'); }
         }
       } catch (error) {
         console.error('Error fetching classroom info:', error);
-        showNotification('Error loading dashboard', 'error');
+        navigate('/teacher/become');
       } finally {
         setIsInitializing(false);
       }
     };
-
+  
     init();
-  }, [verifyTeacher, getClassroomInfo, navigate, showNotification]);
+  }, [verifyTeacher, getClassroomInfo, navigate, showNotification, isAuthenticated, isInitializing]);
 
   const handleLogout = async () => {
     try {

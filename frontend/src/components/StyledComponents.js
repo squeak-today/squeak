@@ -180,7 +180,7 @@ export const HeaderTitle = styled.h1`
   }
 `;
 export const HeaderButton = styled.button`
-  width: 8em; /* Base width */
+  width: 8.5em; /* Base width */
   aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
   font-family: 'Lora', serif;
   font-size: 1.5em;
@@ -540,5 +540,46 @@ export const ButtonContainer = styled.div`
     flex-direction: column;
     gap: 0rem;
 
+  }
+`;
+
+
+// A container that holds both Login and Sign Up buttons side by side
+export const AuthButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  border: 1px solid #000;  /* or any color you prefer */
+  border-radius: 5px;
+  overflow: hidden;  /* ensures rounded corners clip child elements */
+`;
+
+// Wide Login button (white background)
+export const LoginButton = styled.button`
+  flex: 1;  /* takes remaining space to appear 'wide' */
+  background-color: #fff;
+  color: #000;
+  padding: 10px 20px;
+  border: none;
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+// Sign Up button (yellow background)
+export const SignUpButton = styled.button`
+  background-color: #fad48f;
+  color: #000;
+  padding: 10px 20px;
+  border: none;
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f3c87d; /* slightly darker on hover */
   }
 `;

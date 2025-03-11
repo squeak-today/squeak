@@ -347,7 +347,6 @@ function Learn() {
 						<StoryBrowser 
 							stories={allStories} 
 							onParamsSelect={handleListNews} 
-							onStoryBlockClick={handleStoryBlockClick}
 							defaultLanguage={profile?.learning_language || 'any'}
 						/>
 						<StoryRecommendations recommendations={storyRecommendations} />
