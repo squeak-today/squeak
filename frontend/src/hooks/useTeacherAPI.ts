@@ -64,6 +64,16 @@ export function useTeacherAPI() {
         })
     }, [client, requireAuth])
 
+    const removeStudent = useCallback(async (studentUserId: string) => {
+        return requireAuth(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/remove-student' as any, { 
+                body: { student_id: studentUserId }
+            });
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth])
+
     return {
         isAuthenticated,
         verifyTeacher,
@@ -71,6 +81,7 @@ export function useTeacherAPI() {
         getStudentProfiles,
         fetchContent,
         acceptContent,
-        rejectContent
+        rejectContent,
+        removeStudent
     };
 }

@@ -143,6 +143,7 @@ func init() {
 			classroomGroup.POST("/create", teacherHandler.CreateClassroom)
 			classroomGroup.POST("/accept", teacherHandler.AcceptContent)
 			classroomGroup.POST("/reject", teacherHandler.RejectContent)
+			classroomGroup.POST("/remove-student", teacherHandler.RemoveStudent)
 		}
 	}
 

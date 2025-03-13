@@ -133,6 +133,15 @@ module "teacher_classroom_profiles" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "teacher_classroom_remove-student" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "remove-student"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "teacher_classroom_content" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -340,6 +349,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.student,
     module.student_classroom,
     module.student_classroom_join,
+    module.teacher_classroom_remove-student,
     module.audio,
     module.audio_translate,
     module.audio_tts

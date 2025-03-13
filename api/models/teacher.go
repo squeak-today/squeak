@@ -55,4 +55,10 @@ type GetStudentProfilesResponse struct {
     Profiles []GetProfileResponse `json:"profiles" binding:"required"`
 }
 
+type RemoveStudentRequest struct {
+    StudentID string `json:"student_id" binding:"required" example:"550e8400-e29b-41d4-a716-446655440000"`
+}
 
+type RemoveStudentResponse struct {
+    Message string `json:"message" binding:"required" example:"Student removed successfully"`
+}

@@ -4,6 +4,7 @@ import { theme } from '../styles/theme';
 import FrenchFlag from '../assets/vectors/frenchFlag.svg';
 import SpanishFlag from '../assets/vectors/spanishFlag.svg';
 
+
 const ProfilesContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -17,6 +18,36 @@ const ProfileCard = styled.div`
   width: 260px;
   padding: 0;
   overflow: hidden;
+  position: relative;
+`;
+
+const RemoveButton = styled.button`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  z-index: 2;
+  
+  &:hover {
+    color: #ff5252;
+    background-color: rgba(255, 82, 82, 0.1);
+  }
+  
+  ${ProfileCard}:hover & {
+    opacity: 1;
+  }
 `;
 
 const ProfileHeader = styled.div`
@@ -82,13 +113,7 @@ const SkillLevel = styled.span`
   display: inline-block;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.875rem;
-  background-color: ${props => {
-    if (props.level === 'Beginner') return theme.colors.cefr.beginner.bg;
-    if (props.level === 'Intermediate') return theme.colors.cefr.intermediate.bg;
-    if (props.level === 'Advanced') return theme.colors.cefr.advanced.bg;
-    return theme.colors.background;
-  }};
+  font-size: 0.9rem;
   color: ${props => {
     if (props.level === 'Beginner') return theme.colors.cefr.beginner.text;
     if (props.level === 'Intermediate') return theme.colors.cefr.intermediate.text;
@@ -96,6 +121,7 @@ const SkillLevel = styled.span`
     return theme.colors.text.secondary;
   }};
 `;
+
 
 // Array of vibrant colors for avatars
 const vibrantColors = [
@@ -151,13 +177,31 @@ const getAvatarColor = (username) => {
   return vibrantColors[index];
 };
 
-const TeacherStudentProfiles = ({ profiles }) => {
-  if (!profiles || profiles.length === 0) return <div>No student profiles found.</div>;
+
+
+const TeacherStudentProfiles = ({ profiles, onRemoveStudent }) => {
+    const handleRemove = (event, userId) => {
+      event.stopPropagation();
+      if (onRemoveStudent && typeof onRemoveStudent === 'function') {
+        onRemoveStudent(userId);
+      }
+    };
+  
+    if (!Array.isArray(profiles) || profiles.length === 0) {
+        return <div>No student profiles found.</div>;
+      }
 
   return (
     <ProfilesContainer>
       {profiles.map((profile, index) => (
         <ProfileCard key={index}>
+        <RemoveButton
+            onClick={(e) => handleRemove(e, profile.user_id)}
+            title={`Remove ${profile.username}`}
+            aria-label={`Remove ${profile.username}`}
+          >
+            x
+          </RemoveButton>
           <ProfileHeader>
             <ProfileName>{profile.username}</ProfileName>
             <ProfileAvatar bgColor={getAvatarColor(profile.username)}>

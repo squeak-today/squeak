@@ -928,7 +928,7 @@ func (c *Client) GetProfilesByUserIDs(userIDs []string) ([]*Profile, error) {
     }
     
     query := fmt.Sprintf(`
-        SELECT username, learning_language, skill_level, interested_topics, daily_questions_goal
+        SELECT user_id, username, learning_language, skill_level, interested_topics, daily_questions_goal
         FROM profiles
         WHERE user_id IN (%s)`, strings.Join(placeholders, ", "))
     
@@ -943,6 +943,7 @@ func (c *Client) GetProfilesByUserIDs(userIDs []string) ([]*Profile, error) {
         var profile Profile
         
         if err := rows.Scan(
+			&profile.UserID,
             &profile.Username,
             &profile.LearningLanguage,
             &profile.SkillLevel,
@@ -960,4 +961,38 @@ func (c *Client) GetProfilesByUserIDs(userIDs []string) ([]*Profile, error) {
     }
     
     return profiles, nil
+}
+
+func (c *Client) RemoveStudentFromClassroom(classroomID int, studentUserID string) error {
+    tx, err := c.db.Begin()
+    if err != nil {
+        return fmt.Errorf("failed to begin transaction: %v", err)
+    }
+
+    // Delete student record
+    _, err = tx.Exec(`
+        DELETE FROM students 
+        WHERE user_id = $1 AND classroom_id = $2
+    `, studentUserID, classroomID)
+    if err != nil {
+        tx.Rollback()
+        return fmt.Errorf("failed to remove student: %v", err)
+    }
+
+    // Update classroom student count
+    _, err = tx.Exec(`
+        UPDATE classrooms
+        SET student_count = student_count - 1
+        WHERE id = $1
+    `, classroomID)
+    if err != nil {
+        tx.Rollback()
+        return fmt.Errorf("failed to update student count: %v", err)
+    }
+
+    if err := tx.Commit(); err != nil {
+        return fmt.Errorf("failed to commit transaction: %v", err)
+    }
+
+    return nil
 }

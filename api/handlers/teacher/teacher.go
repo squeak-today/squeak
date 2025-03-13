@@ -119,6 +119,7 @@ func (h *TeacherHandler) GetStudentProfiles(c *gin.Context) {
 	convertedProfiles := make([]models.GetProfileResponse, len(profiles))
 	for i, p := range profiles {
 		convertedProfiles[i] = models.GetProfileResponse{
+			UserID:             p.UserID,
 			Username:           p.Username,
 			LearningLanguage:   p.LearningLanguage,
 			SkillLevel:         p.SkillLevel,
@@ -361,4 +362,52 @@ func (h *TeacherHandler) RejectContent(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.RejectContentResponse{Message: "Content rejected successfully"})
+}
+
+// Add to teacher.go handler
+// @Summary      Remove student from classroom
+// @Description  Allows teachers to remove a student from their classroom
+// @Tags         teacher
+// @Accept       json
+// @Produce      json
+// @Param        request  body  models.RemoveStudentRequest  true  "Student removal request"
+// @Success      200  {object}  models.RemoveStudentResponse
+// @Router       /teacher/classroom/remove-student [post]
+func (h *TeacherHandler) RemoveStudent(c *gin.Context) {
+    userID := h.GetUserIDFromToken(c)
+    isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+    if !isTeacher {
+        return
+    }
+
+    var req models.RemoveStudentRequest
+    if err := c.ShouldBindJSON(&req); err != nil {
+        c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+        return
+    }
+
+    // Get teacher's classroom
+    classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
+        return
+    }
+
+    // Convert classroom ID to int
+    classroomIDInt, err := strconv.Atoi(classroomID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom format"})
+        return
+    }
+
+    // Remove student
+    if err := h.DBClient.RemoveStudentFromClassroom(classroomIDInt, req.StudentID); err != nil {
+        log.Printf("Failed to remove student: %v", err)
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to remove student"})
+        return
+    }
+
+    c.JSON(http.StatusOK, models.RemoveStudentResponse{
+        Message: "Student removed successfully",
+    })
 }

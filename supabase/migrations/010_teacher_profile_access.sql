@@ -10,3 +10,13 @@ USING (
         WHERE c.teacher_id = auth.uid() AND s.user_id = profiles.user_id
     )
 );
+
+CREATE POLICY "Teachers can remove students"
+ON students FOR DELETE
+USING (
+    EXISTS (
+        SELECT 1 FROM classrooms
+        WHERE classrooms.teacher_id = auth.uid()
+        AND classrooms.id = students.classroom_id
+    )
+);

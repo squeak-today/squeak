@@ -26,8 +26,22 @@ function TeacherDashboard() {
     isAuthenticated,
     verifyTeacher,
     getClassroomInfo,
-    getStudentProfiles // Add this to destructure
+    getStudentProfiles,
+    removeStudent
   } = useTeacherAPI();
+
+  const handleRemoveStudent = async (userId) => {
+    try {
+      await removeStudent(userId);
+      // Refresh profiles after removal
+      const updatedProfiles = await getStudentProfiles();
+      setStudentProfiles(updatedProfiles);
+      showNotification('Student removed successfully');
+    } catch (error) {
+      console.error('Failed to remove student:', error);
+      showNotification('Failed to remove student. Please try again.');
+    }
+  };
 
   useEffect(() => {
     if (!isInitializing) return;
@@ -40,6 +54,7 @@ function TeacherDashboard() {
             setClassroomInfo(data);
             // Fetch student profiles on initialization
             const profilesData = await getStudentProfiles();
+            console.log('Student Profiles Data:', profilesData);
             setStudentProfiles(profilesData);
           } else { 
             navigate('/teacher/become'); 
@@ -85,11 +100,14 @@ function TeacherDashboard() {
               </ClassroomInfoText>
               {/* Add student profiles display */}
               {studentProfiles && (
-                <>
-                  <DateHeader>Student Profiles</DateHeader>
-                  <TeacherStudentProfiles profiles={studentProfiles.profiles} />
-                </>
-              )}
+              <>
+                <DateHeader>Student Profiles</DateHeader>
+                <TeacherStudentProfiles 
+                  profiles={studentProfiles.profiles || []}
+                  onRemoveStudent={handleRemoveStudent}  
+                />
+              </>
+            )}
             </ClassroomInfoContainer>
           )}
         </Section>

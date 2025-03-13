@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS students (
     CONSTRAINT unique_student_classroom UNIQUE (user_id, classroom_id)
 );
 
+
 ALTER TABLE classrooms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE accepted_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
