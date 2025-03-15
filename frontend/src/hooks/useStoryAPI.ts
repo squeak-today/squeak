@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useAuthenticatedAPI } from './useAuthenticatedAPI';
-import { components } from '../lib/clients/types';
 
 export function useStoryAPI() {
     const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
