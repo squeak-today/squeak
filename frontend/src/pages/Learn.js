@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BrowserBox, LearnPageLayout, StoryBrowserContainer, DateHeader, GreetingHeader, TabsContainer, Tab } from '../styles/LearnPageStyles';
+import { BrowserBox, LearnPageLayout, StoryBrowserContainer, GreetingHeader, TabsContainer, Tab } from '../styles/LearnPageStyles';
 import ContentBrowser from '../components/ContentBrowser';
 import WelcomeModal from '../components/WelcomeModal';
 import { useNavigate } from 'react-router-dom';
@@ -10,25 +10,6 @@ import NewsRecommendations from '../components/NewsRecommendations';
 import StoryRecommendations from '../components/StoryRecommendations';
 import { useProfileAPI } from '../hooks/useProfileAPI';
 import { welcomeMsg } from '../lib/welcome_msg';
-
-const formatDate = () => {
-	const date = new Date();
-	const month = date.toLocaleDateString('en-US', { month: 'long' });
-	const day = date.getDate();
-	const year = date.getFullYear();
-
-	const getOrdinal = (n) => {
-		if (n > 3 && n < 21) return 'th';
-		switch (n % 10) {
-			case 1: return 'st';
-			case 2: return 'nd';
-			case 3: return 'rd';
-			default: return 'th';
-		}
-	};
-
-	return `${month} ${day}${getOrdinal(day)}, ${year}`;
-};
 
 const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject, page, pagesize) => {
 	const url = `${apiBase}${endpoint}?language=${language}&cefr=${cefrLevel}&subject=${subject}&page=${page}&pagesize=${pagesize}`;
@@ -53,8 +34,6 @@ function Learn() {
 	const navigate = useNavigate();
 
 	const [profile, setProfile] = useState(null);
-
-	const [recommendations, setRecommendations] = useState([]);
 
 	const [storyRecommendations, setStoryRecommendations] = useState([]);
 
@@ -97,16 +76,6 @@ function Learn() {
 
 	const fetchRecommendations = useCallback(async (language, cefrLevel) => {
 		try {
-			const recommendedNews = await fetchContentList(apiBase, 'news/query', language, cefrLevel, 'any', 1, 5);
-			const transformedRecommendations = Array.isArray(recommendedNews) 
-				? recommendedNews.map(story => ({
-					id: story.id,
-					title: story.title,
-					cefr_level: story.cefr_level,
-					language: story.language,
-					topic: story.topic
-				}))
-				: [];
 			const storyRecommendations = await fetchContentList(apiBase, 'story/query', language, cefrLevel, 'any', 1, 5);
 			const transformedStoryRecommendations = Array.isArray(storyRecommendations) 
 				? storyRecommendations.map(story => ({
@@ -118,12 +87,11 @@ function Learn() {
 					pages: story.pages
 				}))
 				: [];
-			setRecommendations(transformedRecommendations);
 			setStoryRecommendations(transformedStoryRecommendations);
 		} catch (error) {
-			console.error("Failed to fetch recommendations:", error);
-			showNotification("Couldn't load recommendations. Please try again later!", 'error');
-			setRecommendations([]);
+			console.error("Failed to fetch story recommendations:", error);
+			showNotification("Couldn't load story recommendations. Please try again later!", 'error');
+			setStoryRecommendations([]);
 		}
 	}, [apiBase, showNotification]);
 
@@ -189,8 +157,13 @@ function Learn() {
 						
 						{activeTab === 'today' && (
 							<>
-								<DateHeader>Today is {formatDate()}...</DateHeader>
-								<NewsRecommendations recommendations={recommendations} />
+								{profile && (
+									<NewsRecommendations 
+										userLanguage={profile.learning_language} 
+										cefrLevel={profile.skill_level} 
+										interested_topics={profile.interested_topics}
+									/>
+								)}
 								<StoryRecommendations recommendations={storyRecommendations} />
 							</>
 						)}

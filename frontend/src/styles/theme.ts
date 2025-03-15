@@ -34,7 +34,7 @@ export const theme = {
       },
       B: {
         bg: '#FEF7E0',
-        text: '#B95000'
+        text: '#774800'
       },
       C: {
         bg: '#FCE8E8',

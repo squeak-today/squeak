@@ -14,8 +14,6 @@ import { useNotification } from '../context/NotificationContext';
 import { theme } from '../styles/theme';
 import {
   ProfileContainer,
-  SubTitle,
-  Header,
   UsernameSection,
   Username,
   UsernameInput,
@@ -31,7 +29,6 @@ import {
   ProgressBarFill,
   ProgressText,
   StatValue,
-  StatLabel,
   GoalAdjuster,
   ActionButton,
   ActionButtonsContainer,
@@ -41,8 +38,11 @@ import {
   StreakMessage,
   BannerContainer,
   BannerFlag,
-  BannerOverlay
+  BannerOverlay,
+  FormRow,
+  FormColumn
 } from '../styles/pages/ProfilePageStyles';
+import { getCEFRColor } from '../lib/cefr';
 
 type ProfileData = {
   username: string;
@@ -58,13 +58,6 @@ type ProgressData = {
   streak: number;
   completed_today: boolean;
 }
-
-type CEFRLevel = 'A' | 'B' | 'C';
-
-const getCEFRColor = (level: string) => {
-  const firstLetter = level.charAt(0) as CEFRLevel;
-  return theme.colors.cefr[firstLetter].bg;
-};
 
 const getLanguageBackground = (language: string) => {
   switch (language) {
@@ -341,8 +334,8 @@ function Profile() {
 
         {isEditing && (
           <ProfileSection>
-            <div style={{ display: 'flex', gap: theme.spacing.md }}>
-              <div style={{ flex: 1 }}>
+            <FormRow>
+              <FormColumn>
                 <ProfileLabel>Language</ProfileLabel>
                 <Select
                   value={editedLanguage}
@@ -351,8 +344,8 @@ function Profile() {
                   <option value="Spanish">Spanish</option>
                   <option value="French">French</option>
                 </Select>
-              </div>
-              <div style={{ flex: 1 }}>
+              </FormColumn>
+              <FormColumn>
                 <ProfileLabel>Skill Level</ProfileLabel>
                 <Select
                   value={editedLevel}
@@ -365,8 +358,8 @@ function Profile() {
                   <option value="C1">C1 (Advanced)</option>
                   <option value="C2">C2 (Proficient)</option>
                 </Select>
-              </div>
-            </div>
+              </FormColumn>
+            </FormRow>
           </ProfileSection>
         )}
 
@@ -388,6 +381,7 @@ function Profile() {
                 options={AVAILABLE_TOPICS}
                 selected={editedTopics}
                 onToggle={handleTopicToggle}
+                fullWidth={true}
               />
             ) : (
               <TagsContainer>

@@ -6,6 +6,11 @@ export const ProfileContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
   font-family: ${theme.typography.fontFamily.secondary};
+  box-sizing: border-box;
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing.md} ${theme.spacing.sm};
+  }
 `;
 
 export const SubTitle = styled.div`
@@ -27,6 +32,12 @@ export const UsernameSection = styled.div`
   align-items: center;
   gap: ${theme.spacing.md};
   flex-wrap: wrap;
+  max-width: 75%;
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    max-width: 100%;
+    margin-bottom: ${theme.spacing.sm};
+  }
 `;
 
 export const Username = styled.h1`
@@ -57,11 +68,26 @@ export const UsernameInput = styled.input`
   &:focus {
     outline: none;
   }
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    width: 220px;
+    font-size: ${theme.typography.fontSize.xl};
+  }
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    width: 100%;
+    max-width: 100%;
+    font-size: ${theme.typography.fontSize.lg};
+  }
 `;
 
 export const EditButtons = styled.div`
   display: flex;
   gap: ${theme.spacing.sm};
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    margin-top: ${theme.spacing.md};
+  }
 `;
 
 export const EditButton = styled.button<{ $disabled?: boolean }>`
@@ -75,15 +101,46 @@ export const EditButton = styled.button<{ $disabled?: boolean }>`
   &:hover {
     color: ${props => props.$disabled ? theme.colors.border : theme.colors.text.primary};
   }
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing.md};
+    font-size: 1.2rem;
+  }
 `;
 
 export const MainSection = styled.div`
   display: flex;
   gap: ${theme.spacing.md};
   margin-bottom: ${theme.spacing.lg};
+  width: 100%;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     flex-direction: column;
+  }
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    gap: ${theme.spacing.sm};
+    margin-bottom: ${theme.spacing.md};
+  }
+`;
+
+export const FormRow = styled.div`
+  display: flex;
+  gap: ${theme.spacing.md};
+  width: 100%;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    flex-direction: column;
+    gap: ${theme.spacing.sm};
+  }
+`;
+
+export const FormColumn = styled.div`
+  flex: 1;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    margin-bottom: ${theme.spacing.md};
+    width: 100%;
   }
 `;
 
@@ -98,6 +155,11 @@ export const ProfileSection = styled.div`
   
   &:hover {
     box-shadow: ${theme.elevation.hover};
+  }
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing.sm};
+    width: 100%;
   }
 `;
 
@@ -126,6 +188,11 @@ export const Tag = styled.span<{ $type?: string; $color?: string }>`
   border-radius: 15px;
   font-size: ${theme.typography.fontSize.base};
   font-family: ${theme.typography.fontFamily.secondary};
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing.sm} ${theme.spacing.sm};
+    font-size: 0.85rem;
+  }
 `;
 
 export const TagsContainer = styled.div`
@@ -142,6 +209,12 @@ export const Select = styled.select`
   padding: ${theme.spacing.sm} ${theme.spacing.md};
   border-radius: 15px;
   border: 1px solid ${theme.colors.border};
+  width: 100%;
+  box-sizing: border-box;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.sm};
+  }
 `;
 
 export const ProgressBarContainer = styled.div`
@@ -186,6 +259,10 @@ export const GoalAdjuster = styled.div`
   align-items: center;
   justify-content: center;
   gap: ${theme.spacing.md};
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    gap: ${theme.spacing.sm};
+  }
 `;
 
 export const ActionButton = styled.button<{ $disabled?: boolean }>`
@@ -275,6 +352,11 @@ export const BannerContainer = styled.div`
   &:hover {
     box-shadow: ${theme.elevation.hover};
   }
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    height: 30vh;
+    margin-bottom: ${theme.spacing.md};
+  }
 `;
 
 export const BannerFlag = styled.img`
@@ -299,4 +381,10 @@ export const BannerOverlay = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: ${theme.spacing.sm};
+  }
 `; 
