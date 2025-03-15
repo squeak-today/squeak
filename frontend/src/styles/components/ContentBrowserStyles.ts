@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from '../theme';
 
 export const Container = styled.div`
   max-width: 900px;
@@ -7,11 +8,11 @@ export const Container = styled.div`
 `;
 
 export const Header = styled.h1`
-  font-family: 'Lora', serif;
+  font-family: ${theme.typography.fontFamily.primary};
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 1.5em;
-  color: #000;
+  color: ${theme.colors.text.primary};
 `;
 
 export const FilterContainer = styled.div`
@@ -32,14 +33,14 @@ export const FilterContainer = styled.div`
 export const FilterLabel = styled.label`
   display: block;
   margin-bottom: 0.3em;
-  font-family: 'Lora', serif;
+  font-family: ${theme.typography.fontFamily.primary};
 `;
 
 export const FilterSelect = styled.select`
   padding: 0.5em;
-  border: 1px solid #e0e0e0;
+  border: 1px solid ${theme.colors.border};
   border-radius: 5px;
-  font-family: 'Lora', serif;
+  font-family: ${theme.typography.fontFamily.primary};
   width: 100%;
   background: white;
   cursor: pointer;
@@ -55,11 +56,11 @@ export const PaginationContainer = styled.div`
 
 export const PageButton = styled.button`
   padding: 0.5em 1em;
-  border: 1px solid #e0e0e0;
+  border: 1px solid ${theme.colors.border};
   border-radius: 10px;
   background: white;
   cursor: pointer;
-  font-family: 'Lora', serif;
+  font-family: ${theme.typography.fontFamily.primary};
   &:disabled {
     background: #eee;
     cursor: not-allowed;
@@ -71,7 +72,7 @@ export const DisclaimerText = styled.p`
   font-size: 0.75rem;
   text-align: center;
   margin-top: 2rem;
-  font-family: 'Lora', serif;
+  font-family: ${theme.typography.fontFamily.primary};
   font-style: italic;
 `;
 
@@ -79,6 +80,6 @@ export const NoContentMessage = styled.div`
   text-align: center;
   padding: 2em;
   color: #666;
-  font-family: 'Lora', serif;
+  font-family: ${theme.typography.fontFamily.primary};
   font-style: italic;
 `; 

@@ -402,6 +402,42 @@ definitions:
     required:
     - message
     type: object
+  models.StoryItem:
+    properties:
+      cefr_level:
+        example: B1
+        type: string
+      created_at:
+        example: "2024-02-26T13:01:13.390612Z"
+        type: string
+      date_created:
+        example: "2024-02-26"
+        type: string
+      id:
+        example: "123"
+        type: string
+      language:
+        example: French
+        type: string
+      preview_text:
+        example: Un résumé des nouvelles musicales...
+        type: string
+      title:
+        example: L'actualité musicale en bref
+        type: string
+      topic:
+        example: Music
+        type: string
+    required:
+    - cefr_level
+    - created_at
+    - date_created
+    - id
+    - language
+    - preview_text
+    - title
+    - topic
+    type: object
   models.StreakResponse:
     properties:
       completed_today:
@@ -935,6 +971,49 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get story QNA context
+      tags:
+      - story
+  /story/query:
+    get:
+      consumes:
+      - application/json
+      description: Get story query by ID
+      parameters:
+      - description: Language
+        in: query
+        name: language
+        required: true
+        type: string
+      - description: CEFR
+        in: query
+        name: cefr
+        required: true
+        type: string
+      - description: Subject
+        in: query
+        name: subject
+        required: true
+        type: string
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: Page Size
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.StoryItem'
+            type: array
+      summary: Get story query
       tags:
       - story
   /student:

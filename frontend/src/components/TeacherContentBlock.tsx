@@ -1,5 +1,7 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  StoryBlockContainer,
+  ContentBlockContainer,
   TopSection,
   DateText,
   Title,
@@ -9,16 +11,36 @@ import {
   Tag,
   AcceptButton,
   RejectButton
-} from '../styles/components/TeacherStoryBlockStyles';
-import { useNavigate } from 'react-router-dom';
+} from '../styles/components/ContentBlockStyles';
 
-const formatDate = (dateString) => {
+interface Story {
+  id: string;
+  title: string;
+  preview_text: string;
+  language: string;
+  topic: string;
+  cefr_level: string;
+  date_created: string;
+  content_type: string;
+  [key: string]: any;
+}
+
+interface TeacherContentBlockProps {
+  story: Story;
+  onAccept: (story: Story) => void;
+  onReject: (story: Story) => void;
+  status: string;
+}
+
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  if (isNaN(date)) return "Invalid Date";
+  if (isNaN(date.getTime())) return "Invalid Date";
+  
   const month = date.toLocaleString('en-US', { month: 'long' });
   const day = date.getDate();
   const year = date.getFullYear();
-  const getOrdinal = (n) => {
+  
+  const getOrdinal = (n: number): string => {
     if (n > 3 && n < 21) return 'th';
     switch (n % 10) {
       case 1: return 'st';
@@ -27,13 +49,19 @@ const formatDate = (dateString) => {
       default: return 'th';
     }
   };
+  
   return `${month} ${day}${getOrdinal(day)}, ${year}`;
 };
 
-const TeacherStoryBlock = ({ story, onAccept, onReject, status }) => {
+const TeacherContentBlock: React.FC<TeacherContentBlockProps> = ({ 
+  story, 
+  onAccept, 
+  onReject, 
+  status 
+}) => {
   const navigate = useNavigate();
 
-  const handleAction = (e) => {
+  const handleAction = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (status === 'rejected') {
       onAccept(story);
@@ -42,18 +70,17 @@ const TeacherStoryBlock = ({ story, onAccept, onReject, status }) => {
     }
   };
 
-  const handleClick = (story) => {
+  const handleClick = () => {
     navigate(`/read/${story.content_type}/${story.id}`, {
-        state: {
-            backTo: '/teacher',
-            backText: 'Back to Teacher Dashboard'
-        }
+      state: {
+        backTo: '/teacher',
+        backText: 'Back to Teacher Dashboard'
+      }
     });
   };
 
-  // Expect story properties: title, preview_text, language, topic, cefr_level, date_created
   return (
-    <StoryBlockContainer onClick={() => handleClick(story)}>
+    <ContentBlockContainer onClick={handleClick}>
       <TopSection>
         <TagContainer>
           <Tag cefr={story.cefr_level}>{story.cefr_level}</Tag>
@@ -75,8 +102,8 @@ const TeacherStoryBlock = ({ story, onAccept, onReject, status }) => {
           Reject
         </RejectButton>
       )}
-    </StoryBlockContainer>
+    </ContentBlockContainer>
   );
 };
 
-export default TeacherStoryBlock;
+export default TeacherContentBlock; 

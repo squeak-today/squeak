@@ -11,6 +11,7 @@ import Welcome from './pages/Welcome';
 import TeacherDashboard from './pages/TeacherDashboard';
 import BecomeTeacher from './pages/BecomeTeacher';
 import BecomeStudent from './pages/BecomeStudent';
+import Profile from './pages/Profile';
 
 const App: React.FC = () => {
 	return (
@@ -33,6 +34,11 @@ const App: React.FC = () => {
 					<Route path="/student/become" element={
 						<ProtectedRoute>
 							<BecomeStudent />
+						</ProtectedRoute>
+					} />
+					<Route path="/profile" element={
+						<ProtectedRoute>
+							<Profile />
 						</ProtectedRoute>
 					} />
 

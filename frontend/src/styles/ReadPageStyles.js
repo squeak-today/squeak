@@ -84,7 +84,6 @@ export const Tag = styled.span`
     padding: 6px 12px;
     border-radius: 15px;
     font-size: 0.9em;
-    color: #333;
     font-family: 'Lora', serif;
 `;
 

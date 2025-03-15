@@ -7,6 +7,14 @@ export const theme = {
     selected: 'fad48f',
     background: '#fbfbfb',
     border: '#e0e0e0',
+    languages: {
+      french: {
+        bg: '#E6F3FF', // Pastel blue
+      },
+      spanish: {
+        bg: '#FFE8D6', // Pastel orange
+      }
+    },
     cefr: {
       beginner: {
         bg: '#E6F4EA',
@@ -19,7 +27,25 @@ export const theme = {
       advanced: {
         bg: '#FCE8E8',
         text: '#D93026'
+      },
+      A: {
+        bg: '#E6F4EA',
+        text: '#1B873B'
+      },
+      B: {
+        bg: '#FEF7E0',
+        text: '#774800'
+      },
+      C: {
+        bg: '#FCE8E8',
+        text: '#D93026'
       }
+    },
+    streak: {
+      none: '#f0f0f0',
+      short: '#B3FFB3',  // 5-19 days
+      medium: '#FFD6B3', // 20-59 days
+      long: '#FFB3B3',   // 60+ days
     }
   },
   elevation: {

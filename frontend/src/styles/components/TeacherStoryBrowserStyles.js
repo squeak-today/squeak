@@ -8,7 +8,7 @@ import {
   PageButton,
   DisclaimerText,
   NoContentMessage
-} from './StoryBrowserStyles';
+} from './ContentBrowserStyles';
 
 export const Container = styled(BaseContainer)`
   max-width: 900px;

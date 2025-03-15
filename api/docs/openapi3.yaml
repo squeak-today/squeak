@@ -387,6 +387,52 @@ paths:
         - story
       description: Get story QNA context by ID
       summary: Get story QNA context
+  /story/query:
+    get:
+      parameters:
+        - description: Language
+          in: query
+          name: language
+          required: true
+          schema:
+            type: string
+        - description: CEFR
+          in: query
+          name: cefr
+          required: true
+          schema:
+            type: string
+        - description: Subject
+          in: query
+          name: subject
+          required: true
+          schema:
+            type: string
+        - description: Page
+          in: query
+          name: page
+          required: true
+          schema:
+            type: string
+        - description: Page Size
+          in: query
+          name: pagesize
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/models.StoryItem'
+                type: array
+          description: OK
+      tags:
+        - story
+      description: Get story query by ID
+      summary: Get story query
   /student:
     get:
       responses:
@@ -1034,6 +1080,42 @@ components:
           type: string
       required:
         - message
+      type: object
+    models.StoryItem:
+      properties:
+        cefr_level:
+          example: B1
+          type: string
+        created_at:
+          example: '2024-02-26T13:01:13.390612Z'
+          type: string
+        date_created:
+          example: '2024-02-26'
+          type: string
+        id:
+          example: '123'
+          type: string
+        language:
+          example: French
+          type: string
+        preview_text:
+          example: Un résumé des nouvelles musicales...
+          type: string
+        title:
+          example: L'actualité musicale en bref
+          type: string
+        topic:
+          example: Music
+          type: string
+      required:
+        - cefr_level
+        - created_at
+        - date_created
+        - id
+        - language
+        - preview_text
+        - title
+        - topic
       type: object
     models.StreakResponse:
       properties:

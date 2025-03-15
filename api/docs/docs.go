@@ -571,6 +571,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/story/query": {
+            "get": {
+                "description": "Get story query by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "story"
+                ],
+                "summary": "Get story query",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "language",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "CEFR",
+                        "name": "cefr",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject",
+                        "name": "subject",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page Size",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.StoryItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/student": {
             "get": {
                 "description": "Check if the user is a student and get their classroom info",
@@ -1472,6 +1535,53 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Content rejected successfully"
+                }
+            }
+        },
+        "models.StoryItem": {
+            "type": "object",
+            "required": [
+                "cefr_level",
+                "created_at",
+                "date_created",
+                "id",
+                "language",
+                "preview_text",
+                "title",
+                "topic"
+            ],
+            "properties": {
+                "cefr_level": {
+                    "type": "string",
+                    "example": "B1"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-02-26T13:01:13.390612Z"
+                },
+                "date_created": {
+                    "type": "string",
+                    "example": "2024-02-26"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "language": {
+                    "type": "string",
+                    "example": "French"
+                },
+                "preview_text": {
+                    "type": "string",
+                    "example": "Un résumé des nouvelles musicales..."
+                },
+                "title": {
+                    "type": "string",
+                    "example": "L'actualité musicale en bref"
+                },
+                "topic": {
+                    "type": "string",
+                    "example": "Music"
                 }
             }
         },

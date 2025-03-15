@@ -337,6 +337,33 @@ Get story QNA context by ID
 | 200 | OK | [models.GetStoryQNAContextResponse](#modelsgetstoryqnacontextresponse) |
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 
+### /story/query
+
+#### GET
+##### Summary
+
+Get story query
+
+##### Description
+
+Get story query by ID
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| language | query | Language | Yes | string |
+| cefr | query | CEFR | Yes | string |
+| subject | query | Subject | Yes | string |
+| page | query | Page | Yes | string |
+| pagesize | query | Page Size | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [ [models.StoryItem](#modelsstoryitem) ] |
+
 ---
 ### /student
 
@@ -729,6 +756,19 @@ Accept content
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | message | string | *Example:* `"Content rejected successfully"` | Yes |
+
+#### models.StoryItem
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| cefr_level | string | *Example:* `"B1"` | Yes |
+| created_at | string | *Example:* `"2024-02-26T13:01:13.390612Z"` | Yes |
+| date_created | string | *Example:* `"2024-02-26"` | Yes |
+| id | string | *Example:* `"123"` | Yes |
+| language | string | *Example:* `"French"` | Yes |
+| preview_text | string | *Example:* `"Un résumé des nouvelles musicales..."` | Yes |
+| title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
+| topic | string | *Example:* `"Music"` | Yes |
 
 #### models.StreakResponse
 

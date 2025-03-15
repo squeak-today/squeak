@@ -1,12 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
+import { theme } from '../styles/theme';
 
 const SelectContainer = styled.div`
-    width: 100%;
+    width: auto;
     border: 1px solid #ccc;
     border-radius: 15px;
-    max-height: 150px;
     overflow-y: auto;
+    box-sizing: border-box;
+    
+    @media (max-width: ${theme.breakpoints.mobile}) {
+        width: 100%;
+        max-height: 200px;
+    }
 `;
 
 const Option = styled.div`
@@ -17,11 +23,15 @@ const Option = styled.div`
     &:hover {
         background: ${props => props.$selected ? '#D1E8FF' : '#f5f5f5'};
     }
+    
+    @media (max-width: ${theme.breakpoints.mobile}) {
+        padding: 12px 16px; /* Larger touch target on mobile */
+    }
 `;
 
-const MultiSelect = ({ options, selected, onToggle }) => {
+const MultiSelect = ({ options, selected, onToggle, fullWidth = false }) => {
     return (
-        <SelectContainer>
+        <SelectContainer $fullWidth={fullWidth}>
             {options.map(option => (
                 <Option
                     key={option}

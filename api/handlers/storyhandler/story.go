@@ -157,6 +157,18 @@ func (h *StoryHandler) GetStoryQNAContext(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+//	@Summary		Get story query
+//	@Description	Get story query by ID
+//	@Tags			story
+//	@Accept			json
+//	@Produce		json
+//	@Param			language	query		string	true	"Language"
+//	@Param			cefr		query		string	true	"CEFR"
+//	@Param			subject		query		string	true	"Subject"
+//	@Param			page		query		string	true	"Page"
+//	@Param			pagesize	query		string	true	"Page Size"
+//	@Success		200			{object}	models.GetStoryQueryResponse
+//	@Router			/story/query [get]
 func (h *StoryHandler) GetStoryQuery(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	language := c.Query("language")

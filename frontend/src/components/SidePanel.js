@@ -8,7 +8,6 @@ import {
     ExplanationText,
 } from '../styles/ReadPageStyles';
 
-// General tab components
 import {
     TagsContainer,
     Tag,
@@ -18,7 +17,6 @@ import {
     ReportButton,
 } from '../styles/ReadPageStyles';
 
-// Learn tab components
 import {
     LearnContentContainer,
     Label,
@@ -33,16 +31,7 @@ import {
 } from '../styles/ReadPageStyles';
 
 import LoadingSpinner from './LoadingSpinner';
-
-const getCEFRColor = (level) => {
-    const firstLetter = level.charAt(0);
-    switch (firstLetter) {
-        case 'C': return '#FFB3B3';
-        case 'B': return '#FFD6B3';
-        case 'A': return '#B3FFB3';
-        default: return '#FFA07A';
-    }
-};
+import { getCEFRColor, getCEFRTextColor } from '../lib/cefr';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -134,7 +123,7 @@ const SidePanel = ({
                 <>
                     <ContentSection>
                         <TagsContainer>
-                            <Tag type="cefr" color={getCEFRColor(contentData.difficulty)} value={contentData.difficulty}>
+                            <Tag type="cefr" color={getCEFRColor(contentData.difficulty)} style={{color: getCEFRTextColor(contentData.difficulty)}}>
                                 {contentData.difficulty}
                             </Tag>
                             {contentData.tags.map((tag, index) => (
@@ -190,7 +179,7 @@ const SidePanel = ({
             {questions.map((q, index) => (
                 <QuestionContainer key={index}>
                     <QuestionHeader>
-                        <CEFRTag type="cefr" color={getCEFRColor(q.cefrLevel)}>
+                        <CEFRTag type="cefr" color={getCEFRColor(q.cefrLevel)} style={{color: getCEFRTextColor(q.cefrLevel)}}>
                             {q.cefrLevel}
                         </CEFRTag>
                         <QuestionText>{q.question}</QuestionText>
