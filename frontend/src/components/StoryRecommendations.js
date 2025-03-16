@@ -1,5 +1,7 @@
+import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { getCEFRColor, getCEFRTextColor } from '../lib/cefr';
 
 const Container = styled.div`
     margin-bottom: 2em;
@@ -68,7 +70,7 @@ const Tag = styled.span`
     padding: 0.3em 0.8em;
     border-radius: 12px;
     font-size: 0.75em;
-    color: black;
+    color: ${props => props.cefr ? getCEFRTextColor(props.cefr) : '#333'};
     font-family: 'Lora', serif;
     ${props => props.cefr && 'font-weight: bold;'}
 `;
@@ -87,16 +89,6 @@ const NoRecommendationsMessage = styled.div`
     font-family: 'Lora', serif;
     font-style: italic;
 `;
-
-const getCEFRColor = (level) => {
-    const firstLetter = level.charAt(0);
-    switch (firstLetter) {
-        case 'C': return '#FFB3B3';
-        case 'B': return '#FFD6B3';
-        case 'A': return '#B3FFB3';
-        default: return '#FFA07A';
-    }
-};
 
 const StoryRecommendations = ({ recommendations }) => {
     const navigate = useNavigate();
