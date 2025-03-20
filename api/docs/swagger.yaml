@@ -661,6 +661,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.SpeechToTextResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Speech to text
       tags:
       - audio

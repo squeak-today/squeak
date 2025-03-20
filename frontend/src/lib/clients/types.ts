@@ -40,6 +40,12 @@ export interface paths {
             "application/json": components["schemas"]["models.SpeechToTextResponse"];
           };
         };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
       };
     };
   };

@@ -68,6 +68,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.SpeechToTextResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
                     }
                 }
             }

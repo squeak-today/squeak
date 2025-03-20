@@ -20,7 +20,7 @@ export const TTS_VOICE_IDS = {
     'es-ES': 'es-ES-Standard-A',
 } as const;
 
-export const STT_LANDUAGE_CODES = {
+export const STT_LANGUAGE_CODES = {
     'French': 'fr-CA',
     'Spanish': 'es-ES',
 } as const;

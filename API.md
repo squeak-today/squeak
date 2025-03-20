@@ -52,6 +52,7 @@ Convert speech audio to text
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.SpeechToTextResponse](#modelsspeechtotextresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 
 ### /audio/translate
 

@@ -29,6 +29,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/models.SpeechToTextResponse'
           description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
       tags:
         - audio
       description: Convert speech audio to text

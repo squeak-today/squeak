@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type Client struct {
@@ -154,13 +155,27 @@ func (c *Client) TextToSpeech(text, languageCode, voiceName string) (string, err
 }
 
 func (c *Client) SpeechToText(audioContent, languageCode string) (string, error) {
+	encoding := "LINEAR16"
+	var sampleRateHertz int
+
+	if strings.HasPrefix(audioContent, "GkXf") { // webm file signature
+		encoding = "WEBM_OPUS"
+		sampleRateHertz = 48000
+	}
+
+	configMap := map[string]interface{}{
+		"encoding":                   encoding,
+		"languageCode":               languageCode,
+		"model":                      "default",
+		"enableAutomaticPunctuation": true,
+	}
+
+	if sampleRateHertz > 0 {
+		configMap["sampleRateHertz"] = sampleRateHertz
+	}
+
 	sttPayload := map[string]interface{}{
-		"config": map[string]interface{}{
-			"encoding":                   "LINEAR16",
-			"languageCode":               languageCode,
-			"model":                      "default",
-			"enableAutomaticPunctuation": true,
-		},
+		"config": configMap,
 		"audio": map[string]interface{}{
 			"content": audioContent, // base 64 encoded
 		},
@@ -211,7 +226,7 @@ func (c *Client) SpeechToText(audioContent, languageCode string) (string, error)
 	}
 
 	if len(result.Results) == 0 || len(result.Results[0].Alternatives) == 0 {
-		return "", fmt.Errorf("no transcription results returned: %s", string(body))
+		return "", fmt.Errorf("NO TRANSCRIPT: %s", string(body))
 	}
 
 	return result.Results[0].Alternatives[0].Transcript, nil
