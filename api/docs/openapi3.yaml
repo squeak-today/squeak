@@ -20,6 +20,32 @@ paths:
         - audio
       description: Check if the audio service is live
       summary: Check audio service health
+  /audio/stt:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.SpeechToTextResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - audio
+      description: Convert speech audio to text
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.SpeechToTextRequest'
+        description: Speech to text request
+        required: true
+      summary: Speech to text
   /audio/translate:
     post:
       responses:
@@ -1080,6 +1106,26 @@ components:
           type: string
       required:
         - message
+      type: object
+    models.SpeechToTextRequest:
+      properties:
+        audio_content:
+          example: base64-encoded-audio-content
+          type: string
+        language_code:
+          example: en-US
+          type: string
+      required:
+        - audio_content
+        - language_code
+      type: object
+    models.SpeechToTextResponse:
+      properties:
+        transcript:
+          example: 'Hello, how are you?'
+          type: string
+      required:
+        - transcript
       type: object
     models.StoryItem:
       properties:
