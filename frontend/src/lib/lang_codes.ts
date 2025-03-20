@@ -19,3 +19,8 @@ export const TTS_VOICE_IDS = {
     'fr-FR': 'fr-FR-Standard-A',
     'es-ES': 'es-ES-Standard-A',
 } as const;
+
+export const STT_LANDUAGE_CODES = {
+    'French': 'fr-CA',
+    'Spanish': 'es-ES',
+} as const;

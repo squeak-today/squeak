@@ -33,5 +33,15 @@ export function useAudioAPI() {
         })
     }, [client, requireAuth]);
 
-    return { isAuthenticated, pingAudio, translate, tts };
+    const stt = useCallback(async (content: components["schemas"]["models.SpeechToTextRequest"]) => {
+        return requireAuth(async () => {
+            const { data, error } = await client!.POST('/audio/stt', {
+                body: content
+            });
+            if (error) { throw error; }
+            return data;
+        })
+    }, [client, requireAuth]);
+
+    return { isAuthenticated, pingAudio, translate, tts, stt };
 }

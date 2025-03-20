@@ -38,6 +38,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/audio/stt": {
+            "post": {
+                "description": "Convert speech audio to text",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audio"
+                ],
+                "summary": "Speech to text",
+                "parameters": [
+                    {
+                        "description": "Speech to text request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SpeechToTextRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SpeechToTextResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/audio/translate": {
             "post": {
                 "description": "Translate text from source language to target language",
@@ -1535,6 +1569,35 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Content rejected successfully"
+                }
+            }
+        },
+        "models.SpeechToTextRequest": {
+            "type": "object",
+            "required": [
+                "audio_content",
+                "language_code"
+            ],
+            "properties": {
+                "audio_content": {
+                    "type": "string",
+                    "example": "base64-encoded-audio-content"
+                },
+                "language_code": {
+                    "type": "string",
+                    "example": "en-US"
+                }
+            }
+        },
+        "models.SpeechToTextResponse": {
+            "type": "object",
+            "required": [
+                "transcript"
+            ],
+            "properties": {
+                "transcript": {
+                    "type": "string",
+                    "example": "Hello, how are you?"
                 }
             }
         },

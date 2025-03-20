@@ -152,3 +152,67 @@ func (c *Client) TextToSpeech(text, languageCode, voiceName string) (string, err
 
 	return result.AudioContent, nil
 }
+
+func (c *Client) SpeechToText(audioContent, languageCode string) (string, error) {
+	sttPayload := map[string]interface{}{
+		"config": map[string]interface{}{
+			"encoding":                   "LINEAR16",
+			"languageCode":               languageCode,
+			"model":                      "default",
+			"enableAutomaticPunctuation": true,
+		},
+		"audio": map[string]interface{}{
+			"content": audioContent, // base 64 encoded
+		},
+	}
+
+	jsonData, err := json.Marshal(sttPayload)
+	if err != nil {
+		return "", fmt.Errorf("STT payload marshalling failed: %v", err)
+	}
+
+	req, err := http.NewRequest("POST",
+		"https://speech.googleapis.com/v1/speech:recognize?key="+c.apiKey,
+		bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", fmt.Errorf("failed to create request: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("request to GCP failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("google API returned error: status=%d body=%s", resp.StatusCode, string(body))
+	}
+
+	// Parse the response
+	var result struct {
+		Results []struct {
+			Alternatives []struct {
+				Transcript string  `json:"transcript"`
+				Confidence float64 `json:"confidence"`
+			} `json:"alternatives"`
+		} `json:"results"`
+	}
+
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("failed to unmarshal response: %v, body: %s", err, string(body))
+	}
+
+	if len(result.Results) == 0 || len(result.Results[0].Alternatives) == 0 {
+		return "", fmt.Errorf("no transcription results returned: %s", string(body))
+	}
+
+	return result.Results[0].Alternatives[0].Transcript, nil
+}
