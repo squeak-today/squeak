@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NotificationProvider } from './context/NotificationContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import Auth from './pages/Auth'
 
 const App: React.FC = () => {
   return (
@@ -10,12 +11,7 @@ const App: React.FC = () => {
       <NotificationProvider>
         <Router>
           <Routes>
-            <Route path="/" element={
-            <div>
-              <h1>Squeak Dashboard</h1>
-              <p>Our revamped dashboard for teachers and school boards is a work in progress. Stay tuned!</p>
-            </div>
-          } />
+            <Route path="/" element={<Auth/>} />
           </Routes>
         </Router>
       </NotificationProvider>
