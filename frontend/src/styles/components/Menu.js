@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { theme } from '../theme';
+import { theme } from 'shared';
 
 export const MenuList = styled.div`
   display: flex;

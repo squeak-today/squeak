@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { theme } from '../theme';
+import { theme } from 'shared';
 
 export const FAQContainer = styled.div`
   width: 70vw;

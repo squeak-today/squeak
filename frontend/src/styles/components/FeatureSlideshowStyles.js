@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Container as BaseContainer } from '../layout/Container';
-import { theme } from '../theme';
+import { theme } from 'shared';
 
 export const Container = styled(BaseContainer)`
   width: 100vw;

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { theme } from '../theme';
+import { theme } from 'shared';
 
 export const Heading = styled.h1`
   font-family: ${theme.typography.fontFamily.primary};

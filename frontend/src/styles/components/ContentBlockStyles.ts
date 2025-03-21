@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { theme } from '../theme';
+import { theme } from 'shared';
 import { getCEFRColor, getCEFRTextColor } from '../../lib/cefr';
 
 interface TagProps {
