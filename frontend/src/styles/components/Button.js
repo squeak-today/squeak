@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { theme } from 'shared';
+import { theme } from '../theme';
 
 export const Button = styled.button`
   font-family: ${theme.typography.fontFamily.secondary};

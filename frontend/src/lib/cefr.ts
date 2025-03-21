@@ -1,4 +1,4 @@
-import { theme } from 'shared';
+import { theme } from '../styles/theme';
 
 export const getCEFRColor = (level: string): string => {
   if (!level) return '#E0E0E0';

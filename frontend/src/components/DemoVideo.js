@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { theme } from 'shared';
+import { theme } from '../styles/theme';
 
 const VideoContainer = styled.video`
   width: ${(props) => props.width || "100%"};

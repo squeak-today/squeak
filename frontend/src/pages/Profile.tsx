@@ -11,7 +11,7 @@ import { useProgressAPI } from '../hooks/useProgressAPI';
 import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import { useStudentAPI } from '../hooks/useStudentAPI';
 import { useNotification } from '../context/NotificationContext';
-import { theme } from 'shared';
+import { theme } from '../styles/theme';
 import {
   ProfileContainer,
   UsernameSection,

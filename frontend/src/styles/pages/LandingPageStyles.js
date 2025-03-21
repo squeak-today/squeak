@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 import { Button } from '../components/Button';
 import { Heading } from '../components/Heading';
-import { theme } from 'shared';
+import { theme } from '../theme';
 
 export const HomeContainer = styled.div`
   position: relative;

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { theme } from 'shared';
+import { theme } from '../styles/theme';
 
 const SelectContainer = styled.div`
     width: auto;
