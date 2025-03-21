@@ -26,7 +26,7 @@ CREATE TRIGGER update_organization_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_teacher_updated_at ON teacher;
+DROP TRIGGER IF EXISTS update_teacher_updated_at ON teachers;
 CREATE TRIGGER update_teacher_updated_at
     BEFORE UPDATE ON organizations
     FOR EACH ROW
