@@ -693,6 +693,28 @@ export interface paths {
       };
     };
   };
+  "/webhook": {
+    /**
+     * Process Stripe webhook
+     * @description Validates and processes incoming webhook events from Stripe
+     */
+    post: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.WebhookResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -1007,6 +1029,10 @@ export interface components {
       id?: number;
       /** @example Profile updated successfully */
       message: string;
+    };
+    "models.WebhookResponse": {
+      received?: boolean;
+      type?: string;
     };
     "storage.Dictionary": {
       translations?: {

@@ -589,6 +589,25 @@ Accept content
 | 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
+### /webhook
+
+#### POST
+##### Summary
+
+Process Stripe webhook
+
+##### Description
+
+Validates and processes incoming webhook events from Stripe
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.WebhookResponse](#modelswebhookresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+---
 ### Models
 
 #### models.AcceptContentRequest
@@ -880,6 +899,13 @@ Accept content
 | ---- | ---- | ----------- | -------- |
 | id | integer | *Example:* `123` | No |
 | message | string | *Example:* `"Profile updated successfully"` | Yes |
+
+#### models.WebhookResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| received | boolean |  | No |
+| type | string |  | No |
 
 #### storage.Dictionary
 

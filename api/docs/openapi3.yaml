@@ -703,6 +703,25 @@ paths:
         description: Reject content request
         required: true
       summary: Accept content
+  /webhook:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.WebhookResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - stripe
+      description: Validates and processes incoming webhook events from Stripe
+      summary: Process Stripe webhook
 components:
   schemas:
     models.AcceptContentRequest:
@@ -1299,6 +1318,13 @@ components:
           type: string
       required:
         - message
+      type: object
+    models.WebhookResponse:
+      properties:
+        received:
+          type: boolean
+        type:
+          type: string
       type: object
     storage.Dictionary:
       properties:

@@ -595,6 +595,13 @@ definitions:
     required:
     - message
     type: object
+  models.WebhookResponse:
+    properties:
+      received:
+        type: boolean
+      type:
+        type: string
+    type: object
   storage.Dictionary:
     properties:
       translations:
@@ -1299,6 +1306,25 @@ paths:
       summary: Accept content
       tags:
       - teacher
+  /webhook:
+    post:
+      consumes:
+      - application/json
+      description: Validates and processes incoming webhook events from Stripe
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WebhookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Process Stripe webhook
+      tags:
+      - stripe
 securityDefinitions:
   Bearer:
     description: JWT Authorization header using Bearer
