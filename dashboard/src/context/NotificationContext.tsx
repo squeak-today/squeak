@@ -1,7 +1,20 @@
 import React, { createContext, useContext, useState } from 'react';
 import { NotificationContainer, NotificationsWrapper } from '../styles/ContextStyles';
 
-const NotificationContext = createContext();
+type NotificationType = 'error' | 'success';
+
+interface Notification {
+  id: number;
+  message: string;
+  type: NotificationType;
+  isLeaving?: boolean;
+}
+
+interface NotificationContextType {
+  showNotification: (message: string, type?: NotificationType) => void;
+}
+
+const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 // USAGE
 // import { useNotification } from '/path/to/NotificationContext';
@@ -11,10 +24,10 @@ const NotificationContext = createContext();
 // showNotification('This is an error', 'error')
 // or:
 // showNotification('This is a success', 'success')
-export function NotificationProvider({ children }) {
-    const [notifications, setNotifications] = useState([]);
+export function NotificationProvider({ children }: { children: React.ReactNode }) {
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
-    const showNotification = (message, type = 'error') => {
+    const showNotification = (message: string, type: NotificationType = 'error') => {
         const id = Date.now();
         setNotifications(prev => [...prev, { id, message, type }]);
         
@@ -24,7 +37,7 @@ export function NotificationProvider({ children }) {
         }, timeout);
     };
 
-    const handleNotificationDismiss = (id) => {
+    const handleNotificationDismiss = (id: number) => {
         setNotifications(prev => 
             prev.map(notif => 
                 notif.id === id ? { ...notif, isLeaving: true } : notif
@@ -56,4 +69,10 @@ export function NotificationProvider({ children }) {
     );
 }
 
-export const useNotification = () => useContext(NotificationContext); 
+export const useNotification = (): NotificationContextType => {
+    const context = useContext(NotificationContext);
+    if (context === undefined) {
+        throw new Error('useNotification must be used within a NotificationProvider');
+    }
+    return context;
+} 
