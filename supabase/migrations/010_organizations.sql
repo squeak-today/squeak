@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.organizations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   admin_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  premium BOOLEAN NOT NULL DEFAULT false,
+  plan TEXT NOT NULL DEFAULT 'FREE',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT unique_admin_id UNIQUE (admin_id)
