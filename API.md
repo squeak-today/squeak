@@ -30,6 +30,30 @@ Check if the audio service is live
 | ---- | ----------- | ------ |
 | 200 | OK | [models.AudioHealthResponse](#modelsaudiohealthresponse) |
 
+### /audio/stt
+
+#### POST
+##### Summary
+
+Speech to text
+
+##### Description
+
+Convert speech audio to text
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Speech to text request | Yes | [models.SpeechToTextRequest](#modelsspeechtotextrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.SpeechToTextResponse](#modelsspeechtotextresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /audio/translate
 
 #### POST
@@ -565,6 +589,25 @@ Accept content
 | 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
+### /webhook
+
+#### POST
+##### Summary
+
+Process Stripe webhook
+
+##### Description
+
+Validates and processes incoming webhook events from Stripe
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.WebhookResponse](#modelswebhookresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+---
 ### Models
 
 #### models.AcceptContentRequest
@@ -757,6 +800,19 @@ Accept content
 | ---- | ---- | ----------- | -------- |
 | message | string | *Example:* `"Content rejected successfully"` | Yes |
 
+#### models.SpeechToTextRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| audio_content | string | *Example:* `"base64-encoded-audio-content"` | Yes |
+| language_code | string | *Example:* `"en-US"` | Yes |
+
+#### models.SpeechToTextResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| transcript | string | *Example:* `"Hello, how are you?"` | Yes |
+
 #### models.StoryItem
 
 | Name | Type | Description | Required |
@@ -843,6 +899,13 @@ Accept content
 | ---- | ---- | ----------- | -------- |
 | id | integer | *Example:* `123` | No |
 | message | string | *Example:* `"Profile updated successfully"` | Yes |
+
+#### models.WebhookResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| received | boolean |  | No |
+| type | string |  | No |
 
 #### storage.Dictionary
 

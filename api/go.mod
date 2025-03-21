@@ -13,6 +13,7 @@ require (
 	github.com/google/generative-ai-go v0.19.0
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/lib/pq v1.10.9
+	github.com/stripe/stripe-go/v81 v81.4.0
 	github.com/swaggo/swag v1.16.4
 	google.golang.org/api v0.219.0
 )

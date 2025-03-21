@@ -38,6 +38,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/audio/stt": {
+            "post": {
+                "description": "Convert speech audio to text",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audio"
+                ],
+                "summary": "Speech to text",
+                "parameters": [
+                    {
+                        "description": "Speech to text request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SpeechToTextRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SpeechToTextResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/audio/translate": {
             "post": {
                 "description": "Translate text from source language to target language",
@@ -992,6 +1032,35 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/webhook": {
+            "post": {
+                "description": "Validates and processes incoming webhook events from Stripe",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stripe"
+                ],
+                "summary": "Process Stripe webhook",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.WebhookResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1538,6 +1607,35 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SpeechToTextRequest": {
+            "type": "object",
+            "required": [
+                "audio_content",
+                "language_code"
+            ],
+            "properties": {
+                "audio_content": {
+                    "type": "string",
+                    "example": "base64-encoded-audio-content"
+                },
+                "language_code": {
+                    "type": "string",
+                    "example": "en-US"
+                }
+            }
+        },
+        "models.SpeechToTextResponse": {
+            "type": "object",
+            "required": [
+                "transcript"
+            ],
+            "properties": {
+                "transcript": {
+                    "type": "string",
+                    "example": "Hello, how are you?"
+                }
+            }
+        },
         "models.StoryItem": {
             "type": "object",
             "required": [
@@ -1774,6 +1872,17 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Profile updated successfully"
+                }
+            }
+        },
+        "models.WebhookResponse": {
+            "type": "object",
+            "properties": {
+                "received": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },

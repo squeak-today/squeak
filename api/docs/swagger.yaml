@@ -402,6 +402,26 @@ definitions:
     required:
     - message
     type: object
+  models.SpeechToTextRequest:
+    properties:
+      audio_content:
+        example: base64-encoded-audio-content
+        type: string
+      language_code:
+        example: en-US
+        type: string
+    required:
+    - audio_content
+    - language_code
+    type: object
+  models.SpeechToTextResponse:
+    properties:
+      transcript:
+        example: Hello, how are you?
+        type: string
+    required:
+    - transcript
+    type: object
   models.StoryItem:
     properties:
       cefr_level:
@@ -575,6 +595,13 @@ definitions:
     required:
     - message
     type: object
+  models.WebhookResponse:
+    properties:
+      received:
+        type: boolean
+      type:
+        type: string
+    type: object
   storage.Dictionary:
     properties:
       translations:
@@ -620,6 +647,32 @@ paths:
           schema:
             $ref: '#/definitions/models.AudioHealthResponse'
       summary: Check audio service health
+      tags:
+      - audio
+  /audio/stt:
+    post:
+      consumes:
+      - application/json
+      description: Convert speech audio to text
+      parameters:
+      - description: Speech to text request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SpeechToTextRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SpeechToTextResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Speech to text
       tags:
       - audio
   /audio/translate:
@@ -1253,6 +1306,25 @@ paths:
       summary: Accept content
       tags:
       - teacher
+  /webhook:
+    post:
+      consumes:
+      - application/json
+      description: Validates and processes incoming webhook events from Stripe
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WebhookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Process Stripe webhook
+      tags:
+      - stripe
 securityDefinitions:
   Bearer:
     description: JWT Authorization header using Bearer

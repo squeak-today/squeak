@@ -21,6 +21,34 @@ export interface paths {
       };
     };
   };
+  "/audio/stt": {
+    /**
+     * Speech to text
+     * @description Convert speech audio to text
+     */
+    post: {
+      /** @description Speech to text request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.SpeechToTextRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.SpeechToTextResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/audio/translate": {
     /**
      * Translate text
@@ -665,6 +693,28 @@ export interface paths {
       };
     };
   };
+  "/webhook": {
+    /**
+     * Process Stripe webhook
+     * @description Validates and processes incoming webhook events from Stripe
+     */
+    post: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.WebhookResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -880,6 +930,16 @@ export interface components {
       /** @example Content rejected successfully */
       message: string;
     };
+    "models.SpeechToTextRequest": {
+      /** @example base64-encoded-audio-content */
+      audio_content: string;
+      /** @example en-US */
+      language_code: string;
+    };
+    "models.SpeechToTextResponse": {
+      /** @example Hello, how are you? */
+      transcript: string;
+    };
     "models.StoryItem": {
       /** @example B1 */
       cefr_level: string;
@@ -969,6 +1029,10 @@ export interface components {
       id?: number;
       /** @example Profile updated successfully */
       message: string;
+    };
+    "models.WebhookResponse": {
+      received?: boolean;
+      type?: string;
     };
     "storage.Dictionary": {
       translations?: {

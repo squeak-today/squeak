@@ -2,6 +2,7 @@ package audiohandler
 
 import (
 	"log"
+	"strings"
 	"net/http"
 	"story-api/audio"
 	"story-api/handlers"
@@ -94,5 +95,42 @@ func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.TextToSpeechResponse{
 		AudioContent: audioContent,
+	})
+}
+
+//	@Summary		Speech to text
+//	@Description	Convert speech audio to text
+//	@Tags			audio
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.SpeechToTextRequest	true	"Speech to text request"
+//	@Success		200		{object}	models.SpeechToTextResponse
+//	@Failure		400		{object}	models.ErrorResponse
+//	@Router			/audio/stt [post]
+func (h *AudioHandler) SpeechToText(c *gin.Context) {
+	var infoBody models.SpeechToTextRequest
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	transcript, err := h.AudioClient.SpeechToText(infoBody.AudioContent, infoBody.LanguageCode)
+	if err != nil {
+		if strings.Contains(err.Error(), "NO TRANSCRIPT") {
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{
+				Error: "Speech-to-text failed",
+				Code: "NO_TRANSCRIPT",
+			})
+			return
+		}
+		log.Printf("Speech-to-text failed: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
+			Error: "Speech-to-text failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.SpeechToTextResponse{
+		Transcript: transcript,
 	})
 }
