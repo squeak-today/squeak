@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Auth from './pages/Auth';
 import Org from './pages/Org';
+import Dashboard from './pages/Dashboard';
 
 const App: React.FC = () => {
   return (
@@ -14,7 +15,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={
               <ProtectedRoute>
-                <h1>dashboard</h1>
+                <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/auth" element={<Auth />} />
