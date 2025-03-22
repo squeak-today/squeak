@@ -186,6 +186,16 @@ func (h *OrganizationHandler) JoinOrganization(c *gin.Context) {
 		return
 	}
 
+	plan, err := h.DBClient.GetOrganizationPlan(infoBody.OrganizationID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get organization plan"})
+		return
+	}
+	if plan == "FREE" || plan == "STANDARD" {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Free or Standard organizations can only have one member!"})
+		return
+	}
+
 	teacherID, err := h.DBClient.JoinOrganization(userID, infoBody.OrganizationID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to join organization"})
