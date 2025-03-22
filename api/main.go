@@ -50,7 +50,7 @@ var dbClient *supabase.Client
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if os.Getenv("WORKSPACE") == "dev" && c.GetHeader("Authorization") == "Bearer dev-token" {
+		if os.Getenv("WORKSPACE") != "prod" && c.GetHeader("Authorization") == "Bearer dev-token" {
 			c.Next()
 			return
 		}
@@ -146,6 +146,12 @@ func init() {
 		orgGroup.GET("/plan", orgHandler.CheckOrganizationPlan)
 		orgGroup.POST("/create", orgHandler.CreateOrganization)
 		orgGroup.POST("/join", orgHandler.JoinOrganization)
+
+		paymentsGroup := orgGroup.Group("/payments")
+		{
+			paymentsGroup.GET("", orgHandler.GetOrganizationPayments)
+			paymentsGroup.GET("/create-checkout-session", orgHandler.CreateCheckoutSession)
+		}
 	}
 
 	teacherHandler := teacher.New(dbClient)

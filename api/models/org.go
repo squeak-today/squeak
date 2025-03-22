@@ -23,3 +23,7 @@ type JoinOrganizationRequest struct {
 type JoinOrganizationResponse struct {
 	TeacherID string `json:"teacher_id" binding:"required" example:"123"`
 }
+
+type PaymentsResponse struct {
+	Success bool `json:"success" binding:"required" example:"true"`
+}
