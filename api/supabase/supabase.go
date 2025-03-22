@@ -66,29 +66,6 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
-// set as teacher, student, or none / ""
-func (c *Client) CheckAccountType(userID string, accountType string) (bool, error) {
-	// teacher check
-	exists, err := c.GetTeacherInfo(userID)
-	if err != nil {
-		return false, fmt.Errorf("failed to check teacher info: %v", err)
-	}
-
-	// student check
-	studentID, classroomID, err := c.CheckStudentStatus(userID)
-	if err != nil {
-		return false, fmt.Errorf("failed to check student status: %v", err)
-	}
-
-	if accountType == "teacher" {
-		return exists, nil
-	} else if accountType == "student" {
-		return (studentID != "" && classroomID != ""), nil
-	} else {
-		return (studentID == "" && classroomID == "" && !exists), nil
-	}
-}
-
 func (c *Client) CheckAcceptedContent(classroomID string, contentType string, contentID string) (bool, error) {
 	var exists bool
 	var query string
@@ -701,22 +678,6 @@ func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
 		return 0, false, err
 	}
 	return streak, completedToday, nil
-}
-
-func (c *Client) GetTeacherInfo(teacherID string) (bool, error) {
-	var exists bool
-	err := c.db.QueryRow(`
-		SELECT EXISTS (
-			SELECT 1 
-			FROM classrooms
-			WHERE teacher_id = $1 
-	)`, teacherID).Scan(&exists)
-
-	if err != nil {
-		return false, err
-	}
-
-	return exists, nil
 }
 
 func (c *Client) GetClassroomById(classroomID string) (string, int, error) {

@@ -6,8 +6,9 @@ import (
 	"story-api/models"
 	"story-api/supabase"
 
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 // to impelement logins to organizations
@@ -30,16 +31,15 @@ func New(dbClient *supabase.Client) *OrganizationHandler {
 	}
 }
 
-
-//	@Summary		Check Organization
-//	@Description	Check Organization
-//	@Tags			organization
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.OrganizationResponse
-//	@Failure		401	{object}	models.ErrorResponse
-//	@Failure		404	{object}	models.ErrorResponse
-//	@Router			/organization [get]
+// @Summary		Check Organization
+// @Description	Check Organization
+// @Tags			organization
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	models.OrganizationResponse
+// @Failure		401	{object}	models.ErrorResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Router			/organization [get]
 func (h *OrganizationHandler) CheckOrganization(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	isTeacher, err := h.DBClient.CheckAccountType(userID, "teacher")
@@ -74,15 +74,15 @@ func (h *OrganizationHandler) CheckOrganization(c *gin.Context) {
 	})
 }
 
-//	@Summary		Get Organization Plan
-//	@Description	Get Organization Plan
-//	@Tags			organization
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.OrganizationPlanResponse
-//	@Failure		401	{object}	models.ErrorResponse
-//	@Failure		404	{object}	models.ErrorResponse
-//	@Router			/organization/plan [get]
+// @Summary		Get Organization Plan
+// @Description	Get Organization Plan
+// @Tags			organization
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	models.OrganizationPlanResponse
+// @Failure		401	{object}	models.ErrorResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Router			/organization/plan [get]
 func (h *OrganizationHandler) CheckOrganizationPlan(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	isTeacher, err := h.DBClient.CheckAccountType(userID, "teacher")
@@ -97,7 +97,7 @@ func (h *OrganizationHandler) CheckOrganizationPlan(c *gin.Context) {
 		return
 	}
 
-	organizationID, err := h.DBClient.CheckOrganizationByUserID(userID)
+	organizationID, err := h.DBClient.CheckTeacherOrganizationByUserID(userID)
 	if err != nil {
 		log.Printf("Failed to get organization ID: %v", err)
 		c.JSON(http.StatusNotFound, models.ErrorResponse{Error: "Failed to get organization ID"})
@@ -114,15 +114,15 @@ func (h *OrganizationHandler) CheckOrganizationPlan(c *gin.Context) {
 	c.JSON(http.StatusOK, models.OrganizationPlanResponse{Plan: plan})
 }
 
-//	@Summary		Create Organization
-//	@Description	Create Organization. Automatically adds the calling user as a teacher.
-//	@Tags			organization
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.CreateOrganizationRequest	true	"Create organization request"
-//	@Success		200		{object}	models.CreateOrganizationResponse
-//	@Failure		401		{object}	models.ErrorResponse
-//	@Router			/organization/create [post]
+// @Summary		Create Organization
+// @Description	Create Organization. Automatically adds the calling user as a teacher.
+// @Tags			organization
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.CreateOrganizationRequest	true	"Create organization request"
+// @Success		200		{object}	models.CreateOrganizationResponse
+// @Failure		401		{object}	models.ErrorResponse
+// @Router			/organization/create [post]
 func (h *OrganizationHandler) CreateOrganization(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	isTeacher, err := h.DBClient.CheckAccountType(userID, "teacher")
@@ -157,15 +157,15 @@ func (h *OrganizationHandler) CreateOrganization(c *gin.Context) {
 	})
 }
 
-//	@Summary		Join Organization
-//	@Description	Join Organization that has been created by another admin.
-//	@Tags			organization
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.JoinOrganizationRequest	true	"Join organization request"
-//	@Success		200		{object}	models.JoinOrganizationResponse
-//	@Failure		401		{object}	models.ErrorResponse
-//	@Router			/organization/join [post]
+// @Summary		Join Organization
+// @Description	Join Organization that has been created by another admin.
+// @Tags			organization
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.JoinOrganizationRequest	true	"Join organization request"
+// @Success		200		{object}	models.JoinOrganizationResponse
+// @Failure		401		{object}	models.ErrorResponse
+// @Router			/organization/join [post]
 func (h *OrganizationHandler) JoinOrganization(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	isTeacher, err := h.DBClient.CheckAccountType(userID, "teacher")

@@ -2,6 +2,7 @@ package supabase
 
 import (
 	"fmt"
+	"time"
 )
 
 func (c *Client) GetTeacherUUID(userID string) (string, error) {
@@ -32,7 +33,7 @@ func (c *Client) CheckTeacherOrganization(teacherID string) (string, error) {
 	return uuid, nil
 }
 
-func (c *Client) CheckOrganizationByUserID(userID string) (string, error) {
+func (c *Client) CheckTeacherOrganizationByUserID(userID string) (string, error) {
 	var organizationID string
 	err := c.db.QueryRow(`
 		SELECT organization_id
@@ -85,4 +86,48 @@ func (c *Client) JoinOrganization(userID string, organizationID string) (string,
 	}
 
 	return teacherID, nil
+}
+
+func (c *Client) GetOrganizationByCustomerID(customerID string) (string, error) {
+	var organizationID string
+	err := c.db.QueryRow(`
+		SELECT id
+		FROM organizations
+		WHERE customer_id = $1`, customerID).Scan(&organizationID)
+
+	if err != nil {
+		return "", err
+	}
+
+	return organizationID, nil
+}
+
+func (c *Client) UpdateOrganization(plan, organizationID, customerID, subscriptionID string, expiration time.Time) error {
+	query := `
+		UPDATE organizations 
+		SET 
+			plan = $1,
+			customer_id = NULLIF($2, ''),
+			subscription_id = NULLIF($3, ''),
+			expiration = $4::date,
+			updated_at = CURRENT_TIMESTAMP
+		WHERE id = $5`
+
+	expirationDate := expiration.Format("2006-01-02")
+
+	result, err := c.db.Exec(query, plan, customerID, subscriptionID, expirationDate, organizationID)
+	if err != nil {
+		return fmt.Errorf("failed to update organization billing: %w", err)
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("error checking rows affected: %w", err)
+	}
+
+	if rows == 0 {
+		return fmt.Errorf("no organization found with ID: %s", organizationID)
+	}
+
+	return nil
 }
