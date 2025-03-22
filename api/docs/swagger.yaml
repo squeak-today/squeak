@@ -382,6 +382,26 @@ definitions:
     - title
     - topic
     type: object
+  models.OrganizationPlanResponse:
+    properties:
+      plan:
+        example: FREE
+        type: string
+    required:
+    - plan
+    type: object
+  models.OrganizationResponse:
+    properties:
+      organization_id:
+        example: "123"
+        type: string
+      teacher_id:
+        example: "123"
+        type: string
+    required:
+    - organization_id
+    - teacher_id
+    type: object
   models.RejectContentRequest:
     properties:
       content_id:
@@ -807,6 +827,44 @@ paths:
       summary: Get news content
       tags:
       - news
+  /organization:
+    get:
+      consumes:
+      - application/json
+      description: Check Organization
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrganizationResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check Organization
+      tags:
+      - organization
+  /organization/plan:
+    get:
+      consumes:
+      - application/json
+      description: Get Organization Plan
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrganizationPlanResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Organization Plan
+      tags:
+      - organization
   /profile:
     get:
       consumes:

@@ -277,6 +277,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/organization": {
+            "get": {
+                "description": "Check Organization",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Check Organization",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OrganizationResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/plan": {
+            "get": {
+                "description": "Get Organization Plan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Get Organization Plan",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OrganizationPlanResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "description": "Get the user's profile information",
@@ -1575,6 +1633,35 @@ const docTemplate = `{
                 "topic": {
                     "type": "string",
                     "example": "Music"
+                }
+            }
+        },
+        "models.OrganizationPlanResponse": {
+            "type": "object",
+            "required": [
+                "plan"
+            ],
+            "properties": {
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
+                }
+            }
+        },
+        "models.OrganizationResponse": {
+            "type": "object",
+            "required": [
+                "organization_id",
+                "teacher_id"
+            ],
+            "properties": {
+                "organization_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "teacher_id": {
+                    "type": "string",
+                    "example": "123"
                 }
             }
         },

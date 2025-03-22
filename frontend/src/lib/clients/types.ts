@@ -181,6 +181,50 @@ export interface paths {
       };
     };
   };
+  "/organization": {
+    /**
+     * Check Organization
+     * @description Check Organization
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.OrganizationResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/plan": {
+    /**
+     * Get Organization Plan
+     * @description Get Organization Plan
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.OrganizationPlanResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/profile": {
     /**
      * Get user profile
@@ -919,6 +963,16 @@ export interface components {
       title: string;
       /** @example Music */
       topic: string;
+    };
+    "models.OrganizationPlanResponse": {
+      /** @example FREE */
+      plan: string;
+    };
+    "models.OrganizationResponse": {
+      /** @example 123 */
+      organization_id: string;
+      /** @example 123 */
+      teacher_id: string;
     };
     "models.RejectContentRequest": {
       /** @example 123 */

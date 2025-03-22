@@ -188,6 +188,44 @@ paths:
         - news
       description: Get news content by ID
       summary: Get news content
+  /organization:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.OrganizationResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - organization
+      description: Check Organization
+      summary: Check Organization
+  /organization/plan:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.OrganizationPlanResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - organization
+      description: Get Organization Plan
+      summary: Get Organization Plan
   /profile:
     get:
       responses:
@@ -1105,6 +1143,26 @@ components:
         - preview_text
         - title
         - topic
+      type: object
+    models.OrganizationPlanResponse:
+      properties:
+        plan:
+          example: FREE
+          type: string
+      required:
+        - plan
+      type: object
+    models.OrganizationResponse:
+      properties:
+        organization_id:
+          example: '123'
+          type: string
+        teacher_id:
+          example: '123'
+          type: string
+      required:
+        - organization_id
+        - teacher_id
       type: object
     models.RejectContentRequest:
       properties:

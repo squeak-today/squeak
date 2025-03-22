@@ -40,6 +40,7 @@ import (
 	"story-api/handlers/stripehandler"
 	"story-api/handlers/student"
 	"story-api/handlers/teacher"
+	"story-api/handlers/orghandler"
 )
 
 type Profile = supabase.Profile
@@ -136,6 +137,13 @@ func init() {
 	{
 		stripeHandler := stripehandler.New(dbClient)
 		webhookGroup.POST("", stripeHandler.HandleWebhook)
+	}
+
+	orgHandler := org.New(dbClient)
+	orgGroup := router.Group("/organization")
+	{
+		orgGroup.GET("", orgHandler.CheckOrganization)
+		orgGroup.GET("/plan", orgHandler.CheckOrganizationPlan)
 	}
 
 	teacherHandler := teacher.New(dbClient)

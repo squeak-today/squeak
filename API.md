@@ -158,6 +158,43 @@ Get news content by ID
 | 200 | OK | [ [models.NewsItem](#modelsnewsitem) ] |
 
 ---
+### /organization
+
+#### GET
+##### Summary
+
+Check Organization
+
+##### Description
+
+Check Organization
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.OrganizationResponse](#modelsorganizationresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
+### /organization/plan
+
+#### GET
+##### Summary
+
+Get Organization Plan
+
+##### Description
+
+Get Organization Plan
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.OrganizationPlanResponse](#modelsorganizationplanresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
+---
 ### /profile
 
 #### GET
@@ -786,6 +823,19 @@ Validates and processes incoming webhook events from Stripe
 | preview_text | string | *Example:* `"Un résumé des nouvelles musicales..."` | Yes |
 | title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
+
+#### models.OrganizationPlanResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| plan | string | *Example:* `"FREE"` | Yes |
+
+#### models.OrganizationResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| organization_id | string | *Example:* `"123"` | Yes |
+| teacher_id | string | *Example:* `"123"` | Yes |
 
 #### models.RejectContentRequest
 
