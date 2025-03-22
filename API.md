@@ -176,6 +176,54 @@ Check Organization
 | 200 | OK | [models.OrganizationResponse](#modelsorganizationresponse) |
 | 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
 
+### /organization/create
+
+#### POST
+##### Summary
+
+Create Organization
+
+##### Description
+
+Create Organization. Automatically adds the calling user as a teacher.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Create organization request | Yes | [models.CreateOrganizationRequest](#modelscreateorganizationrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.CreateOrganizationResponse](#modelscreateorganizationresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
+### /organization/join
+
+#### POST
+##### Summary
+
+Join Organization
+
+##### Description
+
+Join Organization that has been created by another admin.
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Join organization request | Yes | [models.JoinOrganizationRequest](#modelsjoinorganizationrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.JoinOrganizationResponse](#modelsjoinorganizationresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /organization/plan
 
 #### GET
@@ -693,6 +741,19 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | classroom_id | string | *Example:* `"123"` | Yes |
 
+#### models.CreateOrganizationRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CreateOrganizationRequest | object |  |  |
+
+#### models.CreateOrganizationResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| organization_id | string | *Example:* `"123"` | Yes |
+| teacher_id | string | *Example:* `"123"` | Yes |
+
 #### models.ErrorResponse
 
 | Name | Type | Description | Required |
@@ -810,6 +871,18 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | message | string | *Example:* `"Student added to classroom successfully"` | Yes |
+
+#### models.JoinOrganizationRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| organization_id | string | *Example:* `"123"` | Yes |
+
+#### models.JoinOrganizationResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| teacher_id | string | *Example:* `"123"` | Yes |
 
 #### models.NewsItem
 

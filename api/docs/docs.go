@@ -306,6 +306,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/organization/create": {
+            "post": {
+                "description": "Create Organization. Automatically adds the calling user as a teacher.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Create Organization",
+                "parameters": [
+                    {
+                        "description": "Create organization request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateOrganizationResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/join": {
+            "post": {
+                "description": "Join Organization that has been created by another admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Join Organization",
+                "parameters": [
+                    {
+                        "description": "Join organization request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.JoinOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JoinOrganizationResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/organization/plan": {
             "get": {
                 "description": "Get Organization Plan",
@@ -1242,6 +1322,26 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateOrganizationRequest": {
+            "type": "object"
+        },
+        "models.CreateOrganizationResponse": {
+            "type": "object",
+            "required": [
+                "organization_id",
+                "teacher_id"
+            ],
+            "properties": {
+                "organization_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "teacher_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type": "object",
             "required": [
@@ -1586,6 +1686,30 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Student added to classroom successfully"
+                }
+            }
+        },
+        "models.JoinOrganizationRequest": {
+            "type": "object",
+            "required": [
+                "organization_id"
+            ],
+            "properties": {
+                "organization_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.JoinOrganizationResponse": {
+            "type": "object",
+            "required": [
+                "teacher_id"
+            ],
+            "properties": {
+                "teacher_id": {
+                    "type": "string",
+                    "example": "123"
                 }
             }
         },

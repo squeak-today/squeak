@@ -7,6 +7,7 @@ export const AuthContainer = styled.div`
   align-items: center;
   min-height: 100vh;
   background-color: ${theme.colors.background};
+  position: relative;
 `;
 
 export const AuthBox = styled.div`
@@ -50,3 +51,101 @@ export const ButtonContainer = styled.div`
   flex-direction: column;
   gap: ${theme.spacing.md};
 `; 
+
+export const LoadingOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const LoadingText = styled.div`
+  font-size: ${theme.typography.fontSize.base};
+  font-family: ${theme.typography.fontFamily.secondary};
+  margin-top: 20px;
+`;
+
+export const Spinner = styled.div`
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid rgb(94, 94, 94);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`; 
+
+export const AuthForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.md};
+  width: 100%;
+`;
+
+export const AuthInput = styled.input`
+  padding: ${theme.spacing.md};
+  border-radius: 8px;
+  border: 1px solid ${theme.colors.border};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  
+  &:focus {
+    outline: none;
+    border-color: #aaa;
+  }
+`;
+
+export const AuthButton = styled.button`
+  padding: ${theme.spacing.md};
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #555;
+  }
+  
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+export const AuthToggle = styled.div`
+  text-align: center;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  cursor: pointer;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const HintText = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 0.9rem;
+  color: ${theme.colors.text.secondary};
+  text-align: center;
+  background-color: #f9f9f9;
+  padding: ${theme.spacing.md};
+  border-radius: 8px;
+  border: 1px dashed ${theme.colors.border};
+`;

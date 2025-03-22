@@ -245,6 +245,24 @@ module "organization_plan" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "organization_create" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.organization.resource_id
+  path_part   = "create"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "organization_join" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.organization.resource_id
+  path_part   = "join"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 # Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
   statement_id  = "${terraform.workspace}-AllowExecutionFromAPIGateway"
@@ -370,7 +388,9 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.audio_tts,
     module.audio_stt,
     module.organization,
-    module.organization_plan
+    module.organization_plan,
+    module.organization_create,
+    module.organization_join
   ]
 }
 

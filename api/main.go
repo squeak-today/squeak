@@ -144,6 +144,8 @@ func init() {
 	{
 		orgGroup.GET("", orgHandler.CheckOrganization)
 		orgGroup.GET("/plan", orgHandler.CheckOrganizationPlan)
+		orgGroup.POST("/create", orgHandler.CreateOrganization)
+		orgGroup.POST("/join", orgHandler.JoinOrganization)
 	}
 
 	teacherHandler := teacher.New(dbClient)
