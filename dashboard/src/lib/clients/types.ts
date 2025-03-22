@@ -330,6 +330,208 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/organization": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check Organization
+         * @description Check Organization
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.OrganizationResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Organization
+         * @description Create Organization. Automatically adds the calling user as a teacher.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Create organization request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreateOrganizationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CreateOrganizationResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Join Organization
+         * @description Join Organization that has been created by another admin.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Join organization request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.JoinOrganizationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.JoinOrganizationResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Organization Plan
+         * @description Get Organization Plan
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.OrganizationPlanResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/profile": {
         parameters: {
             query?: never;
@@ -1414,6 +1616,13 @@ export interface components {
             /** @example 123 */
             classroom_id: string;
         };
+        "models.CreateOrganizationRequest": Record<string, never>;
+        "models.CreateOrganizationResponse": {
+            /** @example 123 */
+            organization_id: string;
+            /** @example 123 */
+            teacher_id: string;
+        };
         "models.ErrorResponse": {
             /** @example PROFILE_NOT_FOUND */
             code?: string;
@@ -1541,6 +1750,14 @@ export interface components {
             /** @example Student added to classroom successfully */
             message: string;
         };
+        "models.JoinOrganizationRequest": {
+            /** @example 123 */
+            organization_id: string;
+        };
+        "models.JoinOrganizationResponse": {
+            /** @example 123 */
+            teacher_id: string;
+        };
         "models.NewsItem": {
             /** @example B1 */
             cefr_level: string;
@@ -1558,6 +1775,16 @@ export interface components {
             title: string;
             /** @example Music */
             topic: string;
+        };
+        "models.OrganizationPlanResponse": {
+            /** @example FREE */
+            plan: string;
+        };
+        "models.OrganizationResponse": {
+            /** @example 123 */
+            organization_id: string;
+            /** @example 123 */
+            teacher_id: string;
         };
         "models.RejectContentRequest": {
             /** @example 123 */

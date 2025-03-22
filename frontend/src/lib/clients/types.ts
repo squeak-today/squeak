@@ -181,6 +181,106 @@ export interface paths {
       };
     };
   };
+  "/organization": {
+    /**
+     * Check Organization
+     * @description Check Organization
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.OrganizationResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/create": {
+    /**
+     * Create Organization
+     * @description Create Organization. Automatically adds the calling user as a teacher.
+     */
+    post: {
+      /** @description Create organization request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CreateOrganizationRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.CreateOrganizationResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/join": {
+    /**
+     * Join Organization
+     * @description Join Organization that has been created by another admin.
+     */
+    post: {
+      /** @description Join organization request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.JoinOrganizationRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.JoinOrganizationResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/plan": {
+    /**
+     * Get Organization Plan
+     * @description Get Organization Plan
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.OrganizationPlanResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/profile": {
     /**
      * Get user profile
@@ -773,6 +873,13 @@ export interface components {
       /** @example 123 */
       classroom_id: string;
     };
+    "models.CreateOrganizationRequest": Record<string, never>;
+    "models.CreateOrganizationResponse": {
+      /** @example 123 */
+      organization_id: string;
+      /** @example 123 */
+      teacher_id: string;
+    };
     "models.ErrorResponse": {
       /** @example PROFILE_NOT_FOUND */
       code?: string;
@@ -902,6 +1009,14 @@ export interface components {
       /** @example Student added to classroom successfully */
       message: string;
     };
+    "models.JoinOrganizationRequest": {
+      /** @example 123 */
+      organization_id: string;
+    };
+    "models.JoinOrganizationResponse": {
+      /** @example 123 */
+      teacher_id: string;
+    };
     "models.NewsItem": {
       /** @example B1 */
       cefr_level: string;
@@ -919,6 +1034,16 @@ export interface components {
       title: string;
       /** @example Music */
       topic: string;
+    };
+    "models.OrganizationPlanResponse": {
+      /** @example FREE */
+      plan: string;
+    };
+    "models.OrganizationResponse": {
+      /** @example 123 */
+      organization_id: string;
+      /** @example 123 */
+      teacher_id: string;
     };
     "models.RejectContentRequest": {
       /** @example 123 */

@@ -93,6 +93,20 @@ definitions:
     required:
     - classroom_id
     type: object
+  models.CreateOrganizationRequest:
+    type: object
+  models.CreateOrganizationResponse:
+    properties:
+      organization_id:
+        example: "123"
+        type: string
+      teacher_id:
+        example: "123"
+        type: string
+    required:
+    - organization_id
+    - teacher_id
+    type: object
   models.ErrorResponse:
     properties:
       code:
@@ -346,6 +360,22 @@ definitions:
     required:
     - message
     type: object
+  models.JoinOrganizationRequest:
+    properties:
+      organization_id:
+        example: "123"
+        type: string
+    required:
+    - organization_id
+    type: object
+  models.JoinOrganizationResponse:
+    properties:
+      teacher_id:
+        example: "123"
+        type: string
+    required:
+    - teacher_id
+    type: object
   models.NewsItem:
     properties:
       cefr_level:
@@ -381,6 +411,26 @@ definitions:
     - preview_text
     - title
     - topic
+    type: object
+  models.OrganizationPlanResponse:
+    properties:
+      plan:
+        example: FREE
+        type: string
+    required:
+    - plan
+    type: object
+  models.OrganizationResponse:
+    properties:
+      organization_id:
+        example: "123"
+        type: string
+      teacher_id:
+        example: "123"
+        type: string
+    required:
+    - organization_id
+    - teacher_id
     type: object
   models.RejectContentRequest:
     properties:
@@ -807,6 +857,96 @@ paths:
       summary: Get news content
       tags:
       - news
+  /organization:
+    get:
+      consumes:
+      - application/json
+      description: Check Organization
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrganizationResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check Organization
+      tags:
+      - organization
+  /organization/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Organization. Automatically adds the calling user as a teacher.
+      parameters:
+      - description: Create organization request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateOrganizationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateOrganizationResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create Organization
+      tags:
+      - organization
+  /organization/join:
+    post:
+      consumes:
+      - application/json
+      description: Join Organization that has been created by another admin.
+      parameters:
+      - description: Join organization request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.JoinOrganizationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JoinOrganizationResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Join Organization
+      tags:
+      - organization
+  /organization/plan:
+    get:
+      consumes:
+      - application/json
+      description: Get Organization Plan
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrganizationPlanResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Organization Plan
+      tags:
+      - organization
   /profile:
     get:
       consumes:

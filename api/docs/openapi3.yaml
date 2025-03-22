@@ -188,6 +188,96 @@ paths:
         - news
       description: Get news content by ID
       summary: Get news content
+  /organization:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.OrganizationResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - organization
+      description: Check Organization
+      summary: Check Organization
+  /organization/create:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.CreateOrganizationResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - organization
+      description: Create Organization. Automatically adds the calling user as a teacher.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.CreateOrganizationRequest'
+        description: Create organization request
+        required: true
+      summary: Create Organization
+  /organization/join:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.JoinOrganizationResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - organization
+      description: Join Organization that has been created by another admin.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.JoinOrganizationRequest'
+        description: Join organization request
+        required: true
+      summary: Join Organization
+  /organization/plan:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.OrganizationPlanResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - organization
+      description: Get Organization Plan
+      summary: Get Organization Plan
   /profile:
     get:
       responses:
@@ -817,6 +907,20 @@ components:
       required:
         - classroom_id
       type: object
+    models.CreateOrganizationRequest:
+      type: object
+    models.CreateOrganizationResponse:
+      properties:
+        organization_id:
+          example: '123'
+          type: string
+        teacher_id:
+          example: '123'
+          type: string
+      required:
+        - organization_id
+        - teacher_id
+      type: object
     models.ErrorResponse:
       properties:
         code:
@@ -1070,6 +1174,22 @@ components:
       required:
         - message
       type: object
+    models.JoinOrganizationRequest:
+      properties:
+        organization_id:
+          example: '123'
+          type: string
+      required:
+        - organization_id
+      type: object
+    models.JoinOrganizationResponse:
+      properties:
+        teacher_id:
+          example: '123'
+          type: string
+      required:
+        - teacher_id
+      type: object
     models.NewsItem:
       properties:
         cefr_level:
@@ -1105,6 +1225,26 @@ components:
         - preview_text
         - title
         - topic
+      type: object
+    models.OrganizationPlanResponse:
+      properties:
+        plan:
+          example: FREE
+          type: string
+      required:
+        - plan
+      type: object
+    models.OrganizationResponse:
+      properties:
+        organization_id:
+          example: '123'
+          type: string
+        teacher_id:
+          example: '123'
+          type: string
+      required:
+        - organization_id
+        - teacher_id
       type: object
     models.RejectContentRequest:
       properties:
