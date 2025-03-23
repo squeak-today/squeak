@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import TeacherStoryBlock from './TeacherStoryBlock';
+import TeacherContentBlock from './TeacherContentBlock';
 
 const ListContainer = styled.div`
   max-width: 800px;
@@ -15,7 +15,7 @@ const TeacherStoryList = ({ stories, onAccept, onReject, status }) => {
   return (
     <ListContainer>
       {stories.map((story) => (
-        <TeacherStoryBlock
+        <TeacherContentBlock
           key={story.id}
           story={story}
           onAccept={onAccept}

@@ -180,60 +180,61 @@ export const HeaderTitle = styled.h1`
   }
 `;
 export const HeaderButton = styled.button`
-  width: 8.5em; /* Base width */
-  aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+  white-space: nowrap; /* Prevents text from wrapping */
+  width: auto; /* Let the button grow with its content */
+  min-width: 8.5em; /* Optional: set a minimum width if needed */
+  aspect-ratio: 7 / 1.5;
   font-family: 'Lora', serif;
   font-size: 1.5em;
   border-radius: 10px;
-  background: #fad48f; /* Updated color */
-  border: none; /* Removed border */
+  background: #fad48f;
+  border: none;
   color: #000000;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* Space between text and arrow */
+  gap: 10px;
   text-decoration: none;
 
   .arrow-icon {
-  display: inline-block;
-  max-height: 24px;
-}
-
-@media (max-width: 768px) {
-  .arrow-icon {
-    display: none;
+    display: inline-block;
+    max-height: 24px;
   }
-}
 
+  @media (max-width: 768px) {
+    .arrow-icon {
+      display: none;
+    }
+  }
 
   &:hover {
-    background: #f3c87d; /* Slightly darker on hover */
+    background: #f3c87d;
   }
 
   /* Adjust for smaller screens */
   @media (max-width: 768px) {
     font-size: 1.5em;
-    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    aspect-ratio: 7 / 1.5;
     max-width: 35vw;
-    justify: center;
+    justify-content: center;
   }
 
   @media (max-width: 480px) {
     font-size: 1.25em;
-    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    aspect-ratio: 7 / 1.5;
     max-height: 2.5em;
     max-width: 40vw;
   }
 
   @media (max-width: 350px) {
     font-size: 1.2em;
-    aspect-ratio: 7 / 1.5; /* Maintain consistent aspect ratio */
+    aspect-ratio: 7 / 1.5;
     max-height: 3em;
     max-width: 45vw;
-
   }
 `;
+
 
 export const HeroButton = styled.button`
   width: 8em; /* Base width */

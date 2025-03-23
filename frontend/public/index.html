@@ -6,10 +6,35 @@
     <link rel="icon" href="favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Learn languages by reading storybooks and news articles tailored to your interests and skill level."
-    />
+    
+    <!-- Mobile & Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Squeak">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="google" content="notranslate">
+    
+    <!-- Primary Meta Tags -->
+    <title>Squeak: Language Learning By Reading What You Love!</title>
+    <meta name="title" content="Squeak!" />
+    <meta name="description" content="Squeak offers classroom-ready content tailored to every student's interests and skill level. Effective language exercises paired with powerful classroom management tools." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://squeak.today/" />
+    <meta property="og:title" content="Squeak: Language Learning By Reading What You Love!" />
+    <meta property="og:description" content="Squeak offers classroom-ready content tailored to every student's interests and skill level. Effective language exercises paired with powerful classroom management tools." />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="https://squeak.today/" />
+    <meta name="twitter:site" content="@learnsqueak" />
+    <meta name="twitter:title" content="Squeak: Language Learning By Reading What You Love!" />
+    <meta name="twitter:description" content="Squeak offers classroom-ready content tailored to every student's interests and skill level. Effective language exercises paired with powerful classroom management tools." />
+
+    <!-- Keywords -->
+    <meta name="keywords" content="language learning, classroom education, storybooks, news articles, teacher tools, student progress tracking, TDSB, UWaterloo, educational technology, language teaching" />
+
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -25,7 +50,55 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Squeak: Language Learning Through Stories!</title>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Squeak",
+      "url": "https://squeak.today",
+      "logo": "https://squeak.today/favicon.png",
+      "description": "Learn languages by reading what you love! Squeak offers classroom-ready content tailored to students'interests and skill level.",
+      "sameAs": [
+        "https://twitter.com/learnsqueak"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "url": "https://squeak.today/contact-support.html"
+      },
+      "foundingDate": "2024",
+      "areaServed": ["CA", "US"],
+      "knowsLanguage": ["eng", "fra", "spa"],
+      "keywords": "language learning, classroom education, storybooks, news articles, teacher tools, student progress tracking, educational technology, language teaching"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Squeak",
+      "url": "https://squeak.today"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["SoftwareApplication", "EducationalApplication"],
+      "name": "Squeak",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any",
+      "description": "Learn languages by reading what you love! Squeak offers classroom-ready content tailored to your interests and skill level. Used by leading schools including TDSB and UWaterloo.",
+      "url": "https://squeak.today",
+      "educationalUse": ["Language Learning", "Reading"],
+      "inLanguage": "eng",
+      "learningResourceType": ["text", "assessment", "activity"],
+      "interactivityType": "active",
+      "isAccessibleForFree": true,
+      "teaches": ["French", "Spanish"]
+    }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

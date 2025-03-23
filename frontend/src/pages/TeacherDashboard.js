@@ -4,6 +4,7 @@ import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import supabase from '../lib/supabase';
 import { useNotification } from '../context/NotificationContext';
 import BasicPage from '../components/BasicPage';
+import NavPage from '../components/NavPage';
 import TeacherStoryBrowser from '../components/TeacherStoryBrowser';
 import TeacherStudentProfiles from 'components/TeacherStudentProfile';
 import {
@@ -100,7 +101,7 @@ function TeacherDashboard() {
   };
 
   return (
-    <BasicPage showLogout onLogout={handleLogout} isLoading={isInitializing}>
+    <NavPage showTeach={true} isLoading={isInitializing} initialActiveNav="teach">
       <Section>
         {/* New Analytics Section */}
         <AnalyticsContainer>
@@ -158,7 +159,7 @@ function TeacherDashboard() {
         <DateHeader>Manage Classroom Content</DateHeader>
         <TeacherStoryBrowser defaultLanguage="any" />
       </Section>
-    </BasicPage>
+    </NavPage>
   );
 }
 
