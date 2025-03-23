@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from './theme';
 
 export const Section = styled.section`
   margin-bottom: 2rem;
@@ -58,3 +59,38 @@ export const ClassroomInfoText = styled.p`
     font-weight: 600;
   }
 `; 
+
+export const AnalyticsContainer = styled.div`
+  display: flex;
+  gap: ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.lg};
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    flex-direction: column;
+  }
+`;
+
+export const Widget = styled.div`
+  flex: 1;
+  min-width: 200px;
+  padding: ${theme.spacing.md};
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+export const WidgetHeader = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: ${theme.spacing.sm};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: ${theme.colors.text.primary};
+`;
+
+export const WidgetContent = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: ${theme.colors.text.primary};
+`;

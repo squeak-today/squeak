@@ -12,14 +12,19 @@ import {
   ButtonContainer,
   DateHeader,
   ClassroomInfoContainer,
-  ClassroomInfoText
+  ClassroomInfoText,
+  AnalyticsContainer,
+  Widget,
+  WidgetHeader,
+  WidgetContent,
 } from '../styles/TeacherDashboardPageStyles';
+import { FaClock, FaChartPie, FaCommentDots } from 'react-icons/fa'; // Icons for analytics
 
 function TeacherDashboard() {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [classroomInfo, setClassroomInfo] = useState(null);
-  const [studentProfiles, setStudentProfiles] = useState(null); // New state for profiles
+  const [studentProfiles, setStudentProfiles] = useState(null);
   const [showClassroomInfo, setShowClassroomInfo] = useState(true);
   const [isInitializing, setIsInitializing] = useState(true);
   const {
@@ -27,13 +32,20 @@ function TeacherDashboard() {
     verifyTeacher,
     getClassroomInfo,
     getStudentProfiles,
-    removeStudent
+    removeStudent,
   } = useTeacherAPI();
+
+  // Mock class-wide analytics data (replace with backend data later)
+  const classAnalytics = {
+    totalTimeSpent: '20 hours',
+    averagePerformance: '75%',
+    totalWordsClicked: 200,
+    totalWordsSoundedOut: 150,
+  };
 
   const handleRemoveStudent = async (userId) => {
     try {
       await removeStudent(userId);
-      // Refresh profiles after removal
       const updatedProfiles = await getStudentProfiles();
       setStudentProfiles(updatedProfiles);
       showNotification('Student removed successfully');
@@ -52,12 +64,11 @@ function TeacherDashboard() {
           if (data.exists) {
             data = await getClassroomInfo();
             setClassroomInfo(data);
-            // Fetch student profiles on initialization
             const profilesData = await getStudentProfiles();
             console.log('Student Profiles Data:', profilesData);
             setStudentProfiles(profilesData);
-          } else { 
-            navigate('/teacher/become'); 
+          } else {
+            navigate('/teacher/become');
           }
         }
       } catch (error) {
@@ -67,14 +78,21 @@ function TeacherDashboard() {
         setIsInitializing(false);
       }
     };
-  
     init();
-  }, [verifyTeacher, getClassroomInfo, getStudentProfiles, navigate, showNotification, isAuthenticated, isInitializing]);
+  }, [
+    verifyTeacher,
+    getClassroomInfo,
+    getStudentProfiles,
+    navigate,
+    showNotification,
+    isAuthenticated,
+    isInitializing,
+  ]);
 
   const handleLogout = async () => {
     try {
-        await supabase.auth.signOut();
-        navigate('/');
+      await supabase.auth.signOut();
+      navigate('/');
     } catch (error) {
       console.error('Error signing out:', error);
       showNotification('Error signing out. Please try again.');
@@ -84,9 +102,35 @@ function TeacherDashboard() {
   return (
     <BasicPage showLogout onLogout={handleLogout} isLoading={isInitializing}>
       <Section>
+        {/* New Analytics Section */}
+        <AnalyticsContainer>
+          <Widget>
+            <WidgetHeader>
+              <FaClock style={{ marginRight: '8px' }} /> Time Spent
+            </WidgetHeader>
+            <WidgetContent>{classAnalytics.totalTimeSpent}</WidgetContent>
+          </Widget>
+          <Widget>
+            <WidgetHeader>
+              <FaChartPie style={{ marginRight: '8px' }} /> Performance
+            </WidgetHeader>
+            <WidgetContent>{classAnalytics.averagePerformance}</WidgetContent>
+          </Widget>
+          <Widget>
+            <WidgetHeader>
+              <FaCommentDots style={{ marginRight: '8px' }} /> Words Interacted
+            </WidgetHeader>
+            <WidgetContent>
+              Clicked: {classAnalytics.totalWordsClicked}, Sounded Out:{' '}
+              {classAnalytics.totalWordsSoundedOut}
+            </WidgetContent>
+          </Widget>
+        </AnalyticsContainer>
+
+        {/* Existing Classroom Info Section */}
         <Section>
           <ButtonContainer>
-            <ToggleButton onClick={() => setShowClassroomInfo(prev => !prev)}>
+            <ToggleButton onClick={() => setShowClassroomInfo((prev) => !prev)}>
               {showClassroomInfo ? 'Hide Classroom Info' : 'Show Classroom Info'}
             </ToggleButton>
           </ButtonContainer>
@@ -98,24 +142,21 @@ function TeacherDashboard() {
               <ClassroomInfoText>
                 <strong>Students Count:</strong> {classroomInfo.students_count}
               </ClassroomInfoText>
-              {/* Add student profiles display */}
               {studentProfiles && (
-              <>
-                <DateHeader>Student Profiles</DateHeader>
-                <TeacherStudentProfiles 
-                  profiles={studentProfiles.profiles || []}
-                  onRemoveStudent={handleRemoveStudent}  
-                />
-              </>
-            )}
+                <>
+                  <DateHeader>Student Profiles</DateHeader>
+                  <TeacherStudentProfiles
+                    profiles={studentProfiles.profiles || []}
+                    onRemoveStudent={handleRemoveStudent}
+                  />
+                </>
+              )}
             </ClassroomInfoContainer>
           )}
         </Section>
 
         <DateHeader>Manage Classroom Content</DateHeader>
-        <TeacherStoryBrowser 
-          defaultLanguage="any"
-        />
+        <TeacherStoryBrowser defaultLanguage="any" />
       </Section>
     </BasicPage>
   );
