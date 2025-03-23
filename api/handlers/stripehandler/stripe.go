@@ -20,7 +20,7 @@ type StripeHandler struct {
 }
 
 func New(dbClient *supabase.Client) *StripeHandler {
-	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+	stripe.Key = os.Getenv("STRIPE_KEY")
 
 	return &StripeHandler{
 		Handler: handlers.New(dbClient),
@@ -62,6 +62,7 @@ func (h *StripeHandler) HandleWebhook(c *gin.Context) {
 		return
 	}
 
+	log.Printf("Received webhook event: %v", event.Type)
 	switch event.Type {
 	case "checkout.session.completed":
 		var checkout stripe.CheckoutSession

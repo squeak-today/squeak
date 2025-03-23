@@ -4,11 +4,15 @@ import (
 	"log"
 	"story-api/supabase"
 	"time"
+	"os"
 
-	"github.com/stripe/stripe-go/v81"
+	stripe "github.com/stripe/stripe-go/v81"
+	subscription "github.com/stripe/stripe-go/v81/subscription"
+	product "github.com/stripe/stripe-go/v81/product"
 )
 
 func HandleCheckoutSessionCompleted(checkout stripe.CheckoutSession, dbClient *supabase.Client) {
+	stripe.Key = os.Getenv("STRIPE_KEY")
 	userID := checkout.ClientReferenceID
 
 	isAdmin, err := dbClient.CheckAdminStatus(userID)
@@ -20,17 +24,21 @@ func HandleCheckoutSessionCompleted(checkout stripe.CheckoutSession, dbClient *s
 		return
 	}
 
-	customer := checkout.Customer
-	subscription := checkout.Subscription
-	invoice := checkout.Invoice
-	if invoice.Status != "paid" {
-		log.Printf("Invoice not paid: %v", invoice.Status)
+	payment_status := checkout.PaymentStatus
+	if payment_status != "paid" {
+		log.Printf("Invoice not paid: %v", payment_status)
 		return
 	}
 
-	product := subscription.Items.Data[0].Plan.Product
+	customerRef := checkout.Customer
+	subscriptionRef := checkout.Subscription
+	subParams := &stripe.SubscriptionParams{}
+	expandedSubscription, _ := subscription.Get(subscriptionRef.ID, subParams)
+	productRef := expandedSubscription.Items.Data[0].Plan.Product
+	prodParams:= &stripe.ProductParams{}
+	expandedProduct, _ := product.Get(productRef.ID, prodParams)
 	plan := "STANDARD"
-	if product.Name == "Classroom" {
+	if expandedProduct.Name == "Classroom" {
 		plan = "STANDARD"
 	}
 
@@ -40,9 +48,9 @@ func HandleCheckoutSessionCompleted(checkout stripe.CheckoutSession, dbClient *s
 		return
 	}
 
-	expirationTime := time.Unix(subscription.CurrentPeriodEnd, 0)
-
-	err = dbClient.UpdateOrganization(plan, organizationID, customer.ID, subscription.ID, expirationTime)
+	expirationTime := time.Unix(expandedSubscription.CurrentPeriodEnd, 0)
+	log.Printf("Updating organization billing info with plan: %v, organizationID: %v, customerID: %v, subscriptionID: %v", plan, organizationID, customerRef.ID, subscriptionRef.ID)
+	err = dbClient.UpdateOrganization(plan, organizationID, customerRef.ID, subscriptionRef.ID, expirationTime)
 	if err != nil {
 		log.Printf("Error updating organization billing: %v", err)
 		return

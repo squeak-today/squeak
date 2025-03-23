@@ -4,29 +4,36 @@ import (
 	"log"
 	"story-api/supabase"
 	"time"
+	"os"
 
-	"github.com/stripe/stripe-go/v81"
+	stripe "github.com/stripe/stripe-go/v81"
+	subscription "github.com/stripe/stripe-go/v81/subscription"
+	product "github.com/stripe/stripe-go/v81/product"
 )
 
 func HandleInvoicePaymentSucceeded(invoice stripe.Invoice, dbClient *supabase.Client) {
-	customer := invoice.Customer
-	subscription := invoice.Subscription
-
-	product := subscription.Items.Data[0].Plan.Product
+	stripe.Key = os.Getenv("STRIPE_KEY")
+	customerRef := invoice.Customer
+	subscriptionRef := invoice.Subscription
+	subParams := &stripe.SubscriptionParams{}
+	expandedSubscription, _ := subscription.Get(subscriptionRef.ID, subParams)
+	productRef := expandedSubscription.Items.Data[0].Plan.Product
+	prodParams:= &stripe.ProductParams{}
+	expandedProduct, _ := product.Get(productRef.ID, prodParams)
 	plan := "STANDARD"
-	if product.Name == "Classroom" {
+	if expandedProduct.Name == "Classroom" {
 		plan = "STANDARD"
 	}
 
-	organizationID, err := dbClient.GetOrganizationByCustomerID(customer.ID)
+	organizationID, err := dbClient.GetOrganizationByCustomerID(customerRef.ID)
 	if err != nil {
 		log.Printf("Error getting organization ID: %v", err)
 		return
 	}
 
-	expirationTime := time.Unix(subscription.CurrentPeriodEnd, 0)
+	expirationTime := time.Unix(expandedSubscription.CurrentPeriodEnd, 0)
 
-	err = dbClient.UpdateOrganization(plan, organizationID, customer.ID, subscription.ID, expirationTime)
+	err = dbClient.UpdateOrganization(plan, organizationID, customerRef.ID, subscriptionRef.ID, expirationTime)
 	if err != nil {
 		log.Printf("Error updating organization: %v", err)
 		return
