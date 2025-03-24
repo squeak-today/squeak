@@ -93,7 +93,7 @@ func (h *StripeHandler) HandleWebhook(c *gin.Context) {
 		HandleInvoicePaymentFailed(invoice, h.DBClient)
 	case "customer.subscription_updated":
 		// this event also catches when they cancel their subscription
-	case "customer.subscription_deleted":
+	case "customer.subscription.deleted":
 		var subscription stripe.Subscription
 		err := json.Unmarshal(event.Data.Raw, &subscription)
 		if err != nil {

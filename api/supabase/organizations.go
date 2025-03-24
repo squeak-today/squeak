@@ -103,19 +103,24 @@ func (c *Client) GetOrganizationByCustomerID(customerID string) (string, error) 
 }
 
 func (c *Client) UpdateOrganization(plan, organizationID, customerID, subscriptionID string, expiration time.Time) error {
+	var expirationValue interface{}
+	if !expiration.IsZero() {
+		expirationValue = expiration.Format("2006-01-02")
+	} else {
+		expirationValue = nil
+	}
+
 	query := `
 		UPDATE organizations 
 		SET 
 			plan = $1,
 			customer_id = NULLIF($2, ''),
 			subscription_id = NULLIF($3, ''),
-			expiration = $4::date,
+			expiration = $4,
 			updated_at = CURRENT_TIMESTAMP
 		WHERE id = $5`
 
-	expirationDate := expiration.Format("2006-01-02")
-
-	result, err := c.db.Exec(query, plan, customerID, subscriptionID, expirationDate, organizationID)
+	result, err := c.db.Exec(query, plan, customerID, subscriptionID, expirationValue, organizationID)
 	if err != nil {
 		return fmt.Errorf("failed to update organization billing: %w", err)
 	}

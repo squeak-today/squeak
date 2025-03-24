@@ -48,6 +48,7 @@ func HandleInvoicePaymentFailed(invoice stripe.Invoice, dbClient *supabase.Clien
 		return
 	}
 
+	log.Printf("Updating organization %v with customer %v, no subscription, same expiration, and plan FREE", organizationID, customer.ID)
 	err = dbClient.UpdateOrganization("FREE", organizationID, customer.ID, "", time.Time{})
 	if err != nil {
 		log.Printf("Error updating organization: %v", err)
