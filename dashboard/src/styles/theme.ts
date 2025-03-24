@@ -4,15 +4,16 @@ export const theme = {
       primary: '#000000',
       secondary: '#333333'
     },
-    selected: 'fad48f',
+    selected: '#f4f4f4',
     background: '#fbfbfb',
     border: '#e0e0e0',
+    danger: '#e74c3c',
     languages: {
       french: {
-        bg: '#E6F3FF', // Pastel blue
+        bg: '#E6F3FF',
       },
       spanish: {
-        bg: '#FFE8D6', // Pastel orange
+        bg: '#FFE8D6',
       }
     },
     cefr: {
@@ -58,11 +59,12 @@ export const theme = {
       secondary: "'Montserrat', sans-serif"
     },
     fontSize: {
-      base: '1rem',
-      md: '1.25rem',
-      lg: '1.5rem',
-      xl: '3rem',
-      xxl: '3.5rem'
+      small: '0.5rem',
+      base: '0.8rem',
+      md: '1.0rem',
+      lg: '1.25rem',
+      xl: '2.5rem',
+      xxl: '3rem'
     }
   },
   spacing: {

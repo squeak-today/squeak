@@ -1,41 +1,59 @@
 import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
-import { TransitionWrapper } from '../styles/PageTransition';
+import NavPage from '../components/NavPage';
 
-const DashboardContainer = styled.div`
+const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: ${theme.colors.background};
+  justify-content: flex-start;
+  align-items: flex-start;
+  height: 100%;
 `;
 
 const Title = styled.h1`
   font-family: ${theme.typography.fontFamily.primary};
   font-size: ${theme.typography.fontSize.xl};
-  text-align: center;
-  margin: 0;
+  margin: 0 0 ${theme.spacing.md};
   color: ${theme.colors.text.primary};
 `;
 
 const Subtitle = styled.h2`
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.md};
-  text-align: center;
   margin-top: ${theme.spacing.md};
   color: ${theme.colors.text.secondary};
 `;
 
+// dummy components for testing
+const HomeContent = () => (
+  <ContentContainer>
+    <Title>Home Dashboard</Title>
+    <Subtitle>View general information about your classroom here.</Subtitle>
+  </ContentContainer>
+);
+
+const StudentsContent = () => (
+  <ContentContainer>
+    <Title>Students Management</Title>
+    <Subtitle>Manage your students and their progress</Subtitle>
+  </ContentContainer>
+);
+
 function Dashboard() {
+  const routes = [
+    { id: 'home', label: 'Home' },
+    { id: 'students', label: 'Students' }
+  ];
+
   return (
-    <TransitionWrapper $isLeaving={false}>
-      <DashboardContainer>
-        <Title>Coming Soon!</Title>
-        <Subtitle>Keep on teaching, a great dashboard is on its way :)</Subtitle>
-      </DashboardContainer>
-    </TransitionWrapper>
+    <NavPage 
+      routes={routes}
+      initialActiveRoute="home"
+    >
+      <HomeContent />
+      <StudentsContent />
+    </NavPage>
   );
 }
 
