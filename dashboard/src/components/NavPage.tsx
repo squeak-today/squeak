@@ -1,12 +1,14 @@
 import React, { ReactNode, useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/drawing_400.png';
 import expandRight from '../assets/icons/expand-right.png';
 import expandLeft from '../assets/icons/expand-left.png';
 import logoutIcon from '../assets/icons/logout.png';
 import graduationCap from '../assets/icons/graduation-cap.png';
+import billingIcon from '../assets/icons/billing.png';
+import settingsIcon from '../assets/icons/settings.png';
 import { useAuth } from '../context/AuthContext';
-import { useProfileAPI } from '../hooks/useProfileAPI';
+import { useDashboard } from '../context/DashboardContext';
 import { 
   PageContainer,
   Sidebar,
@@ -38,20 +40,17 @@ interface ClassroomType {
 }
 
 interface NavPageProps {
-  children: ReactNode[];
-  routes: {
-    id: string;
-    label: string;
-  }[];
-  initialActiveRoute?: string;
+  children: ReactNode;
   isLoading?: boolean;
   classrooms?: ClassroomType[];
 }
 
+const navRoutes = [
+  { id: 'home', label: 'Home', path: '/' }
+];
+
 function NavPage({ 
   children,
-  routes,
-  initialActiveRoute,
   isLoading = false,
   classrooms = [
     { id: 'classroom1', name: 'Classroom 1' },
@@ -59,43 +58,28 @@ function NavPage({
   ]
 }: NavPageProps): React.ReactElement {
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
-  const { getProfile } = useProfileAPI();
-  const [activeRoute, setActiveRoute] = useState<string>(initialActiveRoute || routes[0]?.id || '');
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [userName, setUserName] = useState<string>('');
-  const [profileLoading, setProfileLoading] = useState<boolean>(true);
+  const { profileUsername, isProfileLoading, isSidebarCollapsed, setSidebarCollapsed } = useDashboard();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isClassroomsExpanded, setIsClassroomsExpanded] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const profileData = await getProfile();
-        if (profileData) {
-          setUserName(profileData.username || 'User');
-        }
-      } catch (error) {
-        console.error('Error fetching profile', error);
-      } finally {
-        setProfileLoading(false);
-      }
-    };
-    
-    fetchProfile();
-  }, [getProfile]);
+  const getActiveRouteFromPath = () => {
+    const path = location.pathname;
+    const currentRoute = navRoutes.find(route => route.path === path);
+    return currentRoute?.id;
+  };
   
   useEffect(() => {
-    const checkScreenSize = () => {
+    const handleResize = () => {
       const tabletBreakpoint = parseInt(theme.breakpoints.tablet.replace('px', ''));
-      setIsCollapsed(window.innerWidth <= tabletBreakpoint);
+      setSidebarCollapsed(window.innerWidth <= tabletBreakpoint);
     };
     
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [setSidebarCollapsed]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -111,20 +95,22 @@ function NavPage({
     };
   }, []);
 
-  const routeMap: Record<string, ReactNode> = {};
-  React.Children.forEach(children, (child, index) => {
-    if (React.isValidElement(child) && routes[index]) {
-      routeMap[routes[index].id] = child;
-    }
-  });
-
-  const handleNavClick = async (id: string) => {
-    if (id === 'logout') {
+  const handleNavClick = async (routeId: string) => {
+    if (routeId === 'logout') {
       await logout();
-      navigate('/');
+      navigate('/auth');
       return;
     }
-    setActiveRoute(id);
+
+    if (routeId === 'settings') {
+      navigate('/settings');
+      return;
+    }
+    
+    const route = navRoutes.find(r => r.id === routeId);
+    if (route) {
+      navigate(route.path);
+    }
   };
 
   const handleProfileClick = () => {
@@ -141,12 +127,12 @@ function NavPage({
   };
 
   const handleSettingsClick = () => {
-    console.log('Settings clicked');
+    navigate('/settings');
     setIsDropdownOpen(false);
   };
 
   const handleBillingClick = () => {
-    console.log('Billing clicked');
+    navigate('/settings');
     setIsDropdownOpen(false);
   };
 
@@ -155,30 +141,30 @@ function NavPage({
   };
 
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    setSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  const activeComponent = routeMap[activeRoute] || null;
+  const activeRoute = getActiveRouteFromPath();
 
   return (
     <PageContainer>
-      <Sidebar collapsed={isCollapsed}>
-        <ProfileWrapper collapsed={isCollapsed} ref={dropdownRef}>
+      <Sidebar collapsed={isSidebarCollapsed}>
+        <ProfileWrapper collapsed={isSidebarCollapsed} ref={dropdownRef}>
           <ProfileContainer 
-            collapsed={isCollapsed} 
+            collapsed={isSidebarCollapsed} 
             onClick={handleProfileClick}
           >
-            {!isCollapsed && <ProfileIcon src={graduationCap} alt="Profile" />}
-            {!isCollapsed && <UserName collapsed={isCollapsed}>{userName}</UserName>}
+            {!isSidebarCollapsed && <ProfileIcon src={graduationCap} alt="Profile" />}
+            {!isSidebarCollapsed && <UserName collapsed={isSidebarCollapsed}>{profileUsername}</UserName>}
           </ProfileContainer>
           <ToggleButton onClick={toggleSidebar}>
-            <img src={isCollapsed ? expandRight : expandLeft} alt={isCollapsed ? "Expand" : "Collapse"} />
+            <img src={isSidebarCollapsed ? expandRight : expandLeft} alt={isSidebarCollapsed ? "Expand" : "Collapse"} />
           </ToggleButton>
           
-          {!isCollapsed && (
+          {!isSidebarCollapsed && (
             <DropdownMenu isOpen={isDropdownOpen}>
               <DropdownHeader>
-                <DropdownTitle>{userName}</DropdownTitle>
+                <DropdownTitle>{profileUsername}</DropdownTitle>
                 <DropdownSubtitle onClick={toggleClassroomsList}>
                   Switch Classrooms
                 </DropdownSubtitle>
@@ -202,52 +188,66 @@ function NavPage({
               )}
               
               <DropdownItem onClick={handleBillingClick}>
+                <img src={billingIcon} alt="Billing" style={{ width: '16px', marginRight: '8px' }} />
                 Billing
               </DropdownItem>
               
               <DropdownItem onClick={handleSettingsClick}>
+                <img src={settingsIcon} alt="Settings" style={{ width: '16px', marginRight: '8px' }} />
                 Settings
               </DropdownItem>
             </DropdownMenu>
           )}
         </ProfileWrapper>
         
-        {routes.map((route) => (
+        {navRoutes.map((route) => (
           <NavButton
             key={route.id}
             className={activeRoute === route.id ? 'active' : ''}
             onClick={() => handleNavClick(route.id)}
-            collapsed={isCollapsed}
+            collapsed={isSidebarCollapsed}
           >
-            {isCollapsed ? route.label.charAt(0) : route.label}
+            {isSidebarCollapsed ? route.label.charAt(0) : route.label}
           </NavButton>
         ))}
-
-        <NavButton
-          className="logout"
-          onClick={() => handleNavClick('logout')}
-          collapsed={isCollapsed}
-        >
-          <img src={logoutIcon} alt="Logout" />
-          {!isCollapsed && "Log Out"}
-        </NavButton>
         
-        <ContactButton 
-          onClick={handleContactClick} 
-          collapsed={isCollapsed}
-        >
-          {isCollapsed ? '?' : 'Contact Us'}
-        </ContactButton>
+        <div style={{ display: 'flex', flexDirection: 'column', marginTop: 'auto' }}>
+          {isSidebarCollapsed && (
+            <NavButton
+              className={location.pathname === '/settings' ? 'active' : ''}
+              onClick={() => handleNavClick('settings')}
+              collapsed={isSidebarCollapsed}
+            >
+              <img src={settingsIcon} alt="Settings" />
+            </NavButton>
+          )}
+
+          <NavButton
+            className="logout"
+            onClick={() => handleNavClick('logout')}
+            collapsed={isSidebarCollapsed}
+          >
+            <img src={logoutIcon} alt="Logout" />
+            {!isSidebarCollapsed && "Log Out"}
+          </NavButton>
+          
+          <ContactButton 
+            onClick={handleContactClick} 
+            collapsed={isSidebarCollapsed}
+          >
+            {isSidebarCollapsed ? '?' : 'Contact Us'}
+          </ContactButton>
+        </div>
       </Sidebar>
       <MainContent>
-        {isLoading ? (
+        {isLoading || isProfileLoading ? (
           <LoadingOverlay>
             <LoadingLogo src={logo} alt="Squeak Logo" />
             <Spinner />
             <LoadingText>Loading...</LoadingText>
           </LoadingOverlay>
         ) : (
-          activeComponent
+          children
         )}
       </MainContent>
     </PageContainer>

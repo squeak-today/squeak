@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
 import NavPage from '../components/NavPage';
@@ -25,36 +24,15 @@ const Subtitle = styled.h2`
   color: ${theme.colors.text.secondary};
 `;
 
-// dummy components for testing
-const HomeContent = () => (
-  <ContentContainer>
-    <Title>Home Dashboard</Title>
-    <Subtitle>View general information about your classroom here.</Subtitle>
-  </ContentContainer>
-);
-
-const StudentsContent = () => (
-  <ContentContainer>
-    <Title>Students Management</Title>
-    <Subtitle>Manage your students and their progress</Subtitle>
-  </ContentContainer>
-);
-
-function Dashboard() {
-  const routes = [
-    { id: 'home', label: 'Home' },
-    { id: 'students', label: 'Students' }
-  ];
-
+function Settings() {
   return (
-    <NavPage 
-      routes={routes}
-      initialActiveRoute="home"
-    >
-      <HomeContent />
-      <StudentsContent />
+    <NavPage>
+      <ContentContainer>
+        <Title>Settings</Title>
+        <Subtitle>Configure your account and classroom settings here.</Subtitle>
+      </ContentContainer>
     </NavPage>
   );
 }
 
-export default Dashboard; 
+export default Settings; 

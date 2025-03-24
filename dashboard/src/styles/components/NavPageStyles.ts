@@ -210,6 +210,10 @@ export const NavButton = styled.button<SidebarProps>`
     font-weight: bold;
   }
 
+  &.settings {
+    margin-top: auto;
+  }
+
   &.logout {
     margin-top: auto;
     color: ${theme.colors.danger};
@@ -223,7 +227,7 @@ export const NavButton = styled.button<SidebarProps>`
 export const ContactButton = styled.a<SidebarProps>`
   background: none;
   border: none;
-  padding: ${theme.spacing.md} ${props => props.collapsed ? theme.spacing.sm : theme.spacing.lg};
+  padding: 0 ${props => props.collapsed ? theme.spacing.sm : theme.spacing.lg};
   text-align: ${props => props.collapsed ? 'center' : 'left'};
   color: ${theme.colors.text.primary};
   font-family: ${theme.typography.fontFamily.secondary};
