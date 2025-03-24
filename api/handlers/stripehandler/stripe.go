@@ -1,11 +1,11 @@
 package stripehandler
 
 import (
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"encoding/json"
 	"story-api/handlers"
 	"story-api/models"
 	"story-api/supabase"
@@ -20,7 +20,7 @@ type StripeHandler struct {
 }
 
 func New(dbClient *supabase.Client) *StripeHandler {
-	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
+	stripe.Key = os.Getenv("STRIPE_KEY")
 
 	return &StripeHandler{
 		Handler: handlers.New(dbClient),
@@ -62,11 +62,46 @@ func (h *StripeHandler) HandleWebhook(c *gin.Context) {
 		return
 	}
 
-	prettyJSON, err := json.MarshalIndent(event, "", "  ")
-	if err != nil {
-		log.Printf("Error formatting JSON: %v\n", err)
-	} else {
-		log.Printf("Received Stripe webhook event: %s\nPayload: %s\n", event.Type, string(prettyJSON))
+	log.Printf("Received webhook event: %v", event.Type)
+	switch event.Type {
+	case "checkout.session.completed":
+		var checkout stripe.CheckoutSession
+		err := json.Unmarshal(event.Data.Raw, &checkout)
+        if err != nil {
+            log.Printf("Error parsing webhook JSON: %v\n", err)
+            c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error parsing webhook JSON"})
+            return
+        }
+		HandleCheckoutSessionCompleted(checkout, h.DBClient)
+	case "invoice.payment_succeeded":
+		var invoice stripe.Invoice
+		err := json.Unmarshal(event.Data.Raw, &invoice)
+		if err != nil {
+			log.Printf("Error parsing webhook JSON: %v\n", err)
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error parsing webhook JSON"})
+			return
+		}
+		HandleInvoicePaymentSucceeded(invoice, h.DBClient)
+	case "invoice.payment_failed":
+		var invoice stripe.Invoice
+		err := json.Unmarshal(event.Data.Raw, &invoice)
+		if err != nil {
+			log.Printf("Error parsing webhook JSON: %v\n", err)
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error parsing webhook JSON"})
+			return
+		}
+		HandleInvoicePaymentFailed(invoice, h.DBClient)
+	case "customer.subscription_updated":
+		// this event also catches when they cancel their subscription
+	case "customer.subscription.deleted":
+		var subscription stripe.Subscription
+		err := json.Unmarshal(event.Data.Raw, &subscription)
+		if err != nil {
+			log.Printf("Error parsing webhook JSON: %v\n", err)
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error parsing webhook JSON"})
+			return
+		}
+		HandleSubscriptionDeleted(subscription, h.DBClient)
 	}
 
 	c.JSON(http.StatusOK, models.WebhookResponse{

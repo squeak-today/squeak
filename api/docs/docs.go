@@ -302,6 +302,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -386,6 +392,81 @@ const docTemplate = `{
                 }
             }
         },
+        "/organization/payments": {
+            "get": {
+                "description": "Ping Payments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Ping Payments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaymentsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/payments/cancel-subscription-eop": {
+            "post": {
+                "description": "Cancel a Stripe subscription at the end of the period",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Cancel a Stripe subscription at the end of the period",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CancelSubscriptionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/payments/create-checkout-session": {
+            "post": {
+                "description": "Creates a checkout session and redirects to Stripe's payment page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Create a Stripe checkout session",
+                "responses": {
+                    "303": {
+                        "description": "Redirect to Stripe Checkout",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/organization/plan": {
             "get": {
                 "description": "Get Organization Plan",
@@ -408,6 +489,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -1243,6 +1330,28 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CancelSubscriptionResponse": {
+            "type": "object",
+            "required": [
+                "canceled_plan",
+                "current_expiration",
+                "success"
+            ],
+            "properties": {
+                "canceled_plan": {
+                    "type": "string",
+                    "example": "STANDARD"
+                },
+                "current_expiration": {
+                    "type": "string",
+                    "example": "2025-03-24T12:00:00Z"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "models.ClassroomContentItem": {
             "type": "object",
             "required": [
@@ -1786,6 +1895,18 @@ const docTemplate = `{
                 "teacher_id": {
                     "type": "string",
                     "example": "123"
+                }
+            }
+        },
+        "models.PaymentsResponse": {
+            "type": "object",
+            "required": [
+                "success"
+            ],
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },

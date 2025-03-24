@@ -28,6 +28,22 @@ definitions:
     required:
     - status
     type: object
+  models.CancelSubscriptionResponse:
+    properties:
+      canceled_plan:
+        example: STANDARD
+        type: string
+      current_expiration:
+        example: "2025-03-24T12:00:00Z"
+        type: string
+      success:
+        example: true
+        type: boolean
+    required:
+    - canceled_plan
+    - current_expiration
+    - success
+    type: object
   models.ClassroomContentItem:
     properties:
       cefr_level:
@@ -431,6 +447,14 @@ definitions:
     required:
     - organization_id
     - teacher_id
+    type: object
+  models.PaymentsResponse:
+    properties:
+      success:
+        example: true
+        type: boolean
+    required:
+    - success
     type: object
   models.RejectContentRequest:
     properties:
@@ -873,6 +897,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Check Organization
       tags:
       - organization
@@ -928,6 +956,55 @@ paths:
       summary: Join Organization
       tags:
       - organization
+  /organization/payments:
+    get:
+      consumes:
+      - application/json
+      description: Ping Payments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PaymentsResponse'
+      summary: Ping Payments
+      tags:
+      - organization
+  /organization/payments/cancel-subscription-eop:
+    post:
+      consumes:
+      - application/json
+      description: Cancel a Stripe subscription at the end of the period
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CancelSubscriptionResponse'
+      summary: Cancel a Stripe subscription at the end of the period
+      tags:
+      - organization
+  /organization/payments/create-checkout-session:
+    post:
+      consumes:
+      - application/json
+      description: Creates a checkout session and redirects to Stripe's payment page
+      produces:
+      - application/json
+      responses:
+        "303":
+          description: Redirect to Stripe Checkout
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a Stripe checkout session
+      tags:
+      - organization
   /organization/plan:
     get:
       consumes:
@@ -942,6 +1019,10 @@ paths:
             $ref: '#/definitions/models.OrganizationPlanResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get Organization Plan

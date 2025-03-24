@@ -200,6 +200,12 @@ export interface paths {
             "application/json": components["schemas"]["models.ErrorResponse"];
           };
         };
+        /** @description Not Found */
+        404: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
       };
     };
   };
@@ -259,6 +265,60 @@ export interface paths {
       };
     };
   };
+  "/organization/payments": {
+    /**
+     * Ping Payments
+     * @description Ping Payments
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.PaymentsResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/payments/cancel-subscription-eop": {
+    /**
+     * Cancel a Stripe subscription at the end of the period
+     * @description Cancel a Stripe subscription at the end of the period
+     */
+    post: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/payments/create-checkout-session": {
+    /**
+     * Create a Stripe checkout session
+     * @description Creates a checkout session and redirects to Stripe's payment page
+     */
+    post: {
+      responses: {
+        /** @description Redirect to Stripe Checkout */
+        303: {
+          content: {
+            "application/json": string;
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/organization/plan": {
     /**
      * Get Organization Plan
@@ -274,6 +334,12 @@ export interface paths {
         };
         /** @description Unauthorized */
         401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+        /** @description Not Found */
+        404: {
           content: {
             "application/json": components["schemas"]["models.ErrorResponse"];
           };
@@ -835,6 +901,14 @@ export interface components {
       /** @example live */
       status: string;
     };
+    "models.CancelSubscriptionResponse": {
+      /** @example STANDARD */
+      canceled_plan: string;
+      /** @example 2025-03-24T12:00:00Z */
+      current_expiration: string;
+      /** @example true */
+      success: boolean;
+    };
     "models.ClassroomContentItem": {
       /** @example B1 */
       cefr_level: string;
@@ -1044,6 +1118,10 @@ export interface components {
       organization_id: string;
       /** @example 123 */
       teacher_id: string;
+    };
+    "models.PaymentsResponse": {
+      /** @example true */
+      success: boolean;
     };
     "models.RejectContentRequest": {
       /** @example 123 */
