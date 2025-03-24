@@ -12,6 +12,9 @@ import TeacherDashboard from './pages/TeacherDashboard';
 import BecomeTeacher from './pages/BecomeTeacher';
 import BecomeStudent from './pages/BecomeStudent';
 import Profile from './pages/Profile';
+import TeacherAnalytics from './components/TeacherAnalytics';
+import TeacherContent from './components/TeacherContent';
+import TeacherStudents from './components/TeacherStudents';
 
 const App: React.FC = () => {
 	return (
@@ -26,6 +29,27 @@ const App: React.FC = () => {
 							<TeacherDashboard />
 						</ProtectedRoute>
 					} />
+					<Route path="/teacher/dashboard" element={
+						<ProtectedRoute>
+							<TeacherDashboard />
+						</ProtectedRoute>
+					} />
+					<Route path="/teacher/content" element={
+						<ProtectedRoute>
+							<TeacherContent />
+						</ProtectedRoute>
+					} />
+					<Route path="/teacher/Analytics" element={
+						<ProtectedRoute>
+							<TeacherAnalytics />
+						</ProtectedRoute>
+					} />
+					<Route path="/teacher/students" element={
+						<ProtectedRoute>
+							<TeacherStudents />
+						</ProtectedRoute>
+					} />
+					
 					<Route path="/teacher/become" element={
 						<ProtectedRoute>
 							<BecomeTeacher />

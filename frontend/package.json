@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/recharts": "^1.8.29",
     "amazon-cognito-identity-js": "^6.3.12",
     "cohere-ai": "^7.14.0",
     "openapi-fetch": "^0.13.4",
@@ -21,6 +22,7 @@
     "react-icons": "^5.4.0",
     "react-markdown": "^9.0.3",
     "react-router-dom": "^7.1.5",
+    "recharts": "^2.15.1",
     "styled-components": "^6.1.13",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"

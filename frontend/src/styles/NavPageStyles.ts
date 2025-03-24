@@ -9,9 +9,10 @@ export const PageContainer = styled.div`
 
 export const MainContent = styled.div`
   flex: 1;
-  padding: ${theme.spacing.md};
-  margin-left: 160px;
-  position: relative;
+  padding: 20px;
+  padding-left: 30px; // Add extra padding on the left
+  overflow-y: auto;
+  margin-left: 220px; // Assuming the sidebar width is around 200px, adjust as needed
 `;
 
 export const Sidebar = styled.nav`

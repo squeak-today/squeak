@@ -1,3 +1,4 @@
+// Modified NavPage.tsx
 import { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TransitionWrapper } from './PageTransition';
@@ -21,6 +22,7 @@ interface NavPageProps {
   children: ReactNode;
   isLoading?: boolean;
   showTeach?: boolean;
+  isTeacher?: boolean; // New prop to identify teacher dashboard
   showJoinClassroom?: boolean;
   initialActiveNav?: string;
 }
@@ -29,6 +31,7 @@ function NavPage({
   children,
   initialActiveNav = 'learn',
   isLoading = false,
+  isTeacher = false, // Default to false
 }: NavPageProps): JSX.Element {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
@@ -62,19 +65,55 @@ function NavPage({
             <LogoText>Squeak</LogoText>
           </LogoContainer>
           
-          <NavButton
-            className={activeNav === 'learn' ? 'active' : ''}
-            onClick={() => handleNavClick('learn', '/learn')}
-          >
-            Learn
-          </NavButton>
+          {isTeacher ? (
+            // Teacher-specific navigation
+            <>
+              <NavButton
+                className={activeNav === 'dashboard' ? 'active' : ''}
+                onClick={() => handleNavClick('dashboard', '/teacher/dashboard')}
+              >
+                Dashboard
+              </NavButton>
+              
+              <NavButton
+                className={activeNav === 'analytics' ? 'active' : ''}
+                onClick={() => handleNavClick('analytics', '/teacher/analytics')}
+              >
+                Analytics
+              </NavButton>
+              
+              <NavButton
+                className={activeNav === 'content' ? 'active' : ''}
+                onClick={() => handleNavClick('content', '/teacher/content')}
+              >
+                Moderate Stories
+              </NavButton>
+              
+              <NavButton
+                className={activeNav === 'students' ? 'active' : ''}
+                onClick={() => handleNavClick('students', '/teacher/students')}
+              >
+                Student Profiles
+              </NavButton>
+            </>
+          ) : (
+            // Standard user navigation
+            <>
+              <NavButton
+                className={activeNav === 'learn' ? 'active' : ''}
+                onClick={() => handleNavClick('learn', '/learn')}
+              >
+                Learn
+              </NavButton>
 
-          <NavButton
-            className={activeNav === 'profile' ? 'active' : ''}
-            onClick={() => handleNavClick('profile', '/profile')}
-          >
-            Profile
-          </NavButton>
+              <NavButton
+                className={activeNav === 'profile' ? 'active' : ''}
+                onClick={() => handleNavClick('profile', '/profile')}
+              >
+                Profile
+              </NavButton>
+            </>
+          )}
 
           <NavButton
             className={activeNav === 'contact' ? 'active' : ''}
@@ -106,4 +145,4 @@ function NavPage({
   );
 }
 
-export default NavPage; 
+export default NavPage;
