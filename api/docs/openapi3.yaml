@@ -203,6 +203,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/models.ErrorResponse'
           description: Unauthorized
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
       tags:
         - organization
       description: Check Organization
@@ -259,6 +265,51 @@ paths:
         description: Join organization request
         required: true
       summary: Join Organization
+  /organization/payments:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.PaymentsResponse'
+          description: OK
+      tags:
+        - organization
+      description: Ping Payments
+      summary: Ping Payments
+  /organization/payments/cancel-subscription-eop:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.CancelSubscriptionResponse'
+          description: OK
+      tags:
+        - organization
+      description: Cancel a Stripe subscription at the end of the period
+      summary: Cancel a Stripe subscription at the end of the period
+  /organization/payments/create-checkout-session:
+    post:
+      responses:
+        '303':
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Redirect to Stripe Checkout
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - organization
+      description: Creates a checkout session and redirects to Stripe's payment page
+      summary: Create a Stripe checkout session
   /organization/plan:
     get:
       responses:
@@ -274,6 +325,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/models.ErrorResponse'
           description: Unauthorized
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
       tags:
         - organization
       description: Get Organization Plan
@@ -842,6 +899,22 @@ components:
       required:
         - status
       type: object
+    models.CancelSubscriptionResponse:
+      properties:
+        canceled_plan:
+          example: STANDARD
+          type: string
+        current_expiration:
+          example: '2025-03-24T12:00:00Z'
+          type: string
+        success:
+          example: true
+          type: boolean
+      required:
+        - canceled_plan
+        - current_expiration
+        - success
+      type: object
     models.ClassroomContentItem:
       properties:
         cefr_level:
@@ -1245,6 +1318,14 @@ components:
       required:
         - organization_id
         - teacher_id
+      type: object
+    models.PaymentsResponse:
+      properties:
+        success:
+          example: true
+          type: boolean
+      required:
+        - success
       type: object
     models.RejectContentRequest:
       properties:

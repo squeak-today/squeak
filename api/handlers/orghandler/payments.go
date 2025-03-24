@@ -34,7 +34,7 @@ func (h *OrganizationHandler) GetOrganizationPayments(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Success		303	{string}	string	"Redirect to Stripe Checkout"
-//  @Failure		400	{object}	models.ErrorResponse
+//	@Failure		400	{object}	models.ErrorResponse
 //	@Router			/organization/payments/create-checkout-session [post]
 func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
@@ -52,7 +52,7 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 	log.Printf("organizationID: %v", organizationID)
 
 	// check if user has active subscription
-	plan, _, _, _, err := h.DBClient.GetOrganizationInfo(organizationID)
+	plan, customerID, _, _, err := h.DBClient.GetOrganizationInfo(organizationID)
 	if err != nil {
 		log.Printf("Failed to get organization info: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get organization info"})
@@ -81,6 +81,10 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 		SuccessURL:        stripe.String(domain + "?success=true"),
 		CancelURL:         stripe.String(domain + "?canceled=true"),
 		ClientReferenceID: stripe.String(userID),
+	}
+
+	if customerID != "" {
+		params.Customer = stripe.String(customerID)
 	}
 
 	s, err := session.New(params)

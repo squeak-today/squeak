@@ -368,6 +368,15 @@ export interface paths {
                         "application/json": components["schemas"]["models.ErrorResponse"];
                     };
                 };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
             };
         };
         put?: never;
@@ -484,6 +493,132 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/organization/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ping Payments
+         * @description Ping Payments
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.PaymentsResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization/payments/cancel-subscription-eop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a Stripe subscription at the end of the period
+         * @description Cancel a Stripe subscription at the end of the period
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organization/payments/create-checkout-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a Stripe checkout session
+         * @description Creates a checkout session and redirects to Stripe's payment page
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Redirect to Stripe Checkout */
+                303: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": string;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/organization/plan": {
         parameters: {
             query?: never;
@@ -515,6 +650,15 @@ export interface paths {
                 };
                 /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -1582,6 +1726,14 @@ export interface components {
             /** @example live */
             status: string;
         };
+        "models.CancelSubscriptionResponse": {
+            /** @example STANDARD */
+            canceled_plan: string;
+            /** @example 2025-03-24T12:00:00Z */
+            current_expiration: string;
+            /** @example true */
+            success: boolean;
+        };
         "models.ClassroomContentItem": {
             /** @example B1 */
             cefr_level: string;
@@ -1785,6 +1937,10 @@ export interface components {
             organization_id: string;
             /** @example 123 */
             teacher_id: string;
+        };
+        "models.PaymentsResponse": {
+            /** @example true */
+            success: boolean;
         };
         "models.RejectContentRequest": {
             /** @example 123 */
