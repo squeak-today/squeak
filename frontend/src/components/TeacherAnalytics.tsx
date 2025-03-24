@@ -5,10 +5,7 @@ import NavPage from '../components/NavPage';
 import styled from 'styled-components';
 import {
   Section,
-  DateHeader,
   AnalyticsContainer,
-  Widget,
-  WidgetHeader,
   WidgetContent,
 } from '../styles/TeacherDashboardPageStyles';
 import { FaClock, FaChartPie, FaCommentDots, FaExclamationTriangle } from 'react-icons/fa';
@@ -29,60 +26,28 @@ import {
   TooltipProps
 } from 'recharts';
 
-// Modified layout to have better spacing and organization
-const AnalyticsPageContainer = styled.div`
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-`;
+import { 
+    AnalyticsPageContainer,
+    AnalyticsGrid,
+    WidgetRow,
+    StyledWidget as Widget,
+    WidgetHeader,
+    MetricValue,
+    PercentageIndicator,
+    ProblemItem,
+    ProblemRank,
+    DateHeader,
+    ChartContainer
+  } from '../styles/TeacherAnalyticsStyles';
 
-// Updated AnalyticsGrid for new layout
-const AnalyticsGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  margin-bottom: 24px;
-`;
+  import { theme } from '../styles/theme';
 
-// Row for two widgets side by side
-const WidgetRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
 
-const MetricValue = styled.div`
-  font-size: 24px;
-  font-weight: bold;
-  margin: 10px 0;
-`;
 
 // Fix the styled component to properly type the props
 interface PercentageIndicatorProps {
   $value: number; // Use $ prefix for transient props
 }
-
-const PercentageIndicator = styled.span<PercentageIndicatorProps>`
-  color: ${props => props.$value >= 80 ? '#4caf50' : props.$value >= 60 ? '#ff9800' : '#f44336'};
-  font-weight: bold;
-`;
-
-const ProblemItem = styled.div`
-  padding: 10px;
-  margin-bottom: 8px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  border-left: 4px solid #f44336;
-`;
-
-const ProblemRank = styled.span`
-  font-weight: bold;
-  margin-right: 8px;
-`;
 
 // Define interfaces for data types
 interface TimeSpentDataItem {
@@ -147,16 +112,16 @@ function TeacherAnalytics() {
     previousScore: 68,
     change: '+7%',
     problemAreas: [
-      { id: 1, question: "Compound word recognition", incorrectRate: 42 },
-      { id: 2, question: "Silent letter identification", incorrectRate: 35 },
-      { id: 3, question: "Consonant blends", incorrectRate: 28 },
+      { id: 1, question: "What does sous-évaluées mean?", incorrectRate: 42 },
+      { id: 2, question: "What does effectif mean?", incorrectRate: 35 },
+      { id: 3, question: "Pourquoi les Cowboys de Dallas pourraient-ils avoir des difficultés à recruter Cooper Kupp ?", incorrectRate: 28 },
     ]
   };
 
   // Mock word analytics data
   const wordAnalyticsData: WordAnalyticsItem[] = [
     { name: 'Sounded Out', value: 150 },
-    { name: 'Recognized', value: 200 },
+    { name: 'Clicked', value: 200 },
     { name: 'Skipped', value: 50 },
   ];
 
@@ -170,7 +135,11 @@ function TeacherAnalytics() {
   ];
 
   // Colors for pie chart
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+  const COLORS = [
+    theme.colors.cefr.beginner.text,
+    theme.colors.cefr.intermediate.text,
+    theme.colors.cefr.advanced.text
+  ];
 
   useEffect(() => {
     if (!isInitializing) return;
