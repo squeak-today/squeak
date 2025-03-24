@@ -61,6 +61,54 @@ func (c *Client) GetOrganizationPlan(organizationID string) (string, error) {
 	return plan, nil
 }
 
+func (c *Client) GetOrganizationSubscriptionID(organizationID string) (string, error) {
+	var subscriptionID string
+	err := c.db.QueryRow(`
+		SELECT subscription_id
+		FROM organizations
+		WHERE id = $1`, organizationID).Scan(&subscriptionID)
+
+	if err != nil {
+		return "", err
+	}
+
+	return subscriptionID, nil
+}
+
+func (c *Client) GetOrganizationInfo(organizationID string) (string, string, string, time.Time, error) {
+	var plan string
+	var customerID *string
+	var subscriptionID *string
+	var expiration *time.Time
+
+	err := c.db.QueryRow(`
+		SELECT plan, customer_id, subscription_id, expiration
+		FROM organizations
+		WHERE id = $1`, organizationID).Scan(&plan, &customerID, &subscriptionID, &expiration)
+
+	if err != nil {
+		return "", "", "", time.Time{}, err
+	}
+
+	// convert nullable fields to their zero values if null
+	customerIDStr := ""
+	if customerID != nil {
+		customerIDStr = *customerID
+	}
+
+	subscriptionIDStr := ""
+	if subscriptionID != nil {
+		subscriptionIDStr = *subscriptionID
+	}
+
+	expirationTime := time.Time{}
+	if expiration != nil {
+		expirationTime = *expiration
+	}
+
+	return plan, customerIDStr, subscriptionIDStr, expirationTime, nil
+}
+
 func (c *Client) CreateOrganization(adminID string) (string, error) {
 	var organizationID string
 	err := c.db.QueryRow(`
