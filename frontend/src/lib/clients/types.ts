@@ -287,11 +287,23 @@ export interface paths {
      * @description Cancel a Stripe subscription at the end of the period
      */
     post: {
+      /** @description Cancel subscription request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CancelSubscriptionRequest"];
+        };
+      };
       responses: {
         /** @description OK */
         200: {
           content: {
             "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
           };
         };
       };
@@ -303,11 +315,17 @@ export interface paths {
      * @description Creates a checkout session and redirects to Stripe's payment page
      */
     post: {
+      /** @description Create checkout session request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CreateCheckoutSessionRequest"];
+        };
+      };
       responses: {
         /** @description Redirect to Stripe Checkout */
-        303: {
+        200: {
           content: {
-            "application/json": string;
+            "application/json": components["schemas"]["models.CreateCheckoutSessionResponse"];
           };
         };
         /** @description Bad Request */
@@ -873,6 +891,7 @@ export interface components {
       /** @example live */
       status: string;
     };
+    "models.CancelSubscriptionRequest": Record<string, never>;
     "models.CancelSubscriptionResponse": {
       /** @example CLASSROOM */
       canceled_plan: string;
@@ -910,6 +929,11 @@ export interface components {
       title: string;
       /** @example Music */
       topic: string;
+    };
+    "models.CreateCheckoutSessionRequest": Record<string, never>;
+    "models.CreateCheckoutSessionResponse": {
+      /** @example https://checkout.stripe.com/c/pay/123 */
+      redirect_url: string;
     };
     "models.CreateClassroomRequest": {
       /** @example 10 */

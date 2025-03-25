@@ -28,6 +28,8 @@ definitions:
     required:
     - status
     type: object
+  models.CancelSubscriptionRequest:
+    type: object
   models.CancelSubscriptionResponse:
     properties:
       canceled_plan:
@@ -93,6 +95,16 @@ definitions:
     - preview_text
     - title
     - topic
+    type: object
+  models.CreateCheckoutSessionRequest:
+    type: object
+  models.CreateCheckoutSessionResponse:
+    properties:
+      redirect_url:
+        example: https://checkout.stripe.com/c/pay/123
+        type: string
+    required:
+    - redirect_url
     type: object
   models.CreateClassroomRequest:
     properties:
@@ -975,6 +987,13 @@ paths:
       consumes:
       - application/json
       description: Cancel a Stripe subscription at the end of the period
+      parameters:
+      - description: Cancel subscription request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CancelSubscriptionRequest'
       produces:
       - application/json
       responses:
@@ -982,6 +1001,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.CancelSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Cancel a Stripe subscription at the end of the period
       tags:
       - organization
@@ -990,13 +1013,20 @@ paths:
       consumes:
       - application/json
       description: Creates a checkout session and redirects to Stripe's payment page
+      parameters:
+      - description: Create checkout session request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCheckoutSessionRequest'
       produces:
       - application/json
       responses:
-        "303":
+        "200":
           description: Redirect to Stripe Checkout
           schema:
-            type: string
+            $ref: '#/definitions/models.CreateCheckoutSessionResponse'
         "400":
           description: Bad Request
           schema:

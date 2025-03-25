@@ -287,18 +287,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/models.CancelSubscriptionResponse'
           description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
       tags:
         - organization
       description: Cancel a Stripe subscription at the end of the period
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.CancelSubscriptionRequest'
+        description: Cancel subscription request
+        required: true
       summary: Cancel a Stripe subscription at the end of the period
   /organization/payments/create-checkout-session:
     post:
       responses:
-        '303':
+        '200':
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/models.CreateCheckoutSessionResponse'
           description: Redirect to Stripe Checkout
         '400':
           content:
@@ -309,6 +322,13 @@ paths:
       tags:
         - organization
       description: Creates a checkout session and redirects to Stripe's payment page
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.CreateCheckoutSessionRequest'
+        description: Create checkout session request
+        required: true
       summary: Create a Stripe checkout session
   /profile:
     get:
@@ -874,6 +894,8 @@ components:
       required:
         - status
       type: object
+    models.CancelSubscriptionRequest:
+      type: object
     models.CancelSubscriptionResponse:
       properties:
         canceled_plan:
@@ -939,6 +961,16 @@ components:
         - preview_text
         - title
         - topic
+      type: object
+    models.CreateCheckoutSessionRequest:
+      type: object
+    models.CreateCheckoutSessionResponse:
+      properties:
+        redirect_url:
+          example: 'https://checkout.stripe.com/c/pay/123'
+          type: string
+      required:
+        - redirect_url
       type: object
     models.CreateClassroomRequest:
       properties:

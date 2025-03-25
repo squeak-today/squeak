@@ -253,11 +253,18 @@ Cancel a Stripe subscription at the end of the period
 
 Cancel a Stripe subscription at the end of the period
 
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Cancel subscription request | Yes | [models.CancelSubscriptionRequest](#modelscancelsubscriptionrequest) |
+
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.CancelSubscriptionResponse](#modelscancelsubscriptionresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 
 ### /organization/payments/create-checkout-session
 
@@ -270,11 +277,17 @@ Create a Stripe checkout session
 
 Creates a checkout session and redirects to Stripe's payment page
 
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Create checkout session request | Yes | [models.CreateCheckoutSessionRequest](#modelscreatecheckoutsessionrequest) |
+
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 303 | Redirect to Stripe Checkout | string |
+| 200 | Redirect to Stripe Checkout | [models.CreateCheckoutSessionResponse](#modelscreatecheckoutsessionresponse) |
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
@@ -749,6 +762,12 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | status | string | *Example:* `"live"` | Yes |
 
+#### models.CancelSubscriptionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CancelSubscriptionRequest | object |  |  |
+
 #### models.CancelSubscriptionResponse
 
 | Name | Type | Description | Required |
@@ -771,6 +790,18 @@ Validates and processes incoming webhook events from Stripe
 | preview_text | string | *Example:* `"# L'actualité musicale en bref\n\n## Un flot de nouveautés..."` | Yes |
 | title | string | *Example:* `"# L'actualité musicale en bref\n\n## Un fl..."` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
+
+#### models.CreateCheckoutSessionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CreateCheckoutSessionRequest | object |  |  |
+
+#### models.CreateCheckoutSessionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| redirect_url | string | *Example:* `"https://checkout.stripe.com/c/pay/123"` | Yes |
 
 #### models.CreateClassroomRequest
 

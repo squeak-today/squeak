@@ -428,11 +428,28 @@ const docTemplate = `{
                     "organization"
                 ],
                 "summary": "Cancel a Stripe subscription at the end of the period",
+                "parameters": [
+                    {
+                        "description": "Cancel subscription request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CancelSubscriptionRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.CancelSubscriptionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
                         }
                     }
                 }
@@ -451,11 +468,22 @@ const docTemplate = `{
                     "organization"
                 ],
                 "summary": "Create a Stripe checkout session",
+                "parameters": [
+                    {
+                        "description": "Create checkout session request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateCheckoutSessionRequest"
+                        }
+                    }
+                ],
                 "responses": {
-                    "303": {
+                    "200": {
                         "description": "Redirect to Stripe Checkout",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.CreateCheckoutSessionResponse"
                         }
                     },
                     "400": {
@@ -1295,6 +1323,9 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CancelSubscriptionRequest": {
+            "type": "object"
+        },
         "models.CancelSubscriptionResponse": {
             "type": "object",
             "required": [
@@ -1371,6 +1402,21 @@ const docTemplate = `{
                 "topic": {
                     "type": "string",
                     "example": "Music"
+                }
+            }
+        },
+        "models.CreateCheckoutSessionRequest": {
+            "type": "object"
+        },
+        "models.CreateCheckoutSessionResponse": {
+            "type": "object",
+            "required": [
+                "redirect_url"
+            ],
+            "properties": {
+                "redirect_url": {
+                    "type": "string",
+                    "example": "https://checkout.stripe.com/c/pay/123"
                 }
             }
         },

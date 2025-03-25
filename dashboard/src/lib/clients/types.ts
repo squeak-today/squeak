@@ -552,7 +552,12 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            /** @description Cancel subscription request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CancelSubscriptionRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -561,6 +566,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
                     };
                 };
             };
@@ -591,15 +605,20 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            /** @description Create checkout session request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreateCheckoutSessionRequest"];
+                };
+            };
             responses: {
                 /** @description Redirect to Stripe Checkout */
-                303: {
+                200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string;
+                        "application/json": components["schemas"]["models.CreateCheckoutSessionResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -1669,6 +1688,7 @@ export interface components {
             /** @example live */
             status: string;
         };
+        "models.CancelSubscriptionRequest": Record<string, never>;
         "models.CancelSubscriptionResponse": {
             /** @example CLASSROOM */
             canceled_plan: string;
@@ -1702,6 +1722,11 @@ export interface components {
             title: string;
             /** @example Music */
             topic: string;
+        };
+        "models.CreateCheckoutSessionRequest": Record<string, never>;
+        "models.CreateCheckoutSessionResponse": {
+            /** @example https://checkout.stripe.com/c/pay/123 */
+            redirect_url: string;
         };
         "models.CreateClassroomRequest": {
             /** @example 10 */

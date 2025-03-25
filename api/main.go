@@ -149,7 +149,7 @@ func init() {
 		paymentsGroup := orgGroup.Group("/payments")
 		{
 			paymentsGroup.GET("", orgHandler.GetOrganizationPayments)
-			paymentsGroup.GET("/create-checkout-session", orgHandler.CreateCheckoutSession)
+			paymentsGroup.POST("/create-checkout-session", orgHandler.CreateCheckoutSession)
 			paymentsGroup.POST("/cancel-subscription-eop", orgHandler.CancelSubscriptionAtEndOfPeriod)
 		}
 	}
