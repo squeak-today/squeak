@@ -4,9 +4,14 @@ type TeacherStatusResponse struct {
 	Exists bool `json:"exists" binding:"required" example:"true"`
 }
 
-type GetClassroomInfoResponse struct {
+type ClassroomListItem struct {
 	ClassroomID   string `json:"classroom_id" binding:"required" example:"123"`
+	Name          string `json:"name" binding:"required" example:"Connor"`
 	StudentsCount int    `json:"students_count" binding:"gte=0" example:"10"`
+}
+
+type GetClassroomListResponse struct {
+	Classrooms []ClassroomListItem `json:"classrooms" binding:"required" example:"123"`
 }
 
 type ClassroomContentItem struct {

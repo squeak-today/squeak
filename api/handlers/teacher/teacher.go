@@ -43,30 +43,34 @@ func (h *TeacherHandler) CheckTeacherStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//	@Summary		Get classroom info
-//	@Description	Get classroom info
+//	@Summary		Get classrooms
+//	@Description	Get classrooms
 //	@Tags			teacher
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	models.GetClassroomInfoResponse
+//	@Success		200	{object}	models.GetClassroomListResponse
 //	@Failure		403	{object}	models.ErrorResponse
 //	@Router			/teacher/classroom [get]
-func (h *TeacherHandler) GetClassroomInfo(c *gin.Context) {
+func (h *TeacherHandler) GetClassroomList(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
 	if !isTeacher {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "User is not a teacher"})
 		return
 	}
 
-	classroom_id, students_count, err := h.DBClient.GetClassroomByTeacherId(userID)
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
 	if err != nil {
-		log.Printf("Failed to get classroom: %v", err)
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
 		return
 	}
-	c.JSON(http.StatusOK, models.GetClassroomInfoResponse{
-		ClassroomID:   classroom_id,
-		StudentsCount: students_count,
+	classroomList, err := h.DBClient.GetClassroomList(teacherID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom list"})
+		return
+	}
+	c.JSON(http.StatusOK, models.GetClassroomListResponse{
+		Classrooms: classroomList,
 	})
 }
 
@@ -207,6 +211,7 @@ func (h *TeacherHandler) CreateClassroom(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.CreateClassroomResponse{ClassroomID: classroom_id})
 }
+
 
 //	@Summary		Accept content
 //	@Description	Accept content
