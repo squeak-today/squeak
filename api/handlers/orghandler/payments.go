@@ -53,7 +53,7 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 	log.Printf("organizationID: %v", organizationID)
 
 	// check if user has active subscription
-	plan, customerID, _, _, err := h.DBClient.GetOrganizationInfo(organizationID)
+	plan, customerID, _, _, _, err := h.DBClient.GetOrganizationInfo(organizationID)
 	if err != nil {
 		log.Printf("Failed to get organization info: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get organization info"})
@@ -125,7 +125,7 @@ func (h *OrganizationHandler) CancelSubscriptionAtEndOfPeriod(c *gin.Context) {
 		return
 	}
 
-	plan, _, subscriptionID, expiration, err := h.DBClient.GetOrganizationInfo(organizationID)
+	plan, _, subscriptionID, expiration, _, err := h.DBClient.GetOrganizationInfo(organizationID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get organization info"})
 		return

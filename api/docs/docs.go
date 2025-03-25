@@ -1888,6 +1888,10 @@ const docTemplate = `{
                 "teacher_id"
             ],
             "properties": {
+                "canceled": {
+                    "type": "boolean",
+                    "example": false
+                },
                 "expiration_date": {
                     "type": "string",
                     "example": "2025-03-24T12:00:00Z"

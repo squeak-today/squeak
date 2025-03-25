@@ -5,6 +5,7 @@ type OrganizationResponse struct {
 	TeacherID      string `json:"teacher_id" binding:"required" example:"123"`
 	Plan           string `json:"plan" binding:"required" example:"FREE"`
 	ExpirationDate string `json:"expiration_date" example:"2025-03-24T12:00:00Z"`
+	Canceled       bool   `json:"canceled" example:"false"`
 }
 
 type CreateOrganizationRequest struct {}

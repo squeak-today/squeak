@@ -42,9 +42,9 @@ export const PlanName = styled.h3`
   color: ${theme.colors.text.primary};
 `;
 
-export const CurrentPlanTag = styled.span`
+export const CurrentPlanTag = styled.span<{ canceled?: boolean }>`
   display: inline-block;
-  background-color: #f5f5f5;
+  background-color: ${props => props.canceled ? theme.colors.dangerbg : '#f5f5f5'};
   color: ${theme.colors.text.primary};
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
@@ -93,7 +93,6 @@ export const ModalContent = styled.div`
 
 export const ModalMessage = styled.p`
   font-family: ${theme.typography.fontFamily.secondary};
-  font-weight: bold;
   font-size: ${theme.typography.fontSize.md};
   margin-bottom: ${theme.spacing.lg};
   color: ${theme.colors.text.secondary};
@@ -104,6 +103,14 @@ export const ModalButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: ${theme.spacing.md};
+`;
+
+export const ModalTitle = styled.h3`
+  text-align: center;
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.xl};
+  margin-bottom: ${theme.spacing.sm};
+  color: ${theme.colors.text.primary};
 `;
 
 export const ModalButton = styled.button<{ bgColor?: string; textColor?: string }>`

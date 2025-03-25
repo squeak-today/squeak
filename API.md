@@ -975,6 +975,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| canceled | boolean | *Example:* `false` | No |
 | expiration_date | string | *Example:* `"2025-03-24T12:00:00Z"` | No |
 | organization_id | string | *Example:* `"123"` | Yes |
 | plan | string | *Example:* `"FREE"` | Yes |

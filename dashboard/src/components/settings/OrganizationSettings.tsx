@@ -22,9 +22,11 @@ const OrganizationSettings: React.FC = () => {
   
   const [currentPlan, setCurrentPlan] = useState<PlanType>('FREE');
   const [expirationDate, setExpirationDate] = useState<string | null>(null);
+  const [canceled, setCanceled] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [modalConfirmColor, setModalConfirmColor] = useState('#f5f5f5');
   const [modalTextColor, setModalTextColor] = useState('#000000');
@@ -38,6 +40,7 @@ const OrganizationSettings: React.FC = () => {
         if (result?.data) {
           setCurrentPlan(result.data.plan as PlanType || 'FREE');
           setExpirationDate(result.data.expiration_date || null);
+          setCanceled(result.data.canceled || false);
         }
       } catch (error) {
         console.error('Failed to fetch organization data:', error);
@@ -62,7 +65,8 @@ const OrganizationSettings: React.FC = () => {
   const handleClassroomPlanClick = () => {
     if (currentPlan === 'CLASSROOM') return;
     
-    setModalMessage('Start a 14-day free trial of the Classroom plan?');
+    setModalTitle('Start a 14-day free trial.');
+    setModalMessage('You can cancel at any time before the trial ends and you won\'t be charged.');
     setModalConfirmColor('#f5f5f5');
     setModalTextColor('#000000');
     setModalConfirmAction(() => handleConfirmStartTrial);
@@ -74,7 +78,7 @@ const OrganizationSettings: React.FC = () => {
   };
   
   const handleCancelSubscription = () => {
-    setModalMessage('Are you sure you want to cancel your plan?');
+    setModalMessage('Are you sure you want to cancel your plan? We hate to see you go :(');
     setModalConfirmColor(theme.colors.danger);
     setModalTextColor('#ffffff');
     setModalConfirmAction(() => handleConfirmCancelSubscription);
@@ -132,7 +136,7 @@ const OrganizationSettings: React.FC = () => {
           <PlanName>{currentPlan === 'FREE' ? 'Free' : 
                    currentPlan === 'CLASSROOM' ? 'Classroom' : 
                    'Enterprise'}</PlanName>
-          <CurrentPlanTag>Current plan</CurrentPlanTag>
+          <CurrentPlanTag canceled={canceled}>{canceled ? "Canceled until end of period" : "Current plan"}</CurrentPlanTag>
         </CurrentPlanContainer>
         
         <BillingPeriodRow>
@@ -172,7 +176,7 @@ const OrganizationSettings: React.FC = () => {
         </PlansContainer>
       </Section>
       
-      {currentPlan !== 'FREE' && (
+      {currentPlan !== 'FREE' && !canceled && (
         <CancelPlanButton onClick={handleCancelSubscription}>
           Cancel Plan
         </CancelPlanButton>
@@ -180,6 +184,7 @@ const OrganizationSettings: React.FC = () => {
       
       <ConfirmationModal
         isOpen={isModalOpen}
+        title={modalTitle}
         message={modalMessage}
         onCancel={closeModal}
         onConfirm={modalConfirmAction}
