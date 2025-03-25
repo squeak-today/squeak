@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TransitionWrapper } from './PageTransition';
 import {
@@ -12,7 +12,12 @@ import {
   MainContent,
   HeaderLogo,
   LogoText,
-  LogoContainer
+  LogoContainer,
+  MobileHeader,
+  HamburgerIcon,
+  MobileNav,
+  CloseButton,
+  MobileNavButton
 } from '../styles/NavPageStyles';
 import logo from '../assets/drawing_400.png';
 import supabase from '../lib/supabase';
@@ -32,6 +37,17 @@ function NavPage({
 }: NavPageProps): JSX.Element {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
+  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
+  const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -42,6 +58,9 @@ function NavPage({
 
   const handleNavClick = (id: string, path: string) => {
     setActiveNav(id);
+    if (isMobile) {
+      setMobileNavOpen(false);
+    }
     if (id === 'logout') {
       handleLogout();
       return;
@@ -53,44 +72,91 @@ function NavPage({
     navigate('/');
   };
 
+  const toggleMobileNav = () => {
+    setMobileNavOpen(!mobileNavOpen);
+  };
+
   return (
     <TransitionWrapper>
       <PageContainer>
-        <Sidebar>
-          <LogoContainer onClick={handleLogoClick}>
-            <HeaderLogo src={logo} alt="Squeak Logo" />
-            <LogoText>Squeak</LogoText>
-          </LogoContainer>
-          
-          <NavButton
-            className={activeNav === 'learn' ? 'active' : ''}
-            onClick={() => handleNavClick('learn', '/learn')}
-          >
-            Learn
-          </NavButton>
+        {isMobile ? (
+          <>
+            <MobileHeader>
+              <LogoContainer onClick={handleLogoClick}>
+                <HeaderLogo src={logo} alt="Squeak Logo" />
+                <LogoText>Squeak</LogoText>
+              </LogoContainer>
+              <HamburgerIcon onClick={toggleMobileNav}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </HamburgerIcon>
+            </MobileHeader>
+            <MobileNav $isOpen={mobileNavOpen}>
+              <CloseButton onClick={toggleMobileNav}>&times;</CloseButton>
+              <MobileNavButton
+                className={activeNav === 'learn' ? 'active' : ''}
+                onClick={() => handleNavClick('learn', '/learn')}
+              >
+                Learn
+              </MobileNavButton>
+              <MobileNavButton
+                className={activeNav === 'profile' ? 'active' : ''}
+                onClick={() => handleNavClick('profile', '/profile')}
+              >
+                Profile
+              </MobileNavButton>
+              <MobileNavButton
+                className={activeNav === 'contact' ? 'active' : ''}
+                onClick={() => window.open('/contact-support.html', '_blank')}
+              >
+                Contact Us
+              </MobileNavButton>
+              <MobileNavButton
+                className={`${activeNav === 'logout' ? 'active' : ''} logout`}
+                onClick={() => handleNavClick('logout', '/logout')}
+              >
+                Log Out
+              </MobileNavButton>
+            </MobileNav>
+          </>
+        ) : (
+          <Sidebar>
+            <LogoContainer onClick={handleLogoClick}>
+              <HeaderLogo src={logo} alt="Squeak Logo" />
+              <LogoText>Squeak</LogoText>
+            </LogoContainer>
+            
+            <NavButton
+              className={activeNav === 'learn' ? 'active' : ''}
+              onClick={() => handleNavClick('learn', '/learn')}
+            >
+              Learn
+            </NavButton>
 
-          <NavButton
-            className={activeNav === 'profile' ? 'active' : ''}
-            onClick={() => handleNavClick('profile', '/profile')}
-          >
-            Profile
-          </NavButton>
+            <NavButton
+              className={activeNav === 'profile' ? 'active' : ''}
+              onClick={() => handleNavClick('profile', '/profile')}
+            >
+              Profile
+            </NavButton>
 
-          <NavButton
-            className={activeNav === 'contact' ? 'active' : ''}
-            onClick={() => window.open('/contact-support.html', '_blank')}
-          >
-            Contact Us
-          </NavButton>
+            <NavButton
+              className={activeNav === 'contact' ? 'active' : ''}
+              onClick={() => window.open('/contact-support.html', '_blank')}
+            >
+              Contact Us
+            </NavButton>
 
-          <NavButton
-            className={`${activeNav === 'logout' ? 'active' : ''} logout`}
-            onClick={() => handleNavClick('logout', '/logout')}
-          >
-            Log Out
-          </NavButton>
-        </Sidebar>
-        <MainContent>
+            <NavButton
+              className={`${activeNav === 'logout' ? 'active' : ''} logout`}
+              onClick={() => handleNavClick('logout', '/logout')}
+            >
+              Log Out
+            </NavButton>
+          </Sidebar>
+        )}
+        <MainContent $isMobile={isMobile}>
           {isLoading ? (
             <LoadingOverlay>
               <LoadingLogo src={logo} alt="Squeak Logo" />
@@ -106,4 +172,4 @@ function NavPage({
   );
 }
 
-export default NavPage; 
+export default NavPage;
