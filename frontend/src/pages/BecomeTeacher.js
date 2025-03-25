@@ -73,7 +73,7 @@ function BecomeTeacher() {
           Authorization: `Bearer ${jwt}`,
         },
         // You can adjust the initial students_count as needed
-        body: JSON.stringify({ students_count: 0 }),
+        body: JSON.stringify({ name: "9am Tuesday", students_count: 0 }),
       });
 
       if (!res.ok) {

@@ -1422,7 +1422,14 @@ const docTemplate = `{
         },
         "models.CreateClassroomRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Tuesday 9am"
+                },
                 "students_count": {
                     "type": "integer",
                     "minimum": 0,

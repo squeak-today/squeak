@@ -186,13 +186,19 @@ func (h *TeacherHandler) CreateClassroom(c *gin.Context) {
 		return
 	}
 
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+
 	var infoBody models.CreateClassroomRequest
 	if err := c.ShouldBindJSON(&infoBody); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
 		return
 	}
 
-	classroom_id, err := h.DBClient.CreateClassroom(userID, infoBody.StudentsCount)
+	classroom_id, err := h.DBClient.CreateClassroom(teacherID, infoBody.Name, infoBody.StudentsCount)
 	if err != nil {
 		log.Printf("Failed to create classroom: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})

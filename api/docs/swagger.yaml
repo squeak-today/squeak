@@ -108,10 +108,15 @@ definitions:
     type: object
   models.CreateClassroomRequest:
     properties:
+      name:
+        example: Tuesday 9am
+        type: string
       students_count:
         example: 10
         minimum: 0
         type: integer
+    required:
+    - name
     type: object
   models.CreateClassroomResponse:
     properties:

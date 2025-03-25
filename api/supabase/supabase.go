@@ -731,14 +731,13 @@ func (c *Client) CheckStudentStatus(userID string) (string, string, error) {
 	return studentID, classroomID, nil
 }
 
-func (c *Client) CreateClassroom(userID string, student_count int) (string, error) {
+func (c *Client) CreateClassroom(teacherID string, name string, student_count int) (string, error) {
 	var classroomID string
 	err := c.db.QueryRow(`
-		INSERT INTO classrooms (teacher_id, student_count)
-		VALUES ($1, $2)
-		ON CONFLICT (teacher_id) DO NOTHING
+		INSERT INTO classrooms (teacher_id, student_count, name)
+		VALUES ($1, $2, $3)
 		RETURNING id
-	`, userID, student_count).Scan(&classroomID)
+	`, teacherID, student_count, name).Scan(&classroomID)
 
 	if err == sql.ErrNoRows {
 		return "", fmt.Errorf("failed to create classroom: Teacher already has a classroom")

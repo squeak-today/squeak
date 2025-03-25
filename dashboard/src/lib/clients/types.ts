@@ -1729,6 +1729,8 @@ export interface components {
             redirect_url: string;
         };
         "models.CreateClassroomRequest": {
+            /** @example Tuesday 9am */
+            name: string;
             /** @example 10 */
             students_count?: number;
         };

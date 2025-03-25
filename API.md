@@ -807,6 +807,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| name | string | *Example:* `"Tuesday 9am"` | Yes |
 | students_count | integer | *Example:* `10` | No |
 
 #### models.CreateClassroomResponse
