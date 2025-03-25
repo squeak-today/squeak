@@ -1,35 +1,29 @@
-import styled from 'styled-components';
-import { theme } from '../styles/theme';
+import React from 'react';
 import NavPage from '../components/NavPage';
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  height: 100%;
-`;
-
-const Title = styled.h1`
-  font-family: ${theme.typography.fontFamily.primary};
-  font-size: ${theme.typography.fontSize.xl};
-  margin: 0 0 ${theme.spacing.md};
-  color: ${theme.colors.text.primary};
-`;
-
-const Subtitle = styled.h2`
-  font-family: ${theme.typography.fontFamily.secondary};
-  font-size: ${theme.typography.fontSize.md};
-  margin-top: ${theme.spacing.md};
-  color: ${theme.colors.text.secondary};
-`;
+import TabSelect from '../components/TabSelect';
+import TeacherSettings from '../components/settings/TeacherSettings';
+import OrganizationSettings from '../components/settings/OrganizationSettings';
+import { ContentContainer, Title } from '../styles/components/SettingsPageStyles';
 
 function Settings() {
+  const settingsTabs = [
+    {
+      id: 'teacher',
+      label: 'Teacher',
+      content: <TeacherSettings />
+    },
+    {
+      id: 'organization',
+      label: 'Organization',
+      content: <OrganizationSettings />
+    }
+  ];
+
   return (
     <NavPage>
       <ContentContainer>
         <Title>Settings</Title>
-        <Subtitle>Configure your account and classroom settings here.</Subtitle>
+        <TabSelect tabs={settingsTabs} initialTabId="teacher" />
       </ContentContainer>
     </NavPage>
   );

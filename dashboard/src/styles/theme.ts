@@ -63,7 +63,7 @@ export const theme = {
       base: '0.8rem',
       md: '1.0rem',
       lg: '1.25rem',
-      xl: '2.5rem',
+      xl: '1.75rem',
       xxl: '3rem'
     }
   },
