@@ -31,7 +31,7 @@ definitions:
   models.CancelSubscriptionResponse:
     properties:
       canceled_plan:
-        example: STANDARD
+        example: CLASSROOM
         type: string
       current_expiration:
         example: "2025-03-24T12:00:00Z"
@@ -428,24 +428,23 @@ definitions:
     - title
     - topic
     type: object
-  models.OrganizationPlanResponse:
-    properties:
-      plan:
-        example: FREE
-        type: string
-    required:
-    - plan
-    type: object
   models.OrganizationResponse:
     properties:
+      expiration_date:
+        example: "2025-03-24T12:00:00Z"
+        type: string
       organization_id:
         example: "123"
+        type: string
+      plan:
+        example: FREE
         type: string
       teacher_id:
         example: "123"
         type: string
     required:
     - organization_id
+    - plan
     - teacher_id
     type: object
   models.PaymentsResponse:
@@ -885,7 +884,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Check Organization
+      description: Check Organization for Teacher
       produces:
       - application/json
       responses:
@@ -901,7 +900,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Check Organization
+      summary: Check Organization for Teacher
       tags:
       - organization
   /organization/create:
@@ -1003,29 +1002,6 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create a Stripe checkout session
-      tags:
-      - organization
-  /organization/plan:
-    get:
-      consumes:
-      - application/json
-      description: Get Organization Plan
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.OrganizationPlanResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get Organization Plan
       tags:
       - organization
   /profile:

@@ -211,8 +211,8 @@ paths:
           description: Not Found
       tags:
         - organization
-      description: Check Organization
-      summary: Check Organization
+      description: Check Organization for Teacher
+      summary: Check Organization for Teacher
   /organization/create:
     post:
       responses:
@@ -310,31 +310,6 @@ paths:
         - organization
       description: Creates a checkout session and redirects to Stripe's payment page
       summary: Create a Stripe checkout session
-  /organization/plan:
-    get:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.OrganizationPlanResponse'
-          description: OK
-        '401':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.ErrorResponse'
-          description: Unauthorized
-        '404':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.ErrorResponse'
-          description: Not Found
-      tags:
-        - organization
-      description: Get Organization Plan
-      summary: Get Organization Plan
   /profile:
     get:
       responses:
@@ -902,7 +877,7 @@ components:
     models.CancelSubscriptionResponse:
       properties:
         canceled_plan:
-          example: STANDARD
+          example: CLASSROOM
           type: string
         current_expiration:
           example: '2025-03-24T12:00:00Z'
@@ -1299,24 +1274,23 @@ components:
         - title
         - topic
       type: object
-    models.OrganizationPlanResponse:
-      properties:
-        plan:
-          example: FREE
-          type: string
-      required:
-        - plan
-      type: object
     models.OrganizationResponse:
       properties:
+        expiration_date:
+          example: '2025-03-24T12:00:00Z'
+          type: string
         organization_id:
           example: '123'
+          type: string
+        plan:
+          example: FREE
           type: string
         teacher_id:
           example: '123'
           type: string
       required:
         - organization_id
+        - plan
         - teacher_id
       type: object
     models.PaymentsResponse:

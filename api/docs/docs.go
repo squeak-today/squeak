@@ -279,7 +279,7 @@ const docTemplate = `{
         },
         "/organization": {
             "get": {
-                "description": "Check Organization",
+                "description": "Check Organization for Teacher",
                 "consumes": [
                     "application/json"
                 ],
@@ -289,7 +289,7 @@ const docTemplate = `{
                 "tags": [
                     "organization"
                 ],
-                "summary": "Check Organization",
+                "summary": "Check Organization for Teacher",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -460,41 +460,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/organization/plan": {
-            "get": {
-                "description": "Get Organization Plan",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "organization"
-                ],
-                "summary": "Get Organization Plan",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.OrganizationPlanResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -1340,7 +1305,7 @@ const docTemplate = `{
             "properties": {
                 "canceled_plan": {
                     "type": "string",
-                    "example": "STANDARD"
+                    "example": "CLASSROOM"
                 },
                 "current_expiration": {
                     "type": "string",
@@ -1869,28 +1834,25 @@ const docTemplate = `{
                 }
             }
         },
-        "models.OrganizationPlanResponse": {
-            "type": "object",
-            "required": [
-                "plan"
-            ],
-            "properties": {
-                "plan": {
-                    "type": "string",
-                    "example": "FREE"
-                }
-            }
-        },
         "models.OrganizationResponse": {
             "type": "object",
             "required": [
                 "organization_id",
+                "plan",
                 "teacher_id"
             ],
             "properties": {
+                "expiration_date": {
+                    "type": "string",
+                    "example": "2025-03-24T12:00:00Z"
+                },
                 "organization_id": {
                     "type": "string",
                     "example": "123"
+                },
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
                 },
                 "teacher_id": {
                     "type": "string",

@@ -77,6 +77,9 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 				Quantity: stripe.Int64(1),
 			},
 		},
+		SubscriptionData: &stripe.CheckoutSessionSubscriptionDataParams{
+			TrialPeriodDays: stripe.Int64(14),
+		},
 		Mode:              stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 		SuccessURL:        stripe.String(domain + "?success=true"),
 		CancelURL:         stripe.String(domain + "?canceled=true"),

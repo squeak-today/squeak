@@ -163,11 +163,11 @@ Get news content by ID
 #### GET
 ##### Summary
 
-Check Organization
+Check Organization for Teacher
 
 ##### Description
 
-Check Organization
+Check Organization for Teacher
 
 ##### Responses
 
@@ -276,25 +276,6 @@ Creates a checkout session and redirects to Stripe's payment page
 | ---- | ----------- | ------ |
 | 303 | Redirect to Stripe Checkout | string |
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
-
-### /organization/plan
-
-#### GET
-##### Summary
-
-Get Organization Plan
-
-##### Description
-
-Get Organization Plan
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.OrganizationPlanResponse](#modelsorganizationplanresponse) |
-| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
-| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
 ### /profile
@@ -772,7 +753,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| canceled_plan | string | *Example:* `"STANDARD"` | Yes |
+| canceled_plan | string | *Example:* `"CLASSROOM"` | Yes |
 | current_expiration | string | *Example:* `"2025-03-24T12:00:00Z"` | Yes |
 | success | boolean | *Example:* `true` | Yes |
 
@@ -959,17 +940,13 @@ Validates and processes incoming webhook events from Stripe
 | title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
 
-#### models.OrganizationPlanResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| plan | string | *Example:* `"FREE"` | Yes |
-
 #### models.OrganizationResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| expiration_date | string | *Example:* `"2025-03-24T12:00:00Z"` | No |
 | organization_id | string | *Example:* `"123"` | Yes |
+| plan | string | *Example:* `"FREE"` | Yes |
 | teacher_id | string | *Example:* `"123"` | Yes |
 
 #### models.PaymentsResponse

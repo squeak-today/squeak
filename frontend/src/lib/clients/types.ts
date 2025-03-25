@@ -183,8 +183,8 @@ export interface paths {
   };
   "/organization": {
     /**
-     * Check Organization
-     * @description Check Organization
+     * Check Organization for Teacher
+     * @description Check Organization for Teacher
      */
     get: {
       responses: {
@@ -312,34 +312,6 @@ export interface paths {
         };
         /** @description Bad Request */
         400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/organization/plan": {
-    /**
-     * Get Organization Plan
-     * @description Get Organization Plan
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.OrganizationPlanResponse"];
-          };
-        };
-        /** @description Unauthorized */
-        401: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Not Found */
-        404: {
           content: {
             "application/json": components["schemas"]["models.ErrorResponse"];
           };
@@ -902,7 +874,7 @@ export interface components {
       status: string;
     };
     "models.CancelSubscriptionResponse": {
-      /** @example STANDARD */
+      /** @example CLASSROOM */
       canceled_plan: string;
       /** @example 2025-03-24T12:00:00Z */
       current_expiration: string;
@@ -1109,13 +1081,13 @@ export interface components {
       /** @example Music */
       topic: string;
     };
-    "models.OrganizationPlanResponse": {
-      /** @example FREE */
-      plan: string;
-    };
     "models.OrganizationResponse": {
+      /** @example 2025-03-24T12:00:00Z */
+      expiration_date?: string;
       /** @example 123 */
       organization_id: string;
+      /** @example FREE */
+      plan: string;
       /** @example 123 */
       teacher_id: string;
     };

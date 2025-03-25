@@ -338,8 +338,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Check Organization
-         * @description Check Organization
+         * Check Organization for Teacher
+         * @description Check Organization for Teacher
          */
         get: {
             parameters: {
@@ -613,63 +613,6 @@ export interface paths {
                 };
             };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/organization/plan": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Organization Plan
-         * @description Get Organization Plan
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["models.OrganizationPlanResponse"];
-                    };
-                };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["models.ErrorResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["models.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1727,7 +1670,7 @@ export interface components {
             status: string;
         };
         "models.CancelSubscriptionResponse": {
-            /** @example STANDARD */
+            /** @example CLASSROOM */
             canceled_plan: string;
             /** @example 2025-03-24T12:00:00Z */
             current_expiration: string;
@@ -1928,13 +1871,13 @@ export interface components {
             /** @example Music */
             topic: string;
         };
-        "models.OrganizationPlanResponse": {
-            /** @example FREE */
-            plan: string;
-        };
         "models.OrganizationResponse": {
+            /** @example 2025-03-24T12:00:00Z */
+            expiration_date?: string;
             /** @example 123 */
             organization_id: string;
+            /** @example FREE */
+            plan: string;
             /** @example 123 */
             teacher_id: string;
         };

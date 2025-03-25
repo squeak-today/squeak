@@ -20,9 +20,9 @@ func HandleInvoicePaymentSucceeded(invoice stripe.Invoice, dbClient *supabase.Cl
 	productRef := expandedSubscription.Items.Data[0].Plan.Product
 	prodParams:= &stripe.ProductParams{}
 	expandedProduct, _ := product.Get(productRef.ID, prodParams)
-	plan := "STANDARD"
+	plan := "CLASSROOM"
 	if expandedProduct.Name == "Classroom" {
-		plan = "STANDARD"
+		plan = "CLASSROOM"
 	}
 
 	organizationID, err := dbClient.GetOrganizationByCustomerID(customerRef.ID)

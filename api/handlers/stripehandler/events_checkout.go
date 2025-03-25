@@ -37,9 +37,9 @@ func HandleCheckoutSessionCompleted(checkout stripe.CheckoutSession, dbClient *s
 	productRef := expandedSubscription.Items.Data[0].Plan.Product
 	prodParams:= &stripe.ProductParams{}
 	expandedProduct, _ := product.Get(productRef.ID, prodParams)
-	plan := "STANDARD"
+	plan := "CLASSROOM"
 	if expandedProduct.Name == "Classroom" {
-		plan = "STANDARD"
+		plan = "CLASSROOM"
 	}
 
 	organizationID, err := dbClient.CheckTeacherOrganizationByUserID(userID)
