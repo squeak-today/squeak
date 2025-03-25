@@ -74,6 +74,57 @@ func (h *TeacherHandler) GetClassroomList(c *gin.Context) {
 	})
 }
 
+//	@Summary		Update classroom
+//	@Description	Update classroom
+//	@Tags			teacher
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.UpdateClassroomRequest	true	"Update classroom request"
+//	@Success		200		{object}	models.UpdateClassroomResponse
+//	@Failure		403		{object}	models.ErrorResponse
+//	@Router			/teacher/classroom/update [post]
+func (h *TeacherHandler) UpdateClassroom(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+	if !isTeacher {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "User is not a teacher"})
+		return
+	}
+
+	var infoBody models.UpdateClassroomRequest
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+	ownership, err := h.DBClient.VerifyClassroomOwnership(teacherID, infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to verify classroom ownership"})
+		return
+	}
+	if !ownership {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Teacher does not have access to this classroom"})
+		return
+	}
+
+	classroomIDInt, err := strconv.Atoi(infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid classroom ID format"})
+		return
+	}
+	err = h.DBClient.UpdateClassroom(classroomIDInt, infoBody.Name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update classroom"})
+		return
+	}
+	c.JSON(http.StatusOK, models.UpdateClassroomResponse{Message: "Classroom updated successfully"})
+}
+
 //	@Summary		Query classroom content
 //	@Description	Query classroom content
 //	@Tags			teacher

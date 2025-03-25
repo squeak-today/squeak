@@ -14,6 +14,15 @@ type GetClassroomListResponse struct {
 	Classrooms []ClassroomListItem `json:"classrooms" binding:"required"`
 }
 
+type UpdateClassroomRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
+	Name string `json:"name" binding:"required" example:"Tuesday 9am"`
+}
+
+type UpdateClassroomResponse struct {
+	Message string `json:"message" binding:"required" example:"Classroom updated successfully"`
+}
+
 type ClassroomContentItem struct {
 	ID          string  `json:"id" binding:"required" example:"2479"`
 	CEFRLevel   string  `json:"cefr_level" binding:"required" example:"B1"`
