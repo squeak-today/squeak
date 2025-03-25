@@ -28,10 +28,12 @@ definitions:
     required:
     - status
     type: object
+  models.CancelSubscriptionRequest:
+    type: object
   models.CancelSubscriptionResponse:
     properties:
       canceled_plan:
-        example: STANDARD
+        example: CLASSROOM
         type: string
       current_expiration:
         example: "2025-03-24T12:00:00Z"
@@ -93,6 +95,16 @@ definitions:
     - preview_text
     - title
     - topic
+    type: object
+  models.CreateCheckoutSessionRequest:
+    type: object
+  models.CreateCheckoutSessionResponse:
+    properties:
+      redirect_url:
+        example: https://checkout.stripe.com/c/pay/123
+        type: string
+    required:
+    - redirect_url
     type: object
   models.CreateClassroomRequest:
     properties:
@@ -428,24 +440,23 @@ definitions:
     - title
     - topic
     type: object
-  models.OrganizationPlanResponse:
-    properties:
-      plan:
-        example: FREE
-        type: string
-    required:
-    - plan
-    type: object
   models.OrganizationResponse:
     properties:
+      expiration_date:
+        example: "2025-03-24T12:00:00Z"
+        type: string
       organization_id:
         example: "123"
+        type: string
+      plan:
+        example: FREE
         type: string
       teacher_id:
         example: "123"
         type: string
     required:
     - organization_id
+    - plan
     - teacher_id
     type: object
   models.PaymentsResponse:
@@ -885,7 +896,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Check Organization
+      description: Check Organization for Teacher
       produces:
       - application/json
       responses:
@@ -901,7 +912,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Check Organization
+      summary: Check Organization for Teacher
       tags:
       - organization
   /organization/create:
@@ -976,6 +987,13 @@ paths:
       consumes:
       - application/json
       description: Cancel a Stripe subscription at the end of the period
+      parameters:
+      - description: Cancel subscription request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CancelSubscriptionRequest'
       produces:
       - application/json
       responses:
@@ -983,6 +1001,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.CancelSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Cancel a Stripe subscription at the end of the period
       tags:
       - organization
@@ -991,41 +1013,25 @@ paths:
       consumes:
       - application/json
       description: Creates a checkout session and redirects to Stripe's payment page
+      parameters:
+      - description: Create checkout session request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCheckoutSessionRequest'
       produces:
       - application/json
       responses:
-        "303":
+        "200":
           description: Redirect to Stripe Checkout
           schema:
-            type: string
+            $ref: '#/definitions/models.CreateCheckoutSessionResponse'
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create a Stripe checkout session
-      tags:
-      - organization
-  /organization/plan:
-    get:
-      consumes:
-      - application/json
-      description: Get Organization Plan
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.OrganizationPlanResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get Organization Plan
       tags:
       - organization
   /profile:

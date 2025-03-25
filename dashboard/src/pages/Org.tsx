@@ -11,7 +11,8 @@ import {
   HintText,
   ToggleLink
 } from '../styles/OrgPageStyles';
-import { LoadingOverlay, LoadingText, Spinner, AuthInput } from '../styles/AuthPageStyles';
+import { AuthInput } from '../styles/AuthPageStyles';
+import LoadingScreen from '../components/LoadingScreen';
 import { useOrganizationAPI } from '../hooks/useOrganizationAPI';
 import { useNotification } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
@@ -103,10 +104,7 @@ function Org() {
 
   if (isLoading || authLoading) {
     return (
-      <LoadingOverlay>
-        <Spinner />
-        <LoadingText>Loading...</LoadingText>
-      </LoadingOverlay>
+      <LoadingScreen />
     );
   }
 

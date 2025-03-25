@@ -163,11 +163,11 @@ Get news content by ID
 #### GET
 ##### Summary
 
-Check Organization
+Check Organization for Teacher
 
 ##### Description
 
-Check Organization
+Check Organization for Teacher
 
 ##### Responses
 
@@ -253,11 +253,18 @@ Cancel a Stripe subscription at the end of the period
 
 Cancel a Stripe subscription at the end of the period
 
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Cancel subscription request | Yes | [models.CancelSubscriptionRequest](#modelscancelsubscriptionrequest) |
+
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
 | 200 | OK | [models.CancelSubscriptionResponse](#modelscancelsubscriptionresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 
 ### /organization/payments/create-checkout-session
 
@@ -270,31 +277,18 @@ Create a Stripe checkout session
 
 Creates a checkout session and redirects to Stripe's payment page
 
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Create checkout session request | Yes | [models.CreateCheckoutSessionRequest](#modelscreatecheckoutsessionrequest) |
+
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 303 | Redirect to Stripe Checkout | string |
+| 200 | Redirect to Stripe Checkout | [models.CreateCheckoutSessionResponse](#modelscreatecheckoutsessionresponse) |
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
-
-### /organization/plan
-
-#### GET
-##### Summary
-
-Get Organization Plan
-
-##### Description
-
-Get Organization Plan
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.OrganizationPlanResponse](#modelsorganizationplanresponse) |
-| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
-| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
 ### /profile
@@ -768,11 +762,17 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | status | string | *Example:* `"live"` | Yes |
 
+#### models.CancelSubscriptionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CancelSubscriptionRequest | object |  |  |
+
 #### models.CancelSubscriptionResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| canceled_plan | string | *Example:* `"STANDARD"` | Yes |
+| canceled_plan | string | *Example:* `"CLASSROOM"` | Yes |
 | current_expiration | string | *Example:* `"2025-03-24T12:00:00Z"` | Yes |
 | success | boolean | *Example:* `true` | Yes |
 
@@ -790,6 +790,18 @@ Validates and processes incoming webhook events from Stripe
 | preview_text | string | *Example:* `"# L'actualité musicale en bref\n\n## Un flot de nouveautés..."` | Yes |
 | title | string | *Example:* `"# L'actualité musicale en bref\n\n## Un fl..."` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
+
+#### models.CreateCheckoutSessionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CreateCheckoutSessionRequest | object |  |  |
+
+#### models.CreateCheckoutSessionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| redirect_url | string | *Example:* `"https://checkout.stripe.com/c/pay/123"` | Yes |
 
 #### models.CreateClassroomRequest
 
@@ -959,17 +971,13 @@ Validates and processes incoming webhook events from Stripe
 | title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
 
-#### models.OrganizationPlanResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| plan | string | *Example:* `"FREE"` | Yes |
-
 #### models.OrganizationResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| expiration_date | string | *Example:* `"2025-03-24T12:00:00Z"` | No |
 | organization_id | string | *Example:* `"123"` | Yes |
+| plan | string | *Example:* `"FREE"` | Yes |
 | teacher_id | string | *Example:* `"123"` | Yes |
 
 #### models.PaymentsResponse

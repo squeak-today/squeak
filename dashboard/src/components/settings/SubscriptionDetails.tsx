@@ -20,6 +20,7 @@ interface SubscriptionDetailsProps {
   benefits: string[];
   buttonText: string;
   onButtonClick: () => void;
+  disabled?: boolean;
 }
 
 const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
@@ -29,7 +30,8 @@ const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
   addOnText,
   benefits,
   buttonText,
-  onButtonClick
+  onButtonClick,
+  disabled = false
 }) => {
   return (
     <SubscriptionCard>
@@ -60,7 +62,10 @@ const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
         ))}
       </BenefitsList>
       
-      <ActionButton onClick={onButtonClick}>
+      <ActionButton 
+        onClick={onButtonClick}
+        disabled={disabled}
+      >
         {buttonText}
       </ActionButton>
     </SubscriptionCard>

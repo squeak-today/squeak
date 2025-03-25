@@ -37,12 +37,29 @@ func (c *Client) CheckAdminStatus(userID string) (bool, error) {
 	return exists, nil
 }
 
+func (c *Client) CheckTeacherStatus(userID string) (bool, error) {
+	var exists bool
+	err := c.db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1
+			FROM teachers
+			WHERE user_id = $1
+		)
+	`, userID).Scan(&exists)
+
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
 // set as teacher, student, admin, or none / ""
 func (c *Client) CheckAccountType(userID string, accountType string) (bool, error) {
 	// teacher check
-	exists, err := c.GetTeacherInfo(userID)
+	exists, err := c.CheckTeacherStatus(userID)
 	if err != nil {
-		return false, fmt.Errorf("failed to check teacher info: %v", err)
+		return false, fmt.Errorf("failed to check teacher status: %v", err)
 	}
 
 	// student check

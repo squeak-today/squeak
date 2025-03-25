@@ -33,8 +33,9 @@ func (h *OrganizationHandler) GetOrganizationPayments(c *gin.Context) {
 //	@Tags			organization
 //	@Accept			json
 //	@Produce		json
-//	@Success		303	{string}	string	"Redirect to Stripe Checkout"
-//	@Failure		400	{object}	models.ErrorResponse
+//	@Param			request	body		models.CreateCheckoutSessionRequest		true	"Create checkout session request"
+//	@Success		200		{object}	models.CreateCheckoutSessionResponse	"Redirect to Stripe Checkout"
+//	@Failure		400		{object}	models.ErrorResponse
 //	@Router			/organization/payments/create-checkout-session [post]
 func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
@@ -77,9 +78,12 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 				Quantity: stripe.Int64(1),
 			},
 		},
+		SubscriptionData: &stripe.CheckoutSessionSubscriptionDataParams{
+			TrialPeriodDays: stripe.Int64(14),
+		},
 		Mode:              stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-		SuccessURL:        stripe.String(domain + "?success=true"),
-		CancelURL:         stripe.String(domain + "?canceled=true"),
+		SuccessURL:        stripe.String(domain + "/settings"),
+		CancelURL:         stripe.String(domain + "/settings"),
 		ClientReferenceID: stripe.String(userID),
 	}
 
@@ -94,7 +98,7 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusSeeOther, s.URL)
+	c.JSON(http.StatusOK, models.CreateCheckoutSessionResponse{RedirectUrl: s.URL})
 }
 
 
@@ -103,7 +107,9 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 //	@Tags			organization
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	models.CancelSubscriptionResponse
+//	@Param			request	body		models.CancelSubscriptionRequest	true	"Cancel subscription request"
+//	@Success		200		{object}	models.CancelSubscriptionResponse
+//	@Failure		400		{object}	models.ErrorResponse
 //	@Router			/organization/payments/cancel-subscription-eop [post]
 func (h *OrganizationHandler) CancelSubscriptionAtEndOfPeriod(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)

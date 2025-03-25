@@ -4,14 +4,12 @@ import {
   AuthContainer,
   AuthBox,
   Title,
-  LoadingOverlay,
-  LoadingText,
-  Spinner,
   AuthForm,
   AuthInput,
   AuthButton,
   AuthToggle
 } from '../styles/AuthPageStyles';
+import LoadingScreen from '../components/LoadingScreen';
 import { TransitionWrapper } from '../styles/PageTransition';
 import { useProfileAPI } from '../hooks/useProfileAPI';
 import { useOrganizationAPI } from '../hooks/useOrganizationAPI';
@@ -86,10 +84,7 @@ function Auth() {
 
   if (isLoading || authLoading) {
     return (
-      <LoadingOverlay>
-        <Spinner />
-        <LoadingText>Loading...</LoadingText>
-      </LoadingOverlay>
+      <LoadingScreen />
     );
   }
 

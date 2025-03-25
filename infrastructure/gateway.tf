@@ -237,14 +237,6 @@ module "organization" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
-module "organization_plan" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = module.organization.resource_id
-  path_part   = "plan"
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
 module "organization_create" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -276,6 +268,7 @@ module "organization_payments_create_checkout_session" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
   parent_id   = module.organization_payments.resource_id
   path_part   = "create-checkout-session"
+  http_method = "POST"
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
@@ -413,7 +406,6 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.audio_tts,
     module.audio_stt,
     module.organization,
-    module.organization_plan,
     module.organization_create,
     module.organization_join,
     module.organization_payments,

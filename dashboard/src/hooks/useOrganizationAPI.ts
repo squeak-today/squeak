@@ -38,11 +38,40 @@ export function useOrganizationAPI() {
             }
         });
     }, [client, requireAuthWithErrors]);
+
+    const createCheckoutSession = useCallback(async () => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/organization/payments/create-checkout-session', {
+                body: {}
+            });
+            return {
+                // i had to add this as unknown to avoid the type error
+                // openapi-typescript seems to hate shit ass 303 redirects so if they ever
+                // fix it, fix this.
+                data: data as components["schemas"]["models.CreateCheckoutSessionResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            }
+        });
+    }, [client, requireAuthWithErrors]);
+
+    const cancelSubscriptionAtEndOfPeriod = useCallback(async () => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/organization/payments/cancel-subscription-eop', {
+                body: {}
+            });
+            return {
+                data: data as components["schemas"]["models.CancelSubscriptionResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            }
+        });
+    }, [client, requireAuthWithErrors]);
     
     return {
         isAuthenticated,
         getOrganization,
         createOrganization,
-        joinOrganization
+        joinOrganization,
+        createCheckoutSession,
+        cancelSubscriptionAtEndOfPeriod
     }
 }

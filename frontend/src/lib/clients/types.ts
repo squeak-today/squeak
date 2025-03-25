@@ -183,8 +183,8 @@ export interface paths {
   };
   "/organization": {
     /**
-     * Check Organization
-     * @description Check Organization
+     * Check Organization for Teacher
+     * @description Check Organization for Teacher
      */
     get: {
       responses: {
@@ -287,27 +287,17 @@ export interface paths {
      * @description Cancel a Stripe subscription at the end of the period
      */
     post: {
+      /** @description Cancel subscription request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CancelSubscriptionRequest"];
+        };
+      };
       responses: {
         /** @description OK */
         200: {
           content: {
             "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/organization/payments/create-checkout-session": {
-    /**
-     * Create a Stripe checkout session
-     * @description Creates a checkout session and redirects to Stripe's payment page
-     */
-    post: {
-      responses: {
-        /** @description Redirect to Stripe Checkout */
-        303: {
-          content: {
-            "application/json": string;
           };
         };
         /** @description Bad Request */
@@ -319,27 +309,27 @@ export interface paths {
       };
     };
   };
-  "/organization/plan": {
+  "/organization/payments/create-checkout-session": {
     /**
-     * Get Organization Plan
-     * @description Get Organization Plan
+     * Create a Stripe checkout session
+     * @description Creates a checkout session and redirects to Stripe's payment page
      */
-    get: {
+    post: {
+      /** @description Create checkout session request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CreateCheckoutSessionRequest"];
+        };
+      };
       responses: {
-        /** @description OK */
+        /** @description Redirect to Stripe Checkout */
         200: {
           content: {
-            "application/json": components["schemas"]["models.OrganizationPlanResponse"];
+            "application/json": components["schemas"]["models.CreateCheckoutSessionResponse"];
           };
         };
-        /** @description Unauthorized */
-        401: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Not Found */
-        404: {
+        /** @description Bad Request */
+        400: {
           content: {
             "application/json": components["schemas"]["models.ErrorResponse"];
           };
@@ -901,8 +891,9 @@ export interface components {
       /** @example live */
       status: string;
     };
+    "models.CancelSubscriptionRequest": Record<string, never>;
     "models.CancelSubscriptionResponse": {
-      /** @example STANDARD */
+      /** @example CLASSROOM */
       canceled_plan: string;
       /** @example 2025-03-24T12:00:00Z */
       current_expiration: string;
@@ -938,6 +929,11 @@ export interface components {
       title: string;
       /** @example Music */
       topic: string;
+    };
+    "models.CreateCheckoutSessionRequest": Record<string, never>;
+    "models.CreateCheckoutSessionResponse": {
+      /** @example https://checkout.stripe.com/c/pay/123 */
+      redirect_url: string;
     };
     "models.CreateClassroomRequest": {
       /** @example 10 */
@@ -1109,13 +1105,13 @@ export interface components {
       /** @example Music */
       topic: string;
     };
-    "models.OrganizationPlanResponse": {
-      /** @example FREE */
-      plan: string;
-    };
     "models.OrganizationResponse": {
+      /** @example 2025-03-24T12:00:00Z */
+      expiration_date?: string;
       /** @example 123 */
       organization_id: string;
+      /** @example FREE */
+      plan: string;
       /** @example 123 */
       teacher_id: string;
     };

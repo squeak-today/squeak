@@ -66,3 +66,79 @@ export const BillingPeriodRow = styled.div`
 export const CalendarIcon = styled.span`
   margin-right: ${theme.spacing.sm};
 `;
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+export const ModalContent = styled.div`
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: ${theme.spacing.lg};
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const ModalMessage = styled.p`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-weight: bold;
+  font-size: ${theme.typography.fontSize.md};
+  margin-bottom: ${theme.spacing.lg};
+  color: ${theme.colors.text.secondary};
+  text-align: center;
+`;
+
+export const ModalButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: ${theme.spacing.md};
+`;
+
+export const ModalButton = styled.button<{ bgColor?: string; textColor?: string }>`
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border-radius: 4px;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  cursor: pointer;
+  border: none;
+  background-color: ${props => props.bgColor || '#f5f5f5'};
+  color: ${props => props.textColor || theme.colors.text.primary};
+  
+  &:hover {
+    opacity: 0.9;
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+`;
+
+export const CancelPlanButton = styled.button`
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  background-color: ${theme.colors.danger};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  cursor: pointer;
+  margin-top: ${theme.spacing.xl};
+  margin-bottom: ${theme.spacing.xl};
+  
+  &:hover {
+    opacity: 0.9;
+  }
+`;

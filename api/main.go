@@ -143,14 +143,13 @@ func init() {
 	orgGroup := router.Group("/organization")
 	{
 		orgGroup.GET("", orgHandler.CheckOrganization)
-		orgGroup.GET("/plan", orgHandler.CheckOrganizationPlan)
 		orgGroup.POST("/create", orgHandler.CreateOrganization)
 		orgGroup.POST("/join", orgHandler.JoinOrganization)
 
 		paymentsGroup := orgGroup.Group("/payments")
 		{
 			paymentsGroup.GET("", orgHandler.GetOrganizationPayments)
-			paymentsGroup.GET("/create-checkout-session", orgHandler.CreateCheckoutSession)
+			paymentsGroup.POST("/create-checkout-session", orgHandler.CreateCheckoutSession)
 			paymentsGroup.POST("/cancel-subscription-eop", orgHandler.CancelSubscriptionAtEndOfPeriod)
 		}
 	}
