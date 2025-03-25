@@ -10,7 +10,7 @@ export const BrowserBox = styled.div`
   overflow: hidden;
 
   @media (max-width: 768px) {
-    margin: 40px auto 0 auto;
+    margin: 0px auto 0 auto;
     padding: 1em;
   }
 `;
@@ -76,6 +76,10 @@ export const StoryBrowserContainer = styled.div`
   flex: 1;
   min-width: 0;
   max-width: 60vw;
+
+  @media (max-width: 768px) {
+    max-width: 100vw;
+  }
 `;
 
 export const ProfileDashboardContainer = styled.div`
