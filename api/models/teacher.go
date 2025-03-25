@@ -11,7 +11,7 @@ type ClassroomListItem struct {
 }
 
 type GetClassroomListResponse struct {
-	Classrooms []ClassroomListItem `json:"classrooms" binding:"required" example:"123"`
+	Classrooms []ClassroomListItem `json:"classrooms" binding:"required"`
 }
 
 type ClassroomContentItem struct {
@@ -39,6 +39,7 @@ type CreateClassroomResponse struct {
 }
 
 type AcceptContentRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 	ContentType string `json:"content_type" binding:"required" example:"News"`
 	ContentID   int    `json:"content_id" binding:"gte=0" example:"123"`
 }
@@ -48,6 +49,7 @@ type AcceptContentResponse struct {
 }
 
 type RejectContentRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 	ContentType string `json:"content_type" binding:"required" example:"News"`
 	ContentID   int     `json:"content_id" binding:"gte=0" example:"123"`
 }

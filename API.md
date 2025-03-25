@@ -606,17 +606,17 @@ Check if the user is a teacher
 #### GET
 ##### Summary
 
-Get classroom info
+Get classrooms
 
 ##### Description
 
-Get classroom info
+Get classrooms
 
 ##### Responses
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [models.GetClassroomInfoResponse](#modelsgetclassroominforesponse) |
+| 200 | OK | [models.GetClassroomListResponse](#modelsgetclassroomlistresponse) |
 | 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
 
 ### /teacher/classroom/accept
@@ -665,6 +665,7 @@ Query classroom content
 | pagesize | query | Page size | Yes | string |
 | whitelist | query | Whitelist status | Yes | string |
 | content_type | query | Content type | Yes | string |
+| classroom_id | query | Classroom ID | Yes | string |
 
 ##### Responses
 
@@ -747,6 +748,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| classroom_id | string | *Example:* `"123"` | Yes |
 | content_id | integer | *Example:* `123` | No |
 | content_type | string | *Example:* `"News"` | Yes |
 
@@ -790,6 +792,14 @@ Validates and processes incoming webhook events from Stripe
 | preview_text | string | *Example:* `"# L'actualité musicale en bref\n\n## Un flot de nouveautés..."` | Yes |
 | title | string | *Example:* `"# L'actualité musicale en bref\n\n## Un fl..."` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
+
+#### models.ClassroomListItem
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| classroom_id | string | *Example:* `"123"` | Yes |
+| name | string | *Example:* `"Connor"` | Yes |
+| students_count | integer | *Example:* `10` | No |
 
 #### models.CreateCheckoutSessionRequest
 
@@ -852,12 +862,11 @@ Validates and processes incoming webhook events from Stripe
 | evaluation | string | *Example:* `"PASS"` | Yes |
 | explanation | string | *Example:* `"Perfect!"` | Yes |
 
-#### models.GetClassroomInfoResponse
+#### models.GetClassroomListResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-| students_count | integer | *Example:* `10` | No |
+| classrooms | [ [models.ClassroomListItem](#modelsclassroomlistitem) ] |  | Yes |
 
 #### models.GetNewsResponse
 
@@ -992,6 +1001,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| classroom_id | string | *Example:* `"123"` | Yes |
 | content_id | integer | *Example:* `123` | No |
 | content_type | string | *Example:* `"News"` | Yes |
 

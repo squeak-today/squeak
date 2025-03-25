@@ -691,7 +691,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/models.GetClassroomInfoResponse'
+                $ref: '#/components/schemas/models.GetClassroomListResponse'
           description: OK
         '403':
           content:
@@ -701,8 +701,8 @@ paths:
           description: Forbidden
       tags:
         - teacher
-      description: Get classroom info
-      summary: Get classroom info
+      description: Get classrooms
+      summary: Get classrooms
   /teacher/classroom/accept:
     post:
       responses:
@@ -771,6 +771,12 @@ paths:
         - description: Content type
           in: query
           name: content_type
+          required: true
+          schema:
+            type: string
+        - description: Classroom ID
+          in: query
+          name: classroom_id
           required: true
           schema:
             type: string
@@ -868,6 +874,9 @@ components:
   schemas:
     models.AcceptContentRequest:
       properties:
+        classroom_id:
+          example: '123'
+          type: string
         content_id:
           example: 123
           minimum: 0
@@ -876,6 +885,7 @@ components:
           example: News
           type: string
       required:
+        - classroom_id
         - content_type
       type: object
     models.AcceptContentResponse:
@@ -961,6 +971,22 @@ components:
         - preview_text
         - title
         - topic
+      type: object
+    models.ClassroomListItem:
+      properties:
+        classroom_id:
+          example: '123'
+          type: string
+        name:
+          example: Connor
+          type: string
+        students_count:
+          example: 10
+          minimum: 0
+          type: integer
+      required:
+        - classroom_id
+        - name
       type: object
     models.CreateCheckoutSessionRequest:
       type: object
@@ -1049,17 +1075,14 @@ components:
         - evaluation
         - explanation
       type: object
-    models.GetClassroomInfoResponse:
+    models.GetClassroomListResponse:
       properties:
-        classroom_id:
-          example: '123'
-          type: string
-        students_count:
-          example: 10
-          minimum: 0
-          type: integer
+        classrooms:
+          items:
+            $ref: '#/components/schemas/models.ClassroomListItem'
+          type: array
       required:
-        - classroom_id
+        - classrooms
       type: object
     models.GetNewsResponse:
       properties:
@@ -1343,6 +1366,9 @@ components:
       type: object
     models.RejectContentRequest:
       properties:
+        classroom_id:
+          example: '123'
+          type: string
         content_id:
           example: 123
           minimum: 0
@@ -1351,6 +1377,7 @@ components:
           example: News
           type: string
       required:
+        - classroom_id
         - content_type
       type: object
     models.RejectContentResponse:

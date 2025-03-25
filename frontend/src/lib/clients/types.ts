@@ -705,15 +705,15 @@ export interface paths {
   };
   "/teacher/classroom": {
     /**
-     * Get classroom info
-     * @description Get classroom info
+     * Get classrooms
+     * @description Get classrooms
      */
     get: {
       responses: {
         /** @description OK */
         200: {
           content: {
-            "application/json": components["schemas"]["models.GetClassroomInfoResponse"];
+            "application/json": components["schemas"]["models.GetClassroomListResponse"];
           };
         };
         /** @description Forbidden */
@@ -775,6 +775,8 @@ export interface paths {
           whitelist: string;
           /** @description Content type */
           content_type: string;
+          /** @description Classroom ID */
+          classroom_id: string;
         };
       };
       responses: {
@@ -879,6 +881,8 @@ export interface components {
   schemas: {
     "models.AcceptContentRequest": {
       /** @example 123 */
+      classroom_id: string;
+      /** @example 123 */
       content_id?: number;
       /** @example News */
       content_type: string;
@@ -930,6 +934,14 @@ export interface components {
       /** @example Music */
       topic: string;
     };
+    "models.ClassroomListItem": {
+      /** @example 123 */
+      classroom_id: string;
+      /** @example Connor */
+      name: string;
+      /** @example 10 */
+      students_count?: number;
+    };
     "models.CreateCheckoutSessionRequest": Record<string, never>;
     "models.CreateCheckoutSessionResponse": {
       /** @example https://checkout.stripe.com/c/pay/123 */
@@ -974,11 +986,8 @@ export interface components {
       /** @example Perfect! */
       explanation: string;
     };
-    "models.GetClassroomInfoResponse": {
-      /** @example 123 */
-      classroom_id: string;
-      /** @example 10 */
-      students_count?: number;
+    "models.GetClassroomListResponse": {
+      classrooms: components["schemas"]["models.ClassroomListItem"][];
     };
     "models.GetNewsResponse": {
       /** @example B1 */
@@ -1124,6 +1133,8 @@ export interface components {
       success: boolean;
     };
     "models.RejectContentRequest": {
+      /** @example 123 */
+      classroom_id: string;
       /** @example 123 */
       content_id?: number;
       /** @example News */

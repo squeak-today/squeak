@@ -1015,7 +1015,7 @@
         },
         "/teacher/classroom": {
             "get": {
-                "description": "Get classroom info",
+                "description": "Get classrooms",
                 "consumes": [
                     "application/json"
                 ],
@@ -1025,12 +1025,12 @@
                 "tags": [
                     "teacher"
                 ],
-                "summary": "Get classroom info",
+                "summary": "Get classrooms",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GetClassroomInfoResponse"
+                            "$ref": "#/definitions/models.GetClassroomListResponse"
                         }
                     },
                     "403": {
@@ -1142,6 +1142,13 @@
                         "type": "string",
                         "description": "Content type",
                         "name": "content_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "classroom_id",
                         "in": "query",
                         "required": true
                     }
@@ -1279,9 +1286,14 @@
         "models.AcceptContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,
@@ -1396,6 +1408,28 @@
                 "topic": {
                     "type": "string",
                     "example": "Music"
+                }
+            }
+        },
+        "models.ClassroomListItem": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "name"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Connor"
+                },
+                "students_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 10
                 }
             }
         },
@@ -1523,20 +1557,17 @@
                 }
             }
         },
-        "models.GetClassroomInfoResponse": {
+        "models.GetClassroomListResponse": {
             "type": "object",
             "required": [
-                "classroom_id"
+                "classrooms"
             ],
             "properties": {
-                "classroom_id": {
-                    "type": "string",
-                    "example": "123"
-                },
-                "students_count": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 10
+                "classrooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ClassroomListItem"
+                    }
                 }
             }
         },
@@ -1926,9 +1957,14 @@
         "models.RejectContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,

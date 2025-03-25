@@ -86,6 +86,7 @@ func (h *TeacherHandler) GetClassroomList(c *gin.Context) {
 //	@Param			pagesize		query		string	true	"Page size"
 //	@Param			whitelist		query		string	true	"Whitelist status"
 //	@Param			content_type	query		string	true	"Content type"
+//	@Param			classroom_id	query		string	true	"Classroom ID"
 //	@Success		200				{object}	models.QueryClassroomContentResponse
 //	@Failure		403				{object}	models.ErrorResponse
 //	@Router			/teacher/classroom/content [get]
@@ -105,6 +106,23 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 
 	whitelistStatus := c.Query("whitelist")
 	contentType := c.Query("content_type")
+	classroomID := c.Query("classroom_id")
+
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+
+	ownership, err := h.DBClient.VerifyClassroomOwnership(teacherID, classroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to verify classroom ownership"})
+		return
+	}
+	if !ownership {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Teacher does not have access to this classroom"})
+		return
+	}
 
 	if page == "" {
 		page = "1"
@@ -125,19 +143,13 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 		return
 	}
 
-	classroom_id, _, err := h.DBClient.GetClassroomByTeacherId(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
-		return
-	}
-
 	params := supabase.QueryParams{
 		Language: language,
 		CEFR:     cefr,
 		Subject:  subject,
 		Page:     pageNum,
 		PageSize: pageSizeNum,
-		ClassroomID: classroom_id,
+		ClassroomID: classroomID,
 		WhitelistStatus: whitelistStatus,
 	}
 
@@ -240,14 +252,7 @@ func (h *TeacherHandler) AcceptContent(c *gin.Context) {
 		return
 	}
 
-	// Get classroom ID for teacher
-	classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
-		return
-	}
-
-	classroomIDInt, err := strconv.Atoi(classroomID)
+	classroomIDInt, err := strconv.Atoi(infoBody.ClassroomID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom ID format"})
 		return
@@ -289,14 +294,7 @@ func (h *TeacherHandler) RejectContent(c *gin.Context) {
 		return
 	}
 
-	// Get classroom ID for teacher
-	classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
-		return
-	}
-
-	classroomIDInt, err := strconv.Atoi(classroomID)
+	classroomIDInt, err := strconv.Atoi(infoBody.ClassroomID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom ID format"})
 		return

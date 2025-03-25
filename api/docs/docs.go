@@ -1021,7 +1021,7 @@ const docTemplate = `{
         },
         "/teacher/classroom": {
             "get": {
-                "description": "Get classroom info",
+                "description": "Get classrooms",
                 "consumes": [
                     "application/json"
                 ],
@@ -1031,12 +1031,12 @@ const docTemplate = `{
                 "tags": [
                     "teacher"
                 ],
-                "summary": "Get classroom info",
+                "summary": "Get classrooms",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GetClassroomInfoResponse"
+                            "$ref": "#/definitions/models.GetClassroomListResponse"
                         }
                     },
                     "403": {
@@ -1148,6 +1148,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Content type",
                         "name": "content_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "classroom_id",
                         "in": "query",
                         "required": true
                     }
@@ -1285,9 +1292,14 @@ const docTemplate = `{
         "models.AcceptContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,
@@ -1402,6 +1414,28 @@ const docTemplate = `{
                 "topic": {
                     "type": "string",
                     "example": "Music"
+                }
+            }
+        },
+        "models.ClassroomListItem": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "name"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Connor"
+                },
+                "students_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 10
                 }
             }
         },
@@ -1529,20 +1563,17 @@ const docTemplate = `{
                 }
             }
         },
-        "models.GetClassroomInfoResponse": {
+        "models.GetClassroomListResponse": {
             "type": "object",
             "required": [
-                "classroom_id"
+                "classrooms"
             ],
             "properties": {
-                "classroom_id": {
-                    "type": "string",
-                    "example": "123"
-                },
-                "students_count": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 10
+                "classrooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ClassroomListItem"
+                    }
                 }
             }
         },
@@ -1932,9 +1963,14 @@ const docTemplate = `{
         "models.RejectContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,
