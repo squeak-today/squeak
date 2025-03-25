@@ -4,11 +4,13 @@ import {
   ModalContent,
   ModalMessage,
   ModalButtonContainer,
-  ModalButton
+  ModalButton,
+  ModalTitle
 } from '../../styles/components/SettingsPageStyles';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
+  title: string;
   message: string;
   onCancel: () => void;
   onConfirm: () => void;
@@ -19,6 +21,7 @@ interface ConfirmationModalProps {
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isOpen,
+  title,
   message,
   onCancel,
   onConfirm,
@@ -31,6 +34,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <ModalOverlay>
       <ModalContent>
+        {title != '' && <ModalTitle>{title}</ModalTitle>}
         <ModalMessage>{message}</ModalMessage>
         <ModalButtonContainer>
           <ModalButton 

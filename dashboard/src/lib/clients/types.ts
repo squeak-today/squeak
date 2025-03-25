@@ -1897,6 +1897,8 @@ export interface components {
             topic: string;
         };
         "models.OrganizationResponse": {
+            /** @example false */
+            canceled?: boolean;
             /** @example 2025-03-24T12:00:00Z */
             expiration_date?: string;
             /** @example 123 */

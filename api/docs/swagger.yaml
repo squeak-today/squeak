@@ -442,6 +442,9 @@ definitions:
     type: object
   models.OrganizationResponse:
     properties:
+      canceled:
+        example: false
+        type: boolean
       expiration_date:
         example: "2025-03-24T12:00:00Z"
         type: string

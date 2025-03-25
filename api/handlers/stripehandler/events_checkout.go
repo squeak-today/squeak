@@ -50,7 +50,7 @@ func HandleCheckoutSessionCompleted(checkout stripe.CheckoutSession, dbClient *s
 
 	expirationTime := time.Unix(expandedSubscription.CurrentPeriodEnd, 0)
 	log.Printf("Updating organization billing info with plan: %v, organizationID: %v, customerID: %v, subscriptionID: %v", plan, organizationID, customerRef.ID, subscriptionRef.ID)
-	err = dbClient.UpdateOrganization(plan, organizationID, customerRef.ID, subscriptionRef.ID, expirationTime)
+	err = dbClient.UpdateOrganization(plan, organizationID, customerRef.ID, subscriptionRef.ID, expirationTime, false)
 	if err != nil {
 		log.Printf("Error updating organization billing: %v", err)
 		return

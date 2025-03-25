@@ -91,8 +91,15 @@ func (h *StripeHandler) HandleWebhook(c *gin.Context) {
 			return
 		}
 		HandleInvoicePaymentFailed(invoice, h.DBClient)
-	case "customer.subscription_updated":
-		// this event also catches when they cancel their subscription
+	case "customer.subscription.updated":
+		var subscription stripe.Subscription
+		err := json.Unmarshal(event.Data.Raw, &subscription)
+		if err != nil {
+			log.Printf("Error parsing webhook JSON: %v\n", err)
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error parsing webhook JSON"})
+			return
+		}
+		HandleSubscriptionUpdated(subscription, h.DBClient)
 	case "customer.subscription.deleted":
 		var subscription stripe.Subscription
 		err := json.Unmarshal(event.Data.Raw, &subscription)

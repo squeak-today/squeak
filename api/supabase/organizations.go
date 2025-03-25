@@ -75,19 +75,20 @@ func (c *Client) GetOrganizationSubscriptionID(organizationID string) (string, e
 	return subscriptionID, nil
 }
 
-func (c *Client) GetOrganizationInfo(organizationID string) (string, string, string, time.Time, error) {
+func (c *Client) GetOrganizationInfo(organizationID string) (string, string, string, time.Time, bool, error) {
 	var plan string
 	var customerID *string
 	var subscriptionID *string
 	var expiration *time.Time
+	var canceled *bool
 
 	err := c.db.QueryRow(`
-		SELECT plan, customer_id, subscription_id, expiration
+		SELECT plan, customer_id, subscription_id, expiration, canceled
 		FROM organizations
-		WHERE id = $1`, organizationID).Scan(&plan, &customerID, &subscriptionID, &expiration)
+		WHERE id = $1`, organizationID).Scan(&plan, &customerID, &subscriptionID, &expiration, &canceled)
 
 	if err != nil {
-		return "", "", "", time.Time{}, err
+		return "", "", "", time.Time{}, false, err
 	}
 
 	// convert nullable fields to their zero values if null
@@ -106,7 +107,12 @@ func (c *Client) GetOrganizationInfo(organizationID string) (string, string, str
 		expirationTime = *expiration
 	}
 
-	return plan, customerIDStr, subscriptionIDStr, expirationTime, nil
+	canceledBool := false
+	if canceled != nil {
+		canceledBool = *canceled
+	}
+
+	return plan, customerIDStr, subscriptionIDStr, expirationTime, canceledBool, nil
 }
 
 func (c *Client) CreateOrganization(adminID string) (string, error) {
@@ -150,7 +156,7 @@ func (c *Client) GetOrganizationByCustomerID(customerID string) (string, error) 
 	return organizationID, nil
 }
 
-func (c *Client) UpdateOrganization(plan, organizationID, customerID, subscriptionID string, expiration time.Time) error {
+func (c *Client) UpdateOrganization(plan, organizationID, customerID, subscriptionID string, expiration time.Time, canceled bool) error {
 	var expirationValue interface{}
 	if !expiration.IsZero() {
 		expirationValue = expiration.Format("2006-01-02")
@@ -165,10 +171,11 @@ func (c *Client) UpdateOrganization(plan, organizationID, customerID, subscripti
 			customer_id = NULLIF($2, ''),
 			subscription_id = NULLIF($3, ''),
 			expiration = $4,
+			canceled = $5,
 			updated_at = CURRENT_TIMESTAMP
-		WHERE id = $5`
+		WHERE id = $6`
 
-	result, err := c.db.Exec(query, plan, customerID, subscriptionID, expirationValue, organizationID)
+	result, err := c.db.Exec(query, plan, customerID, subscriptionID, expirationValue, canceled, organizationID)
 	if err != nil {
 		return fmt.Errorf("failed to update organization billing: %w", err)
 	}

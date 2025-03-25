@@ -33,7 +33,7 @@ func HandleInvoicePaymentSucceeded(invoice stripe.Invoice, dbClient *supabase.Cl
 
 	expirationTime := time.Unix(expandedSubscription.CurrentPeriodEnd, 0)
 
-	err = dbClient.UpdateOrganization(plan, organizationID, customerRef.ID, subscriptionRef.ID, expirationTime)
+	err = dbClient.UpdateOrganization(plan, organizationID, customerRef.ID, subscriptionRef.ID, expirationTime, false)
 	if err != nil {
 		log.Printf("Error updating organization: %v", err)
 		return
@@ -49,7 +49,7 @@ func HandleInvoicePaymentFailed(invoice stripe.Invoice, dbClient *supabase.Clien
 	}
 
 	log.Printf("Updating organization %v with customer %v, no subscription, same expiration, and plan FREE", organizationID, customer.ID)
-	err = dbClient.UpdateOrganization("FREE", organizationID, customer.ID, "", time.Time{})
+	err = dbClient.UpdateOrganization("FREE", organizationID, customer.ID, "", time.Time{}, true)
 	if err != nil {
 		log.Printf("Error updating organization: %v", err)
 		return

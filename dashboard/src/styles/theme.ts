@@ -8,6 +8,7 @@ export const theme = {
     background: '#fbfbfb',
     border: '#e0e0e0',
     danger: '#e74c3c',
+    dangerbg: '#F3A69E',
     languages: {
       french: {
         bg: '#E6F3FF',

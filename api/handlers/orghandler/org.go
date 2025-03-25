@@ -69,7 +69,7 @@ func (h *OrganizationHandler) CheckOrganization(c *gin.Context) {
 		return
 	}
 
-	plan, _, _, expiration, err := h.DBClient.GetOrganizationInfo(orgID)
+	plan, _, _, expiration, canceled, err := h.DBClient.GetOrganizationInfo(orgID)
 	if err != nil {
 		log.Printf("Failed to get organization info: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get organization info"})
@@ -81,6 +81,7 @@ func (h *OrganizationHandler) CheckOrganization(c *gin.Context) {
 		TeacherID:      teacherID,
 		Plan:           plan,
 		ExpirationDate: expiration.Format(time.RFC3339),
+		Canceled:       canceled,
 	}
 
 	c.JSON(http.StatusOK, response)
