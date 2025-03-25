@@ -9,7 +9,7 @@ export const BrowserBox = styled.div`
   box-sizing: border-box;
   overflow: hidden;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     margin: 0px auto 0 auto;
     padding: 1em;
   }
@@ -66,7 +66,7 @@ export const LearnPageLayout = styled.div`
   box-sizing: border-box;
   justify-content: center;
   
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     flex-direction: column-reverse;
     padding: 0;
   }
@@ -77,7 +77,7 @@ export const StoryBrowserContainer = styled.div`
   min-width: 0;
   max-width: 60vw;
 
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     max-width: 100vw;
   }
 `;
@@ -93,7 +93,7 @@ export const ProfileDashboardContainer = styled.div`
   height: fit-content;
   font-family: ${theme.typography.fontFamily.primary};
   
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     width: 100%;
     min-width: unset;
     margin: 0 0 1em 0;
@@ -116,4 +116,4 @@ export const NoRecommendationsMessage = styled.div`
   color: #666;
   font-family: ${theme.typography.fontFamily.primary};
   font-style: italic;
-`; 
+`;

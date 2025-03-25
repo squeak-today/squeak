@@ -21,7 +21,7 @@ export const MainContent = styled.div<MainContentProps>`
   margin-left: ${props => props.$isMobile ? '0' : '160px'};
   position: relative;
   
-  @media (max-width: 768px) {
+  @media (max-width: ${theme.breakpoints.tablet}) {
     margin-top: 70px;
   }
 `;
