@@ -1,0 +1,70 @@
+import React from 'react';
+import checkIcon from '../../assets/icons/check.png';
+import {
+  SubscriptionCard,
+  PlanTitle,
+  PriceContainer,
+  Price,
+  PriceUnit,
+  AddOnText,
+  BenefitsList,
+  BenefitItem,
+  ActionButton
+} from '../../styles/components/SubscriptionDetailsStyles';
+
+interface SubscriptionDetailsProps {
+  title: string;
+  price: number;
+  priceUnit?: string;
+  addOnText?: string;
+  benefits: string[];
+  buttonText: string;
+  onButtonClick: () => void;
+}
+
+const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
+  title,
+  price,
+  priceUnit = '/seat/mo',
+  addOnText,
+  benefits,
+  buttonText,
+  onButtonClick
+}) => {
+  return (
+    <SubscriptionCard>
+      <PlanTitle isCustom={price === -1}>{title}</PlanTitle>
+      {price !== -1 && (
+        <PriceContainer>
+          <Price>${price}</Price>
+          <PriceUnit>{priceUnit}</PriceUnit>
+        </PriceContainer>
+      )}
+      
+      {addOnText && (
+        <AddOnText>{addOnText}</AddOnText>
+      )}
+      
+      <BenefitsList>
+        {benefits.map((benefit, index) => (
+          <BenefitItem key={index}>
+            <img 
+              src={checkIcon} 
+              alt="✓" 
+              style={{ width: '16px', height: '16px', 
+                marginRight: '8px', objectFit: 'contain'
+              }} 
+            />
+            {benefit}
+          </BenefitItem>
+        ))}
+      </BenefitsList>
+      
+      <ActionButton onClick={onButtonClick}>
+        {buttonText}
+      </ActionButton>
+    </SubscriptionCard>
+  );
+};
+
+export default SubscriptionDetails; 

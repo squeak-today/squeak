@@ -4,7 +4,12 @@ import supabase from '../lib/supabase';
 const AuthContext = createContext<{
     jwtToken: string | null;
     isLoading: boolean;
-}>({ jwtToken: null, isLoading: true });
+    logout: () => Promise<void>;
+}>({ 
+    jwtToken: null, 
+    isLoading: true,
+    logout: async () => {} 
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [jwtToken, setJwtToken] = useState<string | null>(null);
@@ -25,8 +30,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => subscription.unsubscribe();
     }, []);
 
+    const logout = async () => {
+        try {
+            await supabase.auth.signOut();
+            setJwtToken(null);
+        } catch (error) {
+            console.error('Error signing out:', error);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ jwtToken, isLoading }}>
+        <AuthContext.Provider value={{ jwtToken, isLoading, logout }}>
             {children}
         </AuthContext.Provider>
     );
