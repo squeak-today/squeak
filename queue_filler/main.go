@@ -37,6 +37,36 @@ func handler(ctx context.Context) error {
 	}
 	contentTypes := []string{"News"}
 
+	store, err := NewClient()
+	if err != nil {
+		log.Printf("Failed to create store: %v\n", err)
+		return err
+	}
+	defer store.Close()
+
+	for _, subject := range subjects {
+		resp, err := webSearch("today " + subject + " news", 20)
+		if err != nil {
+			log.Printf("Failed to search for %s: %v\n", subject, err)
+			continue
+		}
+
+		for _, result := range resp.Results {
+			source := NewsSource{
+				Topic: subject,
+				Title: result.Title,
+				URL: result.URL,
+				Content: result.Content,
+				Score: int(result.Score * 100),
+			}
+			err := store.InsertNewsSource(&source)
+			if err != nil {
+				log.Printf("Failed to insert news source: %v\n", err)
+				continue
+			}
+		}
+	}
+
 	var batch []*sqs.SendMessageBatchRequestEntry
 	batchSize := 0
 
