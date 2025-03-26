@@ -144,6 +144,7 @@ func init() {
 			classroomGroup.POST("/accept", teacherHandler.AcceptContent)
 			classroomGroup.POST("/reject", teacherHandler.RejectContent)
 			classroomGroup.POST("/remove-student", teacherHandler.RemoveStudent)
+			classroomGroup.GET("/analytics/problem-areas", teacherHandler.GetProblemAreas)
 		}
 	}
 
@@ -151,6 +152,7 @@ func init() {
 	studentGroup := router.Group("/student")
 	{
 		studentGroup.GET("", studentHandler.CheckStudentStatus)
+		studentGroup.GET("/performance", studentHandler.GetPerformance)
 
 		classroomGroup := studentGroup.Group("/classroom")
 		{

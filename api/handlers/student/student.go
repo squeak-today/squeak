@@ -111,3 +111,21 @@ func (h *StudentHandler) JoinClassroom(c *gin.Context) {
 		Message: "Student added to classroom successfully",
 	})
 }
+
+// @Summary      Get student performance
+// @Description  Retrieves the percentage of incorrect answers for the authenticated student
+// @Tags         student
+// @Produce      json
+// @Success      200  {object}  models.GetPerformanceResponse
+// @Failure      500  {object}  models.ErrorResponse
+// @Router       /student/performance [get]
+func (h *StudentHandler) GetPerformance(c *gin.Context) {
+    userID := c.GetString("user_id") // Assuming user ID is set in context by middleware
+    incorrectPercentage, err := h.DBClient.GetStudentPerformance(userID)
+    if err != nil {
+        log.Printf("Failed to get performance: %v", err)
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get performance"})
+        return
+    }
+    c.JSON(http.StatusOK, models.GetPerformanceResponse{IncorrectPercentage: incorrectPercentage})
+}

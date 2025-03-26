@@ -411,3 +411,53 @@ func (h *TeacherHandler) RemoveStudent(c *gin.Context) {
         Message: "Student removed successfully",
     })
 }
+
+// @Summary      Get classroom problem areas
+// @Description  Retrieves the top questions with the highest incorrect rates for the classroom
+// @Tags         teacher
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.GetProblemAreasResponse
+// @Failure      500  {object}  models.ErrorResponse
+// @Router       /teacher/analytics/problem-areas [get]
+func (h *TeacherHandler) GetProblemAreas(c *gin.Context) {
+    userID := h.GetUserIDFromToken(c)
+    isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+    if !isTeacher {
+        return
+    }
+
+    // Get classroom ID for the teacher
+    classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
+    if err != nil {
+        log.Printf("Failed to get classroom: %v", err)
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
+        return
+    }
+
+    classroomIDInt, err := strconv.Atoi(classroomID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom ID format"})
+        return
+    }
+
+    // Get student user IDs in the classroom
+    studentUserIDs, err := h.DBClient.GetStudentUserIDsByClassroom(classroomIDInt)
+    if err != nil {
+        log.Printf("Failed to get student IDs: %v", err)
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get student IDs"})
+        return
+    }
+
+    // Get problem areas
+    problemAreas, err := h.DBClient.GetClassroomProblemAreas(studentUserIDs)
+    if err != nil {
+        log.Printf("Failed to get problem areas: %v", err)
+        c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get problem areas"})
+        return
+    }
+
+    c.JSON(http.StatusOK, models.GetProblemAreasResponse{
+        ProblemAreas: problemAreas,
+    })
+}

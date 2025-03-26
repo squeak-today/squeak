@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"story-api/models"
 	"strings"
 	"time"
 
@@ -29,7 +30,7 @@ type QueryParams struct {
 
 // Add these near the top with other type definitions
 type Profile struct {
-	UserID			   string   `json:"user_id"`
+	UserID             string   `json:"user_id"`
 	Username           string   `json:"username"`
 	LearningLanguage   string   `json:"learning_language"`
 	SkillLevel         string   `json:"skill_level"`
@@ -886,113 +887,161 @@ func (c *Client) RejectContent(classroomID int, contentType string, contentID in
 
 // GetStudentUserIDsByClassroom retrieves all student user IDs for a classroom
 func (c *Client) GetStudentUserIDsByClassroom(classroomID int) ([]string, error) {
-    query := `
+	query := `
         SELECT user_id 
         FROM students 
         WHERE classroom_id = $1`
-    
-    rows, err := c.db.Query(query, classroomID)
-    if err != nil {
-        return nil, fmt.Errorf("database error querying student IDs: %v", err)
-    }
-    defer rows.Close()
-    
-    var userIDs []string
-    for rows.Next() {
-        var userID string
-        if err := rows.Scan(&userID); err != nil {
-            return nil, fmt.Errorf("error scanning user ID: %v", err)
-        }
-        userIDs = append(userIDs, userID)
-    }
-    
-    if err := rows.Err(); err != nil {
-        return nil, fmt.Errorf("error iterating student rows: %v", err)
-    }
-    
-    return userIDs, nil
+
+	rows, err := c.db.Query(query, classroomID)
+	if err != nil {
+		return nil, fmt.Errorf("database error querying student IDs: %v", err)
+	}
+	defer rows.Close()
+
+	var userIDs []string
+	for rows.Next() {
+		var userID string
+		if err := rows.Scan(&userID); err != nil {
+			return nil, fmt.Errorf("error scanning user ID: %v", err)
+		}
+		userIDs = append(userIDs, userID)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating student rows: %v", err)
+	}
+
+	return userIDs, nil
 }
 
 // GetProfilesByUserIDs retrieves profiles for multiple user IDs
 func (c *Client) GetProfilesByUserIDs(userIDs []string) ([]*Profile, error) {
-    if len(userIDs) == 0 {
-        return []*Profile{}, nil
-    }
-    
-    // Create the placeholder string for the IN clause
-    placeholders := make([]string, len(userIDs))
-    args := make([]interface{}, len(userIDs))
-    for i, id := range userIDs {
-        placeholders[i] = fmt.Sprintf("$%d", i+1)
-        args[i] = id
-    }
-    
-    query := fmt.Sprintf(`
+	if len(userIDs) == 0 {
+		return []*Profile{}, nil
+	}
+
+	// Create the placeholder string for the IN clause
+	placeholders := make([]string, len(userIDs))
+	args := make([]interface{}, len(userIDs))
+	for i, id := range userIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+
+	query := fmt.Sprintf(`
         SELECT user_id, username, learning_language, skill_level, interested_topics, daily_questions_goal
         FROM profiles
         WHERE user_id IN (%s)`, strings.Join(placeholders, ", "))
-    
-    rows, err := c.db.Query(query, args...)
-    if err != nil {
-        return nil, fmt.Errorf("database error querying profiles: %v", err)
-    }
-    defer rows.Close()
-    
-    var profiles []*Profile
-    for rows.Next() {
-        var profile Profile
-        
-        if err := rows.Scan(
+
+	rows, err := c.db.Query(query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("database error querying profiles: %v", err)
+	}
+	defer rows.Close()
+
+	var profiles []*Profile
+	for rows.Next() {
+		var profile Profile
+
+		if err := rows.Scan(
 			&profile.UserID,
-            &profile.Username,
-            &profile.LearningLanguage,
-            &profile.SkillLevel,
-            pq.Array(&profile.InterestedTopics),
-            &profile.DailyQuestionsGoal,
-        ); err != nil {
-            return nil, fmt.Errorf("error scanning profile: %v", err)
-        }
-        
-        profiles = append(profiles, &profile)
-    }
-    
-    if err := rows.Err(); err != nil {
-        return nil, fmt.Errorf("error iterating profile rows: %v", err)
-    }
-    
-    return profiles, nil
+			&profile.Username,
+			&profile.LearningLanguage,
+			&profile.SkillLevel,
+			pq.Array(&profile.InterestedTopics),
+			&profile.DailyQuestionsGoal,
+		); err != nil {
+			return nil, fmt.Errorf("error scanning profile: %v", err)
+		}
+
+		profiles = append(profiles, &profile)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating profile rows: %v", err)
+	}
+
+	return profiles, nil
 }
 
 func (c *Client) RemoveStudentFromClassroom(classroomID int, studentUserID string) error {
-    tx, err := c.db.Begin()
-    if err != nil {
-        return fmt.Errorf("failed to begin transaction: %v", err)
-    }
+	tx, err := c.db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %v", err)
+	}
 
-    // Delete student record
-    _, err = tx.Exec(`
+	// Delete student record
+	_, err = tx.Exec(`
         DELETE FROM students 
         WHERE user_id = $1 AND classroom_id = $2
     `, studentUserID, classroomID)
-    if err != nil {
-        tx.Rollback()
-        return fmt.Errorf("failed to remove student: %v", err)
-    }
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to remove student: %v", err)
+	}
 
-    // Update classroom student count
-    _, err = tx.Exec(`
+	// Update classroom student count
+	_, err = tx.Exec(`
         UPDATE classrooms
         SET student_count = student_count - 1
         WHERE id = $1
     `, classroomID)
-    if err != nil {
-        tx.Rollback()
-        return fmt.Errorf("failed to update student count: %v", err)
-    }
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to update student count: %v", err)
+	}
 
-    if err := tx.Commit(); err != nil {
-        return fmt.Errorf("failed to commit transaction: %v", err)
-    }
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %v", err)
+	}
 
-    return nil
+	return nil
+}
+
+func (c *Client) GetStudentPerformance(userID string) (float64, error) {
+	var incorrectPercentage float64
+	query := `
+        SELECT 
+            COALESCE(ROUND((COUNT(*) FILTER (WHERE NOT is_correct))::numeric / COUNT(*) * 100, 2), 0) AS incorrect_percentage
+        FROM user_answers
+        WHERE user_id = $1
+    `
+	err := c.db.QueryRow(query, userID).Scan(&incorrectPercentage)
+	if err != nil {
+		return 0, err
+	}
+	return incorrectPercentage, nil
+}
+
+func (c *Client) GetClassroomProblemAreas(studentUserIDs []string) ([]models.ProblemArea, error) {
+	if len(studentUserIDs) == 0 {
+		return []models.ProblemArea{}, nil
+	}
+	userIDStr := "'" + strings.Join(studentUserIDs, "','") + "'"
+	query := fmt.Sprintf(`
+        SELECT 
+            q.id,
+            q.question,
+            COALESCE(ROUND((COUNT(ua.*) FILTER (WHERE NOT ua.is_correct))::numeric / COUNT(ua.*) * 100, 2), 0) AS incorrect_rate
+        FROM questions q
+        JOIN user_answers ua ON q.id = ua.question_id
+        WHERE ua.user_id IN (%s)
+        GROUP BY q.id, q.question
+        ORDER BY incorrect_rate DESC
+        LIMIT 5
+    `, userIDStr)
+	rows, err := c.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var problemAreas []models.ProblemArea
+	for rows.Next() {
+		var pa models.ProblemArea
+		if err := rows.Scan(&pa.ID, &pa.Question, &pa.IncorrectRate); err != nil {
+			return nil, err
+		}
+		problemAreas = append(problemAreas, pa)
+	}
+	return problemAreas, nil
 }

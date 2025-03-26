@@ -62,3 +62,13 @@ type RemoveStudentRequest struct {
 type RemoveStudentResponse struct {
     Message string `json:"message" binding:"required" example:"Student removed successfully"`
 }
+
+type GetProblemAreasResponse struct {
+    ProblemAreas []ProblemArea `json:"problemAreas"`
+}
+
+type ProblemArea struct {
+    ID            int     `json:"id" example:"1"`
+    Question      string  `json:"question" example:"What is the capital of France?"`
+    IncorrectRate float64 `json:"incorrectRate" example:"75.5"`
+}

@@ -17,3 +17,7 @@ type JoinClassroomRequest struct {
 type JoinClassroomResponse struct {
 	Message string `json:"message" binding:"required" example:"Student added to classroom successfully"`
 }
+
+type GetPerformanceResponse struct {
+    IncorrectPercentage float64 `json:"incorrectPercentage" example:"42.3"`
+}
