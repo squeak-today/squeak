@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Auth from './pages/Auth';
 import Org from './pages/Org';
 import Home from './pages/Home';
+import Moderate from './pages/Moderate';
 import Settings from './pages/Settings';
 
 const App: React.FC = () => {
@@ -24,6 +25,11 @@ const App: React.FC = () => {
               <Route path="/" element={
                 <ProtectedRoute>
                   <Home />
+                </ProtectedRoute>
+              } />
+              <Route path="/moderate" element={
+                <ProtectedRoute>
+                  <Moderate />
                 </ProtectedRoute>
               } />
               <Route path="/settings" element={

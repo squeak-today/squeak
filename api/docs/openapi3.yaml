@@ -851,6 +851,32 @@ paths:
         description: Reject content request
         required: true
       summary: Accept content
+  /teacher/classroom/update:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.UpdateClassroomResponse'
+          description: OK
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Forbidden
+      tags:
+        - teacher
+      description: Update classroom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.UpdateClassroomRequest'
+        description: Update classroom request
+        required: true
+      summary: Update classroom
   /webhook:
     post:
       responses:
@@ -1541,6 +1567,26 @@ components:
         sentence:
           example: 'Bonjour, comment allez-vous?'
           type: string
+      type: object
+    models.UpdateClassroomRequest:
+      properties:
+        classroom_id:
+          example: '123'
+          type: string
+        name:
+          example: Tuesday 9am
+          type: string
+      required:
+        - classroom_id
+        - name
+      type: object
+    models.UpdateClassroomResponse:
+      properties:
+        message:
+          example: Classroom updated successfully
+          type: string
+      required:
+        - message
       type: object
     models.UpsertProfileRequest:
       properties:

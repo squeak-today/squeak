@@ -722,6 +722,30 @@ Accept content
 | 200 | OK | [models.RejectContentResponse](#modelsrejectcontentresponse) |
 | 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
 
+### /teacher/classroom/update
+
+#### POST
+##### Summary
+
+Update classroom
+
+##### Description
+
+Update classroom
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Update classroom request | Yes | [models.UpdateClassroomRequest](#modelsupdateclassroomrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.UpdateClassroomResponse](#modelsupdateclassroomresponse) |
+| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
+
 ---
 ### /webhook
 
@@ -1093,6 +1117,19 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | sentence | string | *Example:* `"Bonjour, comment allez-vous?"` | No |
+
+#### models.UpdateClassroomRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| classroom_id | string | *Example:* `"123"` | Yes |
+| name | string | *Example:* `"Tuesday 9am"` | Yes |
+
+#### models.UpdateClassroomResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| message | string | *Example:* `"Classroom updated successfully"` | Yes |
 
 #### models.UpsertProfileRequest
 

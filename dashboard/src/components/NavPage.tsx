@@ -23,6 +23,7 @@ import {
   ProfileContainer,
   ProfileIcon,
   UserName,
+  SelectedClassroom,
   ProfileWrapper,
   DropdownMenu,
   DropdownItem,
@@ -34,33 +35,26 @@ import {
 } from '../styles/components/NavPageStyles';
 import { theme } from '../styles/theme';
 
-interface ClassroomType {
-  id: string;
-  name: string;
-}
-
 interface NavPageProps {
   children: ReactNode;
   isLoading?: boolean;
-  classrooms?: ClassroomType[];
 }
 
 const navRoutes = [
-  { id: 'home', label: 'Home', path: '/' }
+  { id: 'home', label: 'Home', path: '/' },
+  { id: 'moderate', label: 'Moderate', path: '/moderate' }
 ];
 
 function NavPage({ 
   children,
-  isLoading = false,
-  classrooms = [
-    { id: 'classroom1', name: 'Classroom 1' },
-    { id: 'classroom2', name: 'Classroom 2' }
-  ]
+  isLoading = false
 }: NavPageProps): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
-  const { profileUsername, isProfileLoading, isSidebarCollapsed, setSidebarCollapsed } = useDashboard();
+  const { profileUsername, isProfileLoading, isSidebarCollapsed, setSidebarCollapsed,
+    classrooms, selectedClassroom, setSelectedClassroom
+  } = useDashboard();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isClassroomsExpanded, setIsClassroomsExpanded] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -122,7 +116,7 @@ function NavPage({
   };
 
   const handleClassroomSelect = (classroomId: string) => {
-    console.log(`Selected classroom: ${classroomId}`);
+    setSelectedClassroom(classroomId);
     setIsDropdownOpen(false);
   };
 
@@ -155,7 +149,16 @@ function NavPage({
             onClick={handleProfileClick}
           >
             {!isSidebarCollapsed && <ProfileIcon src={graduationCap} alt="Profile" />}
-            {!isSidebarCollapsed && <UserName collapsed={isSidebarCollapsed}>{profileUsername}</UserName>}
+            {!isSidebarCollapsed && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <UserName collapsed={isSidebarCollapsed}>{profileUsername}</UserName>
+                {selectedClassroom && classrooms.length > 0 && (
+                  <SelectedClassroom collapsed={isSidebarCollapsed}>
+                    {classrooms.find(c => c.classroom_id === selectedClassroom)?.name} ({"ID: " + selectedClassroom})
+                  </SelectedClassroom>
+                )}
+              </div>
+            )}
           </ProfileContainer>
           <ToggleButton onClick={toggleSidebar}>
             <img src={isSidebarCollapsed ? expandRight : expandLeft} alt={isSidebarCollapsed ? "Expand" : "Collapse"} />
@@ -172,13 +175,14 @@ function NavPage({
               
               {isClassroomsExpanded && (
                 <>
-                  <ClassroomsList isExpanded={isClassroomsExpanded}>
+                  <ClassroomsList expanded={isClassroomsExpanded}>
                     {classrooms.map(classroom => (
                       <DropdownItem 
-                        key={classroom.id} 
-                        onClick={() => handleClassroomSelect(classroom.id)}
+                        key={classroom.classroom_id} 
+                        onClick={() => handleClassroomSelect(classroom.classroom_id)}
+                        isSelected={selectedClassroom === classroom.classroom_id}
                       >
-                        {classroom.name}
+                        {classroom.name + " (" + classroom.classroom_id + ")"}
                       </DropdownItem>
                     ))}
                   </ClassroomsList>

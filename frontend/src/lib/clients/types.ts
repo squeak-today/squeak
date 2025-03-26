@@ -851,6 +851,34 @@ export interface paths {
       };
     };
   };
+  "/teacher/classroom/update": {
+    /**
+     * Update classroom
+     * @description Update classroom
+     */
+    post: {
+      /** @description Update classroom request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.UpdateClassroomRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.UpdateClassroomResponse"];
+          };
+        };
+        /** @description Forbidden */
+        403: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/webhook": {
     /**
      * Process Stripe webhook
@@ -1221,6 +1249,16 @@ export interface components {
     "models.TranslateResponse": {
       /** @example Bonjour, comment allez-vous? */
       sentence?: string;
+    };
+    "models.UpdateClassroomRequest": {
+      /** @example 123 */
+      classroom_id: string;
+      /** @example Tuesday 9am */
+      name: string;
+    };
+    "models.UpdateClassroomResponse": {
+      /** @example Classroom updated successfully */
+      message: string;
     };
     "models.UpsertProfileRequest": {
       /** @example 3 */

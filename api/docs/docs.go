@@ -1258,6 +1258,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/teacher/classroom/update": {
+            "post": {
+                "description": "Update classroom",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Update classroom",
+                "parameters": [
+                    {
+                        "description": "Update classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/webhook": {
             "post": {
                 "description": "Validates and processes incoming webhook events from Stripe",
@@ -2205,6 +2245,35 @@ const docTemplate = `{
                 "sentence": {
                     "type": "string",
                     "example": "Bonjour, comment allez-vous?"
+                }
+            }
+        },
+        "models.UpdateClassroomRequest": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "name"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Tuesday 9am"
+                }
+            }
+        },
+        "models.UpdateClassroomResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Classroom updated successfully"
                 }
             }
         },

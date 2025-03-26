@@ -1624,6 +1624,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/teacher/classroom/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update classroom
+         * @description Update classroom
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Update classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.UpdateClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.UpdateClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/webhook": {
         parameters: {
             query?: never;
@@ -2012,6 +2065,16 @@ export interface components {
         "models.TranslateResponse": {
             /** @example Bonjour, comment allez-vous? */
             sentence?: string;
+        };
+        "models.UpdateClassroomRequest": {
+            /** @example 123 */
+            classroom_id: string;
+            /** @example Tuesday 9am */
+            name: string;
+        };
+        "models.UpdateClassroomResponse": {
+            /** @example Classroom updated successfully */
+            message: string;
         };
         "models.UpsertProfileRequest": {
             /** @example 3 */
