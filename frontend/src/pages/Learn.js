@@ -58,9 +58,9 @@ function Learn() {
 
 	const handleGetProfile = useCallback(async () => {
 		try {
-			const data = await getProfile();
+			const { data, error } = await getProfile();
 			
-			if (data.code === "PROFILE_NOT_FOUND") {
+			if (error?.code === "PROFILE_NOT_FOUND") {
 				navigate('/welcome');
 				return null;
 			}
