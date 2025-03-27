@@ -54,14 +54,14 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
     rejectContent
   } = useTeacherAPI();
 
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = useCallback(async (newPage: number) => {
     setCurrentFilters(prev => ({
       ...prev,
       page: newPage.toString()
     }));
   }, []);
 
-  const handleFilterChange = useCallback((filterType: string, value: string) => {
+  const handleFilterChange = useCallback(async (filterType: string, value: string) => {
     setCurrentFilters(prev => ({
       ...prev,
       [filterType]: value,
@@ -70,7 +70,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
   }, []);
 
   const loadContent = useCallback(async () => {
-    if (!isTeacher || !selectedClassroom) return;
+    if (!isTeacher || selectedClassroom === '') return;
     try {
       const contentData = await fetchContent(
         {
@@ -82,7 +82,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
     } catch (error) {
       showNotification('Error loading content', 'error');
     }
-  }, [currentFilters, isTeacher, showNotification, fetchContent, selectedClassroom]);
+  }, [currentFilters, selectedClassroom, fetchContent]);
 
   const handleAccept = useCallback(async (story: Story) => {
     try {
@@ -125,10 +125,8 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
   }, [verifyTeacher, showNotification]);
 
   useEffect(() => {
-    if (isTeacher && selectedClassroom) {
-      loadContent();
-    }
-  }, [isTeacher, selectedClassroom, currentFilters]);
+    loadContent();
+  }, [selectedClassroom, currentFilters]);
 
   return (
     <Container>

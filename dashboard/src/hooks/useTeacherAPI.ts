@@ -3,7 +3,7 @@ import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import { components } from '../lib/clients/types';
 
 export function useTeacherAPI() {
-    const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
+    const { client, isAuthenticated, requireAuth, requireAuthWithErrors } = useAuthenticatedAPI();
     
     const verifyTeacher = useCallback(async () => {
         return requireAuth(async () => {
@@ -57,12 +57,23 @@ export function useTeacherAPI() {
         })
     }, [client, requireAuth])
 
+    const updateClassroom = useCallback(async (content: components['schemas']['models.UpdateClassroomRequest']) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/update', { body: content })
+            return {
+                data: data as components["schemas"]["models.UpdateClassroomResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            };
+        })
+    }, [client, requireAuthWithErrors])
+
     return {
         isAuthenticated,
         verifyTeacher,
         getClassroomList,
         fetchContent,
         acceptContent,
-        rejectContent
+        rejectContent,
+        updateClassroom
     };
 }

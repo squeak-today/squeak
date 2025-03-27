@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useProfileAPI } from '../hooks/useProfileAPI';
 import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import { components } from '../lib/clients/types';
@@ -15,6 +15,7 @@ interface DashboardContextType {
   classrooms: ClassroomListItem[];
   selectedClassroom: string;
   setSelectedClassroom: (classroom_id: string) => void;
+  fetchClassrooms: () => Promise<void>;
 }
 
 const DashboardContext = createContext<DashboardContextType | null>(null);
@@ -50,6 +51,21 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     checkInitialScreenSize();
   }, []);
 
+  const fetchClassrooms = useCallback(async () => {
+    const classroomsData = await getClassroomList();
+    setClassrooms(classroomsData.classrooms);
+    
+    if (classroomsData.classrooms.length > 0) {
+      const currentSelectionExists = classroomsData.classrooms.some(
+        classroom => classroom.classroom_id === selectedClassroom
+      );
+      
+      if (!currentSelectionExists) {
+        setSelectedClassroom(classroomsData.classrooms[0].classroom_id);
+      }
+    }
+  }, [getClassroomList, selectedClassroom]);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -62,12 +78,6 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
       } finally {
         setIsProfileLoading(false);
       }
-    };
-
-    const fetchClassrooms = async () => {
-      const classroomsData = await getClassroomList();
-      setClassrooms(classroomsData.classrooms);
-      setSelectedClassroom(classroomsData.classrooms[0].classroom_id);
     };
 
     if (jwtToken) {
@@ -84,6 +94,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     classrooms,
     selectedClassroom,
     setSelectedClassroom,
+    fetchClassrooms,
   };
 
   return (

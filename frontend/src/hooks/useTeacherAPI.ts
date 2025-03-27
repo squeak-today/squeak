@@ -32,7 +32,7 @@ export function useTeacherAPI() {
         return requireAuth(async () => {
             const { data, error } = await client!.GET('/teacher/classroom/content', {
                 params: {
-                    query: { ...params, content_type: 'All' }
+                    query: { ...params, classroom_id: 'Classroom', content_type: 'All' }
                 }
             });
             if (error) { throw error; }
