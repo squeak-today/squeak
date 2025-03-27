@@ -1,4 +1,3 @@
-import React from 'react';
 import NavPage from '../components/NavPage';
 import TabSelect from '../components/TabSelect';
 import TeacherSettings from '../components/settings/TeacherSettings';

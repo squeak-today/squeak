@@ -12,6 +12,7 @@ import Settings from './pages/Settings';
 
 const App: React.FC = () => {
   return (
+    // <div className="bg-background h-screen w-screen">
     <AuthProvider>
       <NotificationProvider>
         <DashboardProvider>
@@ -42,6 +43,7 @@ const App: React.FC = () => {
         </DashboardProvider>
       </NotificationProvider>
     </AuthProvider>
+    // </div>
   );
 }
 

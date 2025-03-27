@@ -135,7 +135,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
           <FilterLabel>Status</FilterLabel>
           <FilterSelect
             value={currentFilters.whitelist}
-            onChange={(e) => handleFilterChange('whitelist', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('whitelist', e.target.value)}
           >
             <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
@@ -146,7 +146,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
           <FilterLabel>Language</FilterLabel>
           <FilterSelect 
             value={currentFilters.language} 
-            onChange={(e) => handleFilterChange('language', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('language', e.target.value)}
           >
             <option value="any">Any Language</option>
             <option value="Spanish">Spanish</option>
@@ -158,7 +158,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
           <FilterLabel>CEFR Level</FilterLabel>
           <FilterSelect 
             value={currentFilters.cefr} 
-            onChange={(e) => handleFilterChange('cefr', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('cefr', e.target.value)}
           >
             <option value="any">Any Level</option>
             <option value="A1">A1 (Beginner)</option>
@@ -174,7 +174,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserPro
           <FilterLabel>Topic</FilterLabel>
           <FilterSelect 
             value={currentFilters.subject} 
-            onChange={(e) => handleFilterChange('subject', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('subject', e.target.value)}
           >
             <option value="any">Any Topic</option>
             {AVAILABLE_TOPICS.map(topic => (

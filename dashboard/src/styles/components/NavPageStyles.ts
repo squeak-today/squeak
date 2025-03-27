@@ -3,7 +3,7 @@ import { theme } from '../theme';
 
 export const PageContainer = styled.div`
   display: flex;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   background-color: ${theme.colors.background};
 `;
@@ -261,6 +261,7 @@ export const MainContent = styled.main`
   flex: 1;
   padding: ${theme.spacing.lg};
   overflow-y: auto;
+  width: 100%;
 `;
 
 const spin = keyframes`

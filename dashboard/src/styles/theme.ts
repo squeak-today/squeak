@@ -9,6 +9,7 @@ export const theme = {
     border: '#e0e0e0',
     danger: '#e74c3c',
     dangerbg: '#F3A69E',
+    emphasis: '#FFFEEB',
     languages: {
       french: {
         bg: '#E6F3FF',

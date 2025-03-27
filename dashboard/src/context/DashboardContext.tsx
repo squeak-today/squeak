@@ -57,7 +57,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     
     if (classroomsData.classrooms.length > 0) {
       const currentSelectionExists = classroomsData.classrooms.some(
-        classroom => classroom.classroom_id === selectedClassroom
+        (classroom: ClassroomListItem) => classroom.classroom_id === selectedClassroom
       );
       
       if (!currentSelectionExists) {
