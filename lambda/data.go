@@ -18,26 +18,6 @@ type StoryData struct {
 	Translations StoryDictionary `json:"dictionary"`
 }
 
-// create []byte to pass as Body into uploadStoryS3 from story content and the StoryDictionary
-func buildStoryBody(story string, dictionary StoryDictionary) ([]byte, error) {
-	storyData := StoryData{
-		Story: story,
-		Translations: dictionary,
-	}
-	log.Println("Length of Translations.Words: ", len(dictionary.Translations.Words))
-	log.Println("Length of Translations.Sentences: ", len(dictionary.Translations.Sentences))
-	log.Printf("%+v\n", dictionary)
-	
-	jsonContent, err := json.Marshal(storyData)
-	if err != nil {
-		log.Println("failed to marshal story: %w", err)
-		emptyBytes := make([]byte, 0)
-		return emptyBytes, err
-	}
-
-	return jsonContent, nil
-}
-
 type NewsData struct {
 	Article string `json:"article"`
 	Translations StoryDictionary `json:"dictionary"`

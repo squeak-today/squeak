@@ -8,9 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"strconv"
-	"strings"
 )
 
 type Result struct {
@@ -23,6 +20,14 @@ type Result struct {
 type TavilyResponse struct {
 	Query   string   `json:"query"`
 	Results []Result `json:"results"`
+}
+
+type NewsSource struct {
+	Topic string `json:"topic"`
+	Title string `json:"title"`
+	URL string `json:"url"`
+	Content string `json:"content"`
+	Score int `json:"score"`
 }
 
 // EXAMPLE: webSearch("today investing news", 20)
@@ -77,18 +82,4 @@ func webSearch(query string, info_depth int) (TavilyResponse, error) {
 	}
 
 	return result, nil
-}
-
-func buildInfoBlockFromTavilyResponse(resp TavilyResponse) string {
-	var sb strings.Builder
-
-	for i := range len(resp.Results) {
-		source := resp.Results[i]
-		sb.WriteString("SOURCE " + strconv.Itoa(i) + ": " + source.URL + "\n")
-		sb.WriteString("TITLE: " + source.Title + "\n")
-		sb.WriteString("CONTENT: " + source.Content + "\n")
-		sb.WriteString("RELEVANCE: " + strconv.FormatFloat(source.Score*100.0, 'f', -1, 64) + "%\n")
-	}
-
-	return sb.String()
 }

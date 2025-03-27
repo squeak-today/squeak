@@ -140,7 +140,7 @@ function Profile() {
 
   const handleGetProfile = async () => {
     try {
-      const data = await getProfile();
+      const { data } = await getProfile();
       setProfile(data as ProfileData);
       return data;
     } catch (error) {

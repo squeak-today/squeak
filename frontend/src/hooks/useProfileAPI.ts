@@ -3,15 +3,17 @@ import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import { components } from '../lib/clients/types';
 
 export function useProfileAPI() {
-    const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
+    const { client, isAuthenticated, requireAuth, requireAuthWithErrors } = useAuthenticatedAPI();
 
     const getProfile = useCallback(async () => {
-        return requireAuth(async () => {
+        return requireAuthWithErrors(async () => {
             const { data, error } = await client!.GET('/profile', {});
-            if (error) throw error;
-            return data;
+            return {
+                data: data as components["schemas"]["models.GetProfileResponse"] | null,
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            }
         });
-    }, [client, requireAuth]);
+    }, [client, requireAuthWithErrors]);
 
     const upsertProfile = useCallback(async (content: components["schemas"]["models.UpsertProfileRequest"]) => {
         return requireAuth(async () => {
