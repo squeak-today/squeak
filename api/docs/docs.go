@@ -1218,6 +1218,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/teacher/classroom/delete": {
+            "post": {
+                "description": "Delete classroom",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Delete classroom",
+                "parameters": [
+                    {
+                        "description": "Delete classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teacher/classroom/reject": {
             "post": {
                 "description": "Accept content",
@@ -1540,6 +1580,30 @@ const docTemplate = `{
                 "teacher_id": {
                     "type": "string",
                     "example": "123"
+                }
+            }
+        },
+        "models.DeleteClassroomRequest": {
+            "type": "object",
+            "required": [
+                "classroom_id"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.DeleteClassroomResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Classroom deleted successfully"
                 }
             }
         },

@@ -47,6 +47,14 @@ type CreateClassroomResponse struct {
 	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 }
 
+type DeleteClassroomRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
+}
+
+type DeleteClassroomResponse struct {
+	Message string `json:"message" binding:"required" example:"Classroom deleted successfully"`
+}
+
 type AcceptContentRequest struct {
 	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 	ContentType string `json:"content_type" binding:"required" example:"News"`

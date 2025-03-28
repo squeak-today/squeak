@@ -165,6 +165,7 @@ func init() {
 			classroomGroup.POST("/update", teacherHandler.UpdateClassroom)
 			classroomGroup.GET("/content", teacherHandler.QueryClassroomContent)
 			classroomGroup.POST("/create", teacherHandler.CreateClassroom)
+			classroomGroup.POST("/delete", teacherHandler.DeleteClassroom)
 			classroomGroup.POST("/accept", teacherHandler.AcceptContent)
 			classroomGroup.POST("/reject", teacherHandler.RejectContent)
 		}

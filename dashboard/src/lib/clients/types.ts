@@ -1571,6 +1571,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/teacher/classroom/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delete classroom
+         * @description Delete classroom
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Delete classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.DeleteClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.DeleteClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/teacher/classroom/reject": {
         parameters: {
             query?: never;
@@ -1809,6 +1862,14 @@ export interface components {
             organization_id: string;
             /** @example 123 */
             teacher_id: string;
+        };
+        "models.DeleteClassroomRequest": {
+            /** @example 123 */
+            classroom_id: string;
+        };
+        "models.DeleteClassroomResponse": {
+            /** @example Classroom deleted successfully */
+            message: string;
         };
         "models.ErrorResponse": {
             /** @example PROFILE_NOT_FOUND */

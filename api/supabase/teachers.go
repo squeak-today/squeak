@@ -26,3 +26,13 @@ func (c *Client) GetClassroomList(teacherID string) ([]models.ClassroomListItem,
 
 	return classrooms, nil
 }
+
+func (c *Client) DeleteClassroom(classroomID string) error {
+	_, err := c.db.Exec("DELETE FROM classrooms WHERE id = $1", classroomID)
+	if err != nil {
+		log.Printf("Failed to delete classroom: %v", err)
+		return err
+	}
+
+	return nil
+}

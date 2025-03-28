@@ -698,6 +698,30 @@ Create classroom
 | 200 | OK | [models.CreateClassroomResponse](#modelscreateclassroomresponse) |
 | 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
 
+### /teacher/classroom/delete
+
+#### POST
+##### Summary
+
+Delete classroom
+
+##### Description
+
+Delete classroom
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Delete classroom request | Yes | [models.DeleteClassroomRequest](#modelsdeleteclassroomrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.DeleteClassroomResponse](#modelsdeleteclassroomresponse) |
+| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /teacher/classroom/reject
 
 #### POST
@@ -862,6 +886,18 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | organization_id | string | *Example:* `"123"` | Yes |
 | teacher_id | string | *Example:* `"123"` | Yes |
+
+#### models.DeleteClassroomRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| classroom_id | string | *Example:* `"123"` | Yes |
+
+#### models.DeleteClassroomResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| message | string | *Example:* `"Classroom deleted successfully"` | Yes |
 
 #### models.ErrorResponse
 

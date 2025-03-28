@@ -77,6 +77,17 @@ export function useTeacherAPI() {
         })
     }, [client, requireAuthWithErrors])
 
+    const deleteClassroom = useCallback(async (content: components['schemas']['models.DeleteClassroomRequest']) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/delete', { body: content })
+            return {
+                data: data as components["schemas"]["models.DeleteClassroomResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            };
+        })
+    }, [client, requireAuthWithErrors])
+
+    
     return {
         isAuthenticated,
         verifyTeacher,
@@ -85,6 +96,7 @@ export function useTeacherAPI() {
         acceptContent,
         rejectContent,
         updateClassroom,
-        createClassroom
+        createClassroom,
+        deleteClassroom
     };
 }

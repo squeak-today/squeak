@@ -275,6 +275,55 @@ func (h *TeacherHandler) CreateClassroom(c *gin.Context) {
 	c.JSON(http.StatusOK, models.CreateClassroomResponse{ClassroomID: classroom_id})
 }
 
+//	@Summary		Delete classroom
+//	@Description	Delete classroom
+//	@Tags			teacher
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.DeleteClassroomRequest	true	"Delete classroom request"
+//	@Success		200		{object}	models.DeleteClassroomResponse
+//	@Failure		403		{object}	models.ErrorResponse
+//	@Router			/teacher/classroom/delete [post]
+func (h *TeacherHandler) DeleteClassroom(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+	if !isTeacher {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "User is not a teacher"})
+		return
+	}
+
+	var infoBody models.DeleteClassroomRequest
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+
+	ownership, err := h.DBClient.VerifyClassroomOwnership(teacherID, infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to verify classroom ownership"})
+		return
+	}
+	if !ownership {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Teacher does not have access to this classroom"})
+		return
+	}
+
+	err = h.DBClient.DeleteClassroom(infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete classroom"})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.DeleteClassroomResponse{Message: "Classroom deleted successfully"})
+}
+
+
 
 //	@Summary		Accept content
 //	@Description	Accept content

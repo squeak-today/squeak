@@ -823,6 +823,34 @@ export interface paths {
       };
     };
   };
+  "/teacher/classroom/delete": {
+    /**
+     * Delete classroom
+     * @description Delete classroom
+     */
+    post: {
+      /** @description Delete classroom request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.DeleteClassroomRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.DeleteClassroomResponse"];
+          };
+        };
+        /** @description Forbidden */
+        403: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/teacher/classroom/reject": {
     /**
      * Accept content
@@ -991,6 +1019,14 @@ export interface components {
       organization_id: string;
       /** @example 123 */
       teacher_id: string;
+    };
+    "models.DeleteClassroomRequest": {
+      /** @example 123 */
+      classroom_id: string;
+    };
+    "models.DeleteClassroomResponse": {
+      /** @example Classroom deleted successfully */
+      message: string;
     };
     "models.ErrorResponse": {
       /** @example PROFILE_NOT_FOUND */

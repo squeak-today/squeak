@@ -150,6 +150,15 @@ module "teacher_classroom_create" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "teacher_classroom_delete" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "delete"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "teacher_classroom_accept" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id

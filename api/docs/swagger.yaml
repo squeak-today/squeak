@@ -160,6 +160,22 @@ definitions:
     - organization_id
     - teacher_id
     type: object
+  models.DeleteClassroomRequest:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    type: object
+  models.DeleteClassroomResponse:
+    properties:
+      message:
+        example: Classroom deleted successfully
+        type: string
+    required:
+    - message
+    type: object
   models.ErrorResponse:
     properties:
       code:
@@ -1559,6 +1575,32 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create classroom
+      tags:
+      - teacher
+  /teacher/classroom/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete classroom
+      parameters:
+      - description: Delete classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeleteClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeleteClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete classroom
       tags:
       - teacher
   /teacher/classroom/reject:

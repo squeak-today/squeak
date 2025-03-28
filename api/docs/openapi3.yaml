@@ -825,6 +825,32 @@ paths:
         description: Create classroom request
         required: true
       summary: Create classroom
+  /teacher/classroom/delete:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.DeleteClassroomResponse'
+          description: OK
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Forbidden
+      tags:
+        - teacher
+      description: Delete classroom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.DeleteClassroomRequest'
+        description: Delete classroom request
+        required: true
+      summary: Delete classroom
   /teacher/classroom/reject:
     post:
       responses:
@@ -1057,6 +1083,22 @@ components:
       required:
         - organization_id
         - teacher_id
+      type: object
+    models.DeleteClassroomRequest:
+      properties:
+        classroom_id:
+          example: '123'
+          type: string
+      required:
+        - classroom_id
+      type: object
+    models.DeleteClassroomResponse:
+      properties:
+        message:
+          example: Classroom deleted successfully
+          type: string
+      required:
+        - message
       type: object
     models.ErrorResponse:
       properties:
