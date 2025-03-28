@@ -67,6 +67,16 @@ export function useTeacherAPI() {
         })
     }, [client, requireAuthWithErrors])
 
+    const createClassroom = useCallback(async (content: components['schemas']['models.CreateClassroomRequest']) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/create', { body: content })
+            return {
+                data: data as components["schemas"]["models.CreateClassroomResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            };
+        })
+    }, [client, requireAuthWithErrors])
+
     return {
         isAuthenticated,
         verifyTeacher,
@@ -74,6 +84,7 @@ export function useTeacherAPI() {
         fetchContent,
         acceptContent,
         rejectContent,
-        updateClassroom
+        updateClassroom,
+        createClassroom
     };
 }
