@@ -2,6 +2,9 @@ basePath: /
 definitions:
   models.AcceptContentRequest:
     properties:
+      classroom_id:
+        example: "123"
+        type: string
       content_id:
         example: 123
         minimum: 0
@@ -10,6 +13,7 @@ definitions:
         example: News
         type: string
     required:
+    - classroom_id
     - content_type
     type: object
   models.AcceptContentResponse:
@@ -96,6 +100,22 @@ definitions:
     - title
     - topic
     type: object
+  models.ClassroomListItem:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+      name:
+        example: Connor
+        type: string
+      students_count:
+        example: 10
+        minimum: 0
+        type: integer
+    required:
+    - classroom_id
+    - name
+    type: object
   models.CreateCheckoutSessionRequest:
     type: object
   models.CreateCheckoutSessionResponse:
@@ -108,10 +128,15 @@ definitions:
     type: object
   models.CreateClassroomRequest:
     properties:
+      name:
+        example: Tuesday 9am
+        type: string
       students_count:
         example: 10
         minimum: 0
         type: integer
+    required:
+    - name
     type: object
   models.CreateClassroomResponse:
     properties:
@@ -134,6 +159,22 @@ definitions:
     required:
     - organization_id
     - teacher_id
+    type: object
+  models.DeleteClassroomRequest:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    type: object
+  models.DeleteClassroomResponse:
+    properties:
+      message:
+        example: Classroom deleted successfully
+        type: string
+    required:
+    - message
     type: object
   models.ErrorResponse:
     properties:
@@ -178,17 +219,14 @@ definitions:
     - evaluation
     - explanation
     type: object
-  models.GetClassroomInfoResponse:
+  models.GetClassroomListResponse:
     properties:
-      classroom_id:
-        example: "123"
-        type: string
-      students_count:
-        example: 10
-        minimum: 0
-        type: integer
+      classrooms:
+        items:
+          $ref: '#/definitions/models.ClassroomListItem'
+        type: array
     required:
-    - classroom_id
+    - classrooms
     type: object
   models.GetNewsResponse:
     properties:
@@ -472,6 +510,9 @@ definitions:
     type: object
   models.RejectContentRequest:
     properties:
+      classroom_id:
+        example: "123"
+        type: string
       content_id:
         example: 123
         minimum: 0
@@ -480,6 +521,7 @@ definitions:
         example: News
         type: string
     required:
+    - classroom_id
     - content_type
     type: object
   models.RejectContentResponse:
@@ -643,6 +685,26 @@ definitions:
       sentence:
         example: Bonjour, comment allez-vous?
         type: string
+    type: object
+  models.UpdateClassroomRequest:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+      name:
+        example: Tuesday 9am
+        type: string
+    required:
+    - classroom_id
+    - name
+    type: object
+  models.UpdateClassroomResponse:
+    properties:
+      message:
+        example: Classroom updated successfully
+        type: string
+    required:
+    - message
     type: object
   models.UpsertProfileRequest:
     properties:
@@ -1386,19 +1448,19 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get classroom info
+      description: Get classrooms
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.GetClassroomInfoResponse'
+            $ref: '#/definitions/models.GetClassroomListResponse'
         "403":
           description: Forbidden
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get classroom info
+      summary: Get classrooms
       tags:
       - teacher
   /teacher/classroom/accept:
@@ -1468,6 +1530,11 @@ paths:
         name: content_type
         required: true
         type: string
+      - description: Classroom ID
+        in: query
+        name: classroom_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1510,6 +1577,32 @@ paths:
       summary: Create classroom
       tags:
       - teacher
+  /teacher/classroom/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete classroom
+      parameters:
+      - description: Delete classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeleteClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeleteClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete classroom
+      tags:
+      - teacher
   /teacher/classroom/reject:
     post:
       consumes:
@@ -1534,6 +1627,32 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Accept content
+      tags:
+      - teacher
+  /teacher/classroom/update:
+    post:
+      consumes:
+      - application/json
+      description: Update classroom
+      parameters:
+      - description: Update classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UpdateClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update classroom
       tags:
       - teacher
   /webhook:

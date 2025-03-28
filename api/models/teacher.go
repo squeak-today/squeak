@@ -4,9 +4,23 @@ type TeacherStatusResponse struct {
 	Exists bool `json:"exists" binding:"required" example:"true"`
 }
 
-type GetClassroomInfoResponse struct {
+type ClassroomListItem struct {
 	ClassroomID   string `json:"classroom_id" binding:"required" example:"123"`
+	Name          string `json:"name" binding:"required" example:"Connor"`
 	StudentsCount int    `json:"students_count" binding:"gte=0" example:"10"`
+}
+
+type GetClassroomListResponse struct {
+	Classrooms []ClassroomListItem `json:"classrooms" binding:"required"`
+}
+
+type UpdateClassroomRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
+	Name string `json:"name" binding:"required" example:"Tuesday 9am"`
+}
+
+type UpdateClassroomResponse struct {
+	Message string `json:"message" binding:"required" example:"Classroom updated successfully"`
 }
 
 type ClassroomContentItem struct {
@@ -25,6 +39,7 @@ type ClassroomContentItem struct {
 type QueryClassroomContentResponse []ClassroomContentItem
 
 type CreateClassroomRequest struct {
+	Name string `json:"name" binding:"required" example:"Tuesday 9am"`
 	StudentsCount int `json:"students_count" binding:"gte=0" example:"10"`
 }
 
@@ -32,7 +47,16 @@ type CreateClassroomResponse struct {
 	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 }
 
+type DeleteClassroomRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
+}
+
+type DeleteClassroomResponse struct {
+	Message string `json:"message" binding:"required" example:"Classroom deleted successfully"`
+}
+
 type AcceptContentRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 	ContentType string `json:"content_type" binding:"required" example:"News"`
 	ContentID   int    `json:"content_id" binding:"gte=0" example:"123"`
 }
@@ -42,6 +66,7 @@ type AcceptContentResponse struct {
 }
 
 type RejectContentRequest struct {
+	ClassroomID string `json:"classroom_id" binding:"required" example:"123"`
 	ContentType string `json:"content_type" binding:"required" example:"News"`
 	ContentID   int     `json:"content_id" binding:"gte=0" example:"123"`
 }

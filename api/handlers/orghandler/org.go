@@ -98,24 +98,19 @@ func (h *OrganizationHandler) CheckOrganization(c *gin.Context) {
 //	@Router			/organization/create [post]
 func (h *OrganizationHandler) CreateOrganization(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
-	isTeacher, err := h.DBClient.CheckAccountType(userID, "teacher")
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check teacher status"})
+	isNotStudent := h.CheckNotForbiddenRole(c, userID, "student")
+	if !isNotStudent {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Only non-students can create organizations!"})
 		return
 	}
-	if !isTeacher {
-		c.JSON(http.StatusUnauthorized, models.ErrorResponse{
-			Error: "Only teachers can access this!",
-		})
-		return
-	}
+
 	organizationID, _ := h.DBClient.CheckTeacherOrganizationByUserID(userID)
 	if organizationID != "" {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Teacher already in organization"})
 		return
 	}
 
-	organizationID, err = h.DBClient.CreateOrganization(userID)
+	organizationID, err := h.DBClient.CreateOrganization(userID)
 	if err != nil {
 		log.Printf("Failed to create organization: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to create organization"})

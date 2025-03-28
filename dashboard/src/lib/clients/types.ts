@@ -1360,8 +1360,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get classroom info
-         * @description Get classroom info
+         * Get classrooms
+         * @description Get classrooms
          */
         get: {
             parameters: {
@@ -1378,7 +1378,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["models.GetClassroomInfoResponse"];
+                        "application/json": components["schemas"]["models.GetClassroomListResponse"];
                     };
                 };
                 /** @description Forbidden */
@@ -1481,6 +1481,8 @@ export interface paths {
                     whitelist: string;
                     /** @description Content type */
                     content_type: string;
+                    /** @description Classroom ID */
+                    classroom_id: string;
                 };
                 header?: never;
                 path?: never;
@@ -1569,6 +1571,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/teacher/classroom/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Delete classroom
+         * @description Delete classroom
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Delete classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.DeleteClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.DeleteClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/teacher/classroom/reject": {
         parameters: {
             query?: never;
@@ -1603,6 +1658,59 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["models.RejectContentResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/teacher/classroom/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Update classroom
+         * @description Update classroom
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Update classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.UpdateClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.UpdateClassroomResponse"];
                     };
                 };
                 /** @description Forbidden */
@@ -1676,6 +1784,8 @@ export interface components {
     schemas: {
         "models.AcceptContentRequest": {
             /** @example 123 */
+            classroom_id: string;
+            /** @example 123 */
             content_id?: number;
             /** @example News */
             content_type: string;
@@ -1723,12 +1833,22 @@ export interface components {
             /** @example Music */
             topic: string;
         };
+        "models.ClassroomListItem": {
+            /** @example 123 */
+            classroom_id: string;
+            /** @example Connor */
+            name: string;
+            /** @example 10 */
+            students_count?: number;
+        };
         "models.CreateCheckoutSessionRequest": Record<string, never>;
         "models.CreateCheckoutSessionResponse": {
             /** @example https://checkout.stripe.com/c/pay/123 */
             redirect_url: string;
         };
         "models.CreateClassroomRequest": {
+            /** @example Tuesday 9am */
+            name: string;
             /** @example 10 */
             students_count?: number;
         };
@@ -1742,6 +1862,14 @@ export interface components {
             organization_id: string;
             /** @example 123 */
             teacher_id: string;
+        };
+        "models.DeleteClassroomRequest": {
+            /** @example 123 */
+            classroom_id: string;
+        };
+        "models.DeleteClassroomResponse": {
+            /** @example Classroom deleted successfully */
+            message: string;
         };
         "models.ErrorResponse": {
             /** @example PROFILE_NOT_FOUND */
@@ -1765,11 +1893,8 @@ export interface components {
             /** @example Perfect! */
             explanation: string;
         };
-        "models.GetClassroomInfoResponse": {
-            /** @example 123 */
-            classroom_id: string;
-            /** @example 10 */
-            students_count?: number;
+        "models.GetClassroomListResponse": {
+            classrooms: components["schemas"]["models.ClassroomListItem"][];
         };
         "models.GetNewsResponse": {
             /** @example B1 */
@@ -1914,6 +2039,8 @@ export interface components {
         };
         "models.RejectContentRequest": {
             /** @example 123 */
+            classroom_id: string;
+            /** @example 123 */
             content_id?: number;
             /** @example News */
             content_type: string;
@@ -1999,6 +2126,16 @@ export interface components {
         "models.TranslateResponse": {
             /** @example Bonjour, comment allez-vous? */
             sentence?: string;
+        };
+        "models.UpdateClassroomRequest": {
+            /** @example 123 */
+            classroom_id: string;
+            /** @example Tuesday 9am */
+            name: string;
+        };
+        "models.UpdateClassroomResponse": {
+            /** @example Classroom updated successfully */
+            message: string;
         };
         "models.UpsertProfileRequest": {
             /** @example 3 */

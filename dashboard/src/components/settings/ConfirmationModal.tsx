@@ -34,7 +34,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   return (
     <ModalOverlay>
       <ModalContent>
-        {title != '' && <ModalTitle>{title}</ModalTitle>}
+        {title !== '' && <ModalTitle>{title}</ModalTitle>}
         <ModalMessage>{message}</ModalMessage>
         <ModalButtonContainer>
           <ModalButton 

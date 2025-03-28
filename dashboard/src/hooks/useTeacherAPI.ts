@@ -3,7 +3,7 @@ import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import { components } from '../lib/clients/types';
 
 export function useTeacherAPI() {
-    const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
+    const { client, isAuthenticated, requireAuth, requireAuthWithErrors } = useAuthenticatedAPI();
     
     const verifyTeacher = useCallback(async () => {
         return requireAuth(async () => {
@@ -13,7 +13,7 @@ export function useTeacherAPI() {
         })
     }, [client, requireAuth])
 
-    const getClassroomInfo = useCallback(async () => {
+    const getClassroomList = useCallback(async () => {
         return requireAuth(async () => {
             const { data, error } = await client!.GET('/teacher/classroom', {})
             if (error) { throw error; }
@@ -28,11 +28,12 @@ export function useTeacherAPI() {
         page: string;
         pagesize: string;
         whitelist: string;
+        classroom_id: string;
     }) => {
         return requireAuth(async () => {
             const { data, error } = await client!.GET('/teacher/classroom/content', {
                 params: {
-                    query: { ...params, classroom_id: 'Classroom', content_type: 'All' }
+                    query: { ...params, content_type: 'All' }
                 }
             });
             if (error) { throw error; }
@@ -56,12 +57,46 @@ export function useTeacherAPI() {
         })
     }, [client, requireAuth])
 
+    const updateClassroom = useCallback(async (content: components['schemas']['models.UpdateClassroomRequest']) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/update', { body: content })
+            return {
+                data: data as components["schemas"]["models.UpdateClassroomResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            };
+        })
+    }, [client, requireAuthWithErrors])
+
+    const createClassroom = useCallback(async (content: components['schemas']['models.CreateClassroomRequest']) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/create', { body: content })
+            return {
+                data: data as components["schemas"]["models.CreateClassroomResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            };
+        })
+    }, [client, requireAuthWithErrors])
+
+    const deleteClassroom = useCallback(async (content: components['schemas']['models.DeleteClassroomRequest']) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/teacher/classroom/delete', { body: content })
+            return {
+                data: data as components["schemas"]["models.DeleteClassroomResponse"],
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            };
+        })
+    }, [client, requireAuthWithErrors])
+
+    
     return {
         isAuthenticated,
         verifyTeacher,
-        getClassroomInfo,
+        getClassroomList,
         fetchContent,
         acceptContent,
-        rejectContent
+        rejectContent,
+        updateClassroom,
+        createClassroom,
+        deleteClassroom
     };
 }

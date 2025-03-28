@@ -21,12 +21,12 @@ export const LoadingText = styled.div`
   margin-top: 20px;
 `;
 
-export const Spinner = styled.div`
+export const Spinner = styled.div<{ size?: number }>`
   border: 4px solid #f3f3f3;
   border-top: 4px solid rgb(94, 94, 94);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: ${props => props.size || 40}px;
+  height: ${props => props.size || 40}px;
   animation: spin 1s linear infinite;
 
   @keyframes spin {

@@ -6,6 +6,7 @@ export const AuthContainer = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  min-width: 100vw;
   background-color: ${theme.colors.background};
   position: relative;
 `;
@@ -57,6 +58,7 @@ export const AuthForm = styled.form`
   flex-direction: column;
   gap: ${theme.spacing.md};
   width: 100%;
+  color: ${theme.colors.text.primary};
 `;
 
 export const AuthInput = styled.input`

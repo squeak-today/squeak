@@ -7,10 +7,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Auth from './pages/Auth';
 import Org from './pages/Org';
 import Home from './pages/Home';
+import Moderate from './pages/Moderate';
 import Settings from './pages/Settings';
 
 const App: React.FC = () => {
   return (
+    // <div className="bg-background h-screen w-screen">
     <AuthProvider>
       <NotificationProvider>
         <DashboardProvider>
@@ -26,6 +28,11 @@ const App: React.FC = () => {
                   <Home />
                 </ProtectedRoute>
               } />
+              <Route path="/moderate" element={
+                <ProtectedRoute>
+                  <Moderate />
+                </ProtectedRoute>
+              } />
               <Route path="/settings" element={
                 <ProtectedRoute>
                   <Settings />
@@ -36,6 +43,7 @@ const App: React.FC = () => {
         </DashboardProvider>
       </NotificationProvider>
     </AuthProvider>
+    // </div>
   );
 }
 

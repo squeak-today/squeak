@@ -43,31 +43,86 @@ func (h *TeacherHandler) CheckTeacherStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//	@Summary		Get classroom info
-//	@Description	Get classroom info
+//	@Summary		Get classrooms
+//	@Description	Get classrooms
 //	@Tags			teacher
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	models.GetClassroomInfoResponse
+//	@Success		200	{object}	models.GetClassroomListResponse
 //	@Failure		403	{object}	models.ErrorResponse
 //	@Router			/teacher/classroom [get]
-func (h *TeacherHandler) GetClassroomInfo(c *gin.Context) {
+func (h *TeacherHandler) GetClassroomList(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
 	if !isTeacher {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "User is not a teacher"})
 		return
 	}
 
-	classroom_id, students_count, err := h.DBClient.GetClassroomByTeacherId(userID)
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
 	if err != nil {
-		log.Printf("Failed to get classroom: %v", err)
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
 		return
 	}
-	c.JSON(http.StatusOK, models.GetClassroomInfoResponse{
-		ClassroomID:   classroom_id,
-		StudentsCount: students_count,
+	classroomList, err := h.DBClient.GetClassroomList(teacherID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom list"})
+		return
+	}
+	c.JSON(http.StatusOK, models.GetClassroomListResponse{
+		Classrooms: classroomList,
 	})
+}
+
+//	@Summary		Update classroom
+//	@Description	Update classroom
+//	@Tags			teacher
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.UpdateClassroomRequest	true	"Update classroom request"
+//	@Success		200		{object}	models.UpdateClassroomResponse
+//	@Failure		403		{object}	models.ErrorResponse
+//	@Router			/teacher/classroom/update [post]
+func (h *TeacherHandler) UpdateClassroom(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+	if !isTeacher {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "User is not a teacher"})
+		return
+	}
+
+	var infoBody models.UpdateClassroomRequest
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+	ownership, err := h.DBClient.VerifyClassroomOwnership(teacherID, infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to verify classroom ownership"})
+		return
+	}
+	if !ownership {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Teacher does not have access to this classroom"})
+		return
+	}
+
+	classroomIDInt, err := strconv.Atoi(infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid classroom ID format"})
+		return
+	}
+	err = h.DBClient.UpdateClassroom(classroomIDInt, infoBody.Name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update classroom"})
+		return
+	}
+	c.JSON(http.StatusOK, models.UpdateClassroomResponse{Message: "Classroom updated successfully"})
 }
 
 //	@Summary		Query classroom content
@@ -82,6 +137,7 @@ func (h *TeacherHandler) GetClassroomInfo(c *gin.Context) {
 //	@Param			pagesize		query		string	true	"Page size"
 //	@Param			whitelist		query		string	true	"Whitelist status"
 //	@Param			content_type	query		string	true	"Content type"
+//	@Param			classroom_id	query		string	true	"Classroom ID"
 //	@Success		200				{object}	models.QueryClassroomContentResponse
 //	@Failure		403				{object}	models.ErrorResponse
 //	@Router			/teacher/classroom/content [get]
@@ -101,6 +157,23 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 
 	whitelistStatus := c.Query("whitelist")
 	contentType := c.Query("content_type")
+	classroomID := c.Query("classroom_id")
+
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+
+	ownership, err := h.DBClient.VerifyClassroomOwnership(teacherID, classroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to verify classroom ownership"})
+		return
+	}
+	if !ownership {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Teacher does not have access to this classroom"})
+		return
+	}
 
 	if page == "" {
 		page = "1"
@@ -121,19 +194,13 @@ func (h *TeacherHandler) QueryClassroomContent(c *gin.Context) {
 		return
 	}
 
-	classroom_id, _, err := h.DBClient.GetClassroomByTeacherId(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
-		return
-	}
-
 	params := supabase.QueryParams{
 		Language: language,
 		CEFR:     cefr,
 		Subject:  subject,
 		Page:     pageNum,
 		PageSize: pageSizeNum,
-		ClassroomID: classroom_id,
+		ClassroomID: classroomID,
 		WhitelistStatus: whitelistStatus,
 	}
 
@@ -186,13 +253,19 @@ func (h *TeacherHandler) CreateClassroom(c *gin.Context) {
 		return
 	}
 
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+
 	var infoBody models.CreateClassroomRequest
 	if err := c.ShouldBindJSON(&infoBody); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
 		return
 	}
 
-	classroom_id, err := h.DBClient.CreateClassroom(userID, infoBody.StudentsCount)
+	classroom_id, err := h.DBClient.CreateClassroom(teacherID, infoBody.Name, infoBody.StudentsCount)
 	if err != nil {
 		log.Printf("Failed to create classroom: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
@@ -201,6 +274,56 @@ func (h *TeacherHandler) CreateClassroom(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.CreateClassroomResponse{ClassroomID: classroom_id})
 }
+
+//	@Summary		Delete classroom
+//	@Description	Delete classroom
+//	@Tags			teacher
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.DeleteClassroomRequest	true	"Delete classroom request"
+//	@Success		200		{object}	models.DeleteClassroomResponse
+//	@Failure		403		{object}	models.ErrorResponse
+//	@Router			/teacher/classroom/delete [post]
+func (h *TeacherHandler) DeleteClassroom(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+	isTeacher := h.CheckIsCorrectRole(c, userID, "teacher")
+	if !isTeacher {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "User is not a teacher"})
+		return
+	}
+
+	var infoBody models.DeleteClassroomRequest
+	if err := c.ShouldBindJSON(&infoBody); err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
+		return
+	}
+
+	teacherID, err := h.DBClient.GetTeacherUUID(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get teacher UUID"})
+		return
+	}
+
+	ownership, err := h.DBClient.VerifyClassroomOwnership(teacherID, infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to verify classroom ownership"})
+		return
+	}
+	if !ownership {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Teacher does not have access to this classroom"})
+		return
+	}
+
+	err = h.DBClient.DeleteClassroom(infoBody.ClassroomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete classroom"})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.DeleteClassroomResponse{Message: "Classroom deleted successfully"})
+}
+
+
 
 //	@Summary		Accept content
 //	@Description	Accept content
@@ -229,14 +352,7 @@ func (h *TeacherHandler) AcceptContent(c *gin.Context) {
 		return
 	}
 
-	// Get classroom ID for teacher
-	classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
-		return
-	}
-
-	classroomIDInt, err := strconv.Atoi(classroomID)
+	classroomIDInt, err := strconv.Atoi(infoBody.ClassroomID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom ID format"})
 		return
@@ -278,14 +394,7 @@ func (h *TeacherHandler) RejectContent(c *gin.Context) {
 		return
 	}
 
-	// Get classroom ID for teacher
-	classroomID, _, err := h.DBClient.GetClassroomByTeacherId(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get classroom"})
-		return
-	}
-
-	classroomIDInt, err := strconv.Atoi(classroomID)
+	classroomIDInt, err := strconv.Atoi(infoBody.ClassroomID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Invalid classroom ID format"})
 		return

@@ -124,6 +124,15 @@ module "teacher_classroom" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "teacher_classroom_update" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "update"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "teacher_classroom_content" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -137,6 +146,15 @@ module "teacher_classroom_create" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
   parent_id   = module.teacher_classroom.resource_id
   path_part   = "create"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom_delete" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "delete"
   http_method = "POST"
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
@@ -394,6 +412,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.progress_increment,
     module.teacher,
     module.teacher_classroom,
+    module.teacher_classroom_update,
     module.teacher_classroom_content,
     module.teacher_classroom_create,
     module.teacher_classroom_accept,

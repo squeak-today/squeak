@@ -54,6 +54,23 @@ func (c *Client) CheckTeacherStatus(userID string) (bool, error) {
 	return exists, nil
 }
 
+func (c *Client) VerifyClassroomOwnership(teacherID string, classroomID string) (bool, error) {
+	var exists bool
+	err := c.db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1
+			FROM classrooms
+			WHERE id = $1 AND teacher_id = $2
+		)
+	`, classroomID, teacherID).Scan(&exists)
+
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
 // set as teacher, student, admin, or none / ""
 func (c *Client) CheckAccountType(userID string, accountType string) (bool, error) {
 	// teacher check

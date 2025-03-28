@@ -1021,7 +1021,7 @@ const docTemplate = `{
         },
         "/teacher/classroom": {
             "get": {
-                "description": "Get classroom info",
+                "description": "Get classrooms",
                 "consumes": [
                     "application/json"
                 ],
@@ -1031,12 +1031,12 @@ const docTemplate = `{
                 "tags": [
                     "teacher"
                 ],
-                "summary": "Get classroom info",
+                "summary": "Get classrooms",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GetClassroomInfoResponse"
+                            "$ref": "#/definitions/models.GetClassroomListResponse"
                         }
                     },
                     "403": {
@@ -1150,6 +1150,13 @@ const docTemplate = `{
                         "name": "content_type",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "classroom_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1211,6 +1218,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/teacher/classroom/delete": {
+            "post": {
+                "description": "Delete classroom",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Delete classroom",
+                "parameters": [
+                    {
+                        "description": "Delete classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teacher/classroom/reject": {
             "post": {
                 "description": "Accept content",
@@ -1240,6 +1287,46 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.RejectContentResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/teacher/classroom/update": {
+            "post": {
+                "description": "Update classroom",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Update classroom",
+                "parameters": [
+                    {
+                        "description": "Update classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateClassroomResponse"
                         }
                     },
                     "403": {
@@ -1285,9 +1372,14 @@ const docTemplate = `{
         "models.AcceptContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,
@@ -1405,6 +1497,28 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ClassroomListItem": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "name"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Connor"
+                },
+                "students_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 10
+                }
+            }
+        },
         "models.CreateCheckoutSessionRequest": {
             "type": "object"
         },
@@ -1422,7 +1536,14 @@ const docTemplate = `{
         },
         "models.CreateClassroomRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Tuesday 9am"
+                },
                 "students_count": {
                     "type": "integer",
                     "minimum": 0,
@@ -1459,6 +1580,30 @@ const docTemplate = `{
                 "teacher_id": {
                     "type": "string",
                     "example": "123"
+                }
+            }
+        },
+        "models.DeleteClassroomRequest": {
+            "type": "object",
+            "required": [
+                "classroom_id"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.DeleteClassroomResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Classroom deleted successfully"
                 }
             }
         },
@@ -1522,20 +1667,17 @@ const docTemplate = `{
                 }
             }
         },
-        "models.GetClassroomInfoResponse": {
+        "models.GetClassroomListResponse": {
             "type": "object",
             "required": [
-                "classroom_id"
+                "classrooms"
             ],
             "properties": {
-                "classroom_id": {
-                    "type": "string",
-                    "example": "123"
-                },
-                "students_count": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 10
+                "classrooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ClassroomListItem"
+                    }
                 }
             }
         },
@@ -1925,9 +2067,14 @@ const docTemplate = `{
         "models.RejectContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,
@@ -2162,6 +2309,35 @@ const docTemplate = `{
                 "sentence": {
                     "type": "string",
                     "example": "Bonjour, comment allez-vous?"
+                }
+            }
+        },
+        "models.UpdateClassroomRequest": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "name"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Tuesday 9am"
+                }
+            }
+        },
+        "models.UpdateClassroomResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Classroom updated successfully"
                 }
             }
         },

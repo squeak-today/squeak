@@ -3,7 +3,7 @@ import { theme } from '../theme';
 
 export const PageContainer = styled.div`
   display: flex;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   background-color: ${theme.colors.background};
 `;
@@ -102,6 +102,19 @@ export const UserName = styled.span<SidebarProps>`
   display: ${props => props.collapsed ? 'none' : 'block'};
 `;
 
+export const SelectedClassroom = styled.span<SidebarProps>`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-weight: normal;
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: ${props => props.collapsed ? 0 : 1};
+  display: ${props => props.collapsed ? 'none' : 'block'};
+  margin-top: 2px;
+`;
+
 export const DropdownMenu = styled.div<{ isOpen: boolean }>`
   position: absolute;
   top: 100%;
@@ -143,14 +156,14 @@ export const DropdownSubtitle = styled.span`
   }
 `;
 
-export const ClassroomsList = styled.div<{ isExpanded: boolean }>`
-  max-height: ${props => props.isExpanded ? '200px' : '0'};
-  opacity: ${props => props.isExpanded ? 1 : 0};
+export const ClassroomsList = styled.div<{ expanded: boolean }>`
+  max-height: ${props => props.expanded ? '200px' : '0'};
+  opacity: ${props => props.expanded ? 1 : 0};
   overflow: hidden;
   transition: max-height 0.3s ease, opacity 0.2s ease;
 `;
 
-export const DropdownItem = styled.button`
+export const DropdownItem = styled.button<{ isSelected?: boolean }>`
   width: 100%;
   text-align: left;
   padding: ${theme.spacing.sm} ${theme.spacing.md};
@@ -158,6 +171,7 @@ export const DropdownItem = styled.button`
   border: none;
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
+  font-weight: ${props => props.isSelected ? 'bold' : 'normal'};
   color: ${theme.colors.text.primary};
   cursor: pointer;
   display: flex;
@@ -247,6 +261,7 @@ export const MainContent = styled.main`
   flex: 1;
   padding: ${theme.spacing.lg};
   overflow-y: auto;
+  width: 100%;
 `;
 
 const spin = keyframes`
