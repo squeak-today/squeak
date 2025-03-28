@@ -14,18 +14,27 @@ const SpinnerContainer = styled.div`
 `;
 
 const Spinner = styled.div`
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #5c5b5b;
+    width: ${props => props.size || '40px'};
+    height: ${props => props.size || '40px'};
+    border: ${props => props.borderWidth || '4px'} solid #f3f3f3;
+    border-top: ${props => props.borderWidth || '4px'} solid #5c5b5b;
     border-radius: 50%;
     animation: ${spin} 1s linear infinite;
 `;
 
-const LoadingSpinner = () => (
+const LoadingSpinner = ({ size = "40px", borderWidth = "4px" }) => (
     <SpinnerContainer>
-        <Spinner />
+        <Spinner size={size} borderWidth={borderWidth} />
     </SpinnerContainer>
 );
 
+const InlineSpinnerComponent = ({ size = "40px", borderWidth = "4px" }) => (
+    <Spinner 
+        size={size} 
+        borderWidth={borderWidth} 
+        style={{ display: 'inline-block', margin: 0 }}
+    />
+);
+
+export { InlineSpinnerComponent as InlineSpinner };
 export default LoadingSpinner; 

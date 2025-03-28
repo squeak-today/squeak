@@ -163,6 +163,7 @@ func init() {
 		audioGroup.GET("", audioHandler.CheckHealth)
 		audioGroup.POST("/translate", audioHandler.Translate)
 		audioGroup.POST("/tts", audioHandler.TextToSpeech)
+		audioGroup.POST("/stt", audioHandler.SpeechToText)
 	}
 
 	progressHandler := progresshandler.New(dbClient)

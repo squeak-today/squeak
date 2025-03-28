@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
+import { useAudioAPI } from '../hooks/useAudioAPI';
+import { STT_LANGUAGE_CODES } from '../lib/lang_codes';
+import RecordButton from './RecordButton';
 import {
     SidePanelContainer,
     TabContainer,
@@ -15,6 +18,7 @@ import {
     ButtonGroup,
     ShareButton,
     ReportButton,
+    InputContainer
 } from '../styles/ReadPageStyles';
 
 import {
@@ -75,6 +79,8 @@ const SidePanel = ({
     const [checkingAnswers, setCheckingAnswers] = useState(false);
     const { showNotification } = useNotification();
     const [passedQuestions, setPassedQuestions] = useState(0);
+    const { stt } = useAudioAPI();
+    const [loadingAudio, setLoadingAudio] = useState([]);
 
     const isBeginnerLevel = contentData.difficulty === 'A1' || contentData.difficulty === 'A2';
 
@@ -113,6 +119,47 @@ const SidePanel = ({
         }
         setPassedQuestions(passCount);
         setCheckingAnswers(false);
+    };
+
+    const handleRecordingComplete = async (base64Audio, index) => {
+        try {
+            setLoadingAudio(prev => [...prev, index]);
+            
+            const languageCode = STT_LANGUAGE_CODES[contentData.tags[0]];
+            
+            if (!languageCode) {
+                showNotification('Language not supported for speech recognition', 'error');
+                setLoadingAudio(prev => prev.filter(i => i !== index));
+                return;
+            }
+
+            const response = await stt({
+                audio_content: base64Audio,
+                language_code: languageCode
+            });
+            
+            if (response.error) {
+                if (response.error.code === 'NO_TRANSCRIPT') {
+                    showNotification('No speech detected in target language. Please try again.', 'error');
+                } else {
+                    console.error('Speech to text API error:', response.error);
+                    showNotification(`Speech-to-text failed: ${response.error.error}`, 'error');
+
+                }
+                return;
+            }
+            
+            if (response.data && response.data.transcript) {
+                onAnswerChange(index, response.data.transcript);
+            } else {
+                showNotification('No speech detected. Please try again.', 'error');
+            }
+        } catch (error) {
+            console.error('Speech to text failed:', error);
+            showNotification('Failed to convert speech to text. Please try again.', 'error');
+        } finally {
+            setLoadingAudio(prev => prev.filter(i => i !== index));
+        }
     };
 
     const renderInfoTab = () => (
@@ -184,14 +231,22 @@ const SidePanel = ({
                         </CEFRTag>
                         <QuestionText>{q.question}</QuestionText>
                     </QuestionHeader>
-                    <QuestionInput
-                        value={q.answer}
-                        onChange={(e) => onAnswerChange(index, e.target.value)}
-                        $isVocab={q.type === 'vocab'}
-                        placeholder={q.type === 'vocab' ? 'Enter translation...' : 'Write your answer...'}
-                        $evaluated={q.evaluated}
-                        $passed={q.passed}
-                    />
+                    <InputContainer>
+                        <QuestionInput
+                            value={q.answer}
+                            onChange={(e) => onAnswerChange(index, e.target.value)}
+                            $isVocab={q.type === 'vocab'}
+                            placeholder={q.type === 'vocab' ? 'Explain the word...' : 'Write your answer...'}
+                            $evaluated={q.evaluated}
+                            $passed={q.passed}
+                        />
+                        <RecordButton 
+                            onRecordingComplete={handleRecordingComplete}
+                            onError={showNotification}
+                            id={index}
+                            loading={loadingAudio.includes(index)}
+                        />
+                    </InputContainer>
                     {q.evaluated && q.explanation && (
                         <ExplanationText $passed={q.passed}>
                             {q.explanation}

@@ -272,3 +272,9 @@ export const BackButton = styled.button`
         color: #333;
     }
 `;
+
+export const InputContainer = styled.div`
+    display: flex;
+    align-items: center;
+    width: 100%;
+`;
