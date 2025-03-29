@@ -172,7 +172,9 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
     return (
         <Container>
             <Title>Today is {formatDate()}...</Title>
-            <Subtitle>{isStudent ? "Here are some recommended articles from your teacher!" : `Here are some articles ${topicDisplay} for today!`}</Subtitle>
+            <Subtitle>{
+                isStudent ? (newsItems.length === 0 ? "Ask your teacher to approve some content you're interested in!" : "Here are some recommended articles from your teacher!") : `Here are some articles ${topicDisplay} for today!`
+            }</Subtitle>
             <RecommendationsList>
                 <Timeline />
                 {newsItems.map((newsItem) => (
