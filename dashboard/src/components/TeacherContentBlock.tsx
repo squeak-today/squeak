@@ -71,12 +71,11 @@ const TeacherContentBlock: React.FC<TeacherContentBlockProps> = ({
   };
 
   const handleClick = () => {
-    navigate(`/read/${story.content_type}/${story.id}`, {
-      state: {
-        backTo: '/teacher',
-        backText: 'Back to Teacher Dashboard'
-      }
-    });
+    const baseUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3000'
+      : 'https://squeak.today';
+    const url = `${baseUrl}/read/${story.content_type}/${story.id}`;
+    window.open(url, '_blank');
   };
 
   return (
