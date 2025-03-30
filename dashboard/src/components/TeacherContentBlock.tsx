@@ -59,8 +59,6 @@ const TeacherContentBlock: React.FC<TeacherContentBlockProps> = ({
   onReject, 
   status 
 }) => {
-  const navigate = useNavigate();
-
   const handleAction = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (status === 'rejected') {
