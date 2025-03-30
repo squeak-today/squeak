@@ -69,7 +69,7 @@ func (h *OrganizationHandler) CreateCheckoutSession(c *gin.Context) {
 	domain := "https://dashboard.squeak.today"
 	priceID := "price_1R5Y2REtgulRmEeH0WdlFuZC"
 	if os.Getenv("WORKSPACE") != "prod" {
-		domain = "http://localhost:3001"
+		domain = "http://localhost:5173"
 	}
 	params := &stripe.CheckoutSessionParams{
 		LineItems: []*stripe.CheckoutSessionLineItemParams{

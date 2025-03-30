@@ -1,6 +1,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TransitionWrapper } from './PageTransition';
+import { usePlatform } from '../context/PlatformContext';
 import {
   PageContainer,
   LoadingOverlay,
@@ -17,7 +18,9 @@ import {
   HamburgerIcon,
   MobileNav,
   CloseButton,
-  MobileNavButton
+  MobileNavButton,
+  DashboardLink,
+  MobileDashboardLink
 } from '../styles/NavPageStyles';
 import logo from '../assets/drawing_400.png';
 import supabase from '../lib/supabase';
@@ -39,6 +42,7 @@ function NavPage({
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
+  const { isTeacher, isStudent } = usePlatform();
 
   useEffect(() => {
     const handleResize = () => {
@@ -74,6 +78,49 @@ function NavPage({
 
   const toggleMobileNav = () => {
     setMobileNavOpen(!mobileNavOpen);
+  };
+
+  const handleDashboardClick = () => {
+    const baseUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:5173'
+      : 'https://dashboard.squeak.today';
+    
+    window.open(baseUrl, '_blank');
+  };
+
+  const renderDashboardLink = () => {
+    console.log(isTeacher, isStudent);
+    if (isTeacher) {
+      return (
+        <>
+          {isMobile ? (
+            <MobileDashboardLink onClick={handleDashboardClick}>
+              View Dashboard
+            </MobileDashboardLink>
+          ) : (
+            <DashboardLink onClick={handleDashboardClick}>
+              View Dashboard
+            </DashboardLink>
+          )}
+        </>
+      );
+    } else if (!isStudent && !isTeacher) {
+      return (
+        <>
+          {isMobile ? (
+            <MobileDashboardLink onClick={() => navigate('/student/become')}>
+              Join a Classroom
+            </MobileDashboardLink>
+          ) : (
+            <DashboardLink onClick={() => navigate('/student/become')}>
+              Join a Classroom
+            </DashboardLink>
+          )}
+        </>
+      );
+    }
+    
+    return null;
   };
 
   return (
@@ -118,6 +165,7 @@ function NavPage({
               >
                 Log Out
               </MobileNavButton>
+              {renderDashboardLink()}
             </MobileNav>
           </>
         ) : (
@@ -154,6 +202,8 @@ function NavPage({
             >
               Log Out
             </NavButton>
+            
+            {renderDashboardLink()}
           </Sidebar>
         )}
         <MainContent $isMobile={isMobile}>
