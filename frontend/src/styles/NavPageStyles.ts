@@ -244,3 +244,34 @@ export const Spinner = styled.div`
     100% { transform: rotate(360deg); }
   }
 `;
+
+export const DashboardLink = styled.a`
+  margin-top: auto;
+  margin-bottom: ${theme.spacing.md};
+  padding: ${theme.spacing.md};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.primary};
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: ${theme.colors.text.secondary};
+  }
+`;
+
+export const MobileDashboardLink = styled.a`
+  margin-top: ${theme.spacing.md};
+  padding: ${theme.spacing.md};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.primary};
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: ${theme.colors.text.secondary};
+  }
+`;

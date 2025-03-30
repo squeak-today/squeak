@@ -32,7 +32,7 @@ function Home() {
     <NavPage>
       <ContentContainer>
         <Title>Home Dashboard</Title>
-        <Subtitle>Coming soon!</Subtitle>
+        <Subtitle>More coming soon...Stay tuned!</Subtitle>
       </ContentContainer>
     </NavPage>
   );

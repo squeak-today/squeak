@@ -15,6 +15,7 @@ import BasicPage from "../components/BasicPage";
 import { useNotification } from "../context/NotificationContext";
 
 import { useStudentAPI } from "../hooks/useStudentAPI";
+import { usePlatform } from "../context/PlatformContext";
 
 function BecomeStudent() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ function BecomeStudent() {
   const [statusChecked, setStatusChecked] = useState(false);
   const apiBase = process.env.REACT_APP_API_BASE;
   const [isInitializing, setIsInitializing] = useState(true);
-
+  const { checkRoles } = usePlatform();
   const { jwtToken } = useAuth();
   const { getStudentStatus, joinClassroom } = useStudentAPI();
 
@@ -75,6 +76,7 @@ function BecomeStudent() {
       console.error("Error joining classroom:", error);
       showNotification("Error joining classroom.", "error");
     } finally {
+      await checkRoles();
       setLoading(false);
     }
   };
