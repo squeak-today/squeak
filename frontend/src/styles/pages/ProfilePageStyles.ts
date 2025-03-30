@@ -265,43 +265,6 @@ export const GoalAdjuster = styled.div`
   }
 `;
 
-export const ActionButton = styled.button<{ $disabled?: boolean }>`
-  width: 100%;
-  padding: ${theme.spacing.md};
-  background: ${props => props.$disabled ? theme.colors.border : 'white'};
-  border: 1px solid ${theme.colors.border};
-  border-radius: 12px;
-  font-family: ${theme.typography.fontFamily.secondary};
-  font-size: ${theme.typography.fontSize.base};
-  color: ${props => props.$disabled ? theme.colors.text.secondary : theme.colors.text.primary};
-  cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
-  transition: all 0.2s;
-  margin-bottom: ${theme.spacing.md};
-  pointer-events: ${props => props.$disabled ? 'none' : 'auto'};
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  &:hover {
-    transform: ${props => props.$disabled ? 'none' : 'translateY(-2px)'};
-    box-shadow: ${props => props.$disabled ? 'none' : theme.elevation.hover};
-    cursor: ${props => props.$disabled ? 'not-allowed' : 'pointer'};
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-`;
-
-export const ActionButtonsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-`;
-
 export const StreakContainer = styled.div`
   display: flex;
   flex-direction: column;
