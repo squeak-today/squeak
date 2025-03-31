@@ -21,6 +21,34 @@ export interface paths {
       };
     };
   };
+  "/audio/stt": {
+    /**
+     * Speech to text
+     * @description Convert speech audio to text
+     */
+    post: {
+      /** @description Speech to text request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.SpeechToTextRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.SpeechToTextResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/audio/translate": {
     /**
      * Translate text
@@ -879,6 +907,16 @@ export interface components {
     "models.RejectContentResponse": {
       /** @example Content rejected successfully */
       message: string;
+    };
+    "models.SpeechToTextRequest": {
+      /** @example base64-encoded-audio-content */
+      audio_content: string;
+      /** @example en-US */
+      language_code: string;
+    };
+    "models.SpeechToTextResponse": {
+      /** @example Hello, how are you? */
+      transcript: string;
     };
     "models.StoryItem": {
       /** @example B1 */

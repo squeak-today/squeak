@@ -30,6 +30,30 @@ Check if the audio service is live
 | ---- | ----------- | ------ |
 | 200 | OK | [models.AudioHealthResponse](#modelsaudiohealthresponse) |
 
+### /audio/stt
+
+#### POST
+##### Summary
+
+Speech to text
+
+##### Description
+
+Convert speech audio to text
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Speech to text request | Yes | [models.SpeechToTextRequest](#modelsspeechtotextrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.SpeechToTextResponse](#modelsspeechtotextresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /audio/translate
 
 #### POST
@@ -756,6 +780,19 @@ Accept content
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | message | string | *Example:* `"Content rejected successfully"` | Yes |
+
+#### models.SpeechToTextRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| audio_content | string | *Example:* `"base64-encoded-audio-content"` | Yes |
+| language_code | string | *Example:* `"en-US"` | Yes |
+
+#### models.SpeechToTextResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| transcript | string | *Example:* `"Hello, how are you?"` | Yes |
 
 #### models.StoryItem
 
