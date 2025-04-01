@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ContentBlock from './ContentBlock';
 import { useNewsAPI } from '../hooks/useNewsAPI';
+import { useStudentAPI } from '../hooks/useStudentAPI';
 import { useNotification } from '../context/NotificationContext';
 import { 
     Container, 
@@ -61,11 +62,13 @@ const getTopicForToday = (interested_topics: string[] = []): string => {
 const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage, cefrLevel, interested_topics = [] }) => {
     const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isStudent, setIsStudent] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
     const hasFetchedRef = useRef<boolean>(false);
     
     const navigate = useNavigate();
     const { queryNews } = useNewsAPI();
+    const { getStudentStatus } = useStudentAPI();
     const { showNotification } = useNotification();
 
     useEffect(() => {
@@ -77,6 +80,20 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
             return;
         }
 
+        const fetchStudentStatus = async () => {
+            try {
+                const studentStatus = await getStudentStatus();
+                console.log(studentStatus);
+                if (studentStatus.student_id !== '') {
+                    setIsStudent(true);
+                }
+            } catch (error) {
+                console.error('Error fetching student status:', error);
+            }
+        };
+
+        fetchStudentStatus();
+
         const fetchNewsRecommendations = async () => {
             if (isLoading === false) {
                 setIsLoading(true);
@@ -86,14 +103,20 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
                 hasFetchedRef.current = true;
                 
                 const selectedTopic = getTopicForToday(interested_topics);
-                const response = await queryNews({
+                let response = await queryNews({
                     language: userLanguage,
-                    cefr: cefrLevel,
-                    subject: selectedTopic,
+                    cefr: 'any',
+                    subject: 'any',
                     page: '1',
-                    pagesize: '3'
+                    pagesize: '20'
                 });
-                
+                const filtered_response = response.filter((item: any) => (item.topic === selectedTopic && item.cefr_level === cefrLevel));
+                if (filtered_response.length === 0) {
+                    response = response.slice(0, 3);
+                } else {
+                    response = filtered_response;
+                }
+
                 if (Array.isArray(response)) {
                     setNewsItems(response);
                     setError(false);
@@ -138,7 +161,7 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
         return (
             <Container>
                 <Title>Today is {formatDate()}...</Title>
-                <NoRecommendationsMessage>No news recommendations available!</NoRecommendationsMessage>
+                <NoRecommendationsMessage>{isStudent ? "Ask your teacher to approve some content you're interested in!" : 'No news recommendations available for your level!'}</NoRecommendationsMessage>
             </Container>
         );
     }
@@ -149,7 +172,9 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
     return (
         <Container>
             <Title>Today is {formatDate()}...</Title>
-            <Subtitle>Here are your recommended articles {topicDisplay} for today!</Subtitle>
+            <Subtitle>{
+                isStudent ? (newsItems.length === 0 ? "Ask your teacher to approve some content you're interested in!" : "Here are some recommended articles from your teacher!") : `Here are some articles ${topicDisplay} for today!`
+            }</Subtitle>
             <RecommendationsList>
                 <Timeline />
                 {newsItems.map((newsItem) => (
