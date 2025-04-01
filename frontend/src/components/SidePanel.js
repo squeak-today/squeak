@@ -1,27 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import { useAudioAPI } from '../hooks/useAudioAPI';
-import { STT_LANGUAGE_CODES } from '../lib/lang_codes';
+import { STT_LANGUAGE_CODES, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 import RecordButton from './RecordButton';
+import { FaPlay } from "react-icons/fa";
 import {
     SidePanelContainer,
     TabContainer,
     Tab,
     ContentSection,
     ExplanationText,
-} from '../styles/ReadPageStyles';
-
-import {
     TagsContainer,
     Tag,
     ItalicInfoText,
     ButtonGroup,
     ShareButton,
     ReportButton,
-    InputContainer
-} from '../styles/ReadPageStyles';
-
-import {
+    InputContainer,
     LearnContentContainer,
     Label,
     GoalSelect,
@@ -31,7 +26,10 @@ import {
     QuestionText,
     QuestionInput,
     CEFRTag,
-    CheckAnswersButton
+    CheckAnswersButton,
+    AudioControlsContainer,
+    PlayButton,
+    UserAnswerDisplay
 } from '../styles/ReadPageStyles';
 
 import LoadingSpinner from './LoadingSpinner';
@@ -79,8 +77,9 @@ const SidePanel = ({
     const [checkingAnswers, setCheckingAnswers] = useState(false);
     const { showNotification } = useNotification();
     const [passedQuestions, setPassedQuestions] = useState(0);
-    const { stt } = useAudioAPI();
+    const { stt, tts } = useAudioAPI();
     const [loadingAudio, setLoadingAudio] = useState([]);
+    const [playingQuestion, setPlayingQuestion] = useState(null);
 
     const isBeginnerLevel = contentData.difficulty === 'A1' || contentData.difficulty === 'A2';
 
@@ -162,6 +161,34 @@ const SidePanel = ({
         }
     };
 
+    const handlePlayQuestion = async (index) => {
+        try {
+            setPlayingQuestion(index);
+            const question = questions[index];
+            const langCode = TTS_LANGUAGE_CODES[contentData.tags[0]];
+            
+            if (!langCode) {
+                showNotification('Language not supported for text-to-speech', 'error');
+                setPlayingQuestion(null);
+                return;
+            }
+            
+            const audioContent = await tts({ 
+                language_code: langCode, 
+                text: question.question, 
+                voice_name: TTS_VOICE_IDS[langCode] 
+            });
+            
+            const audio = new Audio(`data:audio/mp3;base64,${audioContent.audio_content}`);
+            audio.onended = () => setPlayingQuestion(null);
+            await audio.play();
+        } catch (error) {
+            console.error('TTS failed:', error);
+            showNotification('Failed to play question. Please try again.', 'error');
+            setPlayingQuestion(null);
+        }
+    };
+
     const renderInfoTab = () => (
         <>
             {isLoading ? (
@@ -232,20 +259,41 @@ const SidePanel = ({
                         <QuestionText>{q.question}</QuestionText>
                     </QuestionHeader>
                     <InputContainer>
-                        <QuestionInput
-                            value={q.answer}
-                            onChange={(e) => onAnswerChange(index, e.target.value)}
-                            $isVocab={q.type === 'vocab'}
-                            placeholder={q.type === 'vocab' ? 'Explain the word...' : 'Write your answer...'}
-                            $evaluated={q.evaluated}
-                            $passed={q.passed}
-                        />
-                        <RecordButton 
-                            onRecordingComplete={handleRecordingComplete}
-                            onError={showNotification}
-                            id={index}
-                            loading={loadingAudio.includes(index)}
-                        />
+                        {q.mode === 'text' ? (
+                            <>
+                                <QuestionInput
+                                    value={q.answer}
+                                    onChange={(e) => onAnswerChange(index, e.target.value)}
+                                    $isVocab={q.type === 'vocab'}
+                                    placeholder={q.type === 'vocab' ? 'Explain the word...' : 'Write your answer...'}
+                                    $evaluated={q.evaluated}
+                                    $passed={q.passed}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <AudioControlsContainer>
+                                    <PlayButton 
+                                        onClick={() => handlePlayQuestion(index)}
+                                        disabled={playingQuestion === index}
+                                    >
+                                        <FaPlay size={18} />
+                                    </PlayButton>
+                                    <RecordButton 
+                                        onRecordingComplete={(audio) => handleRecordingComplete(audio, index)}
+                                        onError={showNotification}
+                                        id={index}
+                                        loading={loadingAudio.includes(index)}
+                                    />
+                                </AudioControlsContainer>
+                                <UserAnswerDisplay
+                                    $evaluated={q.evaluated}
+                                    $passed={q.passed}
+                                >
+                                    {q.answer || 'Your spoken answer will appear here...'}
+                                </UserAnswerDisplay>
+                            </>
+                        )}
                     </InputContainer>
                     {q.evaluated && q.explanation && (
                         <ExplanationText $passed={q.passed}>

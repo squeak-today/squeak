@@ -9,6 +9,8 @@ import supabase from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import TranslationPanel from '../components/TranslationPanel';
 import { useAudioAPI } from '../hooks/useAudioAPI';
+import { useQnaAPI } from '../hooks/useQnaAPI';
+import { useAuth } from '../context/AuthContext';
 
 import { LANGUAGE_CODES_REVERSE, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 
@@ -24,11 +26,13 @@ const DEFAULT_CONTENT = {
 };
 
 function Read() {
+    const { jwtToken } = useAuth();
     const { type, id } = useParams();
     const { state } = useLocation();
 
     const navigate = useNavigate();
     const { showNotification } = useNotification();
+    const { getQuestion, evaluateQnA } = useQnaAPI();
     
     const [contentData, setContentData] = useState(DEFAULT_CONTENT);
     const [sourceLanguage, setSourceLanguage] = useState('en');
@@ -58,8 +62,6 @@ function Read() {
     useEffect(() => {
         const loadInitialMetadata = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                const jwt = session?.access_token;
                 let url = '';
                 if (type === 'Story') {
                     url = `${apiBase}story?id=${id}&page=0`;
@@ -68,7 +70,7 @@ function Read() {
                 }
                 const metadataResponse = await fetch(url, {
                     headers: {
-                        'Authorization': `Bearer ${jwt}`
+                        'Authorization': `Bearer ${jwtToken}`
                     }
                 });
                 const metadata = await metadataResponse.json();
@@ -153,28 +155,19 @@ function Read() {
         
         const fetchQuestion = async (cefrLevel, qType) => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                const jwt = session?.access_token;
-                const response = await fetch(`${apiBase}qna`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${jwt}`
-                    },
-                    body: JSON.stringify({
-                        content_type: contentData.type,
-                        id: contentData.id,
-                        cefr_level: cefrLevel,
-                        question_type: qType
-                    })
+                const data = await getQuestion({
+                    content_type: contentData.type,
+                    id: contentData.id,
+                    cefr_level: cefrLevel,
+                    question_type: qType
                 });
-                const data = await response.json();
+                
                 return { 
                     question: data.question,
                     cefrLevel,
                     type: qType,
-                    answer: ''
+                    answer: '',
+                    mode: qType === 'vocab' ? 'text' : Math.random() < 0.33 ? 'audio' : 'text'
                 };
             } catch (error) {
                 console.error('Error fetching question:', error);
@@ -248,15 +241,12 @@ function Read() {
 
     const handleCheckAnswers = async () => {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const jwt = session?.access_token;
-
             let contextInfo = '';
             if (type === 'Story') {
                 // stories are too long, so we query context.txt
                 const response = await fetch(`${apiBase}story/context?id=${id}`, {
                     headers: {
-                        'Authorization': `Bearer ${jwt}`
+                        'Authorization': `Bearer ${jwtToken}`
                     }
                 });
                 const data = await response.json();
@@ -264,21 +254,12 @@ function Read() {
             }
 
             const results = await Promise.all(questions.map(async (q) => {
-                const response = await fetch(`${apiBase}qna/evaluate`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${jwt}`
-                    },
-                    body: JSON.stringify({
-                        cefr: q.cefrLevel,
-                        content: (type === 'Story') ? contextInfo : contentData.content,
-                        question: q.question,
-                        answer: q.answer
-                    })
+                const data = await evaluateQnA({
+                    cefr: q.cefrLevel,
+                    content: (type === 'Story') ? contextInfo : contentData.content,
+                    question: q.question,
+                    answer: q.answer
                 });
-                const data = await response.json();
                 return data;
             }));
 
@@ -304,12 +285,9 @@ function Read() {
 
     const handleIncrementProgress = async (newlyPassedCount) => {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
-            const jwt = session?.access_token;
-
             await fetch(`${apiBase}progress/increment?amount=${newlyPassedCount}`, {
                 headers: {
-                    'Authorization': `Bearer ${jwt}`
+                    'Authorization': `Bearer ${jwtToken}`
                 }
             });
         } catch (error) {
