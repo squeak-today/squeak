@@ -23,3 +23,12 @@ type TextToSpeechRequest struct {
 type TextToSpeechResponse struct {
 	AudioContent string `json:"audio_content" binding:"required" example:"base64-encoded-audio-content"`
 }
+
+type SpeechToTextRequest struct {
+	AudioContent string `json:"audio_content" binding:"required" example:"base64-encoded-audio-content"`
+	LanguageCode string `json:"language_code" binding:"required" example:"en-US"`
+}
+
+type SpeechToTextResponse struct {
+	Transcript string `json:"transcript" binding:"required" example:"Hello, how are you?"`
+}

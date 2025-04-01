@@ -186,6 +186,15 @@ module "audio_tts" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "audio_stt" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.audio.resource_id
+  path_part   = "stt"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "student" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -333,7 +342,8 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.student_classroom_join,
     module.audio,
     module.audio_translate,
-    module.audio_tts
+    module.audio_tts,
+    module.audio_stt
   ]
 }
 
