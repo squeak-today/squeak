@@ -11,14 +11,14 @@ CREATE TABLE IF NOT EXISTS public.billing_accounts (
 );
 
 ALTER TABLE public.billing_accounts 
-    DROP CONSTRAINT IF EXISTS unique_user_id,
-    DROP CONSTRAINT IF EXISTS unique_customer_id,
-    DROP CONSTRAINT IF EXISTS unique_subscription_id;
+    DROP CONSTRAINT IF EXISTS unique_billing_user_id,
+    DROP CONSTRAINT IF EXISTS unique_billing_customer_id,
+    DROP CONSTRAINT IF EXISTS unique_billing_subscription_id;
 
 ALTER TABLE public.billing_accounts 
-    ADD CONSTRAINT unique_user_id UNIQUE (user_id),
-    ADD CONSTRAINT unique_customer_id UNIQUE (customer_id),
-    ADD CONSTRAINT unique_subscription_id UNIQUE (subscription_id);
+    ADD CONSTRAINT unique_billing_user_id UNIQUE (user_id),
+    ADD CONSTRAINT unique_billing_customer_id UNIQUE (customer_id),
+    ADD CONSTRAINT unique_billing_subscription_id UNIQUE (subscription_id);
 
 CREATE OR REPLACE FUNCTION check_user_not_in_orgs_or_teachers()
 RETURNS TRIGGER AS $$
