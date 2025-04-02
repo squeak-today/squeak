@@ -278,3 +278,36 @@ export const InputContainer = styled.div`
     align-items: center;
     width: 100%;
 `;
+
+export const AudioControlsContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+`;
+
+export const PlayButton = styled.button`
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: ${props => props.disabled ? '#ccc' : '#505050'};
+`;
+
+export const UserAnswerDisplay = styled.div`
+    font-family: 'Lora', serif;
+    background-color: #f5f5f5;
+    padding: 12px;
+    border-radius: 8px;
+    font-style: italic;
+    min-height: 40px;
+    max-height: 120px;
+    overflow-y: auto;
+    margin-bottom: 8px;
+    background-color: ${props => {
+        if (props.$evaluated) {
+            return props.$passed ? '#E6F4EA' : '#FCE8E8';
+        }
+        return '#f5f5f5';
+    }};
+`;
