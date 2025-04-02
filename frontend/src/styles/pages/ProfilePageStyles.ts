@@ -1,15 +1,31 @@
 import styled from 'styled-components';
 import { theme } from '../theme';
 
-export const ProfileContainer = styled.div`
+
+export const MenuContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin: ${theme.spacing.lg} ${theme.spacing.lg};
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    flex-direction: column;
+    justify-content: center;
+    margin: 0;
+  }
+`
+
+export const ProfileContainer = styled.div<{ $width?: string }>`
   padding: ${theme.spacing.lg};
   max-width: 800px;
+  width: ${props => props.$width || '50%'};
   margin: 0 auto;
   font-family: ${theme.typography.fontFamily.secondary};
   box-sizing: border-box;
+  justify-content: center;
   
   @media (max-width: ${theme.breakpoints.mobile}) {
     padding: ${theme.spacing.md} ${theme.spacing.sm};
+    justify-content: center;
   }
 `;
 
@@ -350,4 +366,54 @@ export const BannerOverlay = styled.div`
     align-items: flex-start;
     padding: ${theme.spacing.sm};
   }
+`;
+
+export const BillingContainer = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: ${theme.spacing.lg};
+  box-shadow: ${theme.elevation.base};
+  margin-bottom: ${theme.spacing.lg};
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  &:hover {
+    box-shadow: ${theme.elevation.hover};
+  }
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.md};
+  }
+`;
+
+export const PremiumTitle = styled.h2`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.lg};
+  font-weight: 700;
+  color: ${theme.colors.text.primary};
+  margin: 0 0 ${theme.spacing.sm} 0;
+`;
+
+export const PremiumSubtitle = styled.p`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  margin: 0 0 ${theme.spacing.lg} 0;
+  max-width: 90%;
+`;
+
+export const PremiumButton = styled.button`
+  background: ${theme.colors.selected};
+  color: black;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
 `; 

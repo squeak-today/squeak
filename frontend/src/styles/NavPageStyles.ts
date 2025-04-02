@@ -18,11 +18,13 @@ export const PageContainer = styled.div`
 export const MainContent = styled.div<MainContentProps>`
   flex: 1;
   padding: ${theme.spacing.md};
-  margin-left: ${props => props.$isMobile ? '0' : '160px'};
+  margin-left: ${props => props.$isMobile ? '0' : '15vw'};
   position: relative;
   
   @media (max-width: ${theme.breakpoints.tablet}) {
     margin-top: 70px;
+    margin-left: 0;
+    width: 100%;
   }
 `;
 

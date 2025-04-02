@@ -12,6 +12,7 @@ import { useStudentAPI } from '../hooks/useStudentAPI';
 import { useNotification } from '../context/NotificationContext';
 import { theme } from '../styles/theme';
 import {
+  MenuContainer,
   ProfileContainer,
   UsernameSection,
   Username,
@@ -37,7 +38,11 @@ import {
   BannerFlag,
   BannerOverlay,
   FormRow,
-  FormColumn
+  FormColumn,
+  BillingContainer,
+  PremiumTitle,
+  PremiumSubtitle,
+  PremiumButton
 } from '../styles/pages/ProfilePageStyles';
 import { getCEFRColor } from '../lib/cefr';
 
@@ -272,7 +277,8 @@ function Profile() {
 
   return (
     <NavPage isLoading={isLoading} initialActiveNav="profile">
-      <ProfileContainer>
+      <MenuContainer>
+      <ProfileContainer $width="60%">
         {profile?.learning_language && (
           <BannerContainer style={{ background: getLanguageBackground(profile.learning_language) }}>
             {getLanguageFlag(profile.learning_language) && (
@@ -389,6 +395,14 @@ function Profile() {
           </ProfileSection>
         </MainSection>
       </ProfileContainer>
+      <ProfileContainer $width="40%">
+        <BillingContainer>
+          <PremiumTitle>Squeak Premium</PremiumTitle>
+          <PremiumSubtitle>All features, unlimited usage, easy learning. Free for 7 days.</PremiumSubtitle>
+          <PremiumButton>GET PREMIUM</PremiumButton>
+        </BillingContainer>
+      </ProfileContainer>
+      </MenuContainer>
     </NavPage>
   );
 }

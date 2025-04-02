@@ -7,6 +7,7 @@ export const theme = {
     selected: 'fad48f',
     background: '#fbfbfb',
     border: '#e0e0e0',
+    danger: '#e74c3c',
     languages: {
       french: {
         bg: '#E6F3FF', // Pastel blue
