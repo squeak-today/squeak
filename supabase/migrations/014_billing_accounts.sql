@@ -7,12 +7,18 @@ CREATE TABLE IF NOT EXISTS public.billing_accounts (
     expiration DATE DEFAULT NULL,
     canceled BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT unique_user_id UNIQUE (user_id),
-    CONSTRAINT unique_customer_id UNIQUE (customer_id),
-    CONSTRAINT unique_subscription_id UNIQUE (subscription_id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE public.billing_accounts 
+    DROP CONSTRAINT IF EXISTS unique_user_id,
+    DROP CONSTRAINT IF EXISTS unique_customer_id,
+    DROP CONSTRAINT IF EXISTS unique_subscription_id;
+
+ALTER TABLE public.billing_accounts 
+    ADD CONSTRAINT IF NOT EXISTS unique_user_id UNIQUE (user_id),
+    ADD CONSTRAINT IF NOT EXISTS unique_customer_id UNIQUE (customer_id),
+    ADD CONSTRAINT IF NOT EXISTS unique_subscription_id UNIQUE (subscription_id);
 
 CREATE OR REPLACE FUNCTION check_user_not_in_orgs_or_teachers()
 RETURNS TRIGGER AS $$
