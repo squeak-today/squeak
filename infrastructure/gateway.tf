@@ -238,14 +238,14 @@ module "student_classroom_join" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
-# module "webhook" {
-#   source      = "./api_gateway"
-#   rest_api_id = aws_api_gateway_rest_api.story_api.id
-#   parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
-#   path_part   = "webhook"
-#   http_method = "POST"
-#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-# }
+module "webhook" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "webhook"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
 
 module "organization" {
   source      = "./api_gateway"
@@ -298,6 +298,32 @@ module "organization_join" {
 #   http_method = "POST"
 #   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 # }
+
+module "billing" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "billing"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "billing_create_checkout_session" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.billing.resource_id
+  path_part   = "create-checkout-session" 
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "billing_cancel_subscription_eop" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.billing.resource_id
+  path_part   = "cancel-subscription-eop"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
 
 # Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
@@ -430,6 +456,10 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     // module.organization_payments,
     // module.organization_payments_create_checkout_session,
     // module.organization_payments_cancel_subscription_eop
+    module.billing,
+    module.billing_create_checkout_session,
+    module.billing_cancel_subscription_eop,
+    module.webhook
   ]
 }
 

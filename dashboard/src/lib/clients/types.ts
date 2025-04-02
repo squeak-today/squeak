@@ -211,6 +211,160 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/billing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Check Billing Account
+         * @description Check Billing Account
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.BillingAccountResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/cancel-subscription-eop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a Stripe individual subscription at the end of the period
+         * @description Cancel a Stripe individual subscription at the end of the period
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Cancel subscription request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CancelIndividualSubscriptionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CancelIndividualSubscriptionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/billing/create-checkout-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create a Stripe checkout session (individual)
+         * @description Creates a checkout session and redirects to Stripe's payment page
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Create checkout session request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionRequest"];
+                };
+            };
+            responses: {
+                /** @description Redirect to Stripe Checkout */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/news": {
         parameters: {
             query?: never;
@@ -1798,6 +1952,23 @@ export interface components {
             /** @example live */
             status: string;
         };
+        "models.BillingAccountResponse": {
+            /** @example false */
+            canceled: boolean;
+            /** @example 2025-01-01T00:00:00Z */
+            expiration: string;
+            /** @example PRO */
+            plan: string;
+        };
+        "models.CancelIndividualSubscriptionRequest": Record<string, never>;
+        "models.CancelIndividualSubscriptionResponse": {
+            /** @example PREMIUM */
+            canceled_plan: string;
+            /** @example 2025-03-24T12:00:00Z */
+            current_expiration: string;
+            /** @example true */
+            success: boolean;
+        };
         "models.CancelSubscriptionRequest": Record<string, never>;
         "models.CancelSubscriptionResponse": {
             /** @example CLASSROOM */
@@ -1855,6 +2026,11 @@ export interface components {
         "models.CreateClassroomResponse": {
             /** @example 123 */
             classroom_id: string;
+        };
+        "models.CreateIndividualCheckoutSessionRequest": Record<string, never>;
+        "models.CreateIndividualCheckoutSessionResponse": {
+            /** @example https://checkout.stripe.com/c/pay/123 */
+            redirect_url: string;
         };
         "models.CreateOrganizationRequest": Record<string, never>;
         "models.CreateOrganizationResponse": {

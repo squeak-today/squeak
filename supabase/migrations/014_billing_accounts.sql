@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS public.billing_accounts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE public.billing_accounts ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE public.billing_accounts 
     DROP CONSTRAINT IF EXISTS unique_billing_user_id,
     DROP CONSTRAINT IF EXISTS unique_billing_customer_id,

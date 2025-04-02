@@ -41,6 +41,7 @@ import (
 	"story-api/handlers/student"
 	"story-api/handlers/teacher"
 	"story-api/handlers/orghandler"
+	"story-api/handlers/billinghandler"
 )
 
 type Profile = supabase.Profile
@@ -137,6 +138,14 @@ func init() {
 	{
 		stripeHandler := stripehandler.New(dbClient)
 		webhookGroup.POST("", stripeHandler.HandleWebhook)
+	}
+
+	billingHandler := billing.New(dbClient)
+	billingGroup := router.Group("/billing")
+	{
+		billingGroup.GET("", billingHandler.GetBillingAccount)
+		billingGroup.POST("/create-checkout-session", billingHandler.CreateCheckoutSession)
+		billingGroup.POST("/cancel-subscription-eop", billingHandler.CancelSubscriptionAtEndOfPeriod)
 	}
 
 	orgHandler := org.New(dbClient)
