@@ -3,6 +3,7 @@ ALTER TABLE classrooms DROP CONSTRAINT IF EXISTS unique_teacher_classroom;
 ALTER TABLE classrooms ADD COLUMN IF NOT EXISTS teacher_user_id UUID;
 ALTER TABLE classrooms ADD COLUMN IF NOT EXISTS new_teacher_id UUID;
 
+
 -- First: For classrooms where teacher_id corresponds to an existing teachers.id
 -- (This handles the idempotent case where this migration runs multiple times)
 UPDATE classrooms c
