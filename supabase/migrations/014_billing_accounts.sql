@@ -11,14 +11,25 @@ CREATE TABLE IF NOT EXISTS public.billing_accounts (
 
     CONSTRAINT unique_user_id UNIQUE (user_id),
     CONSTRAINT unique_customer_id UNIQUE (customer_id),
-    CONSTRAINT unique_subscription_id UNIQUE (subscription_id),
-    CONSTRAINT prevent_overlapping_plans_check_in_orgs_or_teachers
-    CHECK (
-        NOT EXISTS (
-            SELECT 1 FROM public.organizations WHERE organizations.admin_id = billing_accounts.user_id
-        ) AND
-        NOT EXISTS (
-            SELECT 1 FROM public.teachers WHERE teachers.user_id = billing_accounts.user_id
-        )
-    )
+    CONSTRAINT unique_subscription_id UNIQUE (subscription_id)
 );
+
+CREATE OR REPLACE FUNCTION check_user_not_in_orgs_or_teachers()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM public.organizations WHERE organizations.admin_id = NEW.user_id
+    ) OR EXISTS (
+        SELECT 1 FROM public.teachers WHERE teachers.user_id = NEW.user_id
+    ) THEN
+        RAISE EXCEPTION 'User already exists in organizations or teachers tables';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS prevent_overlapping_plans_trigger ON public.billing_accounts;
+CREATE TRIGGER prevent_overlapping_plans_trigger
+    BEFORE INSERT ON public.billing_accounts
+    FOR EACH ROW
+    EXECUTE FUNCTION check_user_not_in_orgs_or_teachers();
