@@ -104,6 +104,73 @@ Convert text to speech audio
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
+### /billing
+
+#### GET
+##### Summary
+
+Check Billing Account
+
+##### Description
+
+Check Billing Account
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.BillingAccountResponse](#modelsbillingaccountresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
+### /billing/cancel-subscription-eop
+
+#### POST
+##### Summary
+
+Cancel a Stripe individual subscription at the end of the period
+
+##### Description
+
+Cancel a Stripe individual subscription at the end of the period
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Cancel subscription request | Yes | [models.CancelIndividualSubscriptionRequest](#modelscancelindividualsubscriptionrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.CancelIndividualSubscriptionResponse](#modelscancelindividualsubscriptionresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+### /billing/create-checkout-session
+
+#### POST
+##### Summary
+
+Create a Stripe checkout session (individual)
+
+##### Description
+
+Creates a checkout session and redirects to Stripe's payment page
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Create checkout session request | Yes | [models.CreateIndividualCheckoutSessionRequest](#modelscreateindividualcheckoutsessionrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Redirect to Stripe Checkout | [models.CreateIndividualCheckoutSessionResponse](#modelscreateindividualcheckoutsessionresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+---
 ### /news
 
 #### GET
@@ -812,6 +879,28 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | status | string | *Example:* `"live"` | Yes |
 
+#### models.BillingAccountResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| canceled | boolean | *Example:* `false` | Yes |
+| expiration | string | *Example:* `"2025-01-01T00:00:00Z"` | Yes |
+| plan | string | *Example:* `"PRO"` | Yes |
+
+#### models.CancelIndividualSubscriptionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CancelIndividualSubscriptionRequest | object |  |  |
+
+#### models.CancelIndividualSubscriptionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| canceled_plan | string | *Example:* `"PREMIUM"` | Yes |
+| current_expiration | string | *Example:* `"2025-03-24T12:00:00Z"` | Yes |
+| success | boolean | *Example:* `true` | Yes |
+
 #### models.CancelSubscriptionRequest
 
 | Name | Type | Description | Required |
@@ -873,6 +962,18 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | classroom_id | string | *Example:* `"123"` | Yes |
+
+#### models.CreateIndividualCheckoutSessionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CreateIndividualCheckoutSessionRequest | object |  |  |
+
+#### models.CreateIndividualCheckoutSessionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| redirect_url | string | *Example:* `"https://checkout.stripe.com/c/pay/123"` | Yes |
 
 #### models.CreateOrganizationRequest
 

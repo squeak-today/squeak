@@ -27,6 +27,13 @@ func New(dbClient *supabase.Client) *StripeHandler {
 	}
 }
 
+type HandleMode int 
+const (
+	HandleModeIndividual HandleMode = iota
+	HandleModeOrganization
+)
+
+
 //	@Summary		Process Stripe webhook
 //	@Description	Validates and processes incoming webhook events from Stripe
 //	@Tags			stripe
