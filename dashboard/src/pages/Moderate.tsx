@@ -21,13 +21,6 @@ const Title = styled.h1`
   color: ${theme.colors.text.primary};
 `;
 
-const Subtitle = styled.h2`
-  font-family: ${theme.typography.fontFamily.secondary};
-  font-size: ${theme.typography.fontSize.md};
-  margin-top: ${theme.spacing.md};
-  color: ${theme.colors.text.secondary};
-`;
-
 function Moderate() {
   return (
     <NavPage>
