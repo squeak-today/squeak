@@ -37,8 +37,10 @@ import (
 	"story-api/handlers/progresshandler"
 	"story-api/handlers/qnahandler"
 	"story-api/handlers/storyhandler"
+	"story-api/handlers/stripehandler"
 	"story-api/handlers/student"
 	"story-api/handlers/teacher"
+	"story-api/handlers/orghandler"
 )
 
 type Profile = supabase.Profile
@@ -48,7 +50,7 @@ var dbClient *supabase.Client
 
 func authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if os.Getenv("WORKSPACE") == "dev" && c.GetHeader("Authorization") == "Bearer dev-token" {
+		if os.Getenv("WORKSPACE") != "prod" && c.GetHeader("Authorization") == "Bearer dev-token" {
 			c.Next()
 			return
 		}
@@ -113,7 +115,7 @@ func init() {
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", AllowOrigin)
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization,Stripe-Signature")
 		c.Writer.Header().Set("Access-Control-Max-Age", "3600")
 
 		if c.Request.Method == http.MethodOptions {
@@ -125,10 +127,32 @@ func init() {
 	})
 
 	router.Use(func(c *gin.Context) {
-		if c.Request.Method != http.MethodOptions {
+		if c.Request.Method != http.MethodOptions && !strings.HasSuffix(c.Request.URL.Path, "/webhook") {
 			authMiddleware()(c)
 		}
 	})
+
+	// unprotected webhook route
+	webhookGroup := router.Group("/webhook")
+	{
+		stripeHandler := stripehandler.New(dbClient)
+		webhookGroup.POST("", stripeHandler.HandleWebhook)
+	}
+
+	orgHandler := org.New(dbClient)
+	orgGroup := router.Group("/organization")
+	{
+		orgGroup.GET("", orgHandler.CheckOrganization)
+		orgGroup.POST("/create", orgHandler.CreateOrganization)
+		orgGroup.POST("/join", orgHandler.JoinOrganization)
+
+		paymentsGroup := orgGroup.Group("/payments")
+		{
+			paymentsGroup.GET("", orgHandler.GetOrganizationPayments)
+			paymentsGroup.POST("/create-checkout-session", orgHandler.CreateCheckoutSession)
+			paymentsGroup.POST("/cancel-subscription-eop", orgHandler.CancelSubscriptionAtEndOfPeriod)
+		}
+	}
 
 	teacherHandler := teacher.New(dbClient)
 	teacherGroup := router.Group("/teacher")
@@ -137,9 +161,11 @@ func init() {
 
 		classroomGroup := teacherGroup.Group("/classroom")
 		{
-			classroomGroup.GET("", teacherHandler.GetClassroomInfo)
+			classroomGroup.GET("", teacherHandler.GetClassroomList)
+			classroomGroup.POST("/update", teacherHandler.UpdateClassroom)
 			classroomGroup.GET("/content", teacherHandler.QueryClassroomContent)
 			classroomGroup.POST("/create", teacherHandler.CreateClassroom)
+			classroomGroup.POST("/delete", teacherHandler.DeleteClassroom)
 			classroomGroup.POST("/accept", teacherHandler.AcceptContent)
 			classroomGroup.POST("/reject", teacherHandler.RejectContent)
 		}

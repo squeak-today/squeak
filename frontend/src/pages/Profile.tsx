@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { FaPencilAlt, FaCheck, FaTimes, FaChevronUp, FaChevronDown } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import spanishFlag from '../assets/flags/spanish.png';
 import frenchFlag from '../assets/flags/french.png';
 import NavPage from '../components/NavPage';
@@ -30,8 +29,6 @@ import {
   ProgressText,
   StatValue,
   GoalAdjuster,
-  ActionButton,
-  ActionButtonsContainer,
   StreakContainer,
   StreakValue,
   StreakLabel,
@@ -71,13 +68,11 @@ const getLanguageBackground = (language: string) => {
 };
 
 function Profile() {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [isTeacher, setIsTeacher] = useState(false);
-  const [isStudent, setIsStudent] = useState(false);
   
   const [editedUsername, setEditedUsername] = useState('');
   const [editedLanguage, setEditedLanguage] = useState('');
@@ -98,16 +93,6 @@ function Profile() {
     } catch (error) {
       console.error('Error checking teacher status:', error);
       setIsTeacher(false);
-    }
-  };
-
-  const checkStudentStatus = async () => {
-    try {
-      const data = await getStudentStatus();
-      setIsStudent(data.classroom_id !== "");
-    } catch (error) {
-      console.error('Error checking student status:', error);
-      setIsStudent(false);
     }
   };
 
@@ -228,8 +213,7 @@ function Profile() {
       }
       await Promise.all([
         fetchProgress(),
-        checkTeacherStatus(),
-        checkStudentStatus()
+        checkTeacherStatus()
       ]);
       setIsLoading(false);
     };
@@ -402,23 +386,6 @@ function Profile() {
               )}
             </div>
             {renderProgressBar()}
-          </ProfileSection>
-
-          <ProfileSection>
-            <ActionButtonsContainer>
-              <ActionButton 
-                onClick={() => navigate('/teacher')}
-                $disabled={!isTeacher && isStudent}
-              >
-                Teacher Dashboard
-              </ActionButton>
-              <ActionButton 
-                onClick={() => navigate('/student/become')}
-                $disabled={isStudent || isTeacher}
-              >
-                Join Classroom
-              </ActionButton>
-            </ActionButtonsContainer>
           </ProfileSection>
         </MainSection>
       </ProfileContainer>

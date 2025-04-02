@@ -277,6 +277,224 @@ const docTemplate = `{
                 }
             }
         },
+        "/organization": {
+            "get": {
+                "description": "Check Organization for Teacher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Check Organization for Teacher",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OrganizationResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/create": {
+            "post": {
+                "description": "Create Organization. Automatically adds the calling user as a teacher.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Create Organization",
+                "parameters": [
+                    {
+                        "description": "Create organization request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateOrganizationResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/join": {
+            "post": {
+                "description": "Join Organization that has been created by another admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Join Organization",
+                "parameters": [
+                    {
+                        "description": "Join organization request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.JoinOrganizationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.JoinOrganizationResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/payments": {
+            "get": {
+                "description": "Ping Payments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Ping Payments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.PaymentsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/payments/cancel-subscription-eop": {
+            "post": {
+                "description": "Cancel a Stripe subscription at the end of the period",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Cancel a Stripe subscription at the end of the period",
+                "parameters": [
+                    {
+                        "description": "Cancel subscription request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CancelSubscriptionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CancelSubscriptionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/payments/create-checkout-session": {
+            "post": {
+                "description": "Creates a checkout session and redirects to Stripe's payment page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Create a Stripe checkout session",
+                "parameters": [
+                    {
+                        "description": "Create checkout session request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateCheckoutSessionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Redirect to Stripe Checkout",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateCheckoutSessionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/profile": {
             "get": {
                 "description": "Get the user's profile information",
@@ -803,7 +1021,7 @@ const docTemplate = `{
         },
         "/teacher/classroom": {
             "get": {
-                "description": "Get classroom info",
+                "description": "Get classrooms",
                 "consumes": [
                     "application/json"
                 ],
@@ -813,12 +1031,12 @@ const docTemplate = `{
                 "tags": [
                     "teacher"
                 ],
-                "summary": "Get classroom info",
+                "summary": "Get classrooms",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.GetClassroomInfoResponse"
+                            "$ref": "#/definitions/models.GetClassroomListResponse"
                         }
                     },
                     "403": {
@@ -932,6 +1150,13 @@ const docTemplate = `{
                         "name": "content_type",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "classroom_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -993,6 +1218,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/teacher/classroom/delete": {
+            "post": {
+                "description": "Delete classroom",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Delete classroom",
+                "parameters": [
+                    {
+                        "description": "Delete classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teacher/classroom/reject": {
             "post": {
                 "description": "Accept content",
@@ -1032,15 +1297,89 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/teacher/classroom/update": {
+            "post": {
+                "description": "Update classroom",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "teacher"
+                ],
+                "summary": "Update classroom",
+                "parameters": [
+                    {
+                        "description": "Update classroom request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateClassroomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateClassroomResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/webhook": {
+            "post": {
+                "description": "Validates and processes incoming webhook events from Stripe",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stripe"
+                ],
+                "summary": "Process Stripe webhook",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.WebhookResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
         "models.AcceptContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,
@@ -1073,6 +1412,31 @@ const docTemplate = `{
                 "status": {
                     "type": "string",
                     "example": "live"
+                }
+            }
+        },
+        "models.CancelSubscriptionRequest": {
+            "type": "object"
+        },
+        "models.CancelSubscriptionResponse": {
+            "type": "object",
+            "required": [
+                "canceled_plan",
+                "current_expiration",
+                "success"
+            ],
+            "properties": {
+                "canceled_plan": {
+                    "type": "string",
+                    "example": "CLASSROOM"
+                },
+                "current_expiration": {
+                    "type": "string",
+                    "example": "2025-03-24T12:00:00Z"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -1133,9 +1497,53 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ClassroomListItem": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "name"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Connor"
+                },
+                "students_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 10
+                }
+            }
+        },
+        "models.CreateCheckoutSessionRequest": {
+            "type": "object"
+        },
+        "models.CreateCheckoutSessionResponse": {
+            "type": "object",
+            "required": [
+                "redirect_url"
+            ],
+            "properties": {
+                "redirect_url": {
+                    "type": "string",
+                    "example": "https://checkout.stripe.com/c/pay/123"
+                }
+            }
+        },
         "models.CreateClassroomRequest": {
             "type": "object",
+            "required": [
+                "name"
+            ],
             "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Tuesday 9am"
+                },
                 "students_count": {
                     "type": "integer",
                     "minimum": 0,
@@ -1152,6 +1560,50 @@ const docTemplate = `{
                 "classroom_id": {
                     "type": "string",
                     "example": "123"
+                }
+            }
+        },
+        "models.CreateOrganizationRequest": {
+            "type": "object"
+        },
+        "models.CreateOrganizationResponse": {
+            "type": "object",
+            "required": [
+                "organization_id",
+                "teacher_id"
+            ],
+            "properties": {
+                "organization_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "teacher_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.DeleteClassroomRequest": {
+            "type": "object",
+            "required": [
+                "classroom_id"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.DeleteClassroomResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Classroom deleted successfully"
                 }
             }
         },
@@ -1215,20 +1667,17 @@ const docTemplate = `{
                 }
             }
         },
-        "models.GetClassroomInfoResponse": {
+        "models.GetClassroomListResponse": {
             "type": "object",
             "required": [
-                "classroom_id"
+                "classrooms"
             ],
             "properties": {
-                "classroom_id": {
-                    "type": "string",
-                    "example": "123"
-                },
-                "students_count": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "example": 10
+                "classrooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ClassroomListItem"
+                    }
                 }
             }
         },
@@ -1502,6 +1951,30 @@ const docTemplate = `{
                 }
             }
         },
+        "models.JoinOrganizationRequest": {
+            "type": "object",
+            "required": [
+                "organization_id"
+            ],
+            "properties": {
+                "organization_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.JoinOrganizationResponse": {
+            "type": "object",
+            "required": [
+                "teacher_id"
+            ],
+            "properties": {
+                "teacher_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
         "models.NewsItem": {
             "type": "object",
             "required": [
@@ -1549,12 +2022,59 @@ const docTemplate = `{
                 }
             }
         },
+        "models.OrganizationResponse": {
+            "type": "object",
+            "required": [
+                "organization_id",
+                "plan",
+                "teacher_id"
+            ],
+            "properties": {
+                "canceled": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "expiration_date": {
+                    "type": "string",
+                    "example": "2025-03-24T12:00:00Z"
+                },
+                "organization_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
+                },
+                "teacher_id": {
+                    "type": "string",
+                    "example": "123"
+                }
+            }
+        },
+        "models.PaymentsResponse": {
+            "type": "object",
+            "required": [
+                "success"
+            ],
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "models.RejectContentRequest": {
             "type": "object",
             "required": [
+                "classroom_id",
                 "content_type"
             ],
             "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
                 "content_id": {
                     "type": "integer",
                     "minimum": 0,
@@ -1792,6 +2312,35 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UpdateClassroomRequest": {
+            "type": "object",
+            "required": [
+                "classroom_id",
+                "name"
+            ],
+            "properties": {
+                "classroom_id": {
+                    "type": "string",
+                    "example": "123"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Tuesday 9am"
+                }
+            }
+        },
+        "models.UpdateClassroomResponse": {
+            "type": "object",
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "Classroom updated successfully"
+                }
+            }
+        },
         "models.UpsertProfileRequest": {
             "type": "object",
             "required": [
@@ -1843,6 +2392,17 @@ const docTemplate = `{
                 "message": {
                     "type": "string",
                     "example": "Profile updated successfully"
+                }
+            }
+        },
+        "models.WebhookResponse": {
+            "type": "object",
+            "properties": {
+                "received": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },

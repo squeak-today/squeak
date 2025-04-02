@@ -233,7 +233,7 @@ export const LoadingText = styled.div`
 
 export const Spinner = styled.div`
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
+  border-top: 4px solid rgb(94, 94, 94);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -242,5 +242,36 @@ export const Spinner = styled.div`
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+`;
+
+export const DashboardLink = styled.a`
+  margin-top: auto;
+  margin-bottom: ${theme.spacing.md};
+  padding: ${theme.spacing.md};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.primary};
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: ${theme.colors.text.secondary};
+  }
+`;
+
+export const MobileDashboardLink = styled.a`
+  margin-top: ${theme.spacing.md};
+  padding: ${theme.spacing.md};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.primary};
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+
+  &:hover {
+    color: ${theme.colors.text.secondary};
   }
 `;

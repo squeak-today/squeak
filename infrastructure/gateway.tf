@@ -124,6 +124,15 @@ module "teacher_classroom" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "teacher_classroom_update" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "update"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "teacher_classroom_content" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -137,6 +146,15 @@ module "teacher_classroom_create" {
   rest_api_id = aws_api_gateway_rest_api.story_api.id
   parent_id   = module.teacher_classroom.resource_id
   path_part   = "create"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "teacher_classroom_delete" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.teacher_classroom.resource_id
+  path_part   = "delete"
   http_method = "POST"
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
@@ -219,6 +237,67 @@ module "student_classroom_join" {
   http_method = "POST"
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
+
+# module "webhook" {
+#   source      = "./api_gateway"
+#   rest_api_id = aws_api_gateway_rest_api.story_api.id
+#   parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+#   path_part   = "webhook"
+#   http_method = "POST"
+#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+# }
+
+module "organization" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part   = "organization"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "organization_create" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.organization.resource_id
+  path_part   = "create"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+module "organization_join" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.organization.resource_id
+  path_part   = "join"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# module "organization_payments" {
+#   source      = "./api_gateway"
+#   rest_api_id = aws_api_gateway_rest_api.story_api.id
+#   parent_id   = module.organization.resource_id
+#   path_part   = "payments"
+#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+# }
+
+# module "organization_payments_create_checkout_session" {
+#   source      = "./api_gateway"
+#   rest_api_id = aws_api_gateway_rest_api.story_api.id
+#   parent_id   = module.organization_payments.resource_id
+#   path_part   = "create-checkout-session"
+#   http_method = "POST"
+#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+# }
+
+# module "organization_payments_cancel_subscription_eop" {
+#   source      = "./api_gateway"
+#   rest_api_id = aws_api_gateway_rest_api.story_api.id
+#   parent_id   = module.organization_payments.resource_id
+#   path_part   = "cancel-subscription-eop"
+#   http_method = "POST"
+#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+# }
 
 # Lambda permissions
 resource "aws_lambda_permission" "allow_apigateway" {
@@ -333,6 +412,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.progress_increment,
     module.teacher,
     module.teacher_classroom,
+    module.teacher_classroom_update,
     module.teacher_classroom_content,
     module.teacher_classroom_create,
     module.teacher_classroom_accept,
@@ -343,7 +423,13 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.audio,
     module.audio_translate,
     module.audio_tts,
-    module.audio_stt
+    module.audio_stt,
+    module.organization,
+    module.organization_create,
+    module.organization_join,
+    // module.organization_payments,
+    // module.organization_payments_create_checkout_session,
+    // module.organization_payments_cancel_subscription_eop
   ]
 }
 

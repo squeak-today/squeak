@@ -2,6 +2,9 @@ basePath: /
 definitions:
   models.AcceptContentRequest:
     properties:
+      classroom_id:
+        example: "123"
+        type: string
       content_id:
         example: 123
         minimum: 0
@@ -10,6 +13,7 @@ definitions:
         example: News
         type: string
     required:
+    - classroom_id
     - content_type
     type: object
   models.AcceptContentResponse:
@@ -27,6 +31,24 @@ definitions:
         type: string
     required:
     - status
+    type: object
+  models.CancelSubscriptionRequest:
+    type: object
+  models.CancelSubscriptionResponse:
+    properties:
+      canceled_plan:
+        example: CLASSROOM
+        type: string
+      current_expiration:
+        example: "2025-03-24T12:00:00Z"
+        type: string
+      success:
+        example: true
+        type: boolean
+    required:
+    - canceled_plan
+    - current_expiration
+    - success
     type: object
   models.ClassroomContentItem:
     properties:
@@ -78,12 +100,43 @@ definitions:
     - title
     - topic
     type: object
-  models.CreateClassroomRequest:
+  models.ClassroomListItem:
     properties:
+      classroom_id:
+        example: "123"
+        type: string
+      name:
+        example: Connor
+        type: string
       students_count:
         example: 10
         minimum: 0
         type: integer
+    required:
+    - classroom_id
+    - name
+    type: object
+  models.CreateCheckoutSessionRequest:
+    type: object
+  models.CreateCheckoutSessionResponse:
+    properties:
+      redirect_url:
+        example: https://checkout.stripe.com/c/pay/123
+        type: string
+    required:
+    - redirect_url
+    type: object
+  models.CreateClassroomRequest:
+    properties:
+      name:
+        example: Tuesday 9am
+        type: string
+      students_count:
+        example: 10
+        minimum: 0
+        type: integer
+    required:
+    - name
     type: object
   models.CreateClassroomResponse:
     properties:
@@ -92,6 +145,36 @@ definitions:
         type: string
     required:
     - classroom_id
+    type: object
+  models.CreateOrganizationRequest:
+    type: object
+  models.CreateOrganizationResponse:
+    properties:
+      organization_id:
+        example: "123"
+        type: string
+      teacher_id:
+        example: "123"
+        type: string
+    required:
+    - organization_id
+    - teacher_id
+    type: object
+  models.DeleteClassroomRequest:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+    required:
+    - classroom_id
+    type: object
+  models.DeleteClassroomResponse:
+    properties:
+      message:
+        example: Classroom deleted successfully
+        type: string
+    required:
+    - message
     type: object
   models.ErrorResponse:
     properties:
@@ -136,17 +219,14 @@ definitions:
     - evaluation
     - explanation
     type: object
-  models.GetClassroomInfoResponse:
+  models.GetClassroomListResponse:
     properties:
-      classroom_id:
-        example: "123"
-        type: string
-      students_count:
-        example: 10
-        minimum: 0
-        type: integer
+      classrooms:
+        items:
+          $ref: '#/definitions/models.ClassroomListItem'
+        type: array
     required:
-    - classroom_id
+    - classrooms
     type: object
   models.GetNewsResponse:
     properties:
@@ -346,6 +426,22 @@ definitions:
     required:
     - message
     type: object
+  models.JoinOrganizationRequest:
+    properties:
+      organization_id:
+        example: "123"
+        type: string
+    required:
+    - organization_id
+    type: object
+  models.JoinOrganizationResponse:
+    properties:
+      teacher_id:
+        example: "123"
+        type: string
+    required:
+    - teacher_id
+    type: object
   models.NewsItem:
     properties:
       cefr_level:
@@ -382,8 +478,41 @@ definitions:
     - title
     - topic
     type: object
+  models.OrganizationResponse:
+    properties:
+      canceled:
+        example: false
+        type: boolean
+      expiration_date:
+        example: "2025-03-24T12:00:00Z"
+        type: string
+      organization_id:
+        example: "123"
+        type: string
+      plan:
+        example: FREE
+        type: string
+      teacher_id:
+        example: "123"
+        type: string
+    required:
+    - organization_id
+    - plan
+    - teacher_id
+    type: object
+  models.PaymentsResponse:
+    properties:
+      success:
+        example: true
+        type: boolean
+    required:
+    - success
+    type: object
   models.RejectContentRequest:
     properties:
+      classroom_id:
+        example: "123"
+        type: string
       content_id:
         example: 123
         minimum: 0
@@ -392,6 +521,7 @@ definitions:
         example: News
         type: string
     required:
+    - classroom_id
     - content_type
     type: object
   models.RejectContentResponse:
@@ -556,6 +686,26 @@ definitions:
         example: Bonjour, comment allez-vous?
         type: string
     type: object
+  models.UpdateClassroomRequest:
+    properties:
+      classroom_id:
+        example: "123"
+        type: string
+      name:
+        example: Tuesday 9am
+        type: string
+    required:
+    - classroom_id
+    - name
+    type: object
+  models.UpdateClassroomResponse:
+    properties:
+      message:
+        example: Classroom updated successfully
+        type: string
+    required:
+    - message
+    type: object
   models.UpsertProfileRequest:
     properties:
       daily_questions_goal:
@@ -594,6 +744,13 @@ definitions:
         type: string
     required:
     - message
+    type: object
+  models.WebhookResponse:
+    properties:
+      received:
+        type: boolean
+      type:
+        type: string
     type: object
   storage.Dictionary:
     properties:
@@ -800,6 +957,148 @@ paths:
       summary: Get news content
       tags:
       - news
+  /organization:
+    get:
+      consumes:
+      - application/json
+      description: Check Organization for Teacher
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.OrganizationResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check Organization for Teacher
+      tags:
+      - organization
+  /organization/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Organization. Automatically adds the calling user as a teacher.
+      parameters:
+      - description: Create organization request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateOrganizationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CreateOrganizationResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create Organization
+      tags:
+      - organization
+  /organization/join:
+    post:
+      consumes:
+      - application/json
+      description: Join Organization that has been created by another admin.
+      parameters:
+      - description: Join organization request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.JoinOrganizationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.JoinOrganizationResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Join Organization
+      tags:
+      - organization
+  /organization/payments:
+    get:
+      consumes:
+      - application/json
+      description: Ping Payments
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.PaymentsResponse'
+      summary: Ping Payments
+      tags:
+      - organization
+  /organization/payments/cancel-subscription-eop:
+    post:
+      consumes:
+      - application/json
+      description: Cancel a Stripe subscription at the end of the period
+      parameters:
+      - description: Cancel subscription request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CancelSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CancelSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Cancel a Stripe subscription at the end of the period
+      tags:
+      - organization
+  /organization/payments/create-checkout-session:
+    post:
+      consumes:
+      - application/json
+      description: Creates a checkout session and redirects to Stripe's payment page
+      parameters:
+      - description: Create checkout session request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCheckoutSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Redirect to Stripe Checkout
+          schema:
+            $ref: '#/definitions/models.CreateCheckoutSessionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a Stripe checkout session
+      tags:
+      - organization
   /profile:
     get:
       consumes:
@@ -1149,19 +1448,19 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get classroom info
+      description: Get classrooms
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.GetClassroomInfoResponse'
+            $ref: '#/definitions/models.GetClassroomListResponse'
         "403":
           description: Forbidden
           schema:
             $ref: '#/definitions/models.ErrorResponse'
-      summary: Get classroom info
+      summary: Get classrooms
       tags:
       - teacher
   /teacher/classroom/accept:
@@ -1231,6 +1530,11 @@ paths:
         name: content_type
         required: true
         type: string
+      - description: Classroom ID
+        in: query
+        name: classroom_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -1273,6 +1577,32 @@ paths:
       summary: Create classroom
       tags:
       - teacher
+  /teacher/classroom/delete:
+    post:
+      consumes:
+      - application/json
+      description: Delete classroom
+      parameters:
+      - description: Delete classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeleteClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeleteClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete classroom
+      tags:
+      - teacher
   /teacher/classroom/reject:
     post:
       consumes:
@@ -1299,6 +1629,51 @@ paths:
       summary: Accept content
       tags:
       - teacher
+  /teacher/classroom/update:
+    post:
+      consumes:
+      - application/json
+      description: Update classroom
+      parameters:
+      - description: Update classroom request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateClassroomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.UpdateClassroomResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update classroom
+      tags:
+      - teacher
+  /webhook:
+    post:
+      consumes:
+      - application/json
+      description: Validates and processes incoming webhook events from Stripe
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WebhookResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Process Stripe webhook
+      tags:
+      - stripe
 securityDefinitions:
   Bearer:
     description: JWT Authorization header using Bearer

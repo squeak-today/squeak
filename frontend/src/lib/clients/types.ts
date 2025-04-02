@@ -181,6 +181,162 @@ export interface paths {
       };
     };
   };
+  "/organization": {
+    /**
+     * Check Organization for Teacher
+     * @description Check Organization for Teacher
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.OrganizationResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+        /** @description Not Found */
+        404: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/create": {
+    /**
+     * Create Organization
+     * @description Create Organization. Automatically adds the calling user as a teacher.
+     */
+    post: {
+      /** @description Create organization request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CreateOrganizationRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.CreateOrganizationResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/join": {
+    /**
+     * Join Organization
+     * @description Join Organization that has been created by another admin.
+     */
+    post: {
+      /** @description Join organization request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.JoinOrganizationRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.JoinOrganizationResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/payments": {
+    /**
+     * Ping Payments
+     * @description Ping Payments
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.PaymentsResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/payments/cancel-subscription-eop": {
+    /**
+     * Cancel a Stripe subscription at the end of the period
+     * @description Cancel a Stripe subscription at the end of the period
+     */
+    post: {
+      /** @description Cancel subscription request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CancelSubscriptionRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/organization/payments/create-checkout-session": {
+    /**
+     * Create a Stripe checkout session
+     * @description Creates a checkout session and redirects to Stripe's payment page
+     */
+    post: {
+      /** @description Create checkout session request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CreateCheckoutSessionRequest"];
+        };
+      };
+      responses: {
+        /** @description Redirect to Stripe Checkout */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.CreateCheckoutSessionResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/profile": {
     /**
      * Get user profile
@@ -549,15 +705,15 @@ export interface paths {
   };
   "/teacher/classroom": {
     /**
-     * Get classroom info
-     * @description Get classroom info
+     * Get classrooms
+     * @description Get classrooms
      */
     get: {
       responses: {
         /** @description OK */
         200: {
           content: {
-            "application/json": components["schemas"]["models.GetClassroomInfoResponse"];
+            "application/json": components["schemas"]["models.GetClassroomListResponse"];
           };
         };
         /** @description Forbidden */
@@ -619,6 +775,8 @@ export interface paths {
           whitelist: string;
           /** @description Content type */
           content_type: string;
+          /** @description Classroom ID */
+          classroom_id: string;
         };
       };
       responses: {
@@ -665,6 +823,34 @@ export interface paths {
       };
     };
   };
+  "/teacher/classroom/delete": {
+    /**
+     * Delete classroom
+     * @description Delete classroom
+     */
+    post: {
+      /** @description Delete classroom request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.DeleteClassroomRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.DeleteClassroomResponse"];
+          };
+        };
+        /** @description Forbidden */
+        403: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/teacher/classroom/reject": {
     /**
      * Accept content
@@ -693,6 +879,56 @@ export interface paths {
       };
     };
   };
+  "/teacher/classroom/update": {
+    /**
+     * Update classroom
+     * @description Update classroom
+     */
+    post: {
+      /** @description Update classroom request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.UpdateClassroomRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.UpdateClassroomResponse"];
+          };
+        };
+        /** @description Forbidden */
+        403: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/webhook": {
+    /**
+     * Process Stripe webhook
+     * @description Validates and processes incoming webhook events from Stripe
+     */
+    post: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.WebhookResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -700,6 +936,8 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     "models.AcceptContentRequest": {
+      /** @example 123 */
+      classroom_id: string;
       /** @example 123 */
       content_id?: number;
       /** @example News */
@@ -712,6 +950,15 @@ export interface components {
     "models.AudioHealthResponse": {
       /** @example live */
       status: string;
+    };
+    "models.CancelSubscriptionRequest": Record<string, never>;
+    "models.CancelSubscriptionResponse": {
+      /** @example CLASSROOM */
+      canceled_plan: string;
+      /** @example 2025-03-24T12:00:00Z */
+      current_expiration: string;
+      /** @example true */
+      success: boolean;
     };
     "models.ClassroomContentItem": {
       /** @example B1 */
@@ -743,13 +990,43 @@ export interface components {
       /** @example Music */
       topic: string;
     };
+    "models.ClassroomListItem": {
+      /** @example 123 */
+      classroom_id: string;
+      /** @example Connor */
+      name: string;
+      /** @example 10 */
+      students_count?: number;
+    };
+    "models.CreateCheckoutSessionRequest": Record<string, never>;
+    "models.CreateCheckoutSessionResponse": {
+      /** @example https://checkout.stripe.com/c/pay/123 */
+      redirect_url: string;
+    };
     "models.CreateClassroomRequest": {
+      /** @example Tuesday 9am */
+      name: string;
       /** @example 10 */
       students_count?: number;
     };
     "models.CreateClassroomResponse": {
       /** @example 123 */
       classroom_id: string;
+    };
+    "models.CreateOrganizationRequest": Record<string, never>;
+    "models.CreateOrganizationResponse": {
+      /** @example 123 */
+      organization_id: string;
+      /** @example 123 */
+      teacher_id: string;
+    };
+    "models.DeleteClassroomRequest": {
+      /** @example 123 */
+      classroom_id: string;
+    };
+    "models.DeleteClassroomResponse": {
+      /** @example Classroom deleted successfully */
+      message: string;
     };
     "models.ErrorResponse": {
       /** @example PROFILE_NOT_FOUND */
@@ -773,11 +1050,8 @@ export interface components {
       /** @example Perfect! */
       explanation: string;
     };
-    "models.GetClassroomInfoResponse": {
-      /** @example 123 */
-      classroom_id: string;
-      /** @example 10 */
-      students_count?: number;
+    "models.GetClassroomListResponse": {
+      classrooms: components["schemas"]["models.ClassroomListItem"][];
     };
     "models.GetNewsResponse": {
       /** @example B1 */
@@ -880,6 +1154,14 @@ export interface components {
       /** @example Student added to classroom successfully */
       message: string;
     };
+    "models.JoinOrganizationRequest": {
+      /** @example 123 */
+      organization_id: string;
+    };
+    "models.JoinOrganizationResponse": {
+      /** @example 123 */
+      teacher_id: string;
+    };
     "models.NewsItem": {
       /** @example B1 */
       cefr_level: string;
@@ -898,7 +1180,25 @@ export interface components {
       /** @example Music */
       topic: string;
     };
+    "models.OrganizationResponse": {
+      /** @example false */
+      canceled?: boolean;
+      /** @example 2025-03-24T12:00:00Z */
+      expiration_date?: string;
+      /** @example 123 */
+      organization_id: string;
+      /** @example FREE */
+      plan: string;
+      /** @example 123 */
+      teacher_id: string;
+    };
+    "models.PaymentsResponse": {
+      /** @example true */
+      success: boolean;
+    };
     "models.RejectContentRequest": {
+      /** @example 123 */
+      classroom_id: string;
       /** @example 123 */
       content_id?: number;
       /** @example News */
@@ -986,6 +1286,16 @@ export interface components {
       /** @example Bonjour, comment allez-vous? */
       sentence?: string;
     };
+    "models.UpdateClassroomRequest": {
+      /** @example 123 */
+      classroom_id: string;
+      /** @example Tuesday 9am */
+      name: string;
+    };
+    "models.UpdateClassroomResponse": {
+      /** @example Classroom updated successfully */
+      message: string;
+    };
     "models.UpsertProfileRequest": {
       /** @example 3 */
       daily_questions_goal?: number;
@@ -1007,6 +1317,10 @@ export interface components {
       id?: number;
       /** @example Profile updated successfully */
       message: string;
+    };
+    "models.WebhookResponse": {
+      received?: boolean;
+      type?: string;
     };
     "storage.Dictionary": {
       translations?: {

@@ -65,3 +65,15 @@ variable "supabase_jwt_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "stripe_key" {
+  description = "Stripe Key"
+  type        = string
+  sensitive   = true
+}
+
+variable "stripe_webhook_secret" {
+  description = "Stripe Webhook Secret"
+  type        = string
+  sensitive   = true
+}

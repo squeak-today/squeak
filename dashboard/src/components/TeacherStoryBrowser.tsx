@@ -1,8 +1,9 @@
-import TeacherStoryList from './TeacherStoryList';
 import { useEffect, useState, useCallback } from 'react';
 import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import { useNotification } from '../context/NotificationContext';
 import { AVAILABLE_TOPICS } from '../lib/topics';
+import { useDashboard } from '../context/DashboardContext';
+import TeacherContentBlock from './TeacherContentBlock';
 import {
   Container,
   TeacherFilterContainer as FilterContainer,
@@ -11,19 +12,37 @@ import {
   PaginationContainer,
   PageButton,
   DisclaimerText,
-  NoContentMessage
-} from '../styles/components/TeacherStoryBrowserStyles';
+  NoContentMessage,
+  ListContainer
+} from '../styles/components/ContentBrowserStyles';
 
-const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
+interface Story {
+  id: string;
+  title: string;
+  preview_text: string;
+  language: string;
+  topic: string;
+  cefr_level: string;
+  date_created: string;
+  content_type: string;
+  [key: string]: any;
+}
+
+interface TeacherStoryBrowserProps {
+  defaultLanguage?: string;
+}
+
+const TeacherStoryBrowser = ({ defaultLanguage = 'any' }: TeacherStoryBrowserProps) => {
   const contentPerPage = 6;
-  const [content, setContent] = useState([]);
+  const [content, setContent] = useState<Story[]>([]);
   const [isTeacher, setIsTeacher] = useState(false);
+  const { selectedClassroom } = useDashboard();
   const [currentFilters, setCurrentFilters] = useState({
     language: defaultLanguage,
     cefr: 'any',
     subject: 'any',
-    page: 1,
-    pagesize: 6,
+    page: '1',
+    pagesize: '6',
     whitelist: 'accepted'
   });
 
@@ -35,51 +54,63 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
     rejectContent
   } = useTeacherAPI();
 
-  const handlePageChange = useCallback((newPage) => {
+  const handlePageChange = useCallback(async (newPage: number) => {
     setCurrentFilters(prev => ({
       ...prev,
-      page: newPage
+      page: newPage.toString()
     }));
   }, []);
 
-  const handleFilterChange = useCallback((filterType, value) => {
+  const handleFilterChange = useCallback(async (filterType: string, value: string) => {
     setCurrentFilters(prev => ({
       ...prev,
       [filterType]: value,
-      page: 1
+      page: '1'
     }));
   }, []);
 
   const loadContent = useCallback(async () => {
-    if (!isTeacher) return;
+    if (!isTeacher || selectedClassroom === '') return;
     try {
-      const contentData = await fetchContent(currentFilters);
+      const contentData = await fetchContent(
+        {
+          ...currentFilters,
+          classroom_id: selectedClassroom
+        }
+      );
       setContent(contentData);
     } catch (error) {
       showNotification('Error loading content', 'error');
     }
-  // eslint-disable-next-line
-  }, [currentFilters, isTeacher, showNotification]);
+  }, [currentFilters, selectedClassroom, fetchContent]);
 
-  const handleAccept = useCallback(async (story) => {
+  const handleAccept = useCallback(async (story: Story) => {
     try {
-      await acceptContent({ content_id: parseInt(story.id), content_type: story.content_type });
+      await acceptContent({ 
+        content_id: parseInt(story.id), 
+        content_type: story.content_type,
+        classroom_id: selectedClassroom
+      });
       showNotification('Content accepted successfully', 'success');
       await loadContent();
     } catch (error) {
       showNotification('Error accepting content', 'error');
     }
-  }, [acceptContent, showNotification, loadContent]);
+  }, [acceptContent, showNotification, loadContent, selectedClassroom]);
 
-  const handleReject = useCallback(async (story) => {
+  const handleReject = useCallback(async (story: Story) => {
     try {
-      await rejectContent({ content_id: parseInt(story.id), content_type: story.content_type });
+      await rejectContent({ 
+        content_id: parseInt(story.id), 
+        content_type: story.content_type,
+        classroom_id: selectedClassroom
+      });
       showNotification('Content rejected successfully', 'success');
       await loadContent();
     } catch (error) {
       showNotification('Error rejecting content', 'error');
     }
-  }, [rejectContent, showNotification, loadContent]);
+  }, [rejectContent, showNotification, loadContent, selectedClassroom]);
 
   useEffect(() => {
     const checkTeacherStatus = async () => {
@@ -95,7 +126,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
 
   useEffect(() => {
     loadContent();
-  }, [loadContent]);
+  }, [selectedClassroom, currentFilters]);
 
   return (
     <Container>
@@ -104,7 +135,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
           <FilterLabel>Status</FilterLabel>
           <FilterSelect
             value={currentFilters.whitelist}
-            onChange={(e) => handleFilterChange('whitelist', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('whitelist', e.target.value)}
           >
             <option value="accepted">Accepted</option>
             <option value="rejected">Rejected</option>
@@ -115,7 +146,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
           <FilterLabel>Language</FilterLabel>
           <FilterSelect 
             value={currentFilters.language} 
-            onChange={(e) => handleFilterChange('language', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('language', e.target.value)}
           >
             <option value="any">Any Language</option>
             <option value="Spanish">Spanish</option>
@@ -127,7 +158,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
           <FilterLabel>CEFR Level</FilterLabel>
           <FilterSelect 
             value={currentFilters.cefr} 
-            onChange={(e) => handleFilterChange('cefr', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('cefr', e.target.value)}
           >
             <option value="any">Any Level</option>
             <option value="A1">A1 (Beginner)</option>
@@ -143,7 +174,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
           <FilterLabel>Topic</FilterLabel>
           <FilterSelect 
             value={currentFilters.subject} 
-            onChange={(e) => handleFilterChange('subject', e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleFilterChange('subject', e.target.value)}
           >
             <option value="any">Any Topic</option>
             {AVAILABLE_TOPICS.map(topic => (
@@ -154,20 +185,25 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
       </FilterContainer>
       
       {content.length > 0 ? (
-        <TeacherStoryList 
-          stories={content} 
-          onAccept={handleAccept}
-          onReject={handleReject}
-          status={currentFilters.whitelist}
-        />
+        <ListContainer>
+          {content.map((story) => (
+            <TeacherContentBlock
+              key={story.id}
+              story={story}
+              onAccept={handleAccept}
+              onReject={handleReject}
+              status={currentFilters.whitelist}
+            />
+          ))}
+        </ListContainer>
       ) : (
         <NoContentMessage>No stories found for these filters!</NoContentMessage>
       )}
 
       <PaginationContainer>
         <PageButton 
-          onClick={() => handlePageChange(currentFilters.page - 1)} 
-          disabled={currentFilters.page === 1}
+          onClick={() => handlePageChange(currentFilters.page === '1' ? 1 : parseInt(currentFilters.page) - 1)} 
+          disabled={currentFilters.page === '1'}
         >
           Previous
         </PageButton>
@@ -175,7 +211,7 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
           Page {currentFilters.page}
         </PageButton>
         <PageButton 
-          onClick={() => handlePageChange(currentFilters.page + 1)} 
+          onClick={() => handlePageChange(parseInt(currentFilters.page) + 1)} 
           disabled={content.length < contentPerPage}
         >
           Next
@@ -183,10 +219,10 @@ const TeacherStoryBrowser = ({ defaultLanguage = 'any' }) => {
       </PaginationContainer>
 
       <DisclaimerText>
-        Content may be AI-assisted. Please verify important details from official sources.
+        Always double check content before accepting to your student(s).
       </DisclaimerText>
     </Container>
   );
 };
 
-export default TeacherStoryBrowser;
+export default TeacherStoryBrowser; 
