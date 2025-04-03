@@ -1,5 +1,5 @@
 import React from 'react';
-import checkIcon from '../../assets/icons/check.png';
+import checkIcon from '../assets/icons/check.png';
 import {
   SubscriptionCard,
   PlanTitle,

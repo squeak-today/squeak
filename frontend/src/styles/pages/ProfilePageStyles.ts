@@ -368,25 +368,6 @@ export const BannerOverlay = styled.div`
   }
 `;
 
-// export const ProfileSection = styled.div`
-//   flex: 1;
-//   min-width: 0;
-//   background: white;
-//   border-radius: 16px;
-//   padding: ${theme.spacing.md};
-//   box-shadow: ${theme.elevation.base};
-//   margin-bottom: ${theme.spacing.md};
-  
-//   &:hover {
-//     box-shadow: ${theme.elevation.hover};
-//   }
-  
-//   @media (max-width: ${theme.breakpoints.mobile}) {
-//     padding: ${theme.spacing.sm};
-//     width: 100%;
-//   }
-// `;
-
 export const BillingContainer = styled.div`
   background: white;
   border-radius: 16px;
@@ -394,6 +375,7 @@ export const BillingContainer = styled.div`
   box-shadow: ${theme.elevation.base};
   margin-bottom: ${theme.spacing.md};
   text-align: center;
+  display: flex;
   flex-direction: column;
   align-items: center;
   max-width: 100%;
@@ -444,4 +426,129 @@ export const PremiumButton = styled.button`
   @media (max-width: ${theme.breakpoints.tablet}) {
     padding: ${theme.spacing.md};
   }
-`; 
+`;
+
+export const SubscriptionHeader = styled.div`
+  text-align: center;
+  margin-bottom: ${theme.spacing.lg};
+`;
+
+export const SubscriptionTitle = styled.h1<{ $fontSize?: string }>`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${props => (props.$fontSize == 'lg' ? theme.typography.fontSize.lg : theme.typography.fontSize.xl)};
+  margin-bottom: ${theme.spacing.md};
+  color: ${theme.colors.text.primary};
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: ${theme.typography.fontSize.lg};
+  }
+`;
+
+export const CancelSubscriptionTitle = styled(SubscriptionTitle)`
+  font-size: ${theme.typography.fontSize.lg};
+  margin-bottom: 0;
+`;
+
+export const SubscriptionPlansContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: ${theme.spacing.lg};
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+export const ConfirmationContainer = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${theme.spacing.lg};
+`;
+
+export const ConfirmationText = styled.p`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.md};
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.lg};
+`;
+
+export const CancelSubscriptionText = styled(ConfirmationText)`
+  font-size: ${theme.typography.fontSize.base};
+  margin-bottom: 0;
+`;
+
+export const ButtonsContainer = styled.div`
+  display: flex;
+  gap: ${theme.spacing.md};
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+export const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' | 'secondary' }>`
+  background: ${props => {
+    switch (props.$variant) {
+      case 'danger': return theme.colors.danger;
+      case 'secondary': return 'transparent';
+      default: return theme.colors.selected;
+    }
+  }};
+  color: ${props => props.$variant === 'secondary' ? theme.colors.text.primary : 'black'};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  border: ${props => props.$variant === 'secondary' ? `1px solid ${theme.colors.border}` : 'none'};
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+  
+  &:hover {
+    opacity: 0.9;
+    box-shadow: ${theme.elevation.base};
+  }
+`;
+
+export const PlanValue = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.md};
+  color: ${theme.colors.text.primary};
+  font-style: italic;
+  font-weight: 500;
+`;
+
+export const PlanSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const PlanSectionTitle = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.sm};
+`;
+
+export const PlanName = styled.div`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.lg};
+  font-weight: 500;
+  color: ${theme.colors.text.primary};
+  display: flex;
+  align-items: center;
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const CanceledTag = styled.span`
+  background-color: ${theme.colors.danger};
+  color: white;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  margin-left: ${theme.spacing.md};
+  border-radius: 12px;
+  font-weight: normal;
+`;
