@@ -1218,11 +1218,29 @@ components:
       required:
         - message
       type: object
+    models.ERROR_CODE:
+      enum:
+        - PROFILE_NOT_FOUND
+        - NO_TRANSCRIPT
+        - AUTH_REQUIRED
+        - USAGE_LIMIT_REACHED
+      type: string
+      x-enum-varnames:
+        - PROFILE_NOT_FOUND
+        - NO_TRANSCRIPT
+        - AUTH_REQUIRED
+        - USER_LIMIT_REACHED
     models.ErrorResponse:
       properties:
         code:
+          allOf:
+            - $ref: '#/components/schemas/models.ERROR_CODE'
+          enum:
+            - PROFILE_NOT_FOUND
+            - NO_TRANSCRIPT
+            - AUTH_REQUIRED
+            - USAGE_LIMIT_REACHED
           example: PROFILE_NOT_FOUND
-          type: string
         error:
           example: Something went wrong
           type: string
