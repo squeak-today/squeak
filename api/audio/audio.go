@@ -10,7 +10,8 @@ import (
 )
 
 type Client struct {
-	apiKey string
+	apiKey         string
+	elevenLabsKey  string
 }
 
 type TranslateResponse struct {
@@ -38,9 +39,10 @@ type TTSResponse struct {
 	AudioContent string `json:"audioContent"`
 }
 
-func NewClient(apiKey string) *Client {
+func NewClient(apiKey, elevenLabsKey string) *Client {
 	return &Client{
-		apiKey: apiKey,
+		apiKey:         apiKey,
+		elevenLabsKey:  elevenLabsKey,
 	}
 }
 
@@ -91,7 +93,24 @@ func (c *Client) Translate(sentence, source, target string) (string, error) {
 	return result.Data.Translations[0].TranslatedText, nil
 }
 
-func (c *Client) TextToSpeech(text, languageCode, voiceName string) (string, error) {
+func (c *Client) TextToSpeech(text, languageCode, voiceName string, natural bool) (string, error) {
+	if natural && c.elevenLabsKey != "" {
+		var voiceId string
+		switch {
+		case strings.HasPrefix(languageCode, "fr"):
+			voiceId = ELEVENLABS_FRENCH_VOICE_ID
+		// case strings.HasPrefix(languageCode, "es"):
+		// 	voiceId = ELEVENLABS_SPANISH_VOICE_ID
+		default:
+			return c.googleTextToSpeech(text, languageCode, voiceName)
+		}
+
+		return ElevenLabsTextToSpeech(text, voiceId, c.elevenLabsKey)
+	}
+	return c.googleTextToSpeech(text, languageCode, voiceName)
+}
+
+func (c *Client) googleTextToSpeech(text, languageCode, voiceName string) (string, error) {
 	ttsPayload := TTSRequest{
 		Input: struct {
 			Text string `json:"text"`

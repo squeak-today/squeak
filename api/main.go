@@ -104,7 +104,7 @@ func init() {
 
 	var err error
 	dbClient, err = supabase.NewClient()
-	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"))
+	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"), os.Getenv("ELEVENLABS_API_KEY"))
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v", err)
 	}

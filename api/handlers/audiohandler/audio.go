@@ -78,13 +78,20 @@ func (h *AudioHandler) Translate(c *gin.Context) {
 //	@Failure		500		{object}	models.ErrorResponse
 //	@Router			/audio/tts [post]
 func (h *AudioHandler) TextToSpeech(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
 	var infoBody models.TextToSpeechRequest
 	if err := c.ShouldBindJSON(&infoBody); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Invalid request body"})
 		return
 	}
 
-	audioContent, err := h.AudioClient.TextToSpeech(infoBody.Text, infoBody.LanguageCode, infoBody.VoiceName)
+	if infoBody.Natural {
+		if !h.CheckUsageLimit(c, userID, supabase.NATURAL_TTS_FEATURE, handlers.NATURAL_TTS_USAGE_LIMIT_FREE) {
+			return
+		}
+	}
+
+	audioContent, err := h.AudioClient.TextToSpeech(infoBody.Text, infoBody.LanguageCode, infoBody.VoiceName, infoBody.Natural)
 	if err != nil {
 		log.Printf("Text-to-speech failed: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
@@ -93,6 +100,9 @@ func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 		return
 	}
 
+	if infoBody.Natural {
+		h.DBClient.InsertUsage(userID, supabase.NATURAL_TTS_FEATURE, 1)
+	}
 	c.JSON(http.StatusOK, models.TextToSpeechResponse{
 		AudioContent: audioContent,
 	})
