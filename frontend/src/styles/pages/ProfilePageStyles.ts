@@ -5,12 +5,13 @@ import { theme } from '../theme';
 export const MenuContainer = styled.div`
   display: flex;
   flex-direction: row;
-  margin: ${theme.spacing.lg} ${theme.spacing.lg};
-
+  
   @media (max-width: ${theme.breakpoints.tablet}) {
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     margin: 0;
+    width: 100%;
   }
 `
 
@@ -23,9 +24,8 @@ export const ProfileContainer = styled.div<{ $width?: string }>`
   box-sizing: border-box;
   justify-content: center;
   
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    padding: ${theme.spacing.md} ${theme.spacing.sm};
-    justify-content: center;
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    width: 90%;
   }
 `;
 
@@ -368,16 +368,35 @@ export const BannerOverlay = styled.div`
   }
 `;
 
+// export const ProfileSection = styled.div`
+//   flex: 1;
+//   min-width: 0;
+//   background: white;
+//   border-radius: 16px;
+//   padding: ${theme.spacing.md};
+//   box-shadow: ${theme.elevation.base};
+//   margin-bottom: ${theme.spacing.md};
+  
+//   &:hover {
+//     box-shadow: ${theme.elevation.hover};
+//   }
+  
+//   @media (max-width: ${theme.breakpoints.mobile}) {
+//     padding: ${theme.spacing.sm};
+//     width: 100%;
+//   }
+// `;
+
 export const BillingContainer = styled.div`
   background: white;
   border-radius: 16px;
   padding: ${theme.spacing.lg};
   box-shadow: ${theme.elevation.base};
-  margin-bottom: ${theme.spacing.lg};
+  margin-bottom: ${theme.spacing.md};
   text-align: center;
-  display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 100%;
   
   &:hover {
     box-shadow: ${theme.elevation.hover};
@@ -385,6 +404,7 @@ export const BillingContainer = styled.div`
   
   @media (max-width: ${theme.breakpoints.tablet}) {
     padding: ${theme.spacing.md};
+    width: 90%;
   }
 `;
 
@@ -416,4 +436,12 @@ export const PremiumButton = styled.button`
   cursor: pointer;
   transition: opacity 0.2s;
   width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+  word-wrap: break-word;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.md};
+  }
 `; 
