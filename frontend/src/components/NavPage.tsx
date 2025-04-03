@@ -20,7 +20,12 @@ import {
   CloseButton,
   MobileNavButton,
   DashboardLink,
-  MobileDashboardLink
+  MobileDashboardLink,
+  PremiumPanel,
+  PremiumTitle,
+  PremiumSubtitle,
+  PremiumButton,
+  MobilePremiumPanel
 } from '../styles/NavPageStyles';
 import logo from '../assets/drawing_400.png';
 import supabase from '../lib/supabase';
@@ -42,7 +47,7 @@ function NavPage({
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
-  const { isTeacher, isStudent } = usePlatform();
+  const { isTeacher, isStudent, plan } = usePlatform();
 
   useEffect(() => {
     const handleResize = () => {
@@ -88,8 +93,37 @@ function NavPage({
     window.open(baseUrl, '_blank');
   };
 
+  const handleGetPremiumClick = () => {
+    navigate('/profile/get-premium');
+  };
+
+  const renderPremiumPanel = () => {
+    if (plan !== 'FREE') return null;
+    
+    if (isMobile) {
+      return (
+        <MobilePremiumPanel>
+          <PremiumTitle>Squeak Premium</PremiumTitle>
+          <PremiumSubtitle>All features, unlimited usage. Try for 7 days!</PremiumSubtitle>
+          <PremiumButton onClick={handleGetPremiumClick}>
+            GET PREMIUM
+          </PremiumButton>
+        </MobilePremiumPanel>
+      );
+    }
+    
+    return (
+      <PremiumPanel>
+        <PremiumTitle>Squeak Premium</PremiumTitle>
+        <PremiumSubtitle>All features, unlimited usage. Try for 7 days!</PremiumSubtitle>
+        <PremiumButton onClick={handleGetPremiumClick}>
+          GET PREMIUM
+        </PremiumButton>
+      </PremiumPanel>
+    );
+  };
+
   const renderDashboardLink = () => {
-    console.log(isTeacher, isStudent);
     if (isTeacher) {
       return (
         <>
@@ -165,6 +199,9 @@ function NavPage({
               >
                 Log Out
               </MobileNavButton>
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                {renderPremiumPanel()}
+              </div>
               {renderDashboardLink()}
             </MobileNav>
           </>
@@ -203,6 +240,10 @@ function NavPage({
               Log Out
             </NavButton>
             
+            <div style={{ flexGrow: 1 }}></div>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              {renderPremiumPanel()}
+            </div>
             {renderDashboardLink()}
           </Sidebar>
         )}

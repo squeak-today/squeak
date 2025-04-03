@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FaPencilAlt, FaCheck, FaTimes, FaChevronUp, FaChevronDown } from 'react-icons/fa';
 import spanishFlag from '../assets/flags/spanish.png';
 import frenchFlag from '../assets/flags/french.png';
@@ -107,6 +108,8 @@ const formatDate = (dateString?: string) => {
 };
 
 function Profile() {
+  const navigate = useNavigate();
+  const { getPremium } = useParams<{ getPremium?: string }>();
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -264,8 +267,14 @@ function Profile() {
   };
   
   const handleCloseSubscriptionModal = () => {
-    setIsSubscriptionModalOpen(false);
-    setIsCancellationConfirmation(false);
+    if (getPremium === 'get-premium') {
+      navigate('/profile');
+      setIsSubscriptionModalOpen(false);
+      setIsCancellationConfirmation(false);
+    } else {
+      setIsSubscriptionModalOpen(false);
+      setIsCancellationConfirmation(false);
+    }
   };
   
   const handleGetPremium = async () => {
@@ -446,6 +455,13 @@ function Profile() {
 
     initializeProfile();
   }, []);
+
+  useEffect(() => {
+    if (getPremium === 'get-premium' && billingAccount?.plan === 'FREE') {
+      setIsCancellationConfirmation(false);
+      setIsSubscriptionModalOpen(true);
+    }
+  }, [getPremium, billingAccount]);
 
   if (!profile) {
     return (
