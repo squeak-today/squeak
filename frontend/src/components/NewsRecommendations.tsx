@@ -83,7 +83,6 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
         const fetchStudentStatus = async () => {
             try {
                 const studentStatus = await getStudentStatus();
-                console.log(studentStatus);
                 if (studentStatus.student_id !== '') {
                     setIsStudent(true);
                 }
@@ -101,28 +100,28 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
             
             try {
                 hasFetchedRef.current = true;
-                
-                const selectedTopic = getTopicForToday(interested_topics);
-                let response = await queryNews({
-                    language: userLanguage,
-                    cefr: 'any',
-                    subject: 'any',
-                    page: '1',
-                    pagesize: '20'
-                });
-                const filtered_response = response.filter((item: any) => (item.topic === selectedTopic && item.cefr_level === cefrLevel));
-                if (filtered_response.length === 0) {
-                    response = response.slice(0, 3);
-                } else {
-                    response = filtered_response;
-                }
 
-                if (Array.isArray(response)) {
-                    setNewsItems(response);
+                const selectedTopic = getTopicForToday(interested_topics);
+                const initial_response = await queryNews({
+                    language: userLanguage,
+                    cefr: cefrLevel,
+                    subject: selectedTopic,
+                    page: '1',
+                    pagesize: '3'
+                })
+                if (initial_response.length > 0) {
+                    setNewsItems(initial_response);
                     setError(false);
                 } else {
-                    setNewsItems([]);
-                    setError(true);
+                    let response = await queryNews({
+                        language: userLanguage,
+                        cefr: cefrLevel,
+                        subject: 'any',
+                        page: '1',
+                        pagesize: '3'
+                    });
+                    setNewsItems(response);
+                    setError(false);
                 }
             } catch (error) {
                 console.error('Error fetching news recommendations:', error);
