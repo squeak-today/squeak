@@ -1128,9 +1128,14 @@ export interface components {
       /** @example Classroom deleted successfully */
       message: string;
     };
+    /** @enum {string} */
+    "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
     "models.ErrorResponse": {
-      /** @example PROFILE_NOT_FOUND */
-      code?: string;
+      /**
+       * @example PROFILE_NOT_FOUND
+       * @enum {unknown}
+       */
+      code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
       /** @example Something went wrong */
       error: string;
     };

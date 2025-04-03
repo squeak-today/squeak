@@ -1778,6 +1778,21 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ERROR_CODE": {
+            "type": "string",
+            "enum": [
+                "PROFILE_NOT_FOUND",
+                "NO_TRANSCRIPT",
+                "AUTH_REQUIRED",
+                "USAGE_LIMIT_REACHED"
+            ],
+            "x-enum-varnames": [
+                "PROFILE_NOT_FOUND",
+                "NO_TRANSCRIPT",
+                "AUTH_REQUIRED",
+                "USER_LIMIT_REACHED"
+            ]
+        },
         "models.ErrorResponse": {
             "type": "object",
             "required": [
@@ -1785,7 +1800,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "code": {
-                    "type": "string",
+                    "enum": [
+                        "PROFILE_NOT_FOUND",
+                        "NO_TRANSCRIPT",
+                        "AUTH_REQUIRED",
+                        "USAGE_LIMIT_REACHED"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ERROR_CODE"
+                        }
+                    ],
                     "example": "PROFILE_NOT_FOUND"
                 },
                 "error": {

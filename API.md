@@ -1000,11 +1000,17 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | message | string | *Example:* `"Classroom deleted successfully"` | Yes |
 
+#### models.ERROR_CODE
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.ERROR_CODE | string |  |  |
+
 #### models.ErrorResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| code | string | *Example:* `"PROFILE_NOT_FOUND"` | No |
+| code | [models.ERROR_CODE](#modelserror_code) | *Enum:* `"PROFILE_NOT_FOUND"`, `"NO_TRANSCRIPT"`, `"AUTH_REQUIRED"`, `"USAGE_LIMIT_REACHED"`<br>*Example:* `"PROFILE_NOT_FOUND"` | No |
 | error | string | *Example:* `"Something went wrong"` | Yes |
 
 #### models.EvaluateAnswerRequest
