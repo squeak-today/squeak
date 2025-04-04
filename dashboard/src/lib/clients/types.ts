@@ -2338,6 +2338,8 @@ export interface components {
         "models.TeacherStatusResponse": {
             /** @example true */
             exists: boolean;
+            /** @example FREE */
+            plan?: string;
         };
         "models.TextToSpeechRequest": {
             /** @example en-US */

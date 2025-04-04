@@ -2485,6 +2485,10 @@ const docTemplate = `{
                 "exists": {
                     "type": "boolean",
                     "example": true
+                },
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
                 }
             }
         },

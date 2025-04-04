@@ -1258,6 +1258,7 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | exists | boolean | *Example:* `true` | Yes |
+| plan | string | *Example:* `"FREE"` | No |
 
 #### models.TextToSpeechRequest
 

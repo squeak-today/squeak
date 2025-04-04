@@ -1728,6 +1728,9 @@ components:
         exists:
           example: true
           type: boolean
+        plan:
+          example: FREE
+          type: string
       required:
         - exists
       type: object
