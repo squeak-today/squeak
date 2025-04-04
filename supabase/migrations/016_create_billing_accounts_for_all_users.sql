@@ -13,7 +13,10 @@ AND NOT EXISTS (
 ON CONFLICT (user_id) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION create_billing_account_for_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER SET search_path = ''
+AS $$
 BEGIN
     -- Only create if user doesn't already exist in billing_accounts table
     -- (this makes the function idempotent)
@@ -30,7 +33,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$; 
 
 DROP TRIGGER IF EXISTS create_billing_account_trigger ON auth.users;
 CREATE TRIGGER create_billing_account_trigger
