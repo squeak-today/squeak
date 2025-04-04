@@ -18,7 +18,7 @@ const (
 func ElevenLabsTextToSpeech(text string, voiceId string, apiKey string) (string, error) {
 	payload := map[string]any{
 		"text":     text,
-		"model_id": "eleven_multilingual_v2",
+		"model_id": "eleven_flash_v2_5",
 	}
 
 	jsonData, err := json.Marshal(payload)

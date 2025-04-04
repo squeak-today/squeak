@@ -273,31 +273,31 @@ module "organization_join" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
-# module "organization_payments" {
-#   source      = "./api_gateway"
-#   rest_api_id = aws_api_gateway_rest_api.story_api.id
-#   parent_id   = module.organization.resource_id
-#   path_part   = "payments"
-#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-# }
+module "organization_payments" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.organization.resource_id
+  path_part   = "payments"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
 
-# module "organization_payments_create_checkout_session" {
-#   source      = "./api_gateway"
-#   rest_api_id = aws_api_gateway_rest_api.story_api.id
-#   parent_id   = module.organization_payments.resource_id
-#   path_part   = "create-checkout-session"
-#   http_method = "POST"
-#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-# }
+module "organization_payments_create_checkout_session" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.organization_payments.resource_id
+  path_part   = "create-checkout-session"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
 
-# module "organization_payments_cancel_subscription_eop" {
-#   source      = "./api_gateway"
-#   rest_api_id = aws_api_gateway_rest_api.story_api.id
-#   parent_id   = module.organization_payments.resource_id
-#   path_part   = "cancel-subscription-eop"
-#   http_method = "POST"
-#   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-# }
+module "organization_payments_cancel_subscription_eop" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.organization_payments.resource_id
+  path_part   = "cancel-subscription-eop"
+  http_method = "POST"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
 
 module "billing" {
   source      = "./api_gateway"
@@ -461,9 +461,9 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.organization,
     module.organization_create,
     module.organization_join,
-    // module.organization_payments,
-    // module.organization_payments_create_checkout_session,
-    // module.organization_payments_cancel_subscription_eop
+    module.organization_payments,
+    module.organization_payments_create_checkout_session,
+    module.organization_payments_cancel_subscription_eop,
     module.billing,
     module.billing_usage,
     module.billing_create_checkout_session,

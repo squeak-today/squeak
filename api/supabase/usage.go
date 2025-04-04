@@ -29,6 +29,18 @@ func getEndOfMonth() time.Time {
 }
 
 func (c *Client) InsertUsage(userID string, featureID string, amount int) error {
+	isStudent, err := c.CheckAccountType(userID, "student")
+	if err != nil {
+		return fmt.Errorf("failed to check account type: %v", err)
+	}
+	isTeacher, err := c.CheckAccountType(userID, "teacher")
+	if err != nil {
+		return fmt.Errorf("failed to check account type: %v", err)
+	}
+	if isStudent || isTeacher { // itll error out because teachers don't have a billing account
+		return nil
+	}
+
 	if !isValidFeatureID(featureID) {
 		return errors.New("invalid feature ID: " + featureID)
 	}

@@ -1854,7 +1854,7 @@ const docTemplate = `{
                 "PROFILE_NOT_FOUND",
                 "NO_TRANSCRIPT",
                 "AUTH_REQUIRED",
-                "USER_LIMIT_REACHED"
+                "USAGE_LIMIT_REACHED"
             ]
         },
         "models.ErrorResponse": {

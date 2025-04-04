@@ -4,6 +4,7 @@ import { useAudioAPI } from '../hooks/useAudioAPI';
 import { STT_LANGUAGE_CODES, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 import RecordButton from './RecordButton';
 import { FaPlay } from "react-icons/fa";
+import { usePlatform } from '../context/PlatformContext';
 import {
     SidePanelContainer,
     TabContainer,
@@ -78,6 +79,7 @@ const SidePanel = ({
     isLoading,
     onIncrementProgress
 }) => {
+    const { isTeacher, isStudent } = usePlatform();
     const [activeTab, setActiveTab] = useState('info');
     const [selectedGoal, setSelectedGoal] = useState(GOAL_OPTIONS.RECOMMENDED.value);
     const [checkingAnswers, setCheckingAnswers] = useState(false);
@@ -151,7 +153,11 @@ const SidePanel = ({
                 if (response.error.code === 'NO_TRANSCRIPT') {
                     showNotification('No speech detected in target language. Please try again.', 'error');
                 } else if (response.error.code === 'USAGE_LIMIT_REACHED') {
-                    showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+                    if (isTeacher || isStudent) {
+                        showNotification('Premium feature usage limit reached. Upgrade to teacher premium for unlimited usage!', 'error');
+                      } else {
+                        showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+                      }
                 } else {
                     console.error('Speech to text API error:', response.error);
                     showNotification(`Speech-to-text failed: ${response.error.error}`, 'error');
@@ -190,10 +196,15 @@ const SidePanel = ({
                 voice_name: TTS_VOICE_IDS[langCode],
                 natural: useNaturalPronunciation
             });
+            console.log('audioContent', audioContent);
             
             if (audioContent.error && audioContent.error.code === 'USAGE_LIMIT_REACHED') {
-                showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
-                setPlayingQuestion(null);
+                if (isTeacher || isStudent) {
+                    showNotification('Premium feature usage limit reached. Upgrade to teacher premium for unlimited usage!', 'error');
+                } else {
+                    showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+                }
+            setPlayingQuestion(null);
                 return;
             }
             
@@ -203,7 +214,11 @@ const SidePanel = ({
         } catch (error) {
             console.error('TTS failed:', error);
             if (error?.response?.data?.code === 'USAGE_LIMIT_REACHED') {
-                showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+                if (isTeacher || isStudent) {
+                    showNotification('Premium feature usage limit reached. Upgrade to teacher premium for unlimited usage!', 'error');
+                } else {
+                    showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+                }
             } else {
                 showNotification('Failed to play question. Please try again.', 'error');
             }

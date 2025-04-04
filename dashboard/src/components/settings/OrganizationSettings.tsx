@@ -74,7 +74,7 @@ const OrganizationSettings: React.FC = () => {
   };
   
   const handleEnterprisePlanClick = () => {
-    console.log('Enterprise plan clicked - Contact sales');
+    window.location.href = 'mailto:connor@squeak.today';
   };
   
   const handleCancelSubscription = () => {
@@ -150,14 +150,13 @@ const OrganizationSettings: React.FC = () => {
         <PlansContainer>
           <SubscriptionDetails
             title="Classroom"
-            price={7.99}
-            priceUnit="/teacher/mo"
+            price={14.99}
+            priceUnit="/mo"
+            addOnText="Premium for every student"
             benefits={[
-              "Up to 3 classrooms per teacher",
-              "Unlimited audio transcriptions",
-              "Unlimited Tutor conversations",
-              "Unlimited news articles",
-              "Unlimited stories"
+              "Unlimited Natural Pronunciations",
+              "Unlimited Premium Speech Recognition",
+              "All upcoming features (Unlimited)"
             ]}
             buttonText={currentPlan === 'CLASSROOM' ? 'Subscribed :)' : 'Start 14-day free trial'}
             onButtonClick={handleClassroomPlanClick}
@@ -168,7 +167,7 @@ const OrganizationSettings: React.FC = () => {
             title="Squeak for School Boards"
             price={-1}
             priceUnit="/mo"
-            addOnText="Built for school boards and administrators. Includes everything in Classroom, for unlimited classrooms and teachers, at better pricing per teacher."
+            addOnText="Built for school boards and administrators. Includes everything in Classroom, for unlimited classrooms and teachers, at better pricing per teacher. Reach out to founders@squeak.today!"
             benefits={[]}
             buttonText="Contact sales"
             onButtonClick={handleEnterprisePlanClick}

@@ -68,12 +68,46 @@ func (h *Handler) CheckNotForbiddenRole(c *gin.Context, userID string, role stri
 // returns false if the user has reached the usage limit
 // true if we're good to continue
 func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID string, limit int) bool {
-	plan, _, _, _, _, err := h.DBClient.GetBillingAccount(userID)
+	isStudent, err := h.DBClient.CheckAccountType(userID, "student")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get billing account"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check account type"})
 		return false
 	}
+	isTeacher, err := h.DBClient.CheckAccountType(userID, "teacher")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check account type"})
+		return false
+	}
+
+	plan := "FREE"
+	if isStudent || isTeacher {
+		organizationID, err := h.DBClient.CheckOrganizationByUserID(userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check organization"})
+			return false
+		}
+		if organizationID != "" {
+			plan, err = h.DBClient.GetOrganizationPlan(organizationID)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get organization plan"})
+				return false
+			}
+		}
+	} else {
+		plan, _, _, _, _, err = h.DBClient.GetBillingAccount(userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get billing account"})
+			return false
+		}
+	}
 	if plan == "FREE" {
+		if isTeacher || isStudent {
+			c.JSON(http.StatusForbidden, models.ErrorResponse{
+				Error: "Usage limit reached on " + featureID,
+				Code:  models.USAGE_LIMIT_REACHED,
+			})
+			return false
+		}
 		usage, err := h.DBClient.GetUsage(userID, featureID, plan)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
@@ -82,7 +116,7 @@ func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID strin
 		if usage >= limit {
 			c.JSON(http.StatusForbidden, models.ErrorResponse{
 				Error: fmt.Sprintf("Usage limit reached on %s", featureID),
-				Code:  models.USER_LIMIT_REACHED,
+				Code:  models.USAGE_LIMIT_REACHED,
 			})
 			return false
 		}

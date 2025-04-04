@@ -98,6 +98,8 @@ function NavPage({
   };
 
   const renderPremiumPanel = () => {
+    if (isTeacher || isStudent) return null;
+
     if (plan !== 'FREE') return null;
     
     if (isMobile) {
