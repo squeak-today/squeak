@@ -77,7 +77,9 @@ const SidePanel = ({
     loadingQuestions,
     onCheckAnswers,
     isLoading,
-    onIncrementProgress
+    onIncrementProgress,
+    useNaturalPronunciation,
+    setUseNaturalPronunciation
 }) => {
     const { isTeacher, isStudent } = usePlatform();
     const [activeTab, setActiveTab] = useState('info');
@@ -89,7 +91,6 @@ const SidePanel = ({
     const [loadingAudio, setLoadingAudio] = useState([]);
     const [playingQuestion, setPlayingQuestion] = useState(null);
     
-    const [useNaturalPronunciation, setUseNaturalPronunciation] = useState(false);
     const [usePremiumSpeechToText, setUsePremiumSpeechToText] = useState(false);
 
     const isBeginnerLevel = contentData.difficulty === 'A1' || contentData.difficulty === 'A2';
@@ -190,15 +191,14 @@ const SidePanel = ({
                 return;
             }
             
-            const audioContent = await tts({ 
+            const { data: audioContent, error } = await tts({ 
                 language_code: langCode, 
                 text: question.question, 
                 voice_name: TTS_VOICE_IDS[langCode],
                 natural: useNaturalPronunciation
             });
-            console.log('audioContent', audioContent);
             
-            if (audioContent.error && audioContent.error.code === 'USAGE_LIMIT_REACHED') {
+            if (error && error.code === 'USAGE_LIMIT_REACHED') {
                 if (isTeacher || isStudent) {
                     showNotification('Premium feature usage limit reached. Upgrade to teacher premium for unlimited usage!', 'error');
                 } else {
@@ -213,7 +213,7 @@ const SidePanel = ({
             await audio.play();
         } catch (error) {
             console.error('TTS failed:', error);
-            if (error?.response?.data?.code === 'USAGE_LIMIT_REACHED') {
+            if (error.code === 'USAGE_LIMIT_REACHED') {
                 if (isTeacher || isStudent) {
                     showNotification('Premium feature usage limit reached. Upgrade to teacher premium for unlimited usage!', 'error');
                 } else {
@@ -244,6 +244,17 @@ const SidePanel = ({
 
                         <ItalicInfoText>Written on {formatDate(contentData.date_created)}</ItalicInfoText>
                     </ContentSection>
+
+                    <FeatureToggleButton 
+                        $active={useNaturalPronunciation}
+                        onClick={() => setUseNaturalPronunciation(!useNaturalPronunciation)}
+                    >
+                        <span>Natural Pronunciation</span>
+                        {useNaturalPronunciation && <ToggleIcon 
+                            src={checkIcon} 
+                            alt={"Enabled"}
+                        />}
+                    </FeatureToggleButton>
 
                     <ContentSection>
                         <ButtonGroup>
