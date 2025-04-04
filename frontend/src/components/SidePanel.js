@@ -196,6 +196,7 @@ const SidePanel = ({
                 voice_name: TTS_VOICE_IDS[langCode],
                 natural: useNaturalPronunciation
             });
+            console.log('audioContent', audioContent);
             
             if (audioContent.error && audioContent.error.code === 'USAGE_LIMIT_REACHED') {
                 if (isTeacher || isStudent) {
@@ -218,7 +219,7 @@ const SidePanel = ({
                 } else {
                     showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
                 }
-        } else {
+            } else {
                 showNotification('Failed to play question. Please try again.', 'error');
             }
             setPlayingQuestion(null);

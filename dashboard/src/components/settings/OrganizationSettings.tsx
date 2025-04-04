@@ -149,7 +149,7 @@ const OrganizationSettings: React.FC = () => {
         
         <PlansContainer>
           <SubscriptionDetails
-            title="Teacher"
+            title="Classroom"
             price={14.99}
             priceUnit="/mo"
             addOnText="Premium for every student"

@@ -101,7 +101,11 @@ func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID strin
 		}
 	}
 	if plan == "FREE" {
-		if (isTeacher || isStudent) {
+		if isTeacher || isStudent {
+			c.JSON(http.StatusForbidden, models.ErrorResponse{
+				Error: "Usage limit reached on " + featureID,
+				Code:  models.USAGE_LIMIT_REACHED,
+			})
 			return false
 		}
 		usage, err := h.DBClient.GetUsage(userID, featureID, plan)
@@ -112,7 +116,7 @@ func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID strin
 		if usage >= limit {
 			c.JSON(http.StatusForbidden, models.ErrorResponse{
 				Error: fmt.Sprintf("Usage limit reached on %s", featureID),
-				Code:  models.USER_LIMIT_REACHED,
+				Code:  models.USAGE_LIMIT_REACHED,
 			})
 			return false
 		}
