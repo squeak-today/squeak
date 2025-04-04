@@ -178,6 +178,31 @@ paths:
         description: Create checkout session request
         required: true
       summary: Create a Stripe checkout session (individual)
+  /billing/usage:
+    get:
+      parameters:
+        - description: Plan
+          in: query
+          name: plan
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.BillingAccountUsageResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - billing
+      description: 'Get Billing Account Usage, assumes free plan'
+      summary: Get Billing Account Usage
   /news:
     get:
       parameters:
@@ -1045,6 +1070,26 @@ components:
         - canceled
         - expiration
         - plan
+      type: object
+    models.BillingAccountUsageResponse:
+      properties:
+        max_natural_stt_usage:
+          example: 100
+          type: integer
+        max_natural_tts_usage:
+          example: 100
+          type: integer
+        natural_stt_usage:
+          example: 10
+          type: integer
+        natural_tts_usage:
+          example: 10
+          type: integer
+      required:
+        - max_natural_stt_usage
+        - max_natural_tts_usage
+        - natural_stt_usage
+        - natural_tts_usage
       type: object
     models.CancelIndividualSubscriptionRequest:
       type: object

@@ -189,6 +189,34 @@ export interface paths {
       };
     };
   };
+  "/billing/usage": {
+    /**
+     * Get Billing Account Usage
+     * @description Get Billing Account Usage, assumes free plan
+     */
+    get: {
+      parameters: {
+        query?: {
+          /** @description Plan */
+          plan?: string;
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.BillingAccountUsageResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/news": {
     /**
      * Get news content
@@ -1036,6 +1064,16 @@ export interface components {
       expiration: string;
       /** @example PRO */
       plan: string;
+    };
+    "models.BillingAccountUsageResponse": {
+      /** @example 100 */
+      max_natural_stt_usage: number;
+      /** @example 100 */
+      max_natural_tts_usage: number;
+      /** @example 10 */
+      natural_stt_usage: number;
+      /** @example 10 */
+      natural_tts_usage: number;
     };
     "models.CancelIndividualSubscriptionRequest": Record<string, never>;
     "models.CancelIndividualSubscriptionResponse": {

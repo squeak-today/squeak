@@ -365,6 +365,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/billing/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Billing Account Usage
+         * @description Get Billing Account Usage, assumes free plan
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Plan */
+                    plan?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.BillingAccountUsageResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/news": {
         parameters: {
             query?: never;
@@ -1959,6 +2010,16 @@ export interface components {
             expiration: string;
             /** @example PRO */
             plan: string;
+        };
+        "models.BillingAccountUsageResponse": {
+            /** @example 100 */
+            max_natural_stt_usage: number;
+            /** @example 100 */
+            max_natural_tts_usage: number;
+            /** @example 10 */
+            natural_stt_usage: number;
+            /** @example 10 */
+            natural_tts_usage: number;
         };
         "models.CancelIndividualSubscriptionRequest": Record<string, never>;
         "models.CancelIndividualSubscriptionResponse": {

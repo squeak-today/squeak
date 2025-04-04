@@ -273,6 +273,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/billing/usage": {
+            "get": {
+                "description": "Get Billing Account Usage, assumes free plan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Get Billing Account Usage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plan",
+                        "name": "plan",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BillingAccountUsageResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/news": {
             "get": {
                 "description": "Get news content by ID",
@@ -1543,6 +1580,33 @@ const docTemplate = `{
                 "plan": {
                     "type": "string",
                     "example": "PRO"
+                }
+            }
+        },
+        "models.BillingAccountUsageResponse": {
+            "type": "object",
+            "required": [
+                "max_natural_stt_usage",
+                "max_natural_tts_usage",
+                "natural_stt_usage",
+                "natural_tts_usage"
+            ],
+            "properties": {
+                "max_natural_stt_usage": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "max_natural_tts_usage": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "natural_stt_usage": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "natural_tts_usage": {
+                    "type": "integer",
+                    "example": 10
                 }
             }
         },

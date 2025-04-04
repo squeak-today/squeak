@@ -45,7 +45,36 @@ func (h *BillingHandler) GetBillingAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, models.BillingAccountResponse{Plan: plan, Expiration: expiration, Canceled: canceled})
 }
 
-
+//	@Summary		Get Billing Account Usage
+//	@Description	Get Billing Account Usage, assumes free plan
+//	@Tags			billing
+//	@Accept			json
+//	@Produce		json
+//	@Param			plan	query		string	false	"Plan"
+//	@Success		200		{object}	models.BillingAccountUsageResponse
+//	@Failure		401		{object}	models.ErrorResponse
+//	@Router			/billing/usage [get]
+func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
+	reqPlan := c.Query("plan")
+	if reqPlan == "" {
+		reqPlan = "FREE"
+	}
+	naturalTTSUsage, err := h.DBClient.GetUsage(userID, supabase.NATURAL_TTS_FEATURE, reqPlan)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
+	}
+	naturalSTTUsage, err := h.DBClient.GetUsage(userID, supabase.NATURAL_STT_FEATURE, reqPlan)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
+	}
+	c.JSON(http.StatusOK, models.BillingAccountUsageResponse{
+		NaturalTTSUsage: naturalTTSUsage, 
+		MaxNaturalTTSUsage: handlers.NATURAL_TTS_USAGE_LIMIT_FREE, 
+		NaturalSTTUsage: naturalSTTUsage, 
+		MaxNaturalSTTUsage: handlers.NATURAL_STT_USAGE_LIMIT_FREE,
+	})
+}
 
 //	@Summary		Create a Stripe checkout session (individual)
 //	@Description	Creates a checkout session and redirects to Stripe's payment page

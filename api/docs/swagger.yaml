@@ -48,6 +48,26 @@ definitions:
     - expiration
     - plan
     type: object
+  models.BillingAccountUsageResponse:
+    properties:
+      max_natural_stt_usage:
+        example: 100
+        type: integer
+      max_natural_tts_usage:
+        example: 100
+        type: integer
+      natural_stt_usage:
+        example: 10
+        type: integer
+      natural_tts_usage:
+        example: 10
+        type: integer
+    required:
+    - max_natural_stt_usage
+    - max_natural_tts_usage
+    - natural_stt_usage
+    - natural_tts_usage
+    type: object
   models.CancelIndividualSubscriptionRequest:
     type: object
   models.CancelIndividualSubscriptionResponse:
@@ -1018,6 +1038,30 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create a Stripe checkout session (individual)
+      tags:
+      - billing
+  /billing/usage:
+    get:
+      consumes:
+      - application/json
+      description: Get Billing Account Usage, assumes free plan
+      parameters:
+      - description: Plan
+        in: query
+        name: plan
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BillingAccountUsageResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Billing Account Usage
       tags:
       - billing
   /news:
