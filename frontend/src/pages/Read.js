@@ -11,6 +11,7 @@ import TranslationPanel from '../components/TranslationPanel';
 import { useAudioAPI } from '../hooks/useAudioAPI';
 import { useQnaAPI } from '../hooks/useQnaAPI';
 import { useAuth } from '../context/AuthContext';
+import { usePlatform } from '../context/PlatformContext';
 
 import { LANGUAGE_CODES_REVERSE, TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '../lib/lang_codes';
 
@@ -29,6 +30,7 @@ function Read() {
     const { jwtToken } = useAuth();
     const { type, id } = useParams();
     const { state } = useLocation();
+    const { isTeacher, isStudent } = usePlatform();
 
     const navigate = useNavigate();
     const { showNotification } = useNotification();
@@ -58,6 +60,8 @@ function Read() {
 
     const { translate, tts } = useAudioAPI();
     const [isPlayingTTS, setIsPlayingTTS] = useState(false);
+
+    const [useNaturalPronunciation, setUseNaturalPronunciation] = useState(false);
 
     useEffect(() => {
         const loadInitialMetadata = async () => {
@@ -357,12 +361,25 @@ function Read() {
         try {
             setIsPlayingTTS(true);
             const langCode = TTS_LANGUAGE_CODES[contentData.tags[0]];
-            const audioContent = await tts({ language_code: langCode, text, voice_name: TTS_VOICE_IDS[langCode] });
+            const { data: audioContent, error } = await tts({
+                language_code: langCode,
+                text,
+                voice_name: TTS_VOICE_IDS[langCode],
+                natural: useNaturalPronunciation
+            });
+            if (error && error.code === 'USAGE_LIMIT_REACHED') {
+                if (isTeacher || isStudent) {
+                    showNotification('Premium feature usage limit reached. Upgrade to teacher premium for unlimited usage!', 'error');
+                } else {
+                    showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+                }
+            } else if (error) {
+                showNotification('Failed to play audio', 'error');
+            }
             const audio = new Audio(`data:audio/mp3;base64,${audioContent.audio_content}`);
             await audio.play();
         } catch (error) {
-            console.error('Error playing TTS:', error);
-            showNotification('Failed to play audio', 'error');
+            console.log('error', error.data);
         } finally {
             setIsPlayingTTS(false);
         }
@@ -394,6 +411,8 @@ function Read() {
                         onCheckAnswers={handleCheckAnswers}
                         isLoading={isLoading}
                         onIncrementProgress={handleIncrementProgress}
+                        useNaturalPronunciation={useNaturalPronunciation}
+                        setUseNaturalPronunciation={setUseNaturalPronunciation}
                     />
                     {tooltip.show && (
                         <TranslationPanel

@@ -3,6 +3,7 @@ import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import { components } from '../lib/clients/types';
 
 // Define types for API responses
+type TTSResponse = components["schemas"]["models.TextToSpeechResponse"];
 type SpeechToTextResponse = components["schemas"]["models.SpeechToTextResponse"];
 type ErrorResponse = components["schemas"]["models.ErrorResponse"];
 
@@ -28,12 +29,14 @@ export function useAudioAPI() {
     }, [client, requireAuth]);
 
     const tts = useCallback(async (content: components["schemas"]["models.TextToSpeechRequest"]) => {
-        return requireAuth(async () => {
+        return requireAuthWithErrors(async () => {
             const { data, error } = await client!.POST('/audio/tts', {
                 body: content
             });
-            if (error) { throw error; }
-            return data;
+            return { 
+                data: data as TTSResponse, 
+                error: error as ErrorResponse | null 
+            };
         })
     }, [client, requireAuth]);
 
