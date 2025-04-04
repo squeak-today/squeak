@@ -37,6 +37,15 @@ func New(dbClient *supabase.Client) *BillingHandler {
 //	@Router			/billing [get]
 func (h *BillingHandler) GetBillingAccount(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
+	isNotStudent := h.CheckNotForbiddenRole(c, userID, "student")
+	if !isNotStudent {
+		return
+	}
+	isNotTeacher := h.CheckNotForbiddenRole(c, userID, "teacher")
+	if !isNotTeacher {
+		return
+	}
+	
 	plan, expiration, canceled, _, _, err := h.DBClient.GetBillingAccount(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get billing account"})
@@ -56,6 +65,14 @@ func (h *BillingHandler) GetBillingAccount(c *gin.Context) {
 //	@Router			/billing/usage [get]
 func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
+	isNotStudent := h.CheckNotForbiddenRole(c, userID, "student")
+	if !isNotStudent {
+		return
+	}
+	isNotTeacher := h.CheckNotForbiddenRole(c, userID, "teacher")
+	if !isNotTeacher {
+		return
+	}
 	reqPlan := c.Query("plan")
 	if reqPlan == "" {
 		reqPlan = "FREE"
@@ -87,7 +104,14 @@ func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
 //	@Router			/billing/create-checkout-session [post]
 func (h *BillingHandler) CreateCheckoutSession(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
-
+	isNotStudent := h.CheckNotForbiddenRole(c, userID, "student")
+	if !isNotStudent {
+		return
+	}
+	isNotTeacher := h.CheckNotForbiddenRole(c, userID, "teacher")
+	if !isNotTeacher {
+		return
+	}
 	plan, _, _, customerID, _, err := h.DBClient.GetBillingAccount(userID) // primarily to ensure user has a bbilling account on supa
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get billing account"})
@@ -147,6 +171,14 @@ func (h *BillingHandler) CreateCheckoutSession(c *gin.Context) {
 //	@Router			/billing/cancel-subscription-eop [post]
 func (h *BillingHandler) CancelSubscriptionAtEndOfPeriod(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
+	isNotStudent := h.CheckNotForbiddenRole(c, userID, "student")
+	if !isNotStudent {
+		return
+	}
+	isNotTeacher := h.CheckNotForbiddenRole(c, userID, "teacher")
+	if !isNotTeacher {
+		return
+	}
 	plan, expiration, _, _, subscriptionID, err := h.DBClient.GetBillingAccount(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get billing account"})
