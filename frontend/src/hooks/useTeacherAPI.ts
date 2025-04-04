@@ -2,86 +2,112 @@ import { useCallback } from 'react';
 import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import { components } from '../lib/clients/types';
 
+// Define ProblemArea type locally since it's used in the response
+type ProblemArea = {
+  id: number;
+  question: string;
+  incorrectRate: number;
+};
+
 export function useTeacherAPI() {
-    const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
-    
-    const verifyTeacher = useCallback(async () => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.GET('/teacher', {})
-            if (error) { throw error; }
-            return data;
-        })
-    }, [client, requireAuth])
+  const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
 
-    const getClassroomInfo = useCallback(async () => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.GET('/teacher/classroom', {})
-            if (error) { throw error; }
-            return data;
-        })
-    }, [client, requireAuth])
+  const verifyTeacher = useCallback(async () => {
+    return requireAuth(async () => {
+      const { data, error } = await client!.GET('/teacher', {});
+      if (error) { throw error; }
+      return data;
+    });
+  }, [client, requireAuth]);
 
-    const getStudentProfiles = useCallback(async () => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.GET('/teacher/classroom/profiles' as any, {})
-            if (error) { throw error; }
-            return data;
-        })
-    }, [client, requireAuth])
+  const getClassroomInfo = useCallback(async () => {
+    return requireAuth(async () => {
+      const { data, error } = await client!.GET('/teacher/classroom', {});
+      if (error) { throw error; }
+      return data;
+    });
+  }, [client, requireAuth]);
 
-    const fetchContent = useCallback(async (params: {
-        language: string;
-        cefr: string;
-        subject: string;
-        page: string;
-        pagesize: string;
-        whitelist: string;
+  const getStudentProfiles = useCallback(async () => {
+    return requireAuth(async () => {
+      const { data, error } = await client!.GET('/teacher/classroom/profiles' as any, {});
+      if (error) { throw error; }
+      return data;
+    });
+  }, [client, requireAuth]);
+
+  const fetchContent = useCallback(
+    async (params: {
+      language: string;
+      cefr: string;
+      subject: string;
+      page: string;
+      pagesize: string;
+      whitelist: string;
     }) => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.GET('/teacher/classroom/content', {
-                params: {
-                    query: { ...params, content_type: 'All' }
-                }
-            });
-            if (error) { throw error; }
-            return data;
-        })
-    }, [client, requireAuth]);
+      return requireAuth(async () => {
+        const { data, error } = await client!.GET('/teacher/classroom/content', {
+          params: {
+            query: { ...params, content_type: 'All' },
+          },
+        });
+        if (error) { throw error; }
+        return data;
+      });
+    },
+    [client, requireAuth]
+  );
 
-    const acceptContent = useCallback(async (content: components['schemas']['models.AcceptContentRequest']) => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.POST('/teacher/classroom/accept', { body: content })
-            if (error) { throw error; }
-            return data;
-        })
-    }, [client, requireAuth])
+  const acceptContent = useCallback(
+    async (content: components['schemas']['models.AcceptContentRequest']) => {
+      return requireAuth(async () => {
+        const { data, error } = await client!.POST('/teacher/classroom/accept', { body: content });
+        if (error) { throw error; }
+        return data;
+      });
+    },
+    [client, requireAuth]
+  );
 
-    const rejectContent = useCallback(async (content: components['schemas']['models.RejectContentRequest']) => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.POST('/teacher/classroom/reject', { body: content })
-            if (error) { throw error; }
-            return data;
-        })
-    }, [client, requireAuth])
+  const rejectContent = useCallback(
+    async (content: components['schemas']['models.RejectContentRequest']) => {
+      return requireAuth(async () => {
+        const { data, error } = await client!.POST('/teacher/classroom/reject', { body: content });
+        if (error) { throw error; }
+        return data;
+      });
+    },
+    [client, requireAuth]
+  );
 
-    const removeStudent = useCallback(async (studentUserId: string) => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.POST('/teacher/classroom/remove-student' as any, { 
-                body: { student_id: studentUserId }
-            });
-            if (error) { throw error; }
-            return data;
-        })
-    }, [client, requireAuth])
+  const removeStudent = useCallback(async (studentUserId: string) => {
+    return requireAuth(async () => {
+      const { data, error } = await client!.POST('/teacher/classroom/remove-student' as any, {
+        body: { student_id: studentUserId },
+      });
+      if (error) { throw error; }
+      return data;
+    });
+  }, [client, requireAuth]);
 
-    return {
-        isAuthenticated,
-        verifyTeacher,
-        getClassroomInfo,
-        getStudentProfiles,
-        fetchContent,
-        acceptContent,
-        rejectContent,
-        removeStudent
-    };
+  // New function to fetch problem areas
+  const getProblemAreas = useCallback(async () => {
+    return requireAuth(async () => {
+      const { data, error } = await client!.GET('/teacher/classroom/analytics/problem-areas' as any, {});
+      if (error) { throw error; }
+      return data as { problemAreas: ProblemArea[] };
+    });
+  }, [client, requireAuth]);
+
+  return {
+    isAuthenticated,
+    verifyTeacher,
+    getClassroomInfo,
+    getStudentProfiles,
+    fetchContent,
+    acceptContent,
+    rejectContent,
+    removeStudent,
+    getProblemAreas, // Added to the return object
+  };
 }

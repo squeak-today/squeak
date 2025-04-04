@@ -9,40 +9,38 @@ import {
   WidgetContent,
 } from '../styles/TeacherDashboardPageStyles';
 import { FaClock, FaChartPie, FaCommentDots, FaExclamationTriangle } from 'react-icons/fa';
-import { 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer, 
-  PieChart, 
-  Pie, 
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
   Cell,
-  TooltipProps
+  TooltipProps,
 } from 'recharts';
 
-import { 
-    AnalyticsPageContainer,
-    AnalyticsGrid,
-    WidgetRow,
-    StyledWidget as Widget,
-    WidgetHeader,
-    MetricValue,
-    PercentageIndicator,
-    ProblemItem,
-    ProblemRank,
-    DateHeader,
-    ChartContainer
-  } from '../styles/TeacherAnalyticsStyles';
+import {
+  AnalyticsPageContainer,
+  AnalyticsGrid,
+  WidgetRow,
+  StyledWidget as Widget,
+  WidgetHeader,
+  MetricValue,
+  PercentageIndicator,
+  ProblemItem,
+  ProblemRank,
+  DateHeader,
+  ChartContainer,
+} from '../styles/TeacherAnalyticsStyles';
 
-  import { theme } from '../styles/theme';
-
-
+import { theme } from '../styles/theme';
 
 // Fix the styled component to properly type the props
 interface PercentageIndicatorProps {
@@ -93,10 +91,15 @@ const EnhancedNavPage: React.FC<NavPageProps & { title: string }> = ({ children,
 function TeacherAnalytics() {
   const navigate = useNavigate();
   const [isInitializing, setIsInitializing] = useState(true);
-  const {
-    isAuthenticated,
-    verifyTeacher,
-  } = useTeacherAPI();
+  const { isAuthenticated, verifyTeacher, getProblemAreas } = useTeacherAPI();
+
+  // State for performance data, initialized with placeholders
+  const [performanceData, setPerformanceData] = useState<PerformanceData>({
+    score: 0, // Placeholder until endpoint is available
+    previousScore: 0,
+    change: '0%',
+    problemAreas: [],
+  });
 
   // Mock time spent data (weekly)
   const timeSpentData: TimeSpentDataItem[] = [
@@ -105,18 +108,6 @@ function TeacherAnalytics() {
     { week: 'Week 3', timeSpent: 3.8 },
     { week: 'Week 4', timeSpent: 7.0 },
   ];
-
-  // Mock performance data
-  const performanceData: PerformanceData = {
-    score: 75,
-    previousScore: 68,
-    change: '+7%',
-    problemAreas: [
-      { id: 1, question: "What does sous-évaluées mean?", incorrectRate: 42 },
-      { id: 2, question: "What does effectif mean?", incorrectRate: 35 },
-      { id: 3, question: "Pourquoi les Cowboys de Dallas pourraient-ils avoir des difficultés à recruter Cooper Kupp ?", incorrectRate: 28 },
-    ]
-  };
 
   // Mock word analytics data
   const wordAnalyticsData: WordAnalyticsItem[] = [
@@ -138,9 +129,10 @@ function TeacherAnalytics() {
   const COLORS = [
     theme.colors.cefr.beginner.text,
     theme.colors.cefr.intermediate.text,
-    theme.colors.cefr.advanced.text
+    theme.colors.cefr.advanced.text,
   ];
 
+  // Verify teacher on mount
   useEffect(() => {
     if (!isInitializing) return;
     const init = async () => {
@@ -161,6 +153,21 @@ function TeacherAnalytics() {
     init();
   }, [verifyTeacher, navigate, isAuthenticated, isInitializing]);
 
+  // Fetch problem areas after initialization
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getProblemAreas();
+        setPerformanceData((prev) => ({ ...prev, problemAreas: data.problemAreas }));
+      } catch (error) {
+        console.error('Error fetching problem areas:', error);
+      }
+    };
+    if (!isInitializing) {
+      fetchData();
+    }
+  }, [getProblemAreas, isInitializing]);
+
   // Custom formatter for Line Chart tooltip
   const timeSpentFormatter = (value: number | string | Array<number | string>) => {
     if (typeof value === 'number') {
@@ -178,12 +185,12 @@ function TeacherAnalytics() {
   };
 
   // Custom formatter for Bar Chart tooltip
-  const learningProgressFormatter = (value: number | string | Array<number | string>, name: string) => {
+  const learningProgressFormatter = (
+    value: number | string | Array<number | string>,
+    name: string
+  ) => {
     if (typeof value === 'number') {
-      return [
-        `${value}%`,
-        name === 'mastered' ? 'Mastered' : 'Needs Help'
-      ];
+      return [`${value}%`, name === 'mastered' ? 'Mastered' : 'Needs Help'];
     }
     return ['', ''];
   };
@@ -201,7 +208,7 @@ function TeacherAnalytics() {
     <EnhancedNavPage title="Classroom Analytics" isLoading={isInitializing}>
       <AnalyticsPageContainer>
         <DateHeader>Last Updated: {new Date().toLocaleDateString()}</DateHeader>
-        
+
         <AnalyticsGrid>
           {/* Row 1: Time Spent and Performance side by side */}
           <WidgetRow>
@@ -212,19 +219,25 @@ function TeacherAnalytics() {
                 <h3>Time Spent</h3>
               </WidgetHeader>
               <WidgetContent>
-                <MetricValue>{timeSpentData.reduce((acc, curr) => acc + curr.timeSpent, 0).toFixed(1)} hours total</MetricValue>
+                <MetricValue>
+                  {timeSpentData.reduce((acc, curr) => acc + curr.timeSpent, 0).toFixed(1)} hours
+                  total
+                </MetricValue>
                 <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={timeSpentData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                  <LineChart
+                    data={timeSpentData}
+                    margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="week" />
                     <YAxis label={{ value: 'Hours', angle: -90, position: 'insideLeft' }} />
                     <Tooltip formatter={timeSpentFormatter} />
                     <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="timeSpent" 
-                      stroke="#8884d8" 
-                      activeDot={{ r: 8 }} 
+                    <Line
+                      type="monotone"
+                      dataKey="timeSpent"
+                      stroke="#8884d8"
+                      activeDot={{ r: 8 }}
                       strokeWidth={2}
                     />
                   </LineChart>
@@ -240,17 +253,29 @@ function TeacherAnalytics() {
               </WidgetHeader>
               <WidgetContent>
                 <MetricValue>
-                  <PercentageIndicator $value={performanceData.score}>{performanceData.score}%</PercentageIndicator>
-                  <span style={{ fontSize: '16px', marginLeft: '10px', color: '#4caf50' }}>{performanceData.change}</span>
+                  <PercentageIndicator $value={performanceData.score}>
+                    {performanceData.score}%
+                  </PercentageIndicator>
+                  <span style={{ fontSize: '16px', marginLeft: '10px', color: '#4caf50' }}>
+                    {performanceData.change}
+                  </span>
                 </MetricValue>
-                
+
                 <h4>Problem Areas</h4>
-                {performanceData.problemAreas.map((problem, index) => (
-                  <ProblemItem key={problem.id}>
-                    <ProblemRank>#{index + 1}</ProblemRank>
-                    {problem.question} - <PercentageIndicator $value={100 - problem.incorrectRate}>{problem.incorrectRate}%</PercentageIndicator> incorrect
-                  </ProblemItem>
-                ))}
+                {performanceData.problemAreas.length > 0 ? (
+                  performanceData.problemAreas.map((problem, index) => (
+                    <ProblemItem key={problem.id}>
+                      <ProblemRank>#{index + 1}</ProblemRank>
+                      {problem.question} -{' '}
+                      <PercentageIndicator $value={100 - problem.incorrectRate}>
+                        {problem.incorrectRate}%
+                      </PercentageIndicator>{' '}
+                      incorrect
+                    </ProblemItem>
+                  ))
+                ) : (
+                  <p>No problem areas data available.</p>
+                )}
               </WidgetContent>
             </Widget>
           </WidgetRow>
@@ -288,20 +313,32 @@ function TeacherAnalytics() {
                 <div style={{ flex: '1', minWidth: '300px' }}>
                   <h4>Word Breakdown</h4>
                   <div style={{ marginBottom: '10px' }}>
-                    Total Words: <strong>{wordAnalyticsData.reduce((acc, curr) => acc + curr.value, 0)}</strong>
+                    Total Words:{' '}
+                    <strong>{wordAnalyticsData.reduce((acc, curr) => acc + curr.value, 0)}</strong>
                   </div>
                   {wordAnalyticsData.map((item, index) => (
-                    <div key={index} style={{ 
-                      margin: '10px 0', 
-                      padding: '12px', 
-                      borderRadius: '4px', 
-                      background: COLORS[index % COLORS.length] + '22', 
-                      borderLeft: `4px solid ${COLORS[index % COLORS.length]}`,
-                      display: 'flex',
-                      justifyContent: 'space-between'
-                    }}>
-                      <strong>{item.name}:</strong> 
-                      <span>{item.value} words ({((item.value / wordAnalyticsData.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(1)}%)</span>
+                    <div
+                      key={index}
+                      style={{
+                        margin: '10px 0',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        background: COLORS[index % COLORS.length] + '22',
+                        borderLeft: `4px solid ${COLORS[index % COLORS.length]}`,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <strong>{item.name}:</strong>
+                      <span>
+                        {item.value} words (
+                        {(
+                          (item.value /
+                            wordAnalyticsData.reduce((acc, curr) => acc + curr.value, 0)) *
+                          100
+                        ).toFixed(1)}
+                        %)
+                      </span>
                     </div>
                   ))}
                 </div>
