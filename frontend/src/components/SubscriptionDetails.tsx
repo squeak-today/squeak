@@ -17,6 +17,7 @@ interface SubscriptionDetailsProps {
   price: number;
   priceUnit?: string;
   addOnText?: string;
+  noteText?: string;
   benefits: string[];
   buttonText: string;
   onButtonClick: () => void;
@@ -28,6 +29,7 @@ const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
   price,
   priceUnit = '/seat/mo',
   addOnText,
+  noteText = '',
   benefits,
   buttonText,
   onButtonClick,
@@ -61,6 +63,10 @@ const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
           </BenefitItem>
         ))}
       </BenefitsList>
+
+      {noteText && (
+        <AddOnText><i>{noteText}</i></AddOnText>
+      )}
       
       <ActionButton 
         onClick={onButtonClick}

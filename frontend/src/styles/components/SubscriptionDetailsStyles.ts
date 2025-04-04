@@ -55,7 +55,7 @@ export const AddOnText = styled.p`
 export const BenefitsList = styled.ul`
   list-style-type: none;
   padding: 0;
-  margin: 0 0 ${theme.spacing.lg};
+  margin: 0 0 0;
 `;
 
 export const BenefitItem = styled.li`

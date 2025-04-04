@@ -375,19 +375,15 @@ function Profile() {
     }
     
     const freeBenefits = [
-      'Basic language learning',
-      'Limited questions per day',
-      'Core vocabulary practice',
-      'Standard difficulty levels'
+      '20 Natural Pronunciations',
+      '20 Premium Speech Recognition calls',
+      '2 Squeak Tutor sessions (coming soon!)',
     ];
     
     const premiumBenefits = [
-      'Unlimited daily questions',
-      'Advanced vocabulary practice',
-      'Personalized learning path',
-      'Priority support',
-      'Progress tracking analytics',
-      'Offline mode access'
+      'Unlimited Natural Pronunciations',
+      'Unlimited Premium Speech Recognition calls',
+      'Unlimited Squeak Tutor sessions (coming soon!)',
     ];
     
     return (
@@ -411,11 +407,12 @@ function Profile() {
             title="Premium"
             price={0.99}
             priceUnit="/month"
-            addOnText="First 7 days free"
+            addOnText="Every upcoming feature without limits (for a dollar). Try free for 7 days."
             benefits={premiumBenefits}
             buttonText={isProcessingPayment ? "Processing..." : "GET PREMIUM"}
             onButtonClick={handleGetPremium}
             disabled={isProcessingPayment}
+            noteText="*Cancel anytime before your trial ends to avoid being charged."
           />
         </SubscriptionPlansContainer>
       </>
