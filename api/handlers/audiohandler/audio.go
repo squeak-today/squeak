@@ -126,7 +126,7 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	}
 
 	if infoBody.Premium {
-		if !h.CheckUsageLimit(c, userID, supabase.NATURAL_STT_FEATURE, handlers.NATURAL_STT_USAGE_LIMIT_FREE) {
+		if !h.CheckUsageLimit(c, userID, supabase.PREMIUM_STT_FEATURE, handlers.PREMIUM_STT_USAGE_LIMIT_FREE) {
 			return
 		}
 	}
@@ -148,7 +148,7 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	}
 
 	if infoBody.Premium {
-		h.DBClient.InsertUsage(userID, supabase.NATURAL_STT_FEATURE, 1)
+		h.DBClient.InsertUsage(userID, supabase.PREMIUM_STT_FEATURE, 1)
 	}
 
 	c.JSON(http.StatusOK, models.SpeechToTextResponse{

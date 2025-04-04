@@ -1073,23 +1073,23 @@ components:
       type: object
     models.BillingAccountUsageResponse:
       properties:
-        max_natural_stt_usage:
-          example: 100
-          type: integer
         max_natural_tts_usage:
           example: 100
           type: integer
-        natural_stt_usage:
-          example: 10
+        max_premium_stt_usage:
+          example: 100
           type: integer
         natural_tts_usage:
           example: 10
           type: integer
+        premium_stt_usage:
+          example: 10
+          type: integer
       required:
-        - max_natural_stt_usage
         - max_natural_tts_usage
-        - natural_stt_usage
+        - max_premium_stt_usage
         - natural_tts_usage
+        - premium_stt_usage
       type: object
     models.CancelIndividualSubscriptionRequest:
       type: object

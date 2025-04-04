@@ -25,6 +25,6 @@ type CancelIndividualSubscriptionResponse struct {
 type BillingAccountUsageResponse struct {
 	NaturalTTSUsage int `json:"natural_tts_usage" binding:"required" example:"10"`
 	MaxNaturalTTSUsage int `json:"max_natural_tts_usage" binding:"required" example:"100"`
-	NaturalSTTUsage int `json:"natural_stt_usage" binding:"required" example:"10"`
-	MaxNaturalSTTUsage int `json:"max_natural_stt_usage" binding:"required" example:"100"`
+	PremiumSTTUsage int `json:"premium_stt_usage" binding:"required" example:"10"`
+	MaxPremiumSTTUsage int `json:"max_premium_stt_usage" binding:"required" example:"100"`
 }

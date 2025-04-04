@@ -54,7 +54,16 @@ import {
   CancelSubscriptionText,
   ButtonsContainer,
   ActionButton,
-  PlanValue
+  PlanValue,
+  UsageLimitContainer,
+  UsageLimitTitle,
+  UsageLimitItem,
+  UsageLimitLabel,
+  UsageLimitBarContainer,
+  UsageLimitBarWrapper,
+  UsageLimitBarFill,
+  UsageLimitValue,
+  UsageLimitUnlimited
 } from '../styles/pages/ProfilePageStyles';
 import { getCEFRColor } from '../lib/cefr';
 import {
@@ -83,6 +92,13 @@ type BillingAccountData = {
   plan: string;
   expiration: string;
   canceled: boolean;
+}
+
+type UsageData = {
+  natural_tts_usage: number;
+  max_natural_tts_usage: number;
+  premium_stt_usage: number;
+  max_premium_stt_usage: number;
 }
 
 const getLanguageBackground = (language: string) => {
@@ -116,6 +132,7 @@ function Profile() {
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [isTeacher, setIsTeacher] = useState(false);
   const [billingAccount, setBillingAccount] = useState<BillingAccountData | null>(null);
+  const [usageData, setUsageData] = useState<UsageData | null>(null);
   
   const [editedUsername, setEditedUsername] = useState('');
   const [editedLanguage, setEditedLanguage] = useState('');
@@ -132,7 +149,7 @@ function Profile() {
   const { getProgress, getStreak } = useProgressAPI();
   const { verifyTeacher } = useTeacherAPI();
   const { showNotification } = useNotification();
-  const { getBillingAccount, createCheckoutSession, cancelSubscriptionAtEndOfPeriod } = useBillingAPI();
+  const { getBillingAccount, getBillingAccountUsage, createCheckoutSession, cancelSubscriptionAtEndOfPeriod } = useBillingAPI();
 
   const checkTeacherStatus = async () => {
     try {
@@ -149,10 +166,24 @@ function Profile() {
       const result = await getBillingAccount();
       if (result.data) {
         setBillingAccount(result.data as BillingAccountData);
+        return result.data;
       }
     } catch (error) {
       console.error('Error fetching billing account:', error);
       showNotification('Failed to load subscription information.', 'error');
+    }
+    return null;
+  };
+
+  const fetchUsageData = async (plan: string) => {
+    try {
+      const result = await getBillingAccountUsage({ plan });
+      if (result.data) {
+        setUsageData(result.data as UsageData);
+      }
+    } catch (error) {
+      console.error('Error fetching usage data:', error);
+      showNotification('Failed to load usage information.', 'error');
     }
   };
 
@@ -391,6 +422,80 @@ function Profile() {
     );
   };
 
+  const renderUsageLimitPanel = () => {
+    const isPremium = billingAccount?.plan === 'PREMIUM';
+    
+    if (!usageData) {
+      return null;
+    }
+
+    return (
+      <BillingContainer>
+        <UsageLimitTitle>Feature Usage</UsageLimitTitle>
+        
+        <UsageLimitContainer>
+          <UsageLimitItem>
+            <UsageLimitLabel>Natural Text-to-Speech</UsageLimitLabel>
+            <UsageLimitBarContainer>
+              {isPremium ? (
+                <>
+                  <UsageLimitBarWrapper>
+                    <UsageLimitBarFill 
+                      $percentage={100} 
+                      $atLimit={false}
+                    />
+                  </UsageLimitBarWrapper>
+                  <UsageLimitUnlimited>Unlimited</UsageLimitUnlimited>
+                </>
+              ) : (
+                <>
+                  <UsageLimitBarWrapper>
+                    <UsageLimitBarFill 
+                      $percentage={(usageData.natural_tts_usage / usageData.max_natural_tts_usage) * 100} 
+                      $atLimit={usageData.natural_tts_usage >= usageData.max_natural_tts_usage}
+                    />
+                  </UsageLimitBarWrapper>
+                  <UsageLimitValue>
+                    {usageData.natural_tts_usage}/{usageData.max_natural_tts_usage}
+                  </UsageLimitValue>
+                </>
+              )}
+            </UsageLimitBarContainer>
+          </UsageLimitItem>
+          
+          <UsageLimitItem>
+            <UsageLimitLabel>Premium Speech Recognition</UsageLimitLabel>
+            <UsageLimitBarContainer>
+              {isPremium ? (
+                <>
+                  <UsageLimitBarWrapper>
+                    <UsageLimitBarFill 
+                      $percentage={100} 
+                      $atLimit={false}
+                    />
+                  </UsageLimitBarWrapper>
+                  <UsageLimitUnlimited>Unlimited</UsageLimitUnlimited>
+                </>
+              ) : (
+                <>
+                  <UsageLimitBarWrapper>
+                    <UsageLimitBarFill 
+                      $percentage={(usageData.premium_stt_usage / usageData.max_premium_stt_usage) * 100} 
+                      $atLimit={usageData.premium_stt_usage >= usageData.max_premium_stt_usage}
+                    />
+                  </UsageLimitBarWrapper>
+                  <UsageLimitValue>
+                    {usageData.premium_stt_usage}/{usageData.max_premium_stt_usage}
+                  </UsageLimitValue>
+                </>
+              )}
+            </UsageLimitBarContainer>
+          </UsageLimitItem>
+        </UsageLimitContainer>
+      </BillingContainer>
+    );
+  };
+
   const renderBillingSection = () => {
     if (!billingAccount || billingAccount.plan === 'FREE') {
       return (
@@ -444,10 +549,12 @@ function Profile() {
         setEditedTopics(profileData.interested_topics || []);
       }
       
+      const billingData = await fetchBillingAccount();
+      
       await Promise.all([
         fetchProgress(),
         checkTeacherStatus(),
-        fetchBillingAccount()
+        fetchUsageData(billingData?.plan || 'FREE')
       ]);
       
       setIsLoading(false);
@@ -634,6 +741,7 @@ function Profile() {
       </ProfileContainer>
       <ProfileContainer $width="40%">
         {renderBillingSection()}
+        {renderUsageLimitPanel()}
       </ProfileContainer>
       </MenuContainer>
       

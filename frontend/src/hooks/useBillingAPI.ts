@@ -15,6 +15,22 @@ export function useBillingAPI() {
         });
     }, [client, requireAuthWithErrors]);
 
+    const getBillingAccountUsage = useCallback(async (params: {
+        plan: string;
+    }) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.GET('/billing/usage', {
+                params: {
+                    query: { ...params }
+            }
+            });
+            return {
+                data: data as components["schemas"]["models.BillingAccountUsageResponse"] | null,
+                error: error as components["schemas"]["models.ErrorResponse"] | null
+            }
+        });
+    }, [client, requireAuthWithErrors]);
+
     const createCheckoutSession = useCallback(async (content: components["schemas"]["models.CreateIndividualCheckoutSessionRequest"]) => {
         return requireAuthWithErrors(async () => {
             const { data, error } = await client!.POST('/billing/create-checkout-session', {
@@ -41,6 +57,7 @@ export function useBillingAPI() {
 
     return { 
         getBillingAccount,
+        getBillingAccountUsage,
         createCheckoutSession,
         cancelSubscriptionAtEndOfPeriod
     };
