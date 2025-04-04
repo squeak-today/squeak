@@ -545,7 +545,7 @@ function Profile() {
           {isStudent ? "Premium is already provided by your teacher!" : "Premium is already provided by your organization!"}
         </NoteText>}
         {organizationPlan === 'FREE' && <NoteText>
-          {isStudent ? "Since you are in a student, try asking your teacher for premium for the whole class!" : "If you're an admin with your organization, you can also get premium for everyone!"}
+          {isStudent ? "Since you are a student, try asking your teacher for premium for the whole class!" : "If you're an admin with your organization, you can also get premium for everyone!"}
         </NoteText>}
 
       </BillingContainer>
