@@ -25,3 +25,5 @@ CREATE TRIGGER create_billing_account_trigger
 AFTER INSERT ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION create_billing_account_for_new_user(); 
+
+DROP TRIGGER IF EXISTS prevent_overlapping_plans_trigger ON public.billing_accounts;
