@@ -64,7 +64,8 @@ import {
   UsageLimitBarWrapper,
   UsageLimitBarFill,
   UsageLimitValue,
-  UsageLimitUnlimited
+  UsageLimitUnlimited,
+  NoteText
 } from '../styles/pages/ProfilePageStyles';
 import { getCEFRColor } from '../lib/cefr';
 import {
@@ -132,7 +133,7 @@ function Profile() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [isTeacher, setIsTeacher] = useState(false);
-  const { isStudent } = usePlatform();
+  const { isStudent, organizationPlan } = usePlatform();
   const [billingAccount, setBillingAccount] = useState<BillingAccountData | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   
@@ -348,10 +349,6 @@ function Profile() {
   };
   
   const renderSubscriptionContent = () => {
-    if (isTeacher || isStudent) {
-      return null;
-    }
-    
     if (isCancellationConfirmation) {
       return (
         <ConfirmationContainer>
@@ -426,10 +423,6 @@ function Profile() {
   };
 
   const renderUsageLimitPanel = () => {
-    if (isTeacher || isStudent) {
-      return null;
-    }
-
     const isPremium = billingAccount?.plan === 'PREMIUM';
     
     if (!usageData) {
@@ -504,16 +497,18 @@ function Profile() {
   };
 
   const renderBillingSection = () => {
-    if (isTeacher || isStudent) {
-      return null;
-    }  
-
     if (!billingAccount || billingAccount.plan === 'FREE') {
       return (
         <BillingContainer>
           <PremiumTitle>Squeak Premium</PremiumTitle>
           <PremiumSubtitle>All features, unlimited usage. Try free for 7 days.</PremiumSubtitle>
           <PremiumButton onClick={handleOpenSubscriptionModal}>GET PREMIUM</PremiumButton>
+          {organizationPlan === 'CLASSROOM' && <NoteText>
+            {isStudent ? "Premium is already provided by your teacher!" : "Premium is already provided by your organization!"}
+          </NoteText>}
+          {organizationPlan === 'FREE' && <NoteText>
+            {isStudent ? "Ask your teacher for class-wide premium!" : "If you're an admin with your organization, you can also get premium for everyone!"}
+          </NoteText>}
         </BillingContainer>
       );
     }
@@ -545,6 +540,14 @@ function Profile() {
             Cancel Subscription
           </ActionButton>
         )}
+
+        {organizationPlan === 'CLASSROOM' && <NoteText>
+          {isStudent ? "Premium is already provided by your teacher!" + organizationPlan : "Premium is already provided by your organization!"}
+        </NoteText>}
+        {organizationPlan === 'FREE' && <NoteText>
+          {isStudent ? "Since you are in a student, try asking your teacher for premium for the whole class!" : "If you're an admin with your organization, you can also get premium for everyone!"}
+        </NoteText>}
+
       </BillingContainer>
     );
   };

@@ -47,7 +47,7 @@ function NavPage({
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
-  const { isTeacher, isStudent, plan } = usePlatform();
+  const { isTeacher, isStudent, plan, organizationPlan } = usePlatform();
 
   useEffect(() => {
     const handleResize = () => {
@@ -98,8 +98,7 @@ function NavPage({
   };
 
   const renderPremiumPanel = () => {
-    if (isTeacher || isStudent) return null;
-
+    if (organizationPlan !== 'NO_ORGANIZATION' || isTeacher || isStudent) return null;
     if (plan !== 'FREE') return null;
     
     if (isMobile) {
@@ -243,9 +242,9 @@ function NavPage({
             </NavButton>
             
             <div style={{ flexGrow: 1 }}></div>
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+            {<div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
               {renderPremiumPanel()}
-            </div>
+            </div>}
             {renderDashboardLink()}
           </Sidebar>
         )}
