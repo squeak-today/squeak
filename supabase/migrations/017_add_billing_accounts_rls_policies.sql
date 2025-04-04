@@ -1,5 +1,7 @@
 ALTER TABLE IF EXISTS public.billing_accounts ENABLE ROW LEVEL SECURITY;
 
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.billing_accounts TO authenticated;
+
 DROP POLICY IF EXISTS "Users can view their billing accounts" ON public.billing_accounts;
 DROP POLICY IF EXISTS "Users can insert their billing accounts" ON public.billing_accounts;
 DROP POLICY IF EXISTS "Users can update their billing accounts" ON public.billing_accounts;
