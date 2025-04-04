@@ -552,3 +552,76 @@ export const CanceledTag = styled.span`
   border-radius: 12px;
   font-weight: normal;
 `;
+
+export const UsageLimitContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: ${theme.spacing.md};
+`;
+
+export const UsageLimitTitle = styled.h3`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.md};
+  font-weight: 600;
+  color: ${theme.colors.text.primary};
+  margin: 0 0 ${theme.spacing.md} 0;
+  text-align: left;
+`;
+
+export const UsageLimitItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const UsageLimitLabel = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.sm};
+  text-align: left;
+`;
+
+export const UsageLimitBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.md};
+  width: 100%;
+`;
+
+export const UsageLimitBarWrapper = styled.div`
+  position: relative;
+  flex: 1;
+  height: 12px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+`;
+
+export const UsageLimitBarFill = styled.div<{ $percentage: number; $atLimit: boolean }>`
+  height: 100%;
+  width: ${props => Math.min(props.$percentage, 100)}%;
+  background-color: ${props => props.$atLimit ? theme.colors.danger : '#4CAF50'};
+  transition: width 0.3s ease-in-out;
+`;
+
+export const UsageLimitValue = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  color: ${theme.colors.text.secondary};
+  min-width: 40px;
+  text-align: right;
+`;
+
+export const UsageLimitUnlimited = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  color: ${theme.colors.text.secondary};
+  font-style: italic;
+  text-align: right;
+  min-width: 70px;
+`;

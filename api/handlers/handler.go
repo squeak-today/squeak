@@ -3,14 +3,15 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"story-api/supabase"
 	"story-api/models"
+	"story-api/supabase"
+
 	"github.com/gin-gonic/gin"
 )
 
 const (
 	NATURAL_TTS_USAGE_LIMIT_FREE = 20
-	NATURAL_STT_USAGE_LIMIT_FREE = 20
+	PREMIUM_STT_USAGE_LIMIT_FREE = 20
 )
 
 type Handler struct {
@@ -49,7 +50,7 @@ func (h *Handler) CheckIsCorrectRole(c *gin.Context, userID string, role string)
 	return true
 }
 
-// checkNotForbiddenRole -> true if NOT the forbidden role 
+// checkNotForbiddenRole -> true if NOT the forbidden role
 // everyone but X can access
 func (h *Handler) CheckNotForbiddenRole(c *gin.Context, userID string, role string) bool {
 	isRole, err := h.DBClient.CheckAccountType(userID, role)
@@ -81,7 +82,7 @@ func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID strin
 		if usage >= limit {
 			c.JSON(http.StatusForbidden, models.ErrorResponse{
 				Error: fmt.Sprintf("Usage limit reached on %s", featureID),
-				Code: models.USER_LIMIT_REACHED,
+				Code:  models.USER_LIMIT_REACHED,
 			})
 			return false
 		}

@@ -2013,13 +2013,13 @@ export interface components {
         };
         "models.BillingAccountUsageResponse": {
             /** @example 100 */
-            max_natural_stt_usage: number;
-            /** @example 100 */
             max_natural_tts_usage: number;
-            /** @example 10 */
-            natural_stt_usage: number;
+            /** @example 100 */
+            max_premium_stt_usage: number;
             /** @example 10 */
             natural_tts_usage: number;
+            /** @example 10 */
+            premium_stt_usage: number;
         };
         "models.CancelIndividualSubscriptionRequest": Record<string, never>;
         "models.CancelIndividualSubscriptionResponse": {

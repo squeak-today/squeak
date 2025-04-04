@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"log"
-	"time"
 	"story-api/handlers"
 	"story-api/models"
-	"story-api/supabase"
 	useStripe "story-api/stripe"
+	"story-api/supabase"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v81"
@@ -64,15 +64,15 @@ func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
 	}
-	naturalSTTUsage, err := h.DBClient.GetUsage(userID, supabase.NATURAL_STT_FEATURE, reqPlan)
+	premiumSTTUsage, err := h.DBClient.GetUsage(userID, supabase.PREMIUM_STT_FEATURE, reqPlan)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
 	}
 	c.JSON(http.StatusOK, models.BillingAccountUsageResponse{
-		NaturalTTSUsage: naturalTTSUsage, 
-		MaxNaturalTTSUsage: handlers.NATURAL_TTS_USAGE_LIMIT_FREE, 
-		NaturalSTTUsage: naturalSTTUsage, 
-		MaxNaturalSTTUsage: handlers.NATURAL_STT_USAGE_LIMIT_FREE,
+		NaturalTTSUsage:    naturalTTSUsage,
+		MaxNaturalTTSUsage: handlers.NATURAL_TTS_USAGE_LIMIT_FREE,
+		PremiumSTTUsage:    premiumSTTUsage,
+		MaxPremiumSTTUsage: handlers.PREMIUM_STT_USAGE_LIMIT_FREE,
 	})
 }
 
@@ -160,8 +160,8 @@ func (h *BillingHandler) CancelSubscriptionAtEndOfPeriod(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.CancelIndividualSubscriptionResponse{
-		Success: true,
+		Success:           true,
 		CurrentExpiration: expiration.Format(time.RFC1123),
-		CanceledPlan: plan,
+		CanceledPlan:      plan,
 	})
 }

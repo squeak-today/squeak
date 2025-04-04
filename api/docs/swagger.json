@@ -1580,25 +1580,25 @@
         "models.BillingAccountUsageResponse": {
             "type": "object",
             "required": [
-                "max_natural_stt_usage",
                 "max_natural_tts_usage",
-                "natural_stt_usage",
-                "natural_tts_usage"
+                "max_premium_stt_usage",
+                "natural_tts_usage",
+                "premium_stt_usage"
             ],
             "properties": {
-                "max_natural_stt_usage": {
-                    "type": "integer",
-                    "example": 100
-                },
                 "max_natural_tts_usage": {
                     "type": "integer",
                     "example": 100
                 },
-                "natural_stt_usage": {
+                "max_premium_stt_usage": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "natural_tts_usage": {
                     "type": "integer",
                     "example": 10
                 },
-                "natural_tts_usage": {
+                "premium_stt_usage": {
                     "type": "integer",
                     "example": 10
                 }
