@@ -191,3 +191,51 @@ func (c *Client) UpdateOrganization(plan, organizationID, customerID, subscripti
 
 	return nil
 }
+
+// CheckOrganizationByUserID returns the organization ID for a user, whether they are a student or teacher
+// If the user is a student, it finds their classroom, then the teacher, then the organization
+// If the user is a teacher, it directly finds their organization
+// Returns empty string if user is neither student nor teacher
+func (c *Client) CheckOrganizationByUserID(userID string) (string, error) {
+	isStudent, err := c.CheckAccountType(userID, "student")
+	if err != nil {
+		return "", fmt.Errorf("failed to check if user is a student: %w", err)
+	}
+
+	if isStudent {
+		_, classroomID, err := c.CheckStudentStatus(userID)
+		if err != nil {
+			return "", fmt.Errorf("failed to get student's classroom: %w", err)
+		}
+		if classroomID == "" {
+			return "", fmt.Errorf("student doesn't have a classroom")
+		}
+
+		teacherID, _, err := c.GetClassroomById(classroomID)
+		if err != nil {
+			return "", fmt.Errorf("failed to get teacher ID from classroom: %w", err)
+		}
+
+		organizationID, err := c.CheckTeacherOrganization(teacherID)
+		if err != nil {
+			return "", fmt.Errorf("failed to get organization ID from teacher: %w", err)
+		}
+
+		return organizationID, nil
+	}
+
+	isTeacher, err := c.CheckAccountType(userID, "teacher")
+	if err != nil {
+		return "", fmt.Errorf("failed to check if user is a teacher: %w", err)
+	}
+
+	if isTeacher {
+		organizationID, err := c.CheckTeacherOrganizationByUserID(userID)
+		if err != nil {
+			return "", fmt.Errorf("failed to get organization ID for teacher: %w", err)
+		}
+		return organizationID, nil
+	}
+
+	return "", nil
+}

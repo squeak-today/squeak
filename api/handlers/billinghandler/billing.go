@@ -101,7 +101,7 @@ func (h *BillingHandler) CreateCheckoutSession(c *gin.Context) {
 
 	stripe.Key = os.Getenv("STRIPE_KEY")
 	domain := "https://squeak.today"
-	priceID := "price_1R9SAUEtgulRmEeHY4qLLDG6"
+	priceID := "price_1RA2wFEtgulRmEeH13QCQKlD"
 	if os.Getenv("WORKSPACE") != "prod" {
 		domain = "http://localhost:3000"
 	}
