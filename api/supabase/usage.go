@@ -1,14 +1,81 @@
 package supabase
 
 import (
+	"errors"
 	"fmt"
+	"slices"
 	"time"
 )
 
+const (
+	NATURAL_TTS_FEATURE = "natural_tts"
+	NATURAL_STT_FEATURE = "natural_stt"
+)
 
-func (c *Client) GetUsage(userID string, featureID string, plan string, periodEnd time.Time) (int, error) {
+func GetValidFeatureIDs() []string {
+	return []string{NATURAL_TTS_FEATURE, NATURAL_STT_FEATURE}
+}
+
+func isValidFeatureID(featureID string) bool {
+	validIDs := GetValidFeatureIDs()
+	return slices.Contains(validIDs, featureID)
+}
+
+func getEndOfMonth() time.Time {
+	now := time.Now()
+	currentYear, currentMonth, _ := now.Date()
+	lastOfMonth := time.Date(currentYear, currentMonth+1, 0, 23, 59, 59, 999999999, now.Location())
+	return lastOfMonth
+}
+
+func (c *Client) InsertUsage(userID string, featureID string, amount int) error {
+	if !isValidFeatureID(featureID) {
+		return errors.New("invalid feature ID: " + featureID)
+	}
+
+	plan, expiration, _, _, _, err := c.GetBillingAccount(userID)
+	if err != nil {
+		return fmt.Errorf("failed to get billing account: %v", err)
+	}
+
+	var periodEnd time.Time
+	if expiration.IsZero() {
+		periodEnd = getEndOfMonth()
+	} else {
+		periodEnd = expiration
+	}
+
+	_, err = c.db.Exec(`
+		INSERT INTO metered_usage (user_id, feature_id, plan, amount, period_end)
+		VALUES ($1, $2, $3, $4, $5)
+	`, userID, featureID, plan, amount, periodEnd.Format("2006-01-02"))
+
+	return err
+}
+
+func (c *Client) GetUsage(userID string, featureID string, plan string) (int, error) {
+	if !isValidFeatureID(featureID) {
+		return 0, errors.New("invalid feature ID: " + featureID)
+	}
+
+	accountPlan, expiration, _, _, _, err := c.GetBillingAccount(userID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get billing account: %v", err)
+	}
+
+	if plan == "" {
+		plan = accountPlan
+	}
+
+	var periodEnd time.Time
+	if expiration.IsZero() {
+		periodEnd = getEndOfMonth()
+	} else {
+		periodEnd = expiration
+	}
+
 	var totalAmount int
-	err := c.db.QueryRow(`
+	err = c.db.QueryRow(`
 		SELECT COALESCE(SUM(amount), 0)
 		FROM metered_usage
 		WHERE user_id = $1

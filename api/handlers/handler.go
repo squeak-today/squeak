@@ -8,6 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	NATURAL_TTS_USAGE_LIMIT_FREE = 20
+	NATURAL_STT_USAGE_LIMIT_FREE = 20
+)
+
 type Handler struct {
 	DBClient *supabase.Client
 }
@@ -55,6 +60,31 @@ func (h *Handler) CheckNotForbiddenRole(c *gin.Context, userID string, role stri
 	if isRole {
 		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: fmt.Sprintf("%ss cannot access this endpoint.", role)})
 		return false
+	}
+	return true
+}
+
+// returns false if the user has reached the usage limit
+// true if we're good to continue
+func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID string, limit int) bool {
+	plan, _, _, _, _, err := h.DBClient.GetBillingAccount(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get billing account"})
+		return false
+	}
+	if plan == "FREE" {
+		usage, err := h.DBClient.GetUsage(userID, featureID, plan)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
+			return false
+		}
+		if usage >= limit {
+			c.JSON(http.StatusForbidden, models.ErrorResponse{
+				Error: fmt.Sprintf("Usage limit reached on %s", featureID),
+				Code: models.USER_LIMIT_REACHED,
+			})
+			return false
+		}
 	}
 	return true
 }

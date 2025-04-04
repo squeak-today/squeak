@@ -1,7 +1,5 @@
 package models
 
-import "strings"
-
 type ERROR_CODE string
 const (
 	PROFILE_NOT_FOUND ERROR_CODE = "PROFILE_NOT_FOUND"
