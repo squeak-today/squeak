@@ -463,7 +463,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.organization_join,
     module.organization_payments,
     module.organization_payments_create_checkout_session,
-    module.organization_payments_cancel_subscription_eop
+    module.organization_payments_cancel_subscription_eop,
     module.billing,
     module.billing_usage,
     module.billing_create_checkout_session,
