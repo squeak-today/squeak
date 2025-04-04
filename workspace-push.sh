@@ -7,7 +7,7 @@ BOLD='\033[1m'
 RED='\033[0;31m'
 NC='\033[0m' # no color
 
-echo -e "${BLUE}${BOLD}Have you run terraform login or are already logged in? (yes/no):${NC}"
+echo -e "${BLUE}${BOLD}Have you run terraform login or are already logged in? DOUBLE CHECK YOUR MAIN.TF, PLEASE (yes/no):${NC}"
 read login_confirmation
 
 if [ "$login_confirmation" != "yes" ]; then

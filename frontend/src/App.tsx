@@ -30,6 +30,11 @@ const App: React.FC = () => {
 							<Profile />
 						</ProtectedRoute>
 					} />
+					<Route path="/profile/:getPremium" element={
+						<ProtectedRoute>
+							<Profile />
+						</ProtectedRoute>
+					} />
 
 					<Route path="/auth/:mode" element={<Auth />} />
 					<Route 

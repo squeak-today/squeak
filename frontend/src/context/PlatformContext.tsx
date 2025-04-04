@@ -2,12 +2,15 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useStudentAPI } from '../hooks/useStudentAPI';
 import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import { useAuth } from './AuthContext';
+import { useBillingAPI } from 'hooks/useBillingAPI';
 
 interface PlatformContextType {
   isTeacher: boolean;
   isStudent: boolean;
   isLoading: boolean;
+  plan: string;
   checkRoles: () => Promise<void>;
+  checkPlan: () => Promise<void>;
 }
 
 const PlatformContext = createContext<PlatformContextType | null>(null);
@@ -28,7 +31,9 @@ export const PlatformProvider: React.FC<PlatformProviderProps> = ({ children }) 
   const { jwtToken } = useAuth();
   const { verifyTeacher } = useTeacherAPI();
   const { getStudentStatus } = useStudentAPI();
-  
+  const { getBillingAccount } = useBillingAPI();
+
+  const [plan, setPlan] = useState<string>('FREE');
   const [isTeacher, setIsTeacher] = useState<boolean>(false);
   const [isStudent, setIsStudent] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -69,15 +74,37 @@ export const PlatformProvider: React.FC<PlatformProviderProps> = ({ children }) 
     }
   }
 
+  const checkPlan = async () => {
+    if (!jwtToken) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await getBillingAccount();
+      if (response.data?.plan) {
+        setPlan(response.data.plan);
+      }
+    } catch (error) {
+      console.error('Error checking user plan:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
     checkRoles();
+    checkPlan();
   }, [jwtToken]);
 
   const value: PlatformContextType = {
     isTeacher,
     isStudent,
     isLoading,
-    checkRoles
+    plan,
+    checkRoles,
+    checkPlan
   };
 
   return (

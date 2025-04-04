@@ -29,11 +29,17 @@ import {
     CheckAnswersButton,
     AudioControlsContainer,
     PlayButton,
-    UserAnswerDisplay
+    UserAnswerDisplay,
+    ToggleIcon,
+    FeatureToggleContainer,
+    FeatureToggleButton
 } from '../styles/ReadPageStyles';
 
 import LoadingSpinner from './LoadingSpinner';
 import { getCEFRColor, getCEFRTextColor } from '../lib/cefr';
+
+import checkIcon from '../assets/icons/check.png';
+import closeIcon from '../assets/icons/close.png';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -80,6 +86,9 @@ const SidePanel = ({
     const { stt, tts } = useAudioAPI();
     const [loadingAudio, setLoadingAudio] = useState([]);
     const [playingQuestion, setPlayingQuestion] = useState(null);
+    
+    const [useNaturalPronunciation, setUseNaturalPronunciation] = useState(false);
+    const [usePremiumSpeechToText, setUsePremiumSpeechToText] = useState(false);
 
     const isBeginnerLevel = contentData.difficulty === 'A1' || contentData.difficulty === 'A2';
 
@@ -134,16 +143,18 @@ const SidePanel = ({
 
             const response = await stt({
                 audio_content: base64Audio,
-                language_code: languageCode
+                language_code: languageCode,
+                premium: usePremiumSpeechToText
             });
             
             if (response.error) {
                 if (response.error.code === 'NO_TRANSCRIPT') {
                     showNotification('No speech detected in target language. Please try again.', 'error');
+                } else if (response.error.code === 'USAGE_LIMIT_REACHED') {
+                    showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
                 } else {
                     console.error('Speech to text API error:', response.error);
                     showNotification(`Speech-to-text failed: ${response.error.error}`, 'error');
-
                 }
                 return;
             }
@@ -176,15 +187,26 @@ const SidePanel = ({
             const audioContent = await tts({ 
                 language_code: langCode, 
                 text: question.question, 
-                voice_name: TTS_VOICE_IDS[langCode] 
+                voice_name: TTS_VOICE_IDS[langCode],
+                natural: useNaturalPronunciation
             });
+            
+            if (audioContent.error && audioContent.error.code === 'USAGE_LIMIT_REACHED') {
+                showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+                setPlayingQuestion(null);
+                return;
+            }
             
             const audio = new Audio(`data:audio/mp3;base64,${audioContent.audio_content}`);
             audio.onended = () => setPlayingQuestion(null);
             await audio.play();
         } catch (error) {
             console.error('TTS failed:', error);
-            showNotification('Failed to play question. Please try again.', 'error');
+            if (error?.response?.data?.code === 'USAGE_LIMIT_REACHED') {
+                showNotification('Premium feature usage limit reached. Upgrade to premium for unlimited usage!', 'error');
+            } else {
+                showNotification('Failed to play question. Please try again.', 'error');
+            }
             setPlayingQuestion(null);
         }
     };
@@ -225,6 +247,31 @@ const SidePanel = ({
 
     const renderLearnTab = () => (
         <LearnContentContainer>
+            <Label htmlFor="goal-select">Click to enable or disable:</Label>
+            <FeatureToggleContainer>
+                <FeatureToggleButton 
+                    $active={useNaturalPronunciation}
+                    onClick={() => setUseNaturalPronunciation(!useNaturalPronunciation)}
+                >
+                    <span>Natural Pronunciation</span>
+                    {useNaturalPronunciation && <ToggleIcon 
+                        src={checkIcon} 
+                        alt={"Enabled"}
+                    />}
+                </FeatureToggleButton>
+                
+                <FeatureToggleButton 
+                    $active={usePremiumSpeechToText}
+                    onClick={() => setUsePremiumSpeechToText(!usePremiumSpeechToText)}
+                >
+                    <span>Premium Speech Recognition</span>
+                    {usePremiumSpeechToText && <ToggleIcon 
+                        src={checkIcon} 
+                        alt={"Enabled"}
+                    />}
+                </FeatureToggleButton>
+            </FeatureToggleContainer>
+
             <Label htmlFor="goal-select">Choose a goal for this content:</Label>
             <GoalSelect 
                 id="goal-select"
@@ -247,7 +294,7 @@ const SidePanel = ({
                 onClick={handleSetGoal}
                 disabled={loadingQuestions}
             >
-                {loadingQuestions ? 'Loading...' : 'Set Goal'}
+                {loadingQuestions ? 'Loading...' : 'Start!'}
             </SetGoalButton>
 
             {questions.map((q, index) => (

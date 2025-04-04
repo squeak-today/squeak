@@ -41,6 +41,7 @@ import (
 	"story-api/handlers/student"
 	"story-api/handlers/teacher"
 	"story-api/handlers/orghandler"
+	"story-api/handlers/billinghandler"
 )
 
 type Profile = supabase.Profile
@@ -103,7 +104,7 @@ func init() {
 
 	var err error
 	dbClient, err = supabase.NewClient()
-	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"))
+	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"), os.Getenv("ELEVENLABS_API_KEY"))
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v", err)
 	}
@@ -137,6 +138,15 @@ func init() {
 	{
 		stripeHandler := stripehandler.New(dbClient)
 		webhookGroup.POST("", stripeHandler.HandleWebhook)
+	}
+
+	billingHandler := billing.New(dbClient)
+	billingGroup := router.Group("/billing")
+	{
+		billingGroup.GET("", billingHandler.GetBillingAccount)
+		billingGroup.GET("/usage", billingHandler.GetBillingAccountUsage)
+		billingGroup.POST("/create-checkout-session", billingHandler.CreateCheckoutSession)
+		billingGroup.POST("/cancel-subscription-eop", billingHandler.CancelSubscriptionAtEndOfPeriod)
 	}
 
 	orgHandler := org.New(dbClient)

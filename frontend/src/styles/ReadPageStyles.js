@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from './theme';
 
 export const ReadPageLayout = styled.div`
   display: flex;
@@ -310,4 +311,42 @@ export const UserAnswerDisplay = styled.div`
         }
         return '#f5f5f5';
     }};
+`;
+
+export const ToggleIcon = styled.img`
+    width: 16px;
+    height: 16px;
+    color: ${theme.colors.text.secondary};
+`;
+export const FeatureToggleContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+    margin-bottom: 32px;
+    width: 100%;
+`;
+
+export const FeatureToggleButton = styled.button`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-family: 'Lora', serif;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: ${props => props.$active ? 'white' : '#f5f5f5'};
+    border: ${props => props.$active ? '2px solid #4a90e2' : '1px solid #e0e0e0'};
+    color: ${props => props.$active ? '#333333' : '#777777'};
+    
+    &:hover {
+        background-color: ${props => props.$active ? '#f9f9f9' : '#ebebeb'};
+    }
+    
+    span {
+        flex: 1;
+        text-align: left;
+    }
 `;

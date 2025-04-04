@@ -4,9 +4,10 @@ export const theme = {
       primary: '#000000',
       secondary: '#333333'
     },
-    selected: 'fad48f',
+    selected: '#fad48f',
     background: '#fbfbfb',
     border: '#e0e0e0',
+    danger: '#e74c3c',
     languages: {
       french: {
         bg: '#E6F3FF', // Pastel blue

@@ -104,6 +104,97 @@ Convert text to speech audio
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
+### /billing
+
+#### GET
+##### Summary
+
+Check Billing Account
+
+##### Description
+
+Check Billing Account
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.BillingAccountResponse](#modelsbillingaccountresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
+### /billing/cancel-subscription-eop
+
+#### POST
+##### Summary
+
+Cancel a Stripe individual subscription at the end of the period
+
+##### Description
+
+Cancel a Stripe individual subscription at the end of the period
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Cancel subscription request | Yes | [models.CancelIndividualSubscriptionRequest](#modelscancelindividualsubscriptionrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.CancelIndividualSubscriptionResponse](#modelscancelindividualsubscriptionresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+### /billing/create-checkout-session
+
+#### POST
+##### Summary
+
+Create a Stripe checkout session (individual)
+
+##### Description
+
+Creates a checkout session and redirects to Stripe's payment page
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Create checkout session request | Yes | [models.CreateIndividualCheckoutSessionRequest](#modelscreateindividualcheckoutsessionrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | Redirect to Stripe Checkout | [models.CreateIndividualCheckoutSessionResponse](#modelscreateindividualcheckoutsessionresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+### /billing/usage
+
+#### GET
+##### Summary
+
+Get Billing Account Usage
+
+##### Description
+
+Get Billing Account Usage, assumes free plan
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| plan | query | Plan | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.BillingAccountUsageResponse](#modelsbillingaccountusageresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
+---
 ### /news
 
 #### GET
@@ -812,6 +903,37 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | status | string | *Example:* `"live"` | Yes |
 
+#### models.BillingAccountResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| canceled | boolean | *Example:* `false` | Yes |
+| expiration | string | *Example:* `"2025-01-01T00:00:00Z"` | Yes |
+| plan | string | *Example:* `"PRO"` | Yes |
+
+#### models.BillingAccountUsageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| max_natural_tts_usage | integer | *Example:* `100` | Yes |
+| max_premium_stt_usage | integer | *Example:* `100` | Yes |
+| natural_tts_usage | integer | *Example:* `10` | Yes |
+| premium_stt_usage | integer | *Example:* `10` | Yes |
+
+#### models.CancelIndividualSubscriptionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CancelIndividualSubscriptionRequest | object |  |  |
+
+#### models.CancelIndividualSubscriptionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| canceled_plan | string | *Example:* `"PREMIUM"` | Yes |
+| current_expiration | string | *Example:* `"2025-03-24T12:00:00Z"` | Yes |
+| success | boolean | *Example:* `true` | Yes |
+
 #### models.CancelSubscriptionRequest
 
 | Name | Type | Description | Required |
@@ -874,6 +996,18 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | classroom_id | string | *Example:* `"123"` | Yes |
 
+#### models.CreateIndividualCheckoutSessionRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.CreateIndividualCheckoutSessionRequest | object |  |  |
+
+#### models.CreateIndividualCheckoutSessionResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| redirect_url | string | *Example:* `"https://checkout.stripe.com/c/pay/123"` | Yes |
+
 #### models.CreateOrganizationRequest
 
 | Name | Type | Description | Required |
@@ -899,11 +1033,17 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | message | string | *Example:* `"Classroom deleted successfully"` | Yes |
 
+#### models.ERROR_CODE
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| models.ERROR_CODE | string |  |  |
+
 #### models.ErrorResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| code | string | *Example:* `"PROFILE_NOT_FOUND"` | No |
+| code | [models.ERROR_CODE](#modelserror_code) | *Enum:* `"PROFILE_NOT_FOUND"`, `"NO_TRANSCRIPT"`, `"AUTH_REQUIRED"`, `"USAGE_LIMIT_REACHED"`<br>*Example:* `"PROFILE_NOT_FOUND"` | No |
 | error | string | *Example:* `"Something went wrong"` | Yes |
 
 #### models.EvaluateAnswerRequest
@@ -1077,6 +1217,7 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | audio_content | string | *Example:* `"base64-encoded-audio-content"` | Yes |
 | language_code | string | *Example:* `"en-US"` | Yes |
+| premium | boolean | *Example:* `false` | No |
 
 #### models.SpeechToTextResponse
 
@@ -1122,6 +1263,7 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | language_code | string | *Example:* `"en-US"` | Yes |
+| natural | boolean | *Example:* `false` | No |
 | text | string | *Example:* `"Hello, how are you?"` | Yes |
 | voice_name | string | *Example:* `"en-US-Standard-A"` | Yes |
 

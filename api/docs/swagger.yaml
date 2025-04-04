@@ -32,6 +32,60 @@ definitions:
     required:
     - status
     type: object
+  models.BillingAccountResponse:
+    properties:
+      canceled:
+        example: false
+        type: boolean
+      expiration:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      plan:
+        example: PRO
+        type: string
+    required:
+    - canceled
+    - expiration
+    - plan
+    type: object
+  models.BillingAccountUsageResponse:
+    properties:
+      max_natural_tts_usage:
+        example: 100
+        type: integer
+      max_premium_stt_usage:
+        example: 100
+        type: integer
+      natural_tts_usage:
+        example: 10
+        type: integer
+      premium_stt_usage:
+        example: 10
+        type: integer
+    required:
+    - max_natural_tts_usage
+    - max_premium_stt_usage
+    - natural_tts_usage
+    - premium_stt_usage
+    type: object
+  models.CancelIndividualSubscriptionRequest:
+    type: object
+  models.CancelIndividualSubscriptionResponse:
+    properties:
+      canceled_plan:
+        example: PREMIUM
+        type: string
+      current_expiration:
+        example: "2025-03-24T12:00:00Z"
+        type: string
+      success:
+        example: true
+        type: boolean
+    required:
+    - canceled_plan
+    - current_expiration
+    - success
+    type: object
   models.CancelSubscriptionRequest:
     type: object
   models.CancelSubscriptionResponse:
@@ -146,6 +200,16 @@ definitions:
     required:
     - classroom_id
     type: object
+  models.CreateIndividualCheckoutSessionRequest:
+    type: object
+  models.CreateIndividualCheckoutSessionResponse:
+    properties:
+      redirect_url:
+        example: https://checkout.stripe.com/c/pay/123
+        type: string
+    required:
+    - redirect_url
+    type: object
   models.CreateOrganizationRequest:
     type: object
   models.CreateOrganizationResponse:
@@ -176,11 +240,29 @@ definitions:
     required:
     - message
     type: object
+  models.ERROR_CODE:
+    enum:
+    - PROFILE_NOT_FOUND
+    - NO_TRANSCRIPT
+    - AUTH_REQUIRED
+    - USAGE_LIMIT_REACHED
+    type: string
+    x-enum-varnames:
+    - PROFILE_NOT_FOUND
+    - NO_TRANSCRIPT
+    - AUTH_REQUIRED
+    - USER_LIMIT_REACHED
   models.ErrorResponse:
     properties:
       code:
+        allOf:
+        - $ref: '#/definitions/models.ERROR_CODE'
+        enum:
+        - PROFILE_NOT_FOUND
+        - NO_TRANSCRIPT
+        - AUTH_REQUIRED
+        - USAGE_LIMIT_REACHED
         example: PROFILE_NOT_FOUND
-        type: string
       error:
         example: Something went wrong
         type: string
@@ -540,6 +622,9 @@ definitions:
       language_code:
         example: en-US
         type: string
+      premium:
+        example: false
+        type: boolean
     required:
     - audio_content
     - language_code
@@ -625,6 +710,9 @@ definitions:
       language_code:
         example: en-US
         type: string
+      natural:
+        example: false
+        type: boolean
       text:
         example: Hello, how are you?
         type: string
@@ -881,6 +969,101 @@ paths:
       summary: Text to speech
       tags:
       - audio
+  /billing:
+    get:
+      consumes:
+      - application/json
+      description: Check Billing Account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BillingAccountResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Check Billing Account
+      tags:
+      - billing
+  /billing/cancel-subscription-eop:
+    post:
+      consumes:
+      - application/json
+      description: Cancel a Stripe individual subscription at the end of the period
+      parameters:
+      - description: Cancel subscription request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CancelIndividualSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.CancelIndividualSubscriptionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Cancel a Stripe individual subscription at the end of the period
+      tags:
+      - billing
+  /billing/create-checkout-session:
+    post:
+      consumes:
+      - application/json
+      description: Creates a checkout session and redirects to Stripe's payment page
+      parameters:
+      - description: Create checkout session request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateIndividualCheckoutSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Redirect to Stripe Checkout
+          schema:
+            $ref: '#/definitions/models.CreateIndividualCheckoutSessionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a Stripe checkout session (individual)
+      tags:
+      - billing
+  /billing/usage:
+    get:
+      consumes:
+      - application/json
+      description: Get Billing Account Usage, assumes free plan
+      parameters:
+      - description: Plan
+        in: query
+        name: plan
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.BillingAccountUsageResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get Billing Account Usage
+      tags:
+      - billing
   /news:
     get:
       consumes:

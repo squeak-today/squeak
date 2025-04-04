@@ -104,6 +104,105 @@ paths:
         description: Text to speech request
         required: true
       summary: Text to speech
+  /billing:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.BillingAccountResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - billing
+      description: Check Billing Account
+      summary: Check Billing Account
+  /billing/cancel-subscription-eop:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/models.CancelIndividualSubscriptionResponse
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - billing
+      description: Cancel a Stripe individual subscription at the end of the period
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.CancelIndividualSubscriptionRequest'
+        description: Cancel subscription request
+        required: true
+      summary: Cancel a Stripe individual subscription at the end of the period
+  /billing/create-checkout-session:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/models.CreateIndividualCheckoutSessionResponse
+          description: Redirect to Stripe Checkout
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - billing
+      description: Creates a checkout session and redirects to Stripe's payment page
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/models.CreateIndividualCheckoutSessionRequest
+        description: Create checkout session request
+        required: true
+      summary: Create a Stripe checkout session (individual)
+  /billing/usage:
+    get:
+      parameters:
+        - description: Plan
+          in: query
+          name: plan
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.BillingAccountUsageResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - billing
+      description: 'Get Billing Account Usage, assumes free plan'
+      summary: Get Billing Account Usage
   /news:
     get:
       parameters:
@@ -956,6 +1055,60 @@ components:
       required:
         - status
       type: object
+    models.BillingAccountResponse:
+      properties:
+        canceled:
+          example: false
+          type: boolean
+        expiration:
+          example: '2025-01-01T00:00:00Z'
+          type: string
+        plan:
+          example: PRO
+          type: string
+      required:
+        - canceled
+        - expiration
+        - plan
+      type: object
+    models.BillingAccountUsageResponse:
+      properties:
+        max_natural_tts_usage:
+          example: 100
+          type: integer
+        max_premium_stt_usage:
+          example: 100
+          type: integer
+        natural_tts_usage:
+          example: 10
+          type: integer
+        premium_stt_usage:
+          example: 10
+          type: integer
+      required:
+        - max_natural_tts_usage
+        - max_premium_stt_usage
+        - natural_tts_usage
+        - premium_stt_usage
+      type: object
+    models.CancelIndividualSubscriptionRequest:
+      type: object
+    models.CancelIndividualSubscriptionResponse:
+      properties:
+        canceled_plan:
+          example: PREMIUM
+          type: string
+        current_expiration:
+          example: '2025-03-24T12:00:00Z'
+          type: string
+        success:
+          example: true
+          type: boolean
+      required:
+        - canceled_plan
+        - current_expiration
+        - success
+      type: object
     models.CancelSubscriptionRequest:
       type: object
     models.CancelSubscriptionResponse:
@@ -1070,6 +1223,16 @@ components:
       required:
         - classroom_id
       type: object
+    models.CreateIndividualCheckoutSessionRequest:
+      type: object
+    models.CreateIndividualCheckoutSessionResponse:
+      properties:
+        redirect_url:
+          example: 'https://checkout.stripe.com/c/pay/123'
+          type: string
+      required:
+        - redirect_url
+      type: object
     models.CreateOrganizationRequest:
       type: object
     models.CreateOrganizationResponse:
@@ -1100,11 +1263,29 @@ components:
       required:
         - message
       type: object
+    models.ERROR_CODE:
+      enum:
+        - PROFILE_NOT_FOUND
+        - NO_TRANSCRIPT
+        - AUTH_REQUIRED
+        - USAGE_LIMIT_REACHED
+      type: string
+      x-enum-varnames:
+        - PROFILE_NOT_FOUND
+        - NO_TRANSCRIPT
+        - AUTH_REQUIRED
+        - USER_LIMIT_REACHED
     models.ErrorResponse:
       properties:
         code:
+          allOf:
+            - $ref: '#/components/schemas/models.ERROR_CODE'
+          enum:
+            - PROFILE_NOT_FOUND
+            - NO_TRANSCRIPT
+            - AUTH_REQUIRED
+            - USAGE_LIMIT_REACHED
           example: PROFILE_NOT_FOUND
-          type: string
         error:
           example: Something went wrong
           type: string
@@ -1464,6 +1645,9 @@ components:
         language_code:
           example: en-US
           type: string
+        premium:
+          example: false
+          type: boolean
       required:
         - audio_content
         - language_code
@@ -1549,6 +1733,9 @@ components:
         language_code:
           example: en-US
           type: string
+        natural:
+          example: false
+          type: boolean
         text:
           example: 'Hello, how are you?'
           type: string

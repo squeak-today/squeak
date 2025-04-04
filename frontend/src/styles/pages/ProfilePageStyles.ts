@@ -1,15 +1,31 @@
 import styled from 'styled-components';
 import { theme } from '../theme';
 
-export const ProfileContainer = styled.div`
+
+export const MenuContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+  }
+`
+
+export const ProfileContainer = styled.div<{ $width?: string }>`
   padding: ${theme.spacing.lg};
   max-width: 800px;
+  width: ${props => props.$width || '50%'};
   margin: 0 auto;
   font-family: ${theme.typography.fontFamily.secondary};
   box-sizing: border-box;
+  justify-content: center;
   
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    padding: ${theme.spacing.md} ${theme.spacing.sm};
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    width: 90%;
   }
 `;
 
@@ -350,4 +366,262 @@ export const BannerOverlay = styled.div`
     align-items: flex-start;
     padding: ${theme.spacing.sm};
   }
-`; 
+`;
+
+export const BillingContainer = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: ${theme.spacing.lg};
+  box-shadow: ${theme.elevation.base};
+  margin-bottom: ${theme.spacing.md};
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+  
+  &:hover {
+    box-shadow: ${theme.elevation.hover};
+  }
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.md};
+    width: 90%;
+  }
+`;
+
+export const PremiumTitle = styled.h2`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.lg};
+  font-weight: 700;
+  color: ${theme.colors.text.primary};
+  margin: 0 0 ${theme.spacing.sm} 0;
+`;
+
+export const PremiumSubtitle = styled.p`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  margin: 0 0 ${theme.spacing.lg} 0;
+  max-width: 90%;
+`;
+
+export const PremiumButton = styled.button`
+  background: ${theme.colors.selected};
+  color: black;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+  word-wrap: break-word;
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.md};
+  }
+`;
+
+export const SubscriptionHeader = styled.div`
+  text-align: center;
+  margin-bottom: ${theme.spacing.lg};
+`;
+
+export const SubscriptionTitle = styled.h1<{ $fontSize?: string }>`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${props => (props.$fontSize == 'lg' ? theme.typography.fontSize.lg : theme.typography.fontSize.xl)};
+  margin-bottom: ${theme.spacing.md};
+  color: ${theme.colors.text.primary};
+  
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: ${theme.typography.fontSize.lg};
+  }
+`;
+
+export const CancelSubscriptionTitle = styled(SubscriptionTitle)`
+  font-size: ${theme.typography.fontSize.lg};
+  margin-bottom: 0;
+`;
+
+export const SubscriptionPlansContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: ${theme.spacing.lg};
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+export const ConfirmationContainer = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${theme.spacing.lg};
+`;
+
+export const ConfirmationText = styled.p`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.md};
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.lg};
+`;
+
+export const CancelSubscriptionText = styled(ConfirmationText)`
+  font-size: ${theme.typography.fontSize.base};
+  margin-bottom: 0;
+`;
+
+export const ButtonsContainer = styled.div`
+  display: flex;
+  gap: ${theme.spacing.md};
+  flex-wrap: wrap;
+  justify-content: center;
+`;
+
+export const ActionButton = styled.button<{ $variant?: 'primary' | 'danger' | 'secondary' }>`
+  background: ${props => {
+    switch (props.$variant) {
+      case 'danger': return theme.colors.danger;
+      case 'secondary': return 'transparent';
+      default: return theme.colors.selected;
+    }
+  }};
+  color: ${props => props.$variant === 'secondary' ? theme.colors.text.primary : 'black'};
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  border: ${props => props.$variant === 'secondary' ? `1px solid ${theme.colors.border}` : 'none'};
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+  
+  &:hover {
+    opacity: 0.9;
+    box-shadow: ${theme.elevation.base};
+  }
+`;
+
+export const PlanValue = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.md};
+  color: ${theme.colors.text.primary};
+  font-style: italic;
+  font-weight: 500;
+`;
+
+export const PlanSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const PlanSectionTitle = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.sm};
+`;
+
+export const PlanName = styled.div`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.lg};
+  font-weight: 500;
+  color: ${theme.colors.text.primary};
+  display: flex;
+  align-items: center;
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const CanceledTag = styled.span`
+  background-color: ${theme.colors.danger};
+  color: white;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  margin-left: ${theme.spacing.md};
+  border-radius: 12px;
+  font-weight: normal;
+`;
+
+export const UsageLimitContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: ${theme.spacing.md};
+`;
+
+export const UsageLimitTitle = styled.h3`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.md};
+  font-weight: 600;
+  color: ${theme.colors.text.primary};
+  margin: 0 0 ${theme.spacing.md} 0;
+  text-align: left;
+`;
+
+export const UsageLimitItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const UsageLimitLabel = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.sm};
+  text-align: left;
+`;
+
+export const UsageLimitBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.md};
+  width: 100%;
+`;
+
+export const UsageLimitBarWrapper = styled.div`
+  position: relative;
+  flex: 1;
+  height: 12px;
+  background: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
+`;
+
+export const UsageLimitBarFill = styled.div<{ $percentage: number; $atLimit: boolean }>`
+  height: 100%;
+  width: ${props => Math.min(props.$percentage, 100)}%;
+  background-color: ${props => props.$atLimit ? theme.colors.danger : '#4CAF50'};
+  transition: width 0.3s ease-in-out;
+`;
+
+export const UsageLimitValue = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  color: ${theme.colors.text.secondary};
+  min-width: 40px;
+  text-align: right;
+`;
+
+export const UsageLimitUnlimited = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
+  font-weight: 500;
+  color: ${theme.colors.text.secondary};
+  font-style: italic;
+  text-align: right;
+  min-width: 70px;
+`;
