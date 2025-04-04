@@ -1600,6 +1600,9 @@ components:
         language_code:
           example: en-US
           type: string
+        premium:
+          example: false
+          type: boolean
       required:
         - audio_content
         - language_code
@@ -1685,6 +1688,9 @@ components:
         language_code:
           example: en-US
           type: string
+        natural:
+          example: false
+          type: boolean
         text:
           example: 'Hello, how are you?'
           type: string

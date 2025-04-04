@@ -1318,6 +1318,8 @@ export interface components {
       audio_content: string;
       /** @example en-US */
       language_code: string;
+      /** @example false */
+      premium?: boolean;
     };
     "models.SpeechToTextResponse": {
       /** @example Hello, how are you? */
@@ -1360,6 +1362,8 @@ export interface components {
     "models.TextToSpeechRequest": {
       /** @example en-US */
       language_code: string;
+      /** @example false */
+      natural?: boolean;
       /** @example Hello, how are you? */
       text: string;
       /** @example en-US-Standard-A */

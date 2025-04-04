@@ -9,11 +9,11 @@ import (
 
 const (
 	NATURAL_TTS_FEATURE = "natural_tts"
-	NATURAL_SST_FEATURE = "natural_sst"
+	NATURAL_STT_FEATURE = "natural_stt"
 )
 
 func GetValidFeatureIDs() []string {
-	return []string{NATURAL_TTS_FEATURE, NATURAL_SST_FEATURE}
+	return []string{NATURAL_TTS_FEATURE, NATURAL_STT_FEATURE}
 }
 
 func isValidFeatureID(featureID string) bool {

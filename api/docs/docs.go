@@ -2308,6 +2308,10 @@ const docTemplate = `{
                 "language_code": {
                     "type": "string",
                     "example": "en-US"
+                },
+                "premium": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },
@@ -2427,6 +2431,10 @@ const docTemplate = `{
                 "language_code": {
                     "type": "string",
                     "example": "en-US"
+                },
+                "natural": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "text": {
                     "type": "string",

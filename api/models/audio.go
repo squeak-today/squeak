@@ -28,6 +28,7 @@ type TextToSpeechResponse struct {
 type SpeechToTextRequest struct {
 	AudioContent string `json:"audio_content" binding:"required" example:"base64-encoded-audio-content"`
 	LanguageCode string `json:"language_code" binding:"required" example:"en-US"`
+	Premium      bool   `json:"premium" example:"false"`
 }
 
 type SpeechToTextResponse struct {

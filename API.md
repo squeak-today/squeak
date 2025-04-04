@@ -1184,6 +1184,7 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | audio_content | string | *Example:* `"base64-encoded-audio-content"` | Yes |
 | language_code | string | *Example:* `"en-US"` | Yes |
+| premium | boolean | *Example:* `false` | No |
 
 #### models.SpeechToTextResponse
 
@@ -1229,6 +1230,7 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | language_code | string | *Example:* `"en-US"` | Yes |
+| natural | boolean | *Example:* `false` | No |
 | text | string | *Example:* `"Hello, how are you?"` | Yes |
 | voice_name | string | *Example:* `"en-US-Standard-A"` | Yes |
 
