@@ -245,6 +245,17 @@ const SidePanel = ({
                         <ItalicInfoText>Written on {formatDate(contentData.date_created)}</ItalicInfoText>
                     </ContentSection>
 
+                    <FeatureToggleButton 
+                        $active={useNaturalPronunciation}
+                        onClick={() => setUseNaturalPronunciation(!useNaturalPronunciation)}
+                    >
+                        <span>Natural Pronunciation</span>
+                        {useNaturalPronunciation && <ToggleIcon 
+                            src={checkIcon} 
+                            alt={"Enabled"}
+                        />}
+                    </FeatureToggleButton>
+
                     <ContentSection>
                         <ButtonGroup>
                             <ShareButton onClick={handleShare}>
