@@ -13,6 +13,7 @@ import { useProgressAPI } from '../hooks/useProgressAPI';
 import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import { useNotification } from '../context/NotificationContext';
 import { useBillingAPI } from '../hooks/useBillingAPI';
+import { usePlatform } from '../context/PlatformContext';
 import { theme } from '../styles/theme';
 import {
   MenuContainer,
@@ -131,7 +132,7 @@ function Profile() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [progress, setProgress] = useState<ProgressData | null>(null);
   const [isTeacher, setIsTeacher] = useState(false);
-  const [isStudent, setIsStudent] = useState(false);
+  const { isStudent } = usePlatform();
   const [billingAccount, setBillingAccount] = useState<BillingAccountData | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   
