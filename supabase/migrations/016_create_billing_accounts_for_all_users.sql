@@ -4,6 +4,12 @@ FROM auth.users
 WHERE NOT EXISTS (
     SELECT 1 FROM public.billing_accounts WHERE billing_accounts.user_id = auth.users.id
 )
+AND NOT EXISTS (
+    SELECT 1 FROM public.organizations WHERE organizations.admin_id = auth.users.id
+)
+AND NOT EXISTS (
+    SELECT 1 FROM public.teachers WHERE teachers.user_id = auth.users.id
+)
 ON CONFLICT (user_id) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION create_billing_account_for_new_user()
