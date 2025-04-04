@@ -40,6 +40,19 @@ func (h *TeacherHandler) CheckTeacherStatus(c *gin.Context) {
 	response := models.TeacherStatusResponse{
 		Exists: isTeacher,
 	}
+	if isTeacher {
+		organizationID, err := h.DBClient.CheckOrganizationByUserID(userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check organization"})
+			return
+		}
+		plan, err := h.DBClient.GetOrganizationPlan(organizationID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get organization plan"})
+			return
+		}
+		response.Plan = plan
+	}
 	c.JSON(http.StatusOK, response)
 }
 

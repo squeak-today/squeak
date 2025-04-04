@@ -1390,12 +1390,16 @@ export interface components {
     "models.StudentStatusResponse": {
       /** @example 456 */
       classroom_id: string;
+      /** @example FREE */
+      plan?: string;
       /** @example 123 */
       student_id: string;
     };
     "models.TeacherStatusResponse": {
       /** @example true */
       exists: boolean;
+      /** @example FREE */
+      plan?: string;
     };
     "models.TextToSpeechRequest": {
       /** @example en-US */

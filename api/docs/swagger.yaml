@@ -690,6 +690,9 @@ definitions:
       classroom_id:
         example: "456"
         type: string
+      plan:
+        example: FREE
+        type: string
       student_id:
         example: "123"
         type: string
@@ -702,6 +705,9 @@ definitions:
       exists:
         example: true
         type: boolean
+      plan:
+        example: FREE
+        type: string
     required:
     - exists
     type: object

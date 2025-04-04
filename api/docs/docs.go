@@ -2466,6 +2466,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "456"
                 },
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
+                },
                 "student_id": {
                     "type": "string",
                     "example": "123"
@@ -2481,6 +2485,10 @@ const docTemplate = `{
                 "exists": {
                     "type": "boolean",
                     "example": true
+                },
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
                 }
             }
         },

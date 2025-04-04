@@ -1250,6 +1250,7 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | classroom_id | string | *Example:* `"456"` | Yes |
+| plan | string | *Example:* `"FREE"` | No |
 | student_id | string | *Example:* `"123"` | Yes |
 
 #### models.TeacherStatusResponse
@@ -1257,6 +1258,7 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | exists | boolean | *Example:* `true` | Yes |
+| plan | string | *Example:* `"FREE"` | No |
 
 #### models.TextToSpeechRequest
 

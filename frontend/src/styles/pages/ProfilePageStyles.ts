@@ -625,3 +625,11 @@ export const UsageLimitUnlimited = styled.div`
   text-align: right;
   min-width: 70px;
 `;
+
+export const NoteText = styled.div`
+  font-style: italic;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.sm};
+  color: ${theme.colors.text.secondary};
+  margin-top: ${theme.spacing.md};
+`;
