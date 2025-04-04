@@ -80,6 +80,8 @@ func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID strin
 	}
 
 	plan := "FREE"
+	// if student or teacher, check if they have classroom plan, thus not free
+	// if normal user, check if they have premium access
 	if isStudent || isTeacher {
 		organizationID, err := h.DBClient.CheckOrganizationByUserID(userID)
 		if err != nil {
@@ -100,14 +102,7 @@ func (h *Handler) CheckUsageLimit(c *gin.Context, userID string, featureID strin
 			return false
 		}
 	}
-	if plan == "FREE" {
-		if isTeacher || isStudent {
-			c.JSON(http.StatusForbidden, models.ErrorResponse{
-				Error: "Usage limit reached on " + featureID,
-				Code:  models.USAGE_LIMIT_REACHED,
-			})
-			return false
-		}
+	if plan == "FREE" { // we increment usage for their free plan
 		usage, err := h.DBClient.GetUsage(userID, featureID, plan)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
