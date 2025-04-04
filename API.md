@@ -170,6 +170,30 @@ Creates a checkout session and redirects to Stripe's payment page
 | 200 | Redirect to Stripe Checkout | [models.CreateIndividualCheckoutSessionResponse](#modelscreateindividualcheckoutsessionresponse) |
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 
+### /billing/usage
+
+#### GET
+##### Summary
+
+Get Billing Account Usage
+
+##### Description
+
+Get Billing Account Usage, assumes free plan
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| plan | query | Plan | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.BillingAccountUsageResponse](#modelsbillingaccountusageresponse) |
+| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
 ---
 ### /news
 
@@ -886,6 +910,15 @@ Validates and processes incoming webhook events from Stripe
 | canceled | boolean | *Example:* `false` | Yes |
 | expiration | string | *Example:* `"2025-01-01T00:00:00Z"` | Yes |
 | plan | string | *Example:* `"PRO"` | Yes |
+
+#### models.BillingAccountUsageResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| max_natural_stt_usage | integer | *Example:* `100` | Yes |
+| max_natural_tts_usage | integer | *Example:* `100` | Yes |
+| natural_stt_usage | integer | *Example:* `10` | Yes |
+| natural_tts_usage | integer | *Example:* `10` | Yes |
 
 #### models.CancelIndividualSubscriptionRequest
 

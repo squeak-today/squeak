@@ -144,6 +144,7 @@ func init() {
 	billingGroup := router.Group("/billing")
 	{
 		billingGroup.GET("", billingHandler.GetBillingAccount)
+		billingGroup.GET("/usage", billingHandler.GetBillingAccountUsage)
 		billingGroup.POST("/create-checkout-session", billingHandler.CreateCheckoutSession)
 		billingGroup.POST("/cancel-subscription-eop", billingHandler.CancelSubscriptionAtEndOfPeriod)
 	}

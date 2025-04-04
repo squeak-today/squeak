@@ -21,3 +21,10 @@ type CancelIndividualSubscriptionResponse struct {
 	CurrentExpiration string `json:"current_expiration" binding:"required" example:"2025-03-24T12:00:00Z"`
 	CanceledPlan string `json:"canceled_plan" binding:"required" example:"PREMIUM"`
 }
+
+type BillingAccountUsageResponse struct {
+	NaturalTTSUsage int `json:"natural_tts_usage" binding:"required" example:"10"`
+	MaxNaturalTTSUsage int `json:"max_natural_tts_usage" binding:"required" example:"100"`
+	NaturalSTTUsage int `json:"natural_stt_usage" binding:"required" example:"10"`
+	MaxNaturalSTTUsage int `json:"max_natural_stt_usage" binding:"required" example:"100"`
+}

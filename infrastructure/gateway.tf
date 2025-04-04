@@ -307,6 +307,14 @@ module "billing" {
   lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "billing_usage" {
+  source      = "./api_gateway"
+  rest_api_id = aws_api_gateway_rest_api.story_api.id
+  parent_id   = module.billing.resource_id
+  path_part   = "usage"
+  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 module "billing_create_checkout_session" {
   source      = "./api_gateway"
   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -457,6 +465,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     // module.organization_payments_create_checkout_session,
     // module.organization_payments_cancel_subscription_eop
     module.billing,
+    module.billing_usage,
     module.billing_create_checkout_session,
     module.billing_cancel_subscription_eop,
     module.webhook
