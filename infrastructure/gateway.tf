@@ -274,49 +274,23 @@ module "organization_join" {
 }
 
 # Deck endpoints
+# Deck endpoints
 module "deck" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
-  path_part   = "deck"
-  http_method = "GET" # GET to list decks
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
-module "deck_post" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = aws_api_gateway_rest_api.story_api.root_resource_id
-  path_part   = "deck"
-  http_method = "POST" # POST to create a deck
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part    = "deck"
+  http_methods = ["GET", "POST"]  # GET to list decks, POST to create a deck
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
 module "deck_id" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = module.deck.resource_id
-  path_part   = "{deck_id}"
-  http_method = "GET" # GET a specific deck
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
-module "deck_id_put" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = module.deck.resource_id
-  path_part   = "{deck_id}"
-  http_method = "PUT" # Update a specific deck
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
-}
-
-module "deck_id_delete" {
-  source      = "./api_gateway"
-  rest_api_id = aws_api_gateway_rest_api.story_api.id
-  parent_id   = module.deck.resource_id
-  path_part   = "{deck_id}"
-  http_method = "DELETE" # Delete a specific deck
-  lambda_arn  = aws_lambda_function.story_api_lambda.invoke_arn
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = module.deck.resource_id
+  path_part    = "{deck_id}"
+  http_methods = ["GET", "PUT", "DELETE"]  # CRUD operations on a specific deck
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
 # module "organization_payments" {
@@ -474,10 +448,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.organization_create,
     module.organization_join,
     module.deck,
-    module.deck_post,
     module.deck_id,
-    module.deck_id_put,
-    module.deck_id_delete,
     // module.organization_payments,
     // module.organization_payments_create_checkout_session,
     // module.organization_payments_cancel_subscription_eop
