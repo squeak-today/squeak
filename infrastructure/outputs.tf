@@ -112,3 +112,13 @@ output "api_gateway_url_audio_tts" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/audio/tts"
   description = "Audio Text-to-Speech URL for Story API"
 }
+
+output "api_gateway_url_deck" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/deck"
+  description = "Deck URL for Story API (GET to list, POST to create)"
+}
+
+output "api_gateway_url_deck_id" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/deck/{deck_id}"
+  description = "Specific Deck URL for Story API (GET, PUT, DELETE operations)"
+}

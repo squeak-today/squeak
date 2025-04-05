@@ -5,15 +5,20 @@ export function useDeckAPI() {
     const { client, isAuthenticated, requireAuth } = useAuthenticatedAPI();
 
     const getDecks = useCallback(async (userID: string) => {
-        return requireAuth(async () => {
-            const { data, error } = await client!.GET('/deck' as any, {
-                params: {
-                    query: { user_id: userID }
-                }
+        try {
+            return await requireAuth(async () => {
+                const { data, error } = await client!.GET('/deck' as any, {
+                    params: {
+                        query: { user_id: userID }
+                    }
+                });
+                if (error) throw error;
+                return data || [];
             });
-            if (error) throw error;
-            return data;
-        });
+        } catch (error) {
+            console.error('Error fetching decks:', error);
+            return [];
+        }
     }, [client, requireAuth]);
 
     const createDeck = useCallback(async (deckData: { title: string; language: string; is_public: boolean }) => {

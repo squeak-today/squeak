@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeckAPI } from '../hooks/useDeckAPI';
 import { useNotification } from '../context/NotificationContext';
@@ -19,69 +19,66 @@ interface DeckBrowserProps {
 
 const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
     const [decks, setDecks] = useState<Deck[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const { getDecks } = useDeckAPI();
+    const [title, setTitle] = useState<string>('');
+    const [language, setLanguage] = useState<string>('');
+
+    const { createDeck } = useDeckAPI();
     const { showNotification } = useNotification();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchDecks = async () => {
-            if (!userID) {
-                setDecks([]);
-                setIsLoading(false);
-                return;
-            }
-            try {
-                setIsLoading(true);
-                const decksData = await getDecks(userID);
-                setDecks(decksData || []);
-            } catch (error) {
-                console.error('Error fetching decks:', error);
-                if (error instanceof Error && error.message !== '404') { // Adjust based on getDecks error type
-                    showNotification('Failed to load decks. Please try again.', 'error');
-                }
-                setDecks([]);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchDecks();
-    }, [userID, getDecks, showNotification]);
+    const handleCreateDeck = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const newDeck = await createDeck({ title, language, is_public: false });
+            setDecks((prevDecks) => [...prevDecks, newDeck]);
+            setTitle('');
+            setLanguage('');
+            showNotification('Deck created successfully!', 'success');
+        } catch (error) {
+            console.error('Error creating deck:', error);
+            showNotification('Failed to create deck. Please try again.', 'error');
+        }
+    };
 
     const handleDeckClick = (deck: Deck) => {
         navigate(`/decks/${deck.id}`);
     };
 
-    if (isLoading) {
-        return (
-            <Container>
-                <Title>Your Decks</Title>
-                <NoDecksMessage>Loading decks...</NoDecksMessage>
-            </Container>
-        );
-    }
-
-    if (decks.length === 0) {
-        return (
-            <Container>
-                <Title>Your Decks</Title>
-                <NoDecksMessage>No decks available yet!</NoDecksMessage>
-            </Container>
-        );
-    }
-
     return (
         <Container>
             <Title>Your Decks</Title>
-            <DeckList>
-                {decks.map((deck) => (
-                    <DeckItem key={deck.id} onClick={() => handleDeckClick(deck)}>
-                        <h3>{deck.title}</h3>
-                        <p>Language: {deck.language}</p>
-                        <p>{deck.is_public ? 'Public' : 'Private'}</p>
-                    </DeckItem>
-                ))}
-            </DeckList>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', alignItems: 'flex-start' }}>
+                {decks.length === 0 ? (
+                    <NoDecksMessage>No decks available yet!</NoDecksMessage>
+                ) : (
+                    <DeckList>
+                        {decks.map((deck) => (
+                            <DeckItem key={deck.id} onClick={() => handleDeckClick(deck)}>
+                                <h3>{deck.title}</h3>
+                                <p>Language: {deck.language}</p>
+                                <p>{deck.is_public ? 'Public' : 'Private'}</p>
+                            </DeckItem>
+                        ))}
+                    </DeckList>
+                )}
+                <form onSubmit={handleCreateDeck} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Deck Title"
+                        required
+                    />
+                    <input
+                        type="text"
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        placeholder="Language"
+                        required
+                    />
+                    <button type="submit">Create Deck</button>
+                </form>
+            </div>
         </Container>
     );
 };
