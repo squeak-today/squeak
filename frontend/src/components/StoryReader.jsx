@@ -25,20 +25,6 @@ const StoryText = styled.div`
 	flex-wrap: wrap; // Enable wrapping within the flex container
 `;
 
-const MarkdownWord = styled.span`
-    display: inline;
-    cursor: pointer;
-    margin: -2px 0;
-    padding: 2px 1px;
-    border-radius: ${(props) => props.highlightRounding}px;
-    transition: background-color 0.15s ease;
-
-    &:hover {
-        text-decoration: none;
-        background-color: #fbd48f;
-    }
-`;
-
 const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLanguage }) => {
     const getSentences = (text) => {
         // big regex for sentence detection:
@@ -73,15 +59,21 @@ const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLan
             if (word.trim() === '') {
                 return word;
             }
+
+            const roundingVariants = {
+                5: 'rounded-[5px]', 
+                8: 'rounded-[8px]',
+                10: 'rounded-[10px]',
+            }
+            
             return (
-                <MarkdownWord
-                    highlightRounding={highlightRounding}
+                <span
                     key={index}
                     onClick={(e) => handleWordClick(e, word.trim(), sourceLanguage, sentence.trim())}
-                    className="word"
+                    className={`inline cursor-pointer -my-[2px] mx-0 py-[2px] px-[1px] ${roundingVariants[highlightRounding]} transition-colors duration-150 ease-in hover:bg-[#fbd48f] word`}
                 >
                     {word}
-                </MarkdownWord>
+                </span>
             );
         });
     };
