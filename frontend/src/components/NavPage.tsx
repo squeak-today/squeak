@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TransitionWrapper } from './PageTransition';
 import { usePlatform } from '../context/PlatformContext';
@@ -38,11 +38,11 @@ interface NavPageProps {
   initialActiveNav?: string;
 }
 
-function NavPage({ 
+const NavPage: React.FC<NavPageProps> = ({ 
   children,
   initialActiveNav = 'learn',
   isLoading = false,
-}: NavPageProps): JSX.Element {
+}) => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
