@@ -24,7 +24,7 @@ function BecomeStudent() {
   const [classroomID, setClassroomID] = useState("");
   // Flag to indicate we've checked the student's status
   const [statusChecked, setStatusChecked] = useState(false);
-  const apiBase = process.env.REACT_APP_API_BASE;
+  const apiBase = import.meta.env.VITE_API_BASE;
   const [isInitializing, setIsInitializing] = useState(true);
   const { checkRoles } = usePlatform();
   const { jwtToken } = useAuth();

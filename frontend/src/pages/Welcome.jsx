@@ -24,7 +24,7 @@ function Welcome() {
     });
     const [currentScreen, setCurrentScreen] = useState(1);
 
-    const apiBase = process.env.REACT_APP_API_BASE;
+    const apiBase = import.meta.env.VITE_API_BASE;
 
     const handleLogout = async () => {
 		try {

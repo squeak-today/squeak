@@ -22,7 +22,7 @@ function Auth() {
 
     const { getProfile } = useProfileAPI();
 
-    const apiBase = process.env.REACT_APP_API_BASE;
+    const apiBase = import.meta.env.VITE_API_BASE;
 
 
     const toggleMode = (newMode) => {

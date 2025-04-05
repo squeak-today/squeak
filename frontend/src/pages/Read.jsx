@@ -56,7 +56,7 @@ function Read() {
     const [pagedData, setPagedData] = useState(new Map());
     const [totalPages, setTotalPages] = useState(null);
 
-    const apiBase = process.env.REACT_APP_API_BASE;
+    const apiBase = import.meta.env.VITE_API_BASE;
 
     const { translate, tts } = useAudioAPI();
     const [isPlayingTTS, setIsPlayingTTS] = useState(false);
@@ -87,15 +87,13 @@ function Read() {
                 
                 setContentData({
                     id: id,
-                    type: metadata.content_type,
+                    type: metadata.content_type || type,
                     title: metadata.title,
                     preview: metadata.preview_text,
                     tags: [metadata.language, metadata.topic],
                     difficulty: metadata.cefr_level,
                     date_created: metadata.date_created,
                     content: metadata.content,
-                     // eslint-disable-next-line no-dupe-keys
-                    type: type, 
                 });
                 setSourceLanguage(LANGUAGE_CODES_REVERSE[metadata.language]);
                 if (type === 'Story' && metadata.pages) {
