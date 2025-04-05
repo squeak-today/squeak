@@ -6,6 +6,7 @@ import teacherAccept from '../assets/teacher_accept.png';
 import { useEffect } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
+import Footer from '../components/Footer';
 import {
   HomeContainer,
   ContentContainer,
@@ -145,7 +146,7 @@ function Home() {
         <FAQ />
       </FAQSection>
 
-      
+      <Footer />
     </BasicPage>
   );
 }

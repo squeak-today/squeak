@@ -275,31 +275,13 @@ export const HeroButton = styled.button`
 
 export const FooterContainer = styled.footer`
   position: relative;
-  width: 90%; /* Match the width to the header */
-  max-width: 1200px; /* Keep it consistent with the header */
+  width: 90%;
+  margin: 0 auto;
   height: 80px;
-  margin: 0 auto; /* Center the footer */
-  width: 90%; /* Match the width to the header */
-  max-width: 1200px; /* Keep it consistent with the header */
-  height: 80px;
-  margin: 0 auto; /* Center the footer */
-  background-color: #ffffff;
-  border-top: 0.75px solid #000000; /* Black border on top */
-  border-top: 0.75px solid #000000; /* Black border on top */
+  border-top: 0.75px solid #000000;
   display: flex;
   align-items: center;
-  justify-content: center; /* Space between left and right content */
-  padding: 0 20px; /* Add padding inside the footer */
-  justify-content: center; /* Space between left and right content */
-  padding: 0 20px; /* Add padding inside the footer */
-  box-sizing: border-box;
-
-  @media (max-width: 768px) {
-    flex-direction: column; /* Stack items on smaller screens */
-    flex-direction: column; /* Stack items on smaller screens */
-    height: auto;
-    padding: 1rem;
-  }
+  justify-content: center;
 `;
 
 

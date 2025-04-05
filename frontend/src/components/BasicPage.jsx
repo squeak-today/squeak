@@ -152,10 +152,7 @@ function BasicPage({
 
         {/* Main Content */}
         {children}
-
-        <FooterContainer>
-          <FooterText>© 2025 Squeak. All rights reserved.</FooterText>
-        </FooterContainer>
+        
       </PageContainer>
     </TransitionWrapper>)}
     </>
