@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useStudentAPI } from '../hooks/useStudentAPI';
 import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import { useAuth } from './AuthContext';
-import { useBillingAPI } from 'hooks/useBillingAPI';
+import { useBillingAPI } from '../hooks/useBillingAPI';
 
 interface PlatformContextType {
   isTeacher: boolean;

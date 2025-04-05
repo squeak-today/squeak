@@ -29,7 +29,7 @@ function Learn() {
 	const [activeTab, setActiveTab] = useState('today');
 	const { showNotification } = useNotification();
 
-	const apiBase = process.env.REACT_APP_API_BASE;
+	const apiBase = import.meta.env.VITE_API_BASE;
 
 	const navigate = useNavigate();
 
