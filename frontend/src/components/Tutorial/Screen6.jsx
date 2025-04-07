@@ -249,7 +249,7 @@ const Screen6 = ({ onNext, sourceLanguage = "fr" }) => {
             <NextButton
               onNext={() => {
                 if (!hasTranslated) {
-                  showNotification("Please translate at least one word before continuing.", "error");
+                  showNotification("Please translate at least one word by clicking on it before continuing.", "error");
                   return;
                 }
                 onNext();
