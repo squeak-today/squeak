@@ -19,7 +19,7 @@ export const SubscriptionCard = styled.div`
 
 export const PlanTitle = styled.h3<{ isCustom?: boolean }>`
   font-family: ${theme.typography.fontFamily.primary};
-  font-size: ${props => props.isCustom ? theme.typography.fontSize.xl : theme.typography.fontSize.lg};
+  font-size: ${props => props.isCustom ? theme.typography.fontSize.lg : theme.typography.fontSize.lg};
   margin: 0 0 ${theme.spacing.md};
   color: ${theme.colors.text.primary};
   font-weight: bold;
@@ -56,6 +56,7 @@ export const BenefitsList = styled.ul`
   list-style-type: none;
   padding: 0;
   margin: 0 0 0;
+  margin-bottom: ${theme.spacing.md};
 `;
 
 export const BenefitItem = styled.li`

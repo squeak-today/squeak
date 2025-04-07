@@ -46,7 +46,11 @@ export const GenerateButton = styled.button`
   }
 `;
 
-export const StoryContainer = styled.div`
+interface StoryContainerProps {
+  $isClosing?: boolean;
+}
+
+export const StoryContainer = styled.div<StoryContainerProps>`
   position: relative;
   border-radius: 15px;
   font-family: 'Lora', serif;
@@ -112,7 +116,12 @@ export const InputField = styled.input`
   }
 `;
 
-export const Tooltip = styled.div`
+interface TooltipProps {
+  top: number;
+  left: number;
+}
+
+export const Tooltip = styled.div<TooltipProps>`
   position: fixed;
   top: ${(props) => props.top}px;
   left: ${(props) => props.left}px;
@@ -131,7 +140,11 @@ export const Tooltip = styled.div`
   }
 `;
 
-export const ModalContainer = styled.div`
+interface ModalContainerProps {
+  $isClosing?: boolean;
+}
+
+export const ModalContainer = styled.div<ModalContainerProps>`
   position: fixed;
   top: 0;
   left: 0;
@@ -390,7 +403,11 @@ export const MenuText = styled.div`
   }
 `;
 
-export const MobileMenu = styled.div`
+interface MobileMenuProps {
+  isOpen: boolean;
+}
+
+export const MobileMenu = styled.div<MobileMenuProps>`
   display: none; 
   position: absolute;
   top: 70px; 

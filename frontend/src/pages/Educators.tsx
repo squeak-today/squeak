@@ -1,12 +1,11 @@
-// Home.jsx
+import React, { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import landingDrawing from '../assets/mouse_pencil.png';
 import teacherAccept from '../assets/teacher_accept.png';
-import { useEffect, useRef, useState } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import Footer from '../components/Footer';
-import SectionNav from '../components/SectionNav';
+import SubscriptionDetails from '../components/SubscriptionDetails';
 import {
   HomeContainer,
   ContentContainer,
@@ -41,13 +40,19 @@ import uwo from '../assets/schools/uwo.png';
 import FeatureSlideshow from '../components/FeatureSlideshow';
 import FAQ from '../components/FAQ';
 
-function Home() {
+interface SchoolLogo {
+  id: number;
+  src: string;
+  alt: string;
+}
+
+const Educators: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   
-  const featuresRef = useRef(null);
-  const faqRef = useRef(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const pricingRef = useRef<HTMLDivElement>(null);
+  const faqRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -58,40 +63,30 @@ function Home() {
   }, [navigate]);
 
   useEffect(() => {
-    const scrollToSection = () => {
-      const params = new URLSearchParams(location.search);
-      const section = params.get('section');
-      
-      if (section) {
-        switch(section) {
-          case 'features':
-            featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
-            break;
-          case 'faq':
-            faqRef.current?.scrollIntoView({ behavior: 'smooth' });
-            break;
-        }
+    const hash = location.hash;
+    if (hash) {
+      const sectionId = hash.substring(1);
+      switch(sectionId) {
+        case 'features':
+          featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+          break;
+        case 'pricing':
+          pricingRef.current?.scrollIntoView({ behavior: 'smooth' });
+          break;
+        case 'faq':
+          faqRef.current?.scrollIntoView({ behavior: 'smooth' });
+          break;
       }
-    };
-
-    if (!initialLoadComplete) {
-      const timer = setTimeout(() => {
-        scrollToSection();
-        setInitialLoadComplete(true);
-      }, 100);
-      return () => clearTimeout(timer);
-    } else {
-      scrollToSection();
     }
-  }, [location.search, initialLoadComplete]);
+  }, [location]);
 
-  const handleGetStarted = () => {
+  const handleGetStarted = (): void => {
     navigate('/auth/signup');
   };
 
   const headingWords = "Learn Languages Reading What You Love.".split(" ");
 
-  const schoolLogos = [
+  const schoolLogos: SchoolLogo[] = [
     { id: 1, src: tdsb, alt: "Toronto District School Board" },
     { id: 2, src: uw, alt: "University of Waterloo" },
     { id: 3, src: wlu, alt: "Wilfrid Laurier University" },
@@ -103,6 +98,7 @@ function Home() {
   return (
     <BasicPage showGetStarted showSectionNav sections={[
       { label: "Features", href: "features" },
+      { label: "Pricing", href: "pricing" },
       { label: "FAQs", href: "faq" },
     ]}>
       <HomeContainer>
@@ -155,12 +151,11 @@ function Home() {
         <FeatureSlideshow />
       </TitledSection>
       
-
       <Section>
         <SectionContentWrapper>
           <ContentContainer style={{marginTop: "0vh"}}>
             <SectionHeading>
-              Squeak for <Highlight>Teachers</Highlight>
+              Made for <Highlight>Teachers</Highlight>
             </SectionHeading>
             <SectionSubHeading>
               Teachers, we're here to help <strong>you</strong>. With <strong>Classrooms</strong>, approve and reject content, and track student progress.
@@ -174,6 +169,57 @@ function Home() {
           <WizardHat src={teacherAccept} alt="Teacher accepting content" />
         </SectionContentWrapper>
       </Section>
+
+      <TitledSection ref={pricingRef} id="pricing">
+        <SectionHeading>
+          Simple <Highlight>Pricing</Highlight>
+        </SectionHeading>
+        <SubHeading>
+          <i>Plans for every kind of language educator.</i>
+        </SubHeading>
+        <div className="flex justify-center gap-8 flex-wrap mt-8">
+          <SubscriptionDetails
+            title="Free"
+            price={0}
+            priceUnit="/month"
+            benefits={[
+              "1 Classroom",
+              "Teacher Dashboard",
+              "Basic content access",
+              "Student progress tracking"
+            ]}
+            buttonText="Sign Up"
+            onButtonClick={() => navigate('/auth/signup')}
+          />
+          <SubscriptionDetails
+            title="Classroom"
+            price={14.99}
+            priceUnit="/month"
+            benefits={[
+              "Unlimited Classrooms",
+              "Squeak Premium for all students",
+              "Advanced student analytics",
+              "24/7 Support"
+            ]}
+            buttonText="Learn More"
+            onButtonClick={() => window.open('/contact-support.html', '_blank')}
+          />
+          <SubscriptionDetails
+            title="Organization"
+            price={-1}
+            addOnText="Custom pricing for schools and districts"
+            benefits={[
+              "Everything in Classroom plan",
+              "Custom integration options",
+              "Dedicated account manager",
+              "Tailored onboarding for staff",
+              "Customized reporting"
+            ]}
+            buttonText="Contact Us"
+            onButtonClick={() => window.open('mailto:founders@squeak.today')}
+          />
+        </div>
+      </TitledSection>
 
       <FAQSection ref={faqRef} id="faq">
         <SectionHeading>
@@ -198,6 +244,6 @@ function Home() {
       <Footer />
     </BasicPage>
   );
-}
+};
 
-export default Home;
+export default Educators;
