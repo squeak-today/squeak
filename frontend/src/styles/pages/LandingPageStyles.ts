@@ -80,7 +80,7 @@ export const TitledSection = styled(Section)`
 `;
 
 export const FAQSection = styled(TitledSection)`
-  margin-top: 0rem;
+  margin-top: 4rem;
   margin-bottom: 4rem;
 `;
 
@@ -121,10 +121,10 @@ const fadeInFromTop = keyframes`
   }
 `;
 
-export const AnimatedWord = styled.span`
+export const AnimatedWord = styled.span<{ $delay: number; $shouldAnimate?: boolean }>`
   display: inline-block;
   opacity: 0;
-  animation: ${fadeInFromTop} 0.5s ease forwards;
+  animation: ${props => props.$shouldAnimate === false ? 'none' : fadeInFromTop} 0.5s ease forwards;
   animation-delay: ${props => props.$delay}s;
 `;
 
@@ -296,7 +296,7 @@ export const SchoolLogo = styled.img`
   opacity: 0.6;
   transition: opacity 0.3s ease;
   filter: grayscale(100%);
-  margin: ${theme.spacing.xs} 0;
+  margin: ${theme.spacing.sm} 0;
 
   &:hover {
     opacity: 1;

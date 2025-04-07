@@ -29,6 +29,7 @@ import {
 } from '../styles/NavPageStyles';
 import logo from '../assets/drawing_400.png';
 import supabase from '../lib/supabase';
+import { FaDiscord, FaInstagram, FaTwitter, FaTiktok } from 'react-icons/fa';
 
 interface NavPageProps {
   children: ReactNode;
@@ -158,6 +159,45 @@ const NavPage: React.FC<NavPageProps> = ({
     return null;
   };
 
+  const renderSocialIcons = () => {
+    return (
+      <div className={`flex justify-center items-center gap-4 ${isMobile ? 'mt-4' : 'mt-auto mb-8'} w-full`}>
+        <a 
+          href="https://discord.gg/j8zFGqQEYk" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaDiscord size={20} />
+        </a>
+        <a 
+          href="https://www.instagram.com/squeak.today" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaInstagram size={20} />
+        </a>
+        <a 
+          href="https://x.com/learnsqueak" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaTwitter size={20} />
+        </a>
+        <a 
+          href="https://www.tiktok.com/@learnsqueak" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaTiktok size={20} />
+        </a>
+      </div>
+    );
+  };
+
   return (
     <TransitionWrapper>
       <PageContainer>
@@ -204,6 +244,7 @@ const NavPage: React.FC<NavPageProps> = ({
                 {renderPremiumPanel()}
               </div>
               {renderDashboardLink()}
+              {renderSocialIcons()}
             </MobileNav>
           </>
         ) : (
@@ -246,6 +287,7 @@ const NavPage: React.FC<NavPageProps> = ({
               {renderPremiumPanel()}
             </div>}
             {renderDashboardLink()}
+            {renderSocialIcons()}
           </Sidebar>
         )}
         <MainContent $isMobile={isMobile}>

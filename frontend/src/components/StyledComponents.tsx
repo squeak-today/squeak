@@ -46,7 +46,11 @@ export const GenerateButton = styled.button`
   }
 `;
 
-export const StoryContainer = styled.div`
+interface StoryContainerProps {
+  $isClosing?: boolean;
+}
+
+export const StoryContainer = styled.div<StoryContainerProps>`
   position: relative;
   border-radius: 15px;
   font-family: 'Lora', serif;
@@ -112,7 +116,12 @@ export const InputField = styled.input`
   }
 `;
 
-export const Tooltip = styled.div`
+interface TooltipProps {
+  top: number;
+  left: number;
+}
+
+export const Tooltip = styled.div<TooltipProps>`
   position: fixed;
   top: ${(props) => props.top}px;
   left: ${(props) => props.left}px;
@@ -131,7 +140,11 @@ export const Tooltip = styled.div`
   }
 `;
 
-export const ModalContainer = styled.div`
+interface ModalContainerProps {
+  $isClosing?: boolean;
+}
+
+export const ModalContainer = styled.div<ModalContainerProps>`
   position: fixed;
   top: 0;
   left: 0;
@@ -275,31 +288,13 @@ export const HeroButton = styled.button`
 
 export const FooterContainer = styled.footer`
   position: relative;
-  width: 90%; /* Match the width to the header */
-  max-width: 1200px; /* Keep it consistent with the header */
+  width: 90%;
+  margin: 0 auto;
   height: 80px;
-  margin: 0 auto; /* Center the footer */
-  width: 90%; /* Match the width to the header */
-  max-width: 1200px; /* Keep it consistent with the header */
-  height: 80px;
-  margin: 0 auto; /* Center the footer */
-  background-color: #ffffff;
-  border-top: 0.75px solid #000000; /* Black border on top */
-  border-top: 0.75px solid #000000; /* Black border on top */
+  border-top: 0.75px solid #000000;
   display: flex;
   align-items: center;
-  justify-content: center; /* Space between left and right content */
-  padding: 0 20px; /* Add padding inside the footer */
-  justify-content: center; /* Space between left and right content */
-  padding: 0 20px; /* Add padding inside the footer */
-  box-sizing: border-box;
-
-  @media (max-width: 768px) {
-    flex-direction: column; /* Stack items on smaller screens */
-    flex-direction: column; /* Stack items on smaller screens */
-    height: auto;
-    padding: 1rem;
-  }
+  justify-content: center;
 `;
 
 
@@ -408,7 +403,11 @@ export const MenuText = styled.div`
   }
 `;
 
-export const MobileMenu = styled.div`
+interface MobileMenuProps {
+  isOpen: boolean;
+}
+
+export const MobileMenu = styled.div<MobileMenuProps>`
   display: none; 
   position: absolute;
   top: 70px; 

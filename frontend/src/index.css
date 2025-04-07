@@ -7,8 +7,9 @@
   --color-text-primary: #000000;
   --color-text-secondary: #333333;
   --color-background: #fbfbfb;
+  --color-item-background: #ece9df;
   --color-border: #e0e0e0;
-  --color-selected: #f4f4f4;
+  --color-selected: #fad48f;
   --color-danger: #e74c3c;
   --color-danger-bg: #F3A69E;
   --color-emphasis: #FFFEEB;
@@ -40,6 +41,19 @@
   /* Typography */
   --font-primary: 'Lora', serif;
   --font-secondary: 'Montserrat', sans-serif;
+  --font-size-sm: 0.75rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.25rem;
+  --font-size-lg: 1.5rem;
+  --font-size-xl: 3rem;
+  --font-size-xxl: 3.5rem;
+
+  --text-sm: 0.75rem;
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5rem;
+  --text-xl: 3rem;
+  --text-xxl: 3.5rem;
   
   /* Spacing */
   --spacing-sm: 0.5rem;
