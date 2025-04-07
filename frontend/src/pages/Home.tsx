@@ -36,7 +36,9 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [initialLoadComplete, setInitialLoadComplete] = useState<boolean>(false);
-  const [showRoleModal, setShowRoleModal] = useState<boolean>(true);
+  const params = new URLSearchParams(location.search);
+  const [showRoleModal, setShowRoleModal] = useState<boolean>(!params.has('section'));
+  const [animationsEnabled, setAnimationsEnabled] = useState<boolean>(!showRoleModal);
   
   const featuresRef = useRef<HTMLDivElement>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,7 @@ const Home: React.FC = () => {
       navigate('/educators');
     } else {
       setShowRoleModal(false);
+      setAnimationsEnabled(true);
     }
   };
 
@@ -133,7 +136,11 @@ const Home: React.FC = () => {
         <CenteredContentContainer>
           <MainHeading>
             {headingWords.map((word, index) => (
-              <AnimatedWord key={index} $delay={0.5 + (index * 0.15)}>
+              <AnimatedWord 
+                key={index} 
+                $delay={0.5 + (index * 0.15)} 
+                $shouldAnimate={animationsEnabled}
+              >
                 {word}
               </AnimatedWord>
             ))}

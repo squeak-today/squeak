@@ -31,7 +31,7 @@ export const MobileNav = styled.div<MobileNavProps>`
   position: fixed;
   top: 0;
   right: 0;
-  width: 70%;
+  width: 50%;
   height: 100vh;
   background-color: white;
   z-index: 1002;
@@ -247,9 +247,9 @@ export const Spinner = styled.div`
 `;
 
 export const DashboardLink = styled.a`
-  margin-top: auto;
-  margin-bottom: ${theme.spacing.md};
-  padding: ${theme.spacing.md};
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
   color: ${theme.colors.text.primary};
@@ -263,8 +263,8 @@ export const DashboardLink = styled.a`
 `;
 
 export const MobileDashboardLink = styled.a`
-  margin-top: ${theme.spacing.md};
-  padding: ${theme.spacing.md};
+  margin-top: 0;
+  padding: 0;
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
   color: ${theme.colors.text.primary};

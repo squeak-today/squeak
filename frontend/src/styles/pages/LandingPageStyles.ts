@@ -121,10 +121,10 @@ const fadeInFromTop = keyframes`
   }
 `;
 
-export const AnimatedWord = styled.span<{ $delay: number }>`
+export const AnimatedWord = styled.span<{ $delay: number; $shouldAnimate?: boolean }>`
   display: inline-block;
   opacity: 0;
-  animation: ${fadeInFromTop} 0.5s ease forwards;
+  animation: ${props => props.$shouldAnimate === false ? 'none' : fadeInFromTop} 0.5s ease forwards;
   animation-delay: ${props => props.$delay}s;
 `;
 
