@@ -46,7 +46,6 @@ function Home() {
   const location = useLocation();
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   
-  const heroRef = useRef(null);
   const featuresRef = useRef(null);
   const faqRef = useRef(null);
 
@@ -70,9 +69,6 @@ function Home() {
             break;
           case 'faq':
             faqRef.current?.scrollIntoView({ behavior: 'smooth' });
-            break;
-          default:
-            heroRef.current?.scrollIntoView({ behavior: 'smooth' });
             break;
         }
       }
@@ -105,13 +101,11 @@ function Home() {
   ];
 
   return (
-    <BasicPage showGetStarted>
-      <SectionNav route='/' sections={[
-        { label: "Home", href: "hero" },
-        { label: "Features", href: "features" },
-        { label: "FAQs", href: "faq" },
-      ]}/>
-      <HomeContainer ref={heroRef} id="hero">
+    <BasicPage showGetStarted showSectionNav sections={[
+      { label: "Features", href: "features" },
+      { label: "FAQs", href: "faq" },
+    ]}>
+      <HomeContainer>
         <BackgroundImage
           src={landingDrawing}
           alt="Squeak Mouse Drawing"
@@ -185,7 +179,20 @@ function Home() {
         <SectionHeading>
           FAQs
         </SectionHeading>
-        <FAQ />
+        <FAQ faqs={[
+          {
+            question: "Is Squeak available for multiple languages?",
+            answer: "Currently, Squeak supports French and Spanish. We're working hard to add more languages soon!"
+          },
+          {
+            question: "Is Squeak free?",
+            answer: "Yes! Squeak is 100% free for teachers and students."
+          },
+          {
+            question: "How do you source your news articles?",
+            answer: "We combine hundreds of different news sources and create articles based on the info. Squeak will NEVER write any information that is not from an online, trusted source."
+          }
+        ]}/>
       </FAQSection>
 
       <Footer />

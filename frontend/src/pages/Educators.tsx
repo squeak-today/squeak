@@ -1,7 +1,7 @@
+import React, { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import landingDrawing from '../assets/mouse_pencil.png';
 import teacherAccept from '../assets/teacher_accept.png';
-import { useEffect, useRef } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import Footer from '../components/Footer';
@@ -40,13 +40,18 @@ import uwo from '../assets/schools/uwo.png';
 import FeatureSlideshow from '../components/FeatureSlideshow';
 import FAQ from '../components/FAQ';
 
-function Educators() {
+interface SchoolLogo {
+  id: number;
+  src: string;
+  alt: string;
+}
+
+const Educators: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const heroRef = useRef(null);
-  const featuresRef = useRef(null);
-  const faqRef = useRef(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const faqRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -67,20 +72,17 @@ function Educators() {
         case 'faq':
           faqRef.current?.scrollIntoView({ behavior: 'smooth' });
           break;
-        default:
-          heroRef.current?.scrollIntoView({ behavior: 'smooth' });
-          break;
       }
     }
   }, [location]);
 
-  const handleGetStarted = () => {
+  const handleGetStarted = (): void => {
     navigate('/auth/signup');
   };
 
   const headingWords = "Learn Languages Reading What You Love.".split(" ");
 
-  const schoolLogos = [
+  const schoolLogos: SchoolLogo[] = [
     { id: 1, src: tdsb, alt: "Toronto District School Board" },
     { id: 2, src: uw, alt: "University of Waterloo" },
     { id: 3, src: wlu, alt: "Wilfrid Laurier University" },
@@ -90,13 +92,11 @@ function Educators() {
   ];
 
   return (
-    <BasicPage showGetStarted>
-      <SectionNav route='/educators' sections={[
-        { label: "Home", href: "hero" },
-        { label: "Features", href: "features" },
-        { label: "FAQs", href: "faq" },
-      ]}/>
-      <HomeContainer ref={heroRef} id="hero">
+    <BasicPage showGetStarted showSectionNav sections={[
+      { label: "Features", href: "features" },
+      { label: "FAQs", href: "faq" },
+    ]}>
+      <HomeContainer>
         <BackgroundImage
           src={landingDrawing}
           alt="Squeak Mouse Drawing"
@@ -146,12 +146,11 @@ function Educators() {
         <FeatureSlideshow />
       </TitledSection>
       
-
       <Section>
         <SectionContentWrapper>
           <ContentContainer style={{marginTop: "0vh"}}>
             <SectionHeading>
-              Squeak for <Highlight>Teachers</Highlight>
+              Made for <Highlight>Teachers</Highlight>
             </SectionHeading>
             <SectionSubHeading>
               Teachers, we're here to help <strong>you</strong>. With <strong>Classrooms</strong>, approve and reject content, and track student progress.
@@ -170,12 +169,25 @@ function Educators() {
         <SectionHeading>
           FAQs
         </SectionHeading>
-        <FAQ />
+        <FAQ faqs={[
+          {
+            question: "Is Squeak available for multiple languages?",
+            answer: "Currently, Squeak supports French and Spanish. We're working hard to add more languages soon!"
+          },
+          {
+            question: "Is Squeak free?",
+            answer: "Yes! Squeak is 100% free for teachers and students."
+          },
+          {
+            question: "How do you source your news articles?",
+            answer: "We combine hundreds of different news sources and create articles based on the info. Squeak will NEVER write any information that is not from an online, trusted source."
+          }
+        ]}/>
       </FAQSection>
 
       <Footer />
     </BasicPage>
   );
-}
+};
 
 export default Educators;

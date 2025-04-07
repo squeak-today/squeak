@@ -10,22 +10,7 @@ import {
   ContactLink
 } from '../styles/components/FAQStyles';
 
-const faqs = [
-	{
-    question: "Is Squeak available for multiple languages?",
-    answer: "Currently, Squeak supports French and Spanish. We're working hard to add more languages soon!"
-  },
-  {
-    question: "Is Squeak free?",
-    answer: "Yes! Squeak is 100% free for teachers and students."
-  },
-  {
-    question: "How do you source your news articles?",
-    answer: "We combine hundreds of different news sources and create articles based on the info. Squeak will NEVER write any information that is not from an online, trusted source."
-  }
-];
-
-const FAQ = () => {
+const FAQ = ({ faqs }) => {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleQuestion = (index) => {

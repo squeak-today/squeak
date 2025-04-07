@@ -1,5 +1,5 @@
+import React, { useState } from 'react';
 import { TransitionWrapper } from './PageTransition';
-import { useState } from 'react';
 import {
   NavHeader,
   HeaderLogo,
@@ -21,20 +21,41 @@ import {
   Spinner
 } from '../styles/BasicPageStyles';
 import logo from '../assets/drawing_400.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi'; 
 import { AiOutlineMenu } from 'react-icons/ai';  // hamburger/waffle icon
+import SectionNav from './SectionNav';
 
-function BasicPage({ 
+interface Section {
+  label: string;
+  href: string;
+}
+
+interface BasicPageProps {
+  children: React.ReactNode;
+  showLogout?: boolean;
+  onLogout?: () => void;
+  showGetStarted?: boolean;
+  showTeach?: boolean;
+  showJoinClassroom?: boolean;
+  isLoading?: boolean;
+  sections?: Section[];
+  showSectionNav?: boolean;
+}
+
+const BasicPage: React.FC<BasicPageProps> = ({ 
   children, 
-  showLogout, 
-  onLogout, 
-  showGetStarted, 
+  showLogout = false, 
+  onLogout = () => {}, 
+  showGetStarted = false, 
   showTeach = false,
   showJoinClassroom = false,
-  isLoading = false
-}) {
+  isLoading = false,
+  sections = [],
+  showSectionNav = false
+}) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleGetStarted = () => {
     navigate('/auth/signup');
@@ -59,13 +80,25 @@ function BasicPage({
     </TransitionWrapper>
     {!isLoading && (<TransitionWrapper>
       <PageContainer>
-        <NavHeader>
-          <HeaderLogo
-            src={logo}
-            alt="Squeak Logo"
-            onClick={() => navigate('/')}
-          />
-          <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
+        <NavHeader className="flex items-center justify-between">
+          <div className="flex items-center">
+            <HeaderLogo
+              src={logo}
+              alt="Squeak Logo"
+              onClick={() => navigate('/')}
+            />
+            <LogoText onClick={() => navigate('/')}>Squeak</LogoText>
+          </div>
+          
+          {showSectionNav && sections.length > 0 && (
+            <div className="hidden md:flex items-center justify-center flex-1 mx-4">
+              <SectionNav 
+                route={location.pathname} 
+                sections={sections} 
+                className="mb-0 py-0 border-0 w-full flex-1 flex justify-center" 
+              />
+            </div>
+          )}
           
           <ButtonContainer>
             {showLogout && (
@@ -96,6 +129,29 @@ function BasicPage({
             )}
 
             <MobileMenu isOpen={isMobileMenuOpen}>
+              {showSectionNav && sections.length > 0 && (
+                <div className="pb-2 mb-2 border-b border-border">
+                  {sections.map((section) => (
+                    <MenuText
+                      key={section.label}
+                      onClick={() => {
+                        const url = new URL(window.location.href);
+                        url.searchParams.set('section', section.href);
+                        window.history.pushState({}, '', url.toString());
+                        
+                        const element = document.getElementById(section.href);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                        
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      {section.label}
+                    </MenuText>
+                  ))}
+                </div>
+              )}
               {showTeach && (
                 <MenuText
                   onClick={() => {
@@ -150,6 +206,16 @@ function BasicPage({
           </ButtonContainer>
         </NavHeader>
 
+        {/* Mobile Section Nav */}
+        {showSectionNav && sections.length > 0 && (
+          <div className="md:hidden mb-4 flex justify-center">
+            <SectionNav 
+              route={location.pathname} 
+              sections={sections} 
+            />
+          </div>
+        )}
+
         {/* Main Content */}
         {children}
         
@@ -157,6 +223,6 @@ function BasicPage({
     </TransitionWrapper>)}
     </>
   );
-}
+};
 
 export default BasicPage;

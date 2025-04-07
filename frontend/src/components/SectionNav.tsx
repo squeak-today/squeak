@@ -34,12 +34,12 @@ const SectionNav: React.FC<SectionNavProps> = ({ className, route, sections }) =
     }
   };
 
-  const tabStyle = "border-none font-secondary bg-white px-4 py-2 rounded-md hover:bg-selected transition-all duration-200 text-base";
+  const tabStyle = "mx-auto border-none font-secondary bg-white px-4 py-2 rounded-md hover:bg-selected transition-all duration-200 text-base";
   const params = new URLSearchParams(location.search);
   const currentSection = params.get('section');
 
   return (
-    <div className={`hidden md:flex justify-center gap-6 mt-0 pt-0 py-2 mb-8 sticky top-0 bg-white z-10 border-b border-border font-secondary ${className || ''}`}>
+    <div className={`flex justify-between items-center w-full ${className || ''}`}>
       {sections.map((section) => (
         <button 
           key={section.label}
