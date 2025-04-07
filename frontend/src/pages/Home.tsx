@@ -36,6 +36,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [initialLoadComplete, setInitialLoadComplete] = useState<boolean>(false);
+  const [showRoleModal, setShowRoleModal] = useState<boolean>(true);
   
   const featuresRef = useRef<HTMLDivElement>(null);
   const pricingRef = useRef<HTMLDivElement>(null);
@@ -84,6 +85,14 @@ const Home: React.FC = () => {
     navigate('/auth/signup');
   };
 
+  const handleRoleSelection = (role: 'individual' | 'teacher'): void => {
+    if (role === 'teacher') {
+      navigate('/educators');
+    } else {
+      setShowRoleModal(false);
+    }
+  };
+
   const headingWords = "Learn Languages Reading What You Love.".split(" ");
 
   const languageFlags: LanguageFlag[] = [
@@ -97,6 +106,25 @@ const Home: React.FC = () => {
       { label: "Pricing", href: "pricing" },
       { label: "FAQs", href: "faq" },
     ]}>
+      {showRoleModal && (
+        <div className="z-1000 bg-black/50 flex fixed inset-0 justify-center items-center">
+          <div className="rounded-[16px] bg-white py-2 px-8 w-auto">
+            <h1 className="mt-4 text-center text-lg font-primary mb-4">I am a...</h1>
+            <div className="mb-4 items-center justify-center flex flex-row gap-4">
+              <button onClick={() => handleRoleSelection('individual')}
+                className="cursor-pointer border-none font-secondary hover:bg-selected bg-item-background bg-gray-200 text-black py-3 px-12 rounded-[16px] text-base transition-colors duration-200 ease-in-out"
+              >
+                Individual
+              </button>
+              <button onClick={() => handleRoleSelection('teacher')}
+                className="cursor-pointer border-none font-secondary hover:bg-selected bg-item-background bg-gray-200 text-black py-3 px-12 rounded-[16px] text-base transition-colors duration-200 ease-in-out"
+              >
+                Teacher
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <HomeContainer>
         <BackgroundImage
           src={landingDrawing}
