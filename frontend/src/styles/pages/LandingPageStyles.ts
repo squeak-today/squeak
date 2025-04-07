@@ -80,7 +80,7 @@ export const TitledSection = styled(Section)`
 `;
 
 export const FAQSection = styled(TitledSection)`
-  margin-top: 0rem;
+  margin-top: 4rem;
   margin-bottom: 4rem;
 `;
 

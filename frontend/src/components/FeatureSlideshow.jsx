@@ -18,8 +18,8 @@ import FeatureOneContent from './feature_slideshow/FeatureOneContent';
 const features = [
   {
     id: 1,
-    title: "Learning For All Levels",
-    description: "All content on Squeak is sorted into 6 difficulty levels for content with just the right amount of challenge.",
+    title: "Content Made For You",
+    description: "All content is sorted into 6 difficulty levels and multiple topics for content for the right challenge and enjoyment.",
     content: <FeatureOneContent />
   },
   {
