@@ -96,12 +96,12 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
           },
           {
             label: 'Squeak for Schools',
-            url: '/educator',
+            url: '/educators',
             type: 'local'
           },
           {
             label: 'Squeak Premium',
-            url: '/',
+            url: '/pricing',
             type: 'local'
           }
         ]} />
