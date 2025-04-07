@@ -95,7 +95,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
             type: 'local'
           },
           {
-            label: 'Squeak for Schools',
+            label: 'Squeak for Educators',
             url: '/educators',
             type: 'local'
           },
