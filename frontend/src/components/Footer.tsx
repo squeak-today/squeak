@@ -47,11 +47,11 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
   return (
     <footer className={`w-full bg-[var(--color-background)] border-t border-[var(--color-border)] p-[var(--spacing-lg)_var(--spacing-md)] font-[var(--font-secondary)] mt-[var(--spacing-xl)] flex flex-col items-center ${className || ''}`}>
       <div className="max-w-[1200px] w-full mx-auto flex flex-wrap justify-center gap-8">
-        <Section title="About Us" items={[
+        <Section title="Our Team" items={[
           {
-            label: 'Our Team & Mission',
-            url: '/about',
-            type: 'local'
+            label: 'Sales',
+            url: 'mailto:founders@squeak.today',
+            type: 'external'
           },
           {
             label: 'Discord',
@@ -101,12 +101,12 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
           },
           {
             label: 'Squeak Premium',
-            url: '/pricing',
+            url: '/?section=pricing',
             type: 'local'
           }
         ]} />
 
-        <Section title="Privacy and Terms" items={[
+        {/* <Section title="Privacy and Terms" items={[
           {
             label: 'Privacy Policy',
             url: '/privacy',
@@ -117,7 +117,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
             url: '/tos',
             type: 'local'
           }
-        ]} />
+        ]} /> */}
 
       
       

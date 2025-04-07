@@ -8,6 +8,8 @@ import {
   LevelInfo,
   Example
 } from '../../styles/components/feature_slideshow/FeatureOneContentStyles';
+import { TopicCarousel } from '../TopicCarousel';
+import { AVAILABLE_TOPICS } from '../../lib/topics'
 
 const FeatureOneContent = () => {
   const levels = [
@@ -20,8 +22,16 @@ const FeatureOneContent = () => {
   ];
 
   return (
-    <Container>
+    // <Container>
+    <div className="w-full">
       <Subtitle>Tailored to each student's skill level</Subtitle>
+      
+      <div className="flex justify-center">
+        <div className="w-full max-w-[100%] md:max-w-[40vw] mb-4 items-center">
+          <TopicCarousel topics={AVAILABLE_TOPICS} />
+        </div>
+      </div>
+      
       <LevelsList>
         {levels.map(({ cefr, example }) => (
           <LevelRow key={cefr}>
@@ -32,7 +42,7 @@ const FeatureOneContent = () => {
           </LevelRow>
         ))}
       </LevelsList>
-    </Container>
+    </div>
   );
 };
 
