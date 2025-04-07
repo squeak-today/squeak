@@ -293,6 +293,15 @@ module "deck_id" {
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+module "deck_create" {
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = module.deck.resource_id
+  path_part    = "create"
+  http_methods = ["POST"]
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 # module "organization_payments" {
 #   source      = "./api_gateway"
 #   rest_api_id = aws_api_gateway_rest_api.story_api.id
@@ -449,6 +458,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.organization_join,
     module.deck,
     module.deck_id,
+    module.deck_create,
     // module.organization_payments,
     // module.organization_payments_create_checkout_session,
     // module.organization_payments_cancel_subscription_eop

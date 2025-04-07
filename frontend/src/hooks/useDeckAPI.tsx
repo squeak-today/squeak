@@ -21,7 +21,7 @@ export function useDeckAPI() {
         }
     }, [client, requireAuth]);
 
-    const createDeck = useCallback(async (deckData: { title: string; language: string; is_public: boolean }) => {
+    const createDeck = useCallback(async (deckData: { name: string; description?: string }) => {
         return requireAuth(async () => {
             const { data, error } = await client!.POST('/deck/create' as any, {
                 body: deckData

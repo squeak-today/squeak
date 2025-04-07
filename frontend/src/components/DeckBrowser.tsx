@@ -6,8 +6,7 @@ import { Container, Title, DeckList, DeckItem, NoDecksMessage } from '../styles/
 
 interface Deck {
     id: string;
-    title: string;
-    language: string;
+    name: string;  
     is_public: boolean;
     user_id: string;
     created_at: string;
@@ -19,8 +18,8 @@ interface DeckBrowserProps {
 
 const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
     const [decks, setDecks] = useState<Deck[]>([]);
-    const [title, setTitle] = useState<string>('');
-    const [language, setLanguage] = useState<string>('');
+    const [name, setName] = useState<string>('');  // Changed from title to name
+    const [description, setDescription] = useState<string>('');  // Added description
 
     const { createDeck } = useDeckAPI();
     const { showNotification } = useNotification();
@@ -29,10 +28,10 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
     const handleCreateDeck = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const newDeck = await createDeck({ title, language, is_public: false });
+            const newDeck = await createDeck({ name, description });
             setDecks((prevDecks) => [...prevDecks, newDeck]);
-            setTitle('');
-            setLanguage('');
+            setName('');
+            setDescription('');
             showNotification('Deck created successfully!', 'success');
         } catch (error) {
             console.error('Error creating deck:', error);
@@ -54,8 +53,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
                     <DeckList>
                         {decks.map((deck) => (
                             <DeckItem key={deck.id} onClick={() => handleDeckClick(deck)}>
-                                <h3>{deck.title}</h3>
-                                <p>Language: {deck.language}</p>
+                                <h3>{deck.name}</h3>  // Changed from title to name
                                 <p>{deck.is_public ? 'Public' : 'Private'}</p>
                             </DeckItem>
                         ))}
@@ -64,17 +62,16 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
                 <form onSubmit={handleCreateDeck} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <input
                         type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Deck Title"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Deck Name"
                         required
                     />
                     <input
                         type="text"
-                        value={language}
-                        onChange={(e) => setLanguage(e.target.value)}
-                        placeholder="Language"
-                        required
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Description (optional)"
                     />
                     <button type="submit">Create Deck</button>
                 </form>

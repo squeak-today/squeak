@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS decks (
     CONSTRAINT unique_user_deck_name UNIQUE (user_id, name)
 );
 
+ALTER TABLE decks ADD COLUMN is_system BOOLEAN DEFAULT FALSE;
+
 -- Flashcard Table
 CREATE TABLE IF NOT EXISTS flashcards (
     id SERIAL PRIMARY KEY,
