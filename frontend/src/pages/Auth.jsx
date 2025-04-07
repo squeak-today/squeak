@@ -125,15 +125,14 @@ function Auth() {
           <AuthTitle>{isLogin ? 'Welcome Back!' : 'Create an Account'}</AuthTitle>
 
           {/* Social Logins */}
-          {/*
+    
           <SocialButton onClick={handleAppleSignIn}>
             <AppleIcon /> Login with Apple
           </SocialButton>
-          */}
-
-          <SocialButton onClick={handleGoogleSignIn}>
+         
+          {/*<SocialButton onClick={handleGoogleSignIn}>
             <GoogleIcon /> Login with Google
-          </SocialButton>
+          </SocialButton>*/}
 
           {/* Separator */}
           <Separator>
