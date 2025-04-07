@@ -5,7 +5,7 @@ import teacherAccept from '../assets/teacher_accept.png';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import Footer from '../components/Footer';
-import SectionNav from '../components/SectionNav';
+import SubscriptionDetails from '../components/SubscriptionDetails';
 import {
   HomeContainer,
   ContentContainer,
@@ -51,6 +51,7 @@ const Educators: React.FC = () => {
   const location = useLocation();
   
   const featuresRef = useRef<HTMLDivElement>(null);
+  const pricingRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -68,6 +69,9 @@ const Educators: React.FC = () => {
       switch(sectionId) {
         case 'features':
           featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+          break;
+        case 'pricing':
+          pricingRef.current?.scrollIntoView({ behavior: 'smooth' });
           break;
         case 'faq':
           faqRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -94,6 +98,7 @@ const Educators: React.FC = () => {
   return (
     <BasicPage showGetStarted showSectionNav sections={[
       { label: "Features", href: "features" },
+      { label: "Pricing", href: "pricing" },
       { label: "FAQs", href: "faq" },
     ]}>
       <HomeContainer>
@@ -164,6 +169,57 @@ const Educators: React.FC = () => {
           <WizardHat src={teacherAccept} alt="Teacher accepting content" />
         </SectionContentWrapper>
       </Section>
+
+      <TitledSection ref={pricingRef} id="pricing">
+        <SectionHeading>
+          Simple <Highlight>Pricing</Highlight>
+        </SectionHeading>
+        <SubHeading>
+          <i>Plans for every kind of language educator.</i>
+        </SubHeading>
+        <div className="flex justify-center gap-8 flex-wrap mt-8">
+          <SubscriptionDetails
+            title="Free"
+            price={0}
+            priceUnit="/month"
+            benefits={[
+              "1 Classroom",
+              "Teacher Dashboard",
+              "Basic content access",
+              "Student progress tracking"
+            ]}
+            buttonText="Sign Up"
+            onButtonClick={() => navigate('/auth/signup')}
+          />
+          <SubscriptionDetails
+            title="Classroom"
+            price={14.99}
+            priceUnit="/month"
+            benefits={[
+              "Unlimited Classrooms",
+              "Squeak Premium for all students",
+              "Advanced student analytics",
+              "24/7 Support"
+            ]}
+            buttonText="Learn More"
+            onButtonClick={() => window.open('/contact-support.html', '_blank')}
+          />
+          <SubscriptionDetails
+            title="Organization"
+            price={-1}
+            addOnText="Custom pricing for schools and districts"
+            benefits={[
+              "Everything in Classroom plan",
+              "Custom integration options",
+              "Dedicated account manager",
+              "Tailored onboarding for staff",
+              "Customized reporting"
+            ]}
+            buttonText="Contact Us"
+            onButtonClick={() => window.open('mailto:founders@squeak.today')}
+          />
+        </div>
+      </TitledSection>
 
       <FAQSection ref={faqRef} id="faq">
         <SectionHeading>
