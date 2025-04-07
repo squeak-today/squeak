@@ -1,11 +1,11 @@
-// Home.jsx
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import landingDrawing from '../assets/mouse_pencil.png';
 import teacherAccept from '../assets/teacher_accept.png';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import supabase from '../lib/supabase';
 import BasicPage from '../components/BasicPage';
 import Footer from '../components/Footer';
+import SectionNav from '../components/SectionNav';
 import {
   HomeContainer,
   ContentContainer,
@@ -40,8 +40,13 @@ import uwo from '../assets/schools/uwo.png';
 import FeatureSlideshow from '../components/FeatureSlideshow';
 import FAQ from '../components/FAQ';
 
-function Home() {
+function Educators() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const heroRef = useRef(null);
+  const featuresRef = useRef(null);
+  const faqRef = useRef(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -50,6 +55,24 @@ function Home() {
       }
     });
   }, [navigate]);
+
+  useEffect(() => {
+    const hash = location.hash;
+    if (hash) {
+      const sectionId = hash.substring(1);
+      switch(sectionId) {
+        case 'features':
+          featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+          break;
+        case 'faq':
+          faqRef.current?.scrollIntoView({ behavior: 'smooth' });
+          break;
+        default:
+          heroRef.current?.scrollIntoView({ behavior: 'smooth' });
+          break;
+      }
+    }
+  }, [location]);
 
   const handleGetStarted = () => {
     navigate('/auth/signup');
@@ -68,7 +91,12 @@ function Home() {
 
   return (
     <BasicPage showGetStarted>
-      <HomeContainer>
+      <SectionNav route='/educators' sections={[
+        { label: "Home", href: "hero" },
+        { label: "Features", href: "features" },
+        { label: "FAQs", href: "faq" },
+      ]}/>
+      <HomeContainer ref={heroRef} id="hero">
         <BackgroundImage
           src={landingDrawing}
           alt="Squeak Mouse Drawing"
@@ -108,7 +136,7 @@ function Home() {
         </LogoContainer>
       </SmallSection>
 
-      <TitledSection>
+      <TitledSection ref={featuresRef} id="features">
         <SectionHeading>
           Built for the <Highlight>Classroom</Highlight>
         </SectionHeading>
@@ -138,7 +166,7 @@ function Home() {
         </SectionContentWrapper>
       </Section>
 
-      <FAQSection>
+      <FAQSection ref={faqRef} id="faq">
         <SectionHeading>
           FAQs
         </SectionHeading>
@@ -150,4 +178,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Educators;
