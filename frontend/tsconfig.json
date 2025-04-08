@@ -24,7 +24,4 @@
   "include": [
     "src"
   ],
-  "paths": {
-    "shared": ["../../shared/src"]
-  }
 }

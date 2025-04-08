@@ -3,6 +3,7 @@ package models
 type StudentStatusResponse struct {
 	StudentID   string `json:"student_id" binding:"required" example:"123"`
 	ClassroomID string `json:"classroom_id" binding:"required" example:"456"`
+	Plan        string `json:"plan" example:"FREE"`
 }
 
 type GetStudentClassroomResponse struct {

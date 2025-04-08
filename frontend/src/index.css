@@ -1,11 +1,94 @@
-body {
-  margin: 0;
-  font-family: 'Montserrat', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme {
+  /* Colors */
+  --color-text-primary: #000000;
+  --color-text-secondary: #333333;
+  --color-background: #fbfbfb;
+  --color-item-background: #ece9df;
+  --color-border: #e0e0e0;
+  --color-selected: #fad48f;
+  --color-danger: #e74c3c;
+  --color-danger-bg: #F3A69E;
+  --color-emphasis: #FFFEEB;
+  
+  /* Language colors */
+  --color-french-bg: #E6F3FF;
+  --color-spanish-bg: #FFE8D6;
+  
+  /* CEFR level colors */
+  --color-cefr-beginner-bg: #E6F4EA;
+  --color-cefr-beginner-text: #1B873B;
+  --color-cefr-intermediate-bg: #FEF7E0;
+  --color-cefr-intermediate-text: #B95000;
+  --color-cefr-advanced-bg: #FCE8E8;
+  --color-cefr-advanced-text: #D93026;
+  --color-cefr-a-bg: #E6F4EA;
+  --color-cefr-a-text: #1B873B;
+  --color-cefr-b-bg: #FEF7E0;
+  --color-cefr-b-text: #774800;
+  --color-cefr-c-bg: #FCE8E8;
+  --color-cefr-c-text: #D93026;
+  
+  /* Streak colors */
+  --color-streak-none: #f0f0f0;
+  --color-streak-short: #B3FFB3;
+  --color-streak-medium: #FFD6B3;
+  --color-streak-long: #FFB3B3;
+  
+  /* Typography */
+  --font-primary: 'Lora', serif;
+  --font-secondary: 'Montserrat', sans-serif;
+  --font-size-sm: 0.75rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.25rem;
+  --font-size-lg: 1.5rem;
+  --font-size-xl: 3rem;
+  --font-size-xxl: 3.5rem;
+
+  --text-sm: 0.75rem;
+  --text-base: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.5rem;
+  --text-xl: 3rem;
+  --text-xxl: 3.5rem;
+  
+  /* Spacing */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 4rem;
+  
+  /* Elevation/Shadows */
+  --shadow-base: 0 2px 4px rgba(0, 0, 0, 0.15);
+  --shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.15);
+  
+  /* Breakpoints */
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1200px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer base {
+  body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
 }

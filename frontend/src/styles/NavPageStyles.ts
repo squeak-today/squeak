@@ -17,12 +17,13 @@ export const PageContainer = styled.div`
 
 export const MainContent = styled.div<MainContentProps>`
   flex: 1;
-  padding: ${theme.spacing.md};
-  margin-left: ${props => props.$isMobile ? '0' : '160px'};
+  margin-left: ${props => props.$isMobile ? '0' : 'calc(15vw + ' + theme.spacing.md + ' + ' + theme.spacing.md + ')'};
   position: relative;
   
   @media (max-width: ${theme.breakpoints.tablet}) {
     margin-top: 70px;
+    margin-left: 0;
+    width: 100%;
   }
 `;
 
@@ -30,7 +31,7 @@ export const MobileNav = styled.div<MobileNavProps>`
   position: fixed;
   top: 0;
   right: 0;
-  width: 70%;
+  width: 50%;
   height: 100vh;
   background-color: white;
   z-index: 1002;
@@ -246,9 +247,9 @@ export const Spinner = styled.div`
 `;
 
 export const DashboardLink = styled.a`
-  margin-top: auto;
-  margin-bottom: ${theme.spacing.md};
-  padding: ${theme.spacing.md};
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
   color: ${theme.colors.text.primary};
@@ -262,8 +263,8 @@ export const DashboardLink = styled.a`
 `;
 
 export const MobileDashboardLink = styled.a`
-  margin-top: ${theme.spacing.md};
-  padding: ${theme.spacing.md};
+  margin-top: 0;
+  padding: 0;
   font-family: ${theme.typography.fontFamily.secondary};
   font-size: ${theme.typography.fontSize.base};
   color: ${theme.colors.text.primary};
@@ -274,4 +275,67 @@ export const MobileDashboardLink = styled.a`
   &:hover {
     color: ${theme.colors.text.secondary};
   }
+`;
+
+export const PremiumPanel = styled.div`
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: ${theme.elevation.base};
+  padding: ${theme.spacing.md};
+  margin-top: auto;
+  margin-bottom: ${theme.spacing.md};
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 85%;
+  width: 85%;
+  
+  &:hover {
+    box-shadow: ${theme.elevation.hover};
+  }
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    max-width: 90%;
+  }
+`;
+
+export const PremiumTitle = styled.div`
+  font-family: ${theme.typography.fontFamily.primary};
+  font-size: ${theme.typography.fontSize.md};
+  font-weight: 600;
+  margin-bottom: ${theme.spacing.sm};
+  color: ${theme.colors.text.primary};
+`;
+
+export const PremiumSubtitle = styled.div`
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 0.8rem;
+  color: ${theme.colors.text.secondary};
+  margin-bottom: ${theme.spacing.md};
+`;
+
+export const PremiumButton = styled.button`
+  background: ${theme.colors.selected};
+  color: black;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: ${theme.spacing.sm} ${theme.spacing.md};
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+export const MobilePremiumPanel = styled(PremiumPanel)`
+  margin: ${theme.spacing.md} auto;
+  width: 80%;
 `;

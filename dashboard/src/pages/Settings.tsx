@@ -1,7 +1,7 @@
 import NavPage from '../components/NavPage';
 import TabSelect from '../components/TabSelect';
 import TeacherSettings from '../components/settings/TeacherSettings';
-// import OrganizationSettings from '../components/settings/OrganizationSettings';
+import OrganizationSettings from '../components/settings/OrganizationSettings';
 import { ContentContainer, Title } from '../styles/components/SettingsPageStyles';
 
 function Settings() {
@@ -11,11 +11,11 @@ function Settings() {
       label: 'Teacher',
       content: <TeacherSettings />
     },
-    // {
-    //   id: 'organization',
-    //   label: 'Organization',
-    //   content: <OrganizationSettings />
-    // }
+    {
+      id: 'organization',
+      label: 'Organization',
+      content: <OrganizationSettings />
+    }
   ];
 
   return (

@@ -4,6 +4,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { AuthProvider } from './context/AuthContext';
 import { PlatformProvider } from './context/PlatformContext';
 import Home from './pages/Home';
+import Educators from './pages/Educators';
 import Learn from './pages/Learn';
 import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -20,12 +21,18 @@ const App: React.FC = () => {
 			<Router>
 				<Routes>
 					<Route path="/" element={<Home />} />
+					<Route path="/educators" element={<Educators />} />
 					<Route path="/student/become" element={
 						<ProtectedRoute>
 							<BecomeStudent />
 						</ProtectedRoute>
 					} />
 					<Route path="/profile" element={
+						<ProtectedRoute>
+							<Profile />
+						</ProtectedRoute>
+					} />
+					<Route path="/profile/:getPremium" element={
 						<ProtectedRoute>
 							<Profile />
 						</ProtectedRoute>

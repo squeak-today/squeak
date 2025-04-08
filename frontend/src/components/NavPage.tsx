@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TransitionWrapper } from './PageTransition';
 import { usePlatform } from '../context/PlatformContext';
@@ -20,10 +20,16 @@ import {
   CloseButton,
   MobileNavButton,
   DashboardLink,
-  MobileDashboardLink
+  MobileDashboardLink,
+  PremiumPanel,
+  PremiumTitle,
+  PremiumSubtitle,
+  PremiumButton,
+  MobilePremiumPanel
 } from '../styles/NavPageStyles';
 import logo from '../assets/drawing_400.png';
 import supabase from '../lib/supabase';
+import { FaDiscord, FaInstagram, FaTwitter, FaTiktok } from 'react-icons/fa';
 
 interface NavPageProps {
   children: ReactNode;
@@ -33,16 +39,16 @@ interface NavPageProps {
   initialActiveNav?: string;
 }
 
-function NavPage({ 
+const NavPage: React.FC<NavPageProps> = ({ 
   children,
   initialActiveNav = 'learn',
   isLoading = false,
-}: NavPageProps): JSX.Element {
+}) => {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState<string>(initialActiveNav);
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
-  const { isTeacher, isStudent } = usePlatform();
+  const { isTeacher, isStudent, plan, organizationPlan } = usePlatform();
 
   useEffect(() => {
     const handleResize = () => {
@@ -88,8 +94,38 @@ function NavPage({
     window.open(baseUrl, '_blank');
   };
 
+  const handleGetPremiumClick = () => {
+    navigate('/profile/get-premium');
+  };
+
+  const renderPremiumPanel = () => {
+    if (organizationPlan !== 'NO_ORGANIZATION' || isTeacher || isStudent) return null;
+    if (plan !== 'FREE') return null;
+    
+    if (isMobile) {
+      return (
+        <MobilePremiumPanel>
+          <PremiumTitle>Squeak Premium</PremiumTitle>
+          <PremiumSubtitle>All features, unlimited usage. Try for 7 days!</PremiumSubtitle>
+          <PremiumButton onClick={handleGetPremiumClick}>
+            GET PREMIUM
+          </PremiumButton>
+        </MobilePremiumPanel>
+      );
+    }
+    
+    return (
+      <PremiumPanel>
+        <PremiumTitle>Squeak Premium</PremiumTitle>
+        <PremiumSubtitle>All features, unlimited usage. Try for 7 days!</PremiumSubtitle>
+        <PremiumButton onClick={handleGetPremiumClick}>
+          GET PREMIUM
+        </PremiumButton>
+      </PremiumPanel>
+    );
+  };
+
   const renderDashboardLink = () => {
-    console.log(isTeacher, isStudent);
     if (isTeacher) {
       return (
         <>
@@ -121,6 +157,45 @@ function NavPage({
     }
     
     return null;
+  };
+
+  const renderSocialIcons = () => {
+    return (
+      <div className={`flex justify-center items-center gap-4 ${isMobile ? 'mt-4' : 'mt-auto mb-8'} w-full`}>
+        <a 
+          href="https://discord.gg/j8zFGqQEYk" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaDiscord size={20} />
+        </a>
+        <a 
+          href="https://www.instagram.com/squeak.today" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaInstagram size={20} />
+        </a>
+        <a 
+          href="https://x.com/learnsqueak" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaTwitter size={20} />
+        </a>
+        <a 
+          href="https://www.tiktok.com/@learnsqueak" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-gray-600 hover:text-gray-900 transition-colors"
+        >
+          <FaTiktok size={20} />
+        </a>
+      </div>
+    );
   };
 
   return (
@@ -165,7 +240,11 @@ function NavPage({
               >
                 Log Out
               </MobileNavButton>
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                {renderPremiumPanel()}
+              </div>
               {renderDashboardLink()}
+              {renderSocialIcons()}
             </MobileNav>
           </>
         ) : (
@@ -203,7 +282,12 @@ function NavPage({
               Log Out
             </NavButton>
             
+            <div style={{ flexGrow: 1 }}></div>
+            {<div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              {renderPremiumPanel()}
+            </div>}
             {renderDashboardLink()}
+            {renderSocialIcons()}
           </Sidebar>
         )}
         <MainContent $isMobile={isMobile}>

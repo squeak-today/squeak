@@ -2,6 +2,7 @@ package models
 
 type TeacherStatusResponse struct {
 	Exists bool `json:"exists" binding:"required" example:"true"`
+	Plan string `json:"plan" example:"FREE"`
 }
 
 type ClassroomListItem struct {

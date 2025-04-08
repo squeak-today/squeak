@@ -28,6 +28,8 @@ resource "aws_lambda_function" "story_api_lambda" {
       STRIPE_KEY            = var.stripe_key
       STRIPE_WEBHOOK_SECRET = var.stripe_webhook_secret
 
+      ELEVENLABS_API_KEY = var.elevenlabs_api_key
+
       JWT_SECRET     = var.supabase_jwt_secret
       GEMINI_API_KEY = var.gemini_api_key
       WORKSPACE      = terraform.workspace

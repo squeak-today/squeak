@@ -164,6 +164,152 @@ const docTemplate = `{
                 }
             }
         },
+        "/billing": {
+            "get": {
+                "description": "Check Billing Account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Check Billing Account",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BillingAccountResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/cancel-subscription-eop": {
+            "post": {
+                "description": "Cancel a Stripe individual subscription at the end of the period",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Cancel a Stripe individual subscription at the end of the period",
+                "parameters": [
+                    {
+                        "description": "Cancel subscription request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CancelIndividualSubscriptionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.CancelIndividualSubscriptionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/create-checkout-session": {
+            "post": {
+                "description": "Creates a checkout session and redirects to Stripe's payment page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Create a Stripe checkout session (individual)",
+                "parameters": [
+                    {
+                        "description": "Create checkout session request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateIndividualCheckoutSessionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Redirect to Stripe Checkout",
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateIndividualCheckoutSessionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/billing/usage": {
+            "get": {
+                "description": "Get Billing Account Usage, assumes free plan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "billing"
+                ],
+                "summary": "Get Billing Account Usage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Plan",
+                        "name": "plan",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.BillingAccountUsageResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/news": {
             "get": {
                 "description": "Get news content by ID",
@@ -1415,6 +1561,80 @@ const docTemplate = `{
                 }
             }
         },
+        "models.BillingAccountResponse": {
+            "type": "object",
+            "required": [
+                "canceled",
+                "expiration",
+                "plan"
+            ],
+            "properties": {
+                "canceled": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "expiration": {
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
+                },
+                "plan": {
+                    "type": "string",
+                    "example": "PRO"
+                }
+            }
+        },
+        "models.BillingAccountUsageResponse": {
+            "type": "object",
+            "required": [
+                "max_natural_tts_usage",
+                "max_premium_stt_usage",
+                "natural_tts_usage",
+                "premium_stt_usage"
+            ],
+            "properties": {
+                "max_natural_tts_usage": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "max_premium_stt_usage": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "natural_tts_usage": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "premium_stt_usage": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "models.CancelIndividualSubscriptionRequest": {
+            "type": "object"
+        },
+        "models.CancelIndividualSubscriptionResponse": {
+            "type": "object",
+            "required": [
+                "canceled_plan",
+                "current_expiration",
+                "success"
+            ],
+            "properties": {
+                "canceled_plan": {
+                    "type": "string",
+                    "example": "PREMIUM"
+                },
+                "current_expiration": {
+                    "type": "string",
+                    "example": "2025-03-24T12:00:00Z"
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
         "models.CancelSubscriptionRequest": {
             "type": "object"
         },
@@ -1563,6 +1783,21 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CreateIndividualCheckoutSessionRequest": {
+            "type": "object"
+        },
+        "models.CreateIndividualCheckoutSessionResponse": {
+            "type": "object",
+            "required": [
+                "redirect_url"
+            ],
+            "properties": {
+                "redirect_url": {
+                    "type": "string",
+                    "example": "https://checkout.stripe.com/c/pay/123"
+                }
+            }
+        },
         "models.CreateOrganizationRequest": {
             "type": "object"
         },
@@ -1607,6 +1842,21 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ERROR_CODE": {
+            "type": "string",
+            "enum": [
+                "PROFILE_NOT_FOUND",
+                "NO_TRANSCRIPT",
+                "AUTH_REQUIRED",
+                "USAGE_LIMIT_REACHED"
+            ],
+            "x-enum-varnames": [
+                "PROFILE_NOT_FOUND",
+                "NO_TRANSCRIPT",
+                "AUTH_REQUIRED",
+                "USAGE_LIMIT_REACHED"
+            ]
+        },
         "models.ErrorResponse": {
             "type": "object",
             "required": [
@@ -1614,7 +1864,17 @@ const docTemplate = `{
             ],
             "properties": {
                 "code": {
-                    "type": "string",
+                    "enum": [
+                        "PROFILE_NOT_FOUND",
+                        "NO_TRANSCRIPT",
+                        "AUTH_REQUIRED",
+                        "USAGE_LIMIT_REACHED"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ERROR_CODE"
+                        }
+                    ],
                     "example": "PROFILE_NOT_FOUND"
                 },
                 "error": {
@@ -2112,6 +2372,10 @@ const docTemplate = `{
                 "language_code": {
                     "type": "string",
                     "example": "en-US"
+                },
+                "premium": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },
@@ -2202,6 +2466,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "456"
                 },
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
+                },
                 "student_id": {
                     "type": "string",
                     "example": "123"
@@ -2217,6 +2485,10 @@ const docTemplate = `{
                 "exists": {
                     "type": "boolean",
                     "example": true
+                },
+                "plan": {
+                    "type": "string",
+                    "example": "FREE"
                 }
             }
         },
@@ -2231,6 +2503,10 @@ const docTemplate = `{
                 "language_code": {
                     "type": "string",
                     "example": "en-US"
+                },
+                "natural": {
+                    "type": "boolean",
+                    "example": false
                 },
                 "text": {
                     "type": "string",

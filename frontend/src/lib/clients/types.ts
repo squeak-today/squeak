@@ -111,6 +111,112 @@ export interface paths {
       };
     };
   };
+  "/billing": {
+    /**
+     * Check Billing Account
+     * @description Check Billing Account
+     */
+    get: {
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.BillingAccountResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/billing/cancel-subscription-eop": {
+    /**
+     * Cancel a Stripe individual subscription at the end of the period
+     * @description Cancel a Stripe individual subscription at the end of the period
+     */
+    post: {
+      /** @description Cancel subscription request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CancelIndividualSubscriptionRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.CancelIndividualSubscriptionResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/billing/create-checkout-session": {
+    /**
+     * Create a Stripe checkout session (individual)
+     * @description Creates a checkout session and redirects to Stripe's payment page
+     */
+    post: {
+      /** @description Create checkout session request */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionRequest"];
+        };
+      };
+      responses: {
+        /** @description Redirect to Stripe Checkout */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/billing/usage": {
+    /**
+     * Get Billing Account Usage
+     * @description Get Billing Account Usage, assumes free plan
+     */
+    get: {
+      parameters: {
+        query?: {
+          /** @description Plan */
+          plan?: string;
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          content: {
+            "application/json": components["schemas"]["models.BillingAccountUsageResponse"];
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          content: {
+            "application/json": components["schemas"]["models.ErrorResponse"];
+          };
+        };
+      };
+    };
+  };
   "/news": {
     /**
      * Get news content
@@ -951,6 +1057,33 @@ export interface components {
       /** @example live */
       status: string;
     };
+    "models.BillingAccountResponse": {
+      /** @example false */
+      canceled: boolean;
+      /** @example 2025-01-01T00:00:00Z */
+      expiration: string;
+      /** @example PRO */
+      plan: string;
+    };
+    "models.BillingAccountUsageResponse": {
+      /** @example 100 */
+      max_natural_tts_usage: number;
+      /** @example 100 */
+      max_premium_stt_usage: number;
+      /** @example 10 */
+      natural_tts_usage: number;
+      /** @example 10 */
+      premium_stt_usage: number;
+    };
+    "models.CancelIndividualSubscriptionRequest": Record<string, never>;
+    "models.CancelIndividualSubscriptionResponse": {
+      /** @example PREMIUM */
+      canceled_plan: string;
+      /** @example 2025-03-24T12:00:00Z */
+      current_expiration: string;
+      /** @example true */
+      success: boolean;
+    };
     "models.CancelSubscriptionRequest": Record<string, never>;
     "models.CancelSubscriptionResponse": {
       /** @example CLASSROOM */
@@ -1013,6 +1146,11 @@ export interface components {
       /** @example 123 */
       classroom_id: string;
     };
+    "models.CreateIndividualCheckoutSessionRequest": Record<string, never>;
+    "models.CreateIndividualCheckoutSessionResponse": {
+      /** @example https://checkout.stripe.com/c/pay/123 */
+      redirect_url: string;
+    };
     "models.CreateOrganizationRequest": Record<string, never>;
     "models.CreateOrganizationResponse": {
       /** @example 123 */
@@ -1028,9 +1166,14 @@ export interface components {
       /** @example Classroom deleted successfully */
       message: string;
     };
+    /** @enum {string} */
+    "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
     "models.ErrorResponse": {
-      /** @example PROFILE_NOT_FOUND */
-      code?: string;
+      /**
+       * @example PROFILE_NOT_FOUND
+       * @enum {unknown}
+       */
+      code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
       /** @example Something went wrong */
       error: string;
     };
@@ -1213,6 +1356,8 @@ export interface components {
       audio_content: string;
       /** @example en-US */
       language_code: string;
+      /** @example false */
+      premium?: boolean;
     };
     "models.SpeechToTextResponse": {
       /** @example Hello, how are you? */
@@ -1245,16 +1390,22 @@ export interface components {
     "models.StudentStatusResponse": {
       /** @example 456 */
       classroom_id: string;
+      /** @example FREE */
+      plan?: string;
       /** @example 123 */
       student_id: string;
     };
     "models.TeacherStatusResponse": {
       /** @example true */
       exists: boolean;
+      /** @example FREE */
+      plan?: string;
     };
     "models.TextToSpeechRequest": {
       /** @example en-US */
       language_code: string;
+      /** @example false */
+      natural?: boolean;
       /** @example Hello, how are you? */
       text: string;
       /** @example en-US-Standard-A */

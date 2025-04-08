@@ -77,3 +77,9 @@ variable "stripe_webhook_secret" {
   type        = string
   sensitive   = true
 }
+
+variable "elevenlabs_api_key" {
+  description = "ElevenLabs API Key"
+  type        = string
+  sensitive   = true
+}
