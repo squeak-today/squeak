@@ -1,29 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeckAPI } from '../hooks/useDeckAPI';
 import { useNotification } from '../context/NotificationContext';
 import { Container, Title, DeckList, DeckItem, NoDecksMessage } from '../styles/components/DeckBrowserStyles';
 
 interface Deck {
-    id: string;
-    name: string;  
+    id: number; // Change from string to number
+    name: string;
+    description: string;
     is_public: boolean;
+    is_system: boolean;
     user_id: string;
     created_at: string;
+    updated_at: string;
 }
 
 interface DeckBrowserProps {
-    userID: string;
+    userID: string; // May not be needed if backend uses context
 }
 
 const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
     const [decks, setDecks] = useState<Deck[]>([]);
-    const [name, setName] = useState<string>('');  // Changed from title to name
-    const [description, setDescription] = useState<string>('');  // Added description
+    const [name, setName] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const { createDeck } = useDeckAPI();
+    const { getDecks, createDeck } = useDeckAPI();
     const { showNotification } = useNotification();
     const navigate = useNavigate();
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        isMounted.current = true;
+        const fetchDecks = async () => {
+            setIsLoading(true);
+            try {
+                const fetchedDecks = await getDecks();
+                if (isMounted.current) {
+                    setDecks(fetchedDecks || []);
+                }
+            } catch (error) {
+                console.error("Error fetching decks:", error);
+                if (isMounted.current) {
+                    showNotification('Failed to fetch decks.', 'error');
+                }
+            } finally {
+                if (isMounted.current) {
+                    setIsLoading(false);
+                }
+            }
+        };
+        fetchDecks();
+        return () => {
+            isMounted.current = false;
+        };
+    }, [getDecks, showNotification]); // Add showNotification to deps if it’s stable
 
     const handleCreateDeck = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -53,7 +84,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
                     <DeckList>
                         {decks.map((deck) => (
                             <DeckItem key={deck.id} onClick={() => handleDeckClick(deck)}>
-                                <h3>{deck.name}</h3>  // Changed from title to name
+                                <h3>{deck.name}</h3>
                                 <p>{deck.is_public ? 'Public' : 'Private'}</p>
                             </DeckItem>
                         ))}
