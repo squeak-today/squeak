@@ -28,7 +28,6 @@ function Learn() {
     const [showWelcome, setShowWelcome] = useState(false);
     const [activeTab, setActiveTab] = useState('today');
     const { showNotification } = useNotification();
-    const apiBase = process.env.REACT_APP_API_BASE;
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [storyRecommendations, setStoryRecommendations] = useState([]);
