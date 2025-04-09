@@ -38,6 +38,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/audio/audiobook": {
+            "get": {
+                "description": "Get audiobook for a news_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audio"
+                ],
+                "summary": "Get audiobook",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "News ID",
+                        "name": "news_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AudiobookResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/audio/stt": {
             "post": {
                 "description": "Convert speech audio to text",
@@ -1561,6 +1599,14 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AudiobookResponse": {
+            "type": "object",
+            "properties": {
+                "audiobook": {
+                    "$ref": "#/definitions/storage.Audiobook"
+                }
+            }
+        },
         "models.BillingAccountResponse": {
             "type": "object",
             "required": [
@@ -2678,6 +2724,46 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "storage.AlignmentInfo": {
+            "type": "object",
+            "properties": {
+                "character_end_times_seconds": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "character_start_times_seconds": {
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "characters": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "storage.Audiobook": {
+            "type": "object",
+            "properties": {
+                "alignment": {
+                    "$ref": "#/definitions/storage.AlignmentInfo"
+                },
+                "audio_base64": {
+                    "type": "string"
+                },
+                "normalized_alignment": {
+                    "$ref": "#/definitions/storage.AlignmentInfo"
+                },
+                "text": {
                     "type": "string"
                 }
             }

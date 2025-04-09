@@ -32,6 +32,11 @@ definitions:
     required:
     - status
     type: object
+  models.AudiobookResponse:
+    properties:
+      audiobook:
+        $ref: '#/definitions/storage.Audiobook'
+    type: object
   models.BillingAccountResponse:
     properties:
       canceled:
@@ -846,6 +851,32 @@ definitions:
       type:
         type: string
     type: object
+  storage.AlignmentInfo:
+    properties:
+      character_end_times_seconds:
+        items:
+          type: number
+        type: array
+      character_start_times_seconds:
+        items:
+          type: number
+        type: array
+      characters:
+        items:
+          type: string
+        type: array
+    type: object
+  storage.Audiobook:
+    properties:
+      alignment:
+        $ref: '#/definitions/storage.AlignmentInfo'
+      audio_base64:
+        type: string
+      normalized_alignment:
+        $ref: '#/definitions/storage.AlignmentInfo'
+      text:
+        type: string
+    type: object
   storage.Dictionary:
     properties:
       translations:
@@ -891,6 +922,31 @@ paths:
           schema:
             $ref: '#/definitions/models.AudioHealthResponse'
       summary: Check audio service health
+      tags:
+      - audio
+  /audio/audiobook:
+    get:
+      consumes:
+      - application/json
+      description: Get audiobook for a news_id
+      parameters:
+      - description: News ID
+        in: query
+        name: news_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AudiobookResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get audiobook
       tags:
       - audio
   /audio/stt:

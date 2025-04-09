@@ -1,5 +1,7 @@
 package models
 
+import "story-api/storage"
+
 type AudioHealthResponse struct {
 	Status string `json:"status" binding:"required" example:"live"`
 }
@@ -33,4 +35,8 @@ type SpeechToTextRequest struct {
 
 type SpeechToTextResponse struct {
 	Transcript string `json:"transcript" binding:"required" example:"Hello, how are you?"`
+}
+
+type AudiobookResponse struct {
+	Audiobook storage.Audiobook `json:"audiobook"`
 }
