@@ -2,25 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeckAPI } from '../hooks/useDeckAPI';
 import { useNotification } from '../context/NotificationContext';
-import {
-    DeckBrowserContainer,
-    DeckBrowserTitle,
-    ContentLayout,
-    LoadingText,
-    EmptyStateText,
-    DeckGrid,
-    DeckCard,
-    DeckName,
-    DeckDescription,
-    DeckStatus,
-    DeckActionButtons,
-    ViewButton,
-    DeleteButton,
-    CreateDeckForm,
-    FormInput,
-    CreateButton,
-    FormTitle
-} from '../styles/DeckBrowserStyles';
 
 interface Deck {
     id: number;
@@ -42,6 +23,8 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
     const [name, setName] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const decksPerPage = 9;
 
     const { getDecks, createDeck, deleteDeck } = useDeckAPI();
     const { showNotification } = useNotification();
@@ -101,74 +84,153 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
         }
     };
 
+    // Pagination logic
+    const indexOfLastDeck = currentPage * decksPerPage;
+    const indexOfFirstDeck = indexOfLastDeck - decksPerPage;
+    const currentDecks = decks.slice(indexOfFirstDeck, indexOfLastDeck);
+    const totalPages = Math.ceil(decks.length / decksPerPage);
+
+    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+    // Card badge for deck type
+    const getDeckBadge = (deck: Deck) => {
+        if (deck.is_system) {
+            return <span className="px-2 py-1 bg-gray-200 text-gray-700 rounded-full text-xs font-medium">System Deck</span>;
+        } else if (deck.is_public) {
+            return <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Public Deck</span>;
+        } else {
+            return <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">Private Deck</span>;
+        }
+    };
+
     return (
-        <DeckBrowserContainer>
-            <DeckBrowserTitle>Your Flashcard Decks</DeckBrowserTitle>
+        <div className="max-w-7xl mx-auto px-4 py-8 font-['Montserrat',_sans-serif]">
+            <h1 className="text-3xl font-['Lora',_serif] font-bold mb-6 text-black">Your Flashcard Decks</h1>
             
-            <ContentLayout>
+            <div className="flex flex-col lg:flex-row gap-8">
                 {isLoading ? (
-                    <LoadingText>Loading your decks...</LoadingText>
+                    <div className="flex-1 text-gray-600">Loading your decks...</div>
                 ) : decks.length === 0 ? (
-                    <EmptyStateText>You don't have any decks yet. Create your first deck to get started!</EmptyStateText>
+                    <div className="flex-1 text-gray-600">You don't have any decks yet. Create your first deck to get started!</div>
                 ) : (
-                    <DeckGrid>
-                        {decks.map((deck) => (
-                            <DeckCard
-                                key={deck.id}
-                                onClick={() => handleDeckClick(deck)}
-                            >
-                                <div>
-                                    <DeckName>{deck.name}</DeckName>
-                                    {deck.description && (
-                                        <DeckDescription>{deck.description}</DeckDescription>
-                                    )}
-                                    <DeckStatus>
-                                        {deck.is_system ? 'System Deck' : deck.is_public ? 'Public Deck' : 'Private Deck'}
-                                    </DeckStatus>
+                    <div className="flex-1">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {currentDecks.map((deck) => (
+                                <div 
+                                    key={deck.id}
+                                    onClick={() => handleDeckClick(deck)}
+                                    className="bg-white rounded-lg border border-[#e0e0e0] shadow-[0_2px_4px_rgba(0,0,0,0.15)] hover:shadow-[0_4px_6px_rgba(0,0,0,0.15)] transition-shadow cursor-pointer h-64 flex flex-col overflow-hidden"
+                                >
+                                    {/* Card header with visual indicator for deck type */}
+                                    <div className="h-2 bg-[#fad48f] w-full"></div>
+                                    
+                                    <div className="p-5 flex flex-col flex-grow">
+                                        <div className="mb-1">{getDeckBadge(deck)}</div>
+                                        <h3 className="text-base font-['Lora',_serif] font-semibold mt-2 text-black">{deck.name}</h3>
+                                        
+                                        {deck.description && (
+                                            <p className="text-[#333333] mt-2 line-clamp-2 text-sm font-['Montserrat',_sans-serif]">{deck.description}</p>
+                                        )}
+                                        
+                                        <div className="mt-auto pt-4 flex space-x-3">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeckClick(deck);
+                                                }}
+                                                className="flex-1 px-4 py-2 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors font-['Montserrat',_sans-serif]"
+                                            >
+                                                View
+                                            </button>
+                                            {!deck.is_system && (
+                                                <button
+                                                    onClick={(e) => handleDeleteDeck(e, deck.id)}
+                                                    className="flex-1 px-4 py-2 bg-[#f0f0f0] hover:bg-[#e5e5e5] text-[#333333] rounded-md transition-colors font-['Montserrat',_sans-serif]"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                                <DeckActionButtons>
-                                    <ViewButton
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeckClick(deck);
-                                        }}
-                                    >
-                                        View
-                                    </ViewButton>
-                                    {!deck.is_system && (
-                                        <DeleteButton
-                                            onClick={(e) => handleDeleteDeck(e, deck.id)}
+                            ))}
+                            
+                            {/* Create deck card - same height as deck cards */}
+                            <div className="bg-white rounded-lg border border-gray-200 shadow-sm h-64 flex flex-col overflow-hidden">
+                                <div className="h-2 bg-green-200 w-full"></div>
+                                <div className="p-5 flex flex-col h-full">
+                                    <h3 className="text-base font-['Lora',_serif] font-semibold mb-3 text-black">Create New Deck</h3>
+                                    <form onSubmit={handleCreateDeck} className="flex flex-col h-full">
+                                        <input
+                                            type="text"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            placeholder="Deck Name"
+                                            required
+                                            className="p-2 border border-[#e0e0e0] rounded-md focus:outline-none focus:ring-2 focus:ring-[#fad48f] focus:border-transparent mb-3 font-['Montserrat',_sans-serif]"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
+                                            placeholder="Description (optional)"
+                                            className="p-2 border border-[#e0e0e0] rounded-md focus:outline-none focus:ring-2 focus:ring-[#fad48f] focus:border-transparent font-['Montserrat',_sans-serif]"
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="mt-auto p-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors font-['Montserrat',_sans-serif]"
                                         >
-                                            Delete
-                                        </DeleteButton>
-                                    )}
-                                </DeckActionButtons>
-                            </DeckCard>
-                        ))}
-                    </DeckGrid>
+                                            Create Deck
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center mt-8">
+                                <nav className="flex items-center space-x-2">
+                                    <button 
+                                        onClick={() => paginate(Math.max(1, currentPage - 1))}
+                                        disabled={currentPage === 1}
+                                        className={`px-3 py-1 rounded-md ${
+                                            currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                        }`}
+                                    >
+                                        Previous
+                                    </button>
+                                    
+                                    {Array.from({ length: totalPages }).map((_, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => paginate(index + 1)}
+                                            className={`px-3 py-1 rounded-md ${
+                                                currentPage === index + 1 
+                                                    ? 'bg-yellow-200 text-gray-800' 
+                                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                            }`}
+                                        >
+                                            {index + 1}
+                                        </button>
+                                    ))}
+                                    
+                                    <button 
+                                        onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className={`px-3 py-1 rounded-md ${
+                                            currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                        }`}
+                                    >
+                                        Next
+                                    </button>
+                                </nav>
+                            </div>
+                        )}
+                    </div>
                 )}
-                
-                <CreateDeckForm onSubmit={handleCreateDeck}>
-                    <FormTitle>Create New Deck</FormTitle>
-                    <FormInput
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Deck Name"
-                        required
-                    />
-                    <FormInput
-                        type="text"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Description (optional)"
-                    />
-                    <CreateButton type="submit">
-                        Create Deck
-                    </CreateButton>
-                </CreateDeckForm>
-            </ContentLayout>
-        </DeckBrowserContainer>
+            </div>
+        </div>
     );
 };
 
