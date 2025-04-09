@@ -60,6 +60,8 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
           } else if (error.code === 'USAGE_LIMIT_REACHED') {
             setUsageError('You have reached your limit of audiobooks for this month!');
             showNotification('You have reached your limit of audiobooks for this month!', 'error');
+          } else if (error.error === 'No audiobook available for this news_id') {
+            setUsageError('No audiobook available for this article!');
           } else {
             setUsageError('An error occurred while fetching the audiobook!');
             showNotification('An error occurred while fetching the audiobook!', 'error');

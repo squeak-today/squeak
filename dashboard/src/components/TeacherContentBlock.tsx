@@ -70,6 +70,9 @@ const TeacherContentBlock: React.FC<TeacherContentBlockProps> = ({
   };
 
   function getTag(tier: string) {
+    if (tier === 'NONE') {
+      return (<></>)
+    }
     tier = tier.toLowerCase();
     const text = String(tier).charAt(0).toUpperCase() + String(tier).slice(1);
     return (
