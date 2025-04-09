@@ -1,0 +1,366 @@
+import React, {useEffect, useState, useRef} from 'react';
+import LoadingSpinner from './LoadingSpinner';
+import { useAudioAPI } from '../hooks/useAudioAPI';
+import { useNotification } from '../context/NotificationContext';
+import { FaPlay, FaPause, FaForward, FaBackward } from 'react-icons/fa';
+
+interface AudiobookReaderProps {
+    id: string;
+    contentType: string;
+}
+
+interface WordTiming {
+  text: string;
+  startTime: number;
+  endTime: number;
+}
+
+const Word: React.FC<{ 
+  text: string; 
+  isActive: boolean; 
+  startTime: number;
+  onClick: (time: number) => void;
+}> = ({ text, isActive, startTime, onClick }) => {
+  return (
+    <span 
+      className={`inline-block transition-colors duration-100 ease-in rounded px-[1px] py-[2px] cursor-pointer ${
+        isActive ? 'bg-[var(--color-selected)]' : 'hover:bg-[var(--color-selected)] hover:bg-opacity-50'
+      }`}
+      onClick={() => onClick(startTime)}
+    >
+      {text}
+    </span>
+  );
+};
+
+const AudiobookReader: React.FC<AudiobookReaderProps> = ({ 
+  id, 
+  contentType
+}) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [audioData, setAudioData] = useState<string>('');
+    const [text, setText] = useState<string>('');
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const [words, setWords] = useState<WordTiming[]>([]);
+    const [activeWordIndex, setActiveWordIndex] = useState<number>(0);
+    const [usageError, setUsageError] = useState<string>('');
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const { getAudiobook } = useAudioAPI();
+    const { showNotification } = useNotification();
+    
+    useEffect(() => {
+      const fetchAudiobook = async () => {
+        const { data, error } = await getAudiobook({ news_id: id });
+        if (error) {
+          if (error.code === 'USAGE_RESTRICTED') {
+            setUsageError('Your plan does not provide access to this audiobook!');
+            showNotification('Your plan does not provide access to this audiobook!', 'error');
+          } else if (error.code === 'USAGE_LIMIT_REACHED') {
+            setUsageError('You have reached your limit of audiobooks for this month!');
+            showNotification('You have reached your limit of audiobooks for this month!', 'error');
+          } else {
+            setUsageError('An error occurred while fetching the audiobook!');
+            showNotification('An error occurred while fetching the audiobook!', 'error');
+          }
+          console.error('Error fetching audiobook:', error);
+        } else if (data?.audiobook) {
+          const textContent = data.audiobook.text || '';
+          setText(textContent);
+          setAudioData(data.audiobook.audio_base64 || '');
+          
+          if (data.audiobook.alignment) {
+            const { characters, character_start_times_seconds, character_end_times_seconds } = data.audiobook.alignment;
+            const wordTimings = extractWordTimings(
+              textContent,
+              characters || [],
+              character_start_times_seconds || [],
+              character_end_times_seconds || []
+            );
+            setWords(wordTimings);
+          }
+        }
+        setIsLoading(false);
+      }
+      fetchAudiobook();
+    }, [id])
+
+    const extractWordTimings = (
+      text: string, 
+      characters: string[], 
+      startTimes: number[], 
+      endTimes: number[]
+    ): WordTiming[] => {
+      const result: WordTiming[] = [];
+      const wordRegex = /\S+/g;
+      let match;
+      
+      // create a mapping from text position to character array index
+      let textIndex = 0;
+      const indexMap: number[] = [];
+      
+      for (let i = 0; i < text.length; i++) {
+        while (textIndex < characters.length && text[i] !== characters[textIndex]) {
+          textIndex++;
+        }
+        
+        if (textIndex < characters.length) {
+          indexMap[i] = textIndex;
+          textIndex++;
+        }
+      }
+      
+      while ((match = wordRegex.exec(text)) !== null) {
+        const word = match[0];
+        const startIndex = match.index;
+        const endIndex = startIndex + word.length - 1;
+        
+        const startCharIndex = indexMap[startIndex];
+        const endCharIndex = indexMap[endIndex];
+        
+        if (startCharIndex !== undefined && endCharIndex !== undefined &&
+            startCharIndex < startTimes.length && endCharIndex < endTimes.length) {
+          result.push({
+            text: word,
+            startTime: startTimes[startCharIndex],
+            endTime: endTimes[endCharIndex]
+          });
+        }
+      }
+      
+      return result;
+    };
+
+    const handlePlayPause = () => {
+      if (audioRef.current) {
+        if (isPlaying) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+      }
+    };
+
+    const handleTimeUpdate = () => {
+      if (audioRef.current) {
+        const currentTime = audioRef.current.currentTime;
+        setCurrentTime(currentTime);
+        
+        // find the currently active word with a small tolerance window
+        const index = words.findIndex(
+          word => {
+            const buffer = 0.0;
+            return (currentTime + buffer >= word.startTime && currentTime - buffer <= word.endTime);
+          }
+        );
+        
+        if (index !== -1) {
+          setActiveWordIndex(index);
+        }
+      }
+    };
+
+    useEffect(() => {
+      let animationFrameId: number | null = null;
+      
+      const updateHighlighting = () => {
+        if (audioRef.current && isPlaying) {
+          const currentTime = audioRef.current.currentTime;
+          
+          const index = words.findIndex(
+            word => {
+              const buffer = 0.02;
+              return (currentTime + buffer >= word.startTime && currentTime - buffer <= word.endTime);
+            }
+          );
+          
+          if (index !== -1 && index !== activeWordIndex) {
+            setActiveWordIndex(index);
+          }
+          
+          animationFrameId = requestAnimationFrame(updateHighlighting);
+        }
+      };
+      
+      if (isPlaying) {
+        animationFrameId = requestAnimationFrame(updateHighlighting);
+      }
+      
+      return () => {
+        if (animationFrameId !== null) {
+          cancelAnimationFrame(animationFrameId);
+        }
+      };
+    }, [isPlaying, words, activeWordIndex]);
+
+    const handleLoadedMetadata = () => {
+      if (audioRef.current) {
+        setDuration(audioRef.current.duration);
+      }
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setActiveWordIndex(0);
+    };
+
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const time = Number(e.target.value);
+      if (audioRef.current) {
+        audioRef.current.currentTime = time;
+        setCurrentTime(time);
+        setIsPlaying(false);
+      }
+    };
+
+    const handleSkipForward = () => {
+      if (audioRef.current) {
+        const newTime = Math.min(audioRef.current.currentTime + 0.1*duration, duration);
+        audioRef.current.currentTime = newTime;
+        setCurrentTime(newTime);
+      }
+    };
+
+    const handleSkipBackward = () => {
+      if (audioRef.current) {
+        const newTime = Math.max(audioRef.current.currentTime - 0.1*duration, 0);
+        audioRef.current.currentTime = newTime;
+        setCurrentTime(newTime);
+      }
+    };
+
+    const handleWordClick = (time: number) => {
+      if (audioRef.current) {
+        audioRef.current.currentTime = time;
+        setCurrentTime(time);
+        if (!isPlaying) {
+          audioRef.current.play();
+          setIsPlaying(true);
+        }
+      }
+    };
+
+    const formatTime = (time: number) => {
+      const minutes = Math.floor(time / 60);
+      const seconds = Math.floor(time % 60);
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const renderWords = () => {
+      if (words.length === 0) {
+        return text.split(/(\s+)/).map((word, index) => {
+          if (word.trim() === '') {
+            return word;
+          }
+          return <Word 
+            key={index} 
+            text={word} 
+            isActive={false}
+            startTime={0}
+            onClick={() => {}}
+          />;
+        });
+      }
+      
+      return words.map((word, index) => {
+        return (
+          <React.Fragment key={index}>
+            {index > 0 && ' '}
+            <Word 
+              text={word.text} 
+              isActive={index === activeWordIndex}
+              startTime={word.startTime}
+              onClick={handleWordClick}
+            />
+          </React.Fragment>
+        );
+      });
+    };
+
+    return (
+      <div className="flex flex-col h-full relative">
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : usageError ? (
+          <div className="flex flex-col items-center justify-center h-full p-6">
+            <p className="text-lg font-bold mb-2">Access Restricted</p>
+            <p>{usageError}</p>
+          </div>
+        ) : (
+          <>
+            <p className="mt-0 mb-2 text-lg font-bold mx-auto ">Transcript</p>
+            <div className="flex-grow overflow-y-auto px-0 py-6 font-primary bg-background rounded-[16px]">
+              <div className="max-w-2xl mx-auto px-4">
+                {renderWords()}
+              </div>
+            </div>
+            
+            <div className="sticky bottom-0 left-0 right-0 bg-white shadow-[var(--shadow-base)] p-4 rounded-xl">
+              <audio 
+                ref={audioRef}
+                src={`data:audio/mp3;base64,${audioData}`}
+                onTimeUpdate={handleTimeUpdate}
+                onLoadedMetadata={handleLoadedMetadata}
+                onEnded={handleEnded}
+              />
+              
+              <div className="w-full max-w-4xl mx-auto">
+                <div className="flex justify-center items-center gap-2 mb-2">
+                  <button
+                    onClick={handleSkipBackward}
+                    className="border-none w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full bg-[var(--color-border)] hover:opacity-90 transition-opacity"
+                  >
+                    <FaBackward className="text-sm" />
+                  </button>
+
+                  <button
+                    onClick={handlePlayPause}
+                    className="border-none w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-[var(--color-selected)] hover:opacity-90 transition-opacity"
+                  >
+                    {isPlaying ? <FaPause /> : <FaPlay className="ml-1" />}
+                  </button>
+
+                  <button
+                    onClick={handleSkipForward}
+                    className="border-none w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-full bg-[var(--color-border)] hover:opacity-90 transition-opacity"
+                  >
+                    <FaForward className="text-sm" />
+                  </button>
+                </div>
+                
+                <div className="flex items-center min-w-0">
+                  <div className="w-[50px] text-base font-secondary text-right pr-2">
+                    {formatTime(currentTime)}
+                  </div>
+                  
+                  <div className="flex-grow flex items-center h-[20px] px-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max={duration}
+                      value={currentTime}
+                      onChange={handleSeek}
+                      className="w-full h-1 bg-[var(--color-border)] rounded-lg appearance-none cursor-pointer 
+                        [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 
+                        [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-selected)]
+                        [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-150
+                        [&::-webkit-slider-thumb]:shadow-none"
+                      style={{ margin: 0 }}
+                    />
+                  </div>
+                  
+                  <div className="w-[50px] text-base font-secondary pl-2">
+                    {formatTime(duration)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    )
+}
+
+export default AudiobookReader;
