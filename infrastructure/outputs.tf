@@ -137,3 +137,8 @@ output "api_gateway_url_flashcard_id_delete" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/flashcard/{flashcard_id}/delete"
   description = "Flashcard Delete URL for Story API (POST to delete a flashcard)"
 }
+
+output "api_gateway_url_deck_id_delete" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/deck/{deck_id}/delete"
+  description = "Deck Delete URL for Story API (POST to delete a deck)"
+}

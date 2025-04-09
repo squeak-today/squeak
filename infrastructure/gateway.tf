@@ -301,6 +301,16 @@ module "deck_create" {
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+# /deck/{deck_id}/delete with POST method
+module "deck_id_delete" {
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = module.deck_id.resource_id
+  path_part    = "delete"
+  http_methods = ["POST"]
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 # Base /flashcard resource (no direct methods)
 module "flashcard" {
   source       = "./api_gateway"
@@ -351,6 +361,7 @@ module "flashcard_id_delete" {
   http_methods = ["POST"]
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
+
 
 # module "organization_payments" {
 #   source      = "./api_gateway"
@@ -550,6 +561,7 @@ resource "aws_api_gateway_deployment" "api_deployment" {
     module.deck,
     module.deck_id,
     module.deck_create,
+    module.deck_id_delete,
     // module.organization_payments,
     // module.organization_payments_create_checkout_session,
     // module.organization_payments_cancel_subscription_eop
