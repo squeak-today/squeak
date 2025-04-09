@@ -2,11 +2,13 @@
 package deckhandler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
 	"story-api/supabase"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
@@ -53,7 +55,9 @@ func (h *Handler) GetDecks(c *gin.Context) {
 // @Router /deck/{id} [get]
 func (h *Handler) GetDeck(c *gin.Context) {
 	userID := c.GetString("sub")
+	log.Printf("Authenticated user ID: %s", userID)
 	deckIDStr := c.Param("id")
+	log.Printf("Deck ID: %s", deckIDStr)
 	
 	deckID, err := strconv.Atoi(deckIDStr)
 	if err != nil {

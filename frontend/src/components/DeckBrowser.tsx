@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeckAPI } from '../hooks/useDeckAPI';
 import { useNotification } from '../context/NotificationContext';
-import { Container, Title, DeckList, DeckItem, NoDecksMessage } from '../styles/components/DeckBrowserStyles';
 
 interface Deck {
-    id: number; // Change from string to number
+    id: number;
     name: string;
     description: string;
     is_public: boolean;
@@ -16,7 +15,7 @@ interface Deck {
 }
 
 interface DeckBrowserProps {
-    userID: string; // May not be needed if backend uses context
+    userID: string;
 }
 
 const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
@@ -25,7 +24,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
     const [description, setDescription] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const { getDecks, createDeck } = useDeckAPI();
+    const { getDecks, createDeck, deleteDeck } = useDeckAPI();
     const { showNotification } = useNotification();
     const navigate = useNavigate();
     const isMounted = useRef(true);
@@ -36,25 +35,17 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
             setIsLoading(true);
             try {
                 const fetchedDecks = await getDecks();
-                if (isMounted.current) {
-                    setDecks(fetchedDecks || []);
-                }
+                if (isMounted.current) setDecks(fetchedDecks || []);
             } catch (error) {
                 console.error("Error fetching decks:", error);
-                if (isMounted.current) {
-                    showNotification('Failed to fetch decks.', 'error');
-                }
+                if (isMounted.current) showNotification('Failed to fetch decks.', 'error');
             } finally {
-                if (isMounted.current) {
-                    setIsLoading(false);
-                }
+                if (isMounted.current) setIsLoading(false);
             }
         };
         fetchDecks();
-        return () => {
-            isMounted.current = false;
-        };
-    }, [getDecks, showNotification]); // Add showNotification to deps if it’s stable
+
+    }, []);
 
     const handleCreateDeck = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -66,7 +57,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
             showNotification('Deck created successfully!', 'success');
         } catch (error) {
             console.error('Error creating deck:', error);
-            showNotification('Failed to create deck. Please try again.', 'error');
+            showNotification('Failed to create deck.', 'error');
         }
     };
 
@@ -74,40 +65,84 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
         navigate(`/decks/${deck.id}`);
     };
 
+    const handleDeleteDeck = async (deckId: number) => {
+        if (window.confirm('Are you sure you want to delete this deck?')) {
+            try {
+                await deleteDeck(deckId);
+                setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckId));
+                showNotification('Deck deleted successfully!', 'success');
+            } catch (error) {
+                console.error('Error deleting deck:', error);
+                showNotification('Failed to delete deck.', 'error');
+            }
+        }
+    };
+
     return (
-        <Container>
-            <Title>Your Decks</Title>
-            <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', alignItems: 'flex-start' }}>
-                {decks.length === 0 ? (
-                    <NoDecksMessage>No decks available yet!</NoDecksMessage>
+        <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-4">Your Decks</h1>
+            <div className="flex flex-row gap-6 items-start">
+                {isLoading ? (
+                    <p>Loading...</p>
+                ) : decks.length === 0 ? (
+                    <p className="text-gray-500">No decks available yet!</p>
                 ) : (
-                    <DeckList>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {decks.map((deck) => (
-                            <DeckItem key={deck.id} onClick={() => handleDeckClick(deck)}>
-                                <h3>{deck.name}</h3>
-                                <p>{deck.is_public ? 'Public' : 'Private'}</p>
-                            </DeckItem>
+                            <div
+                                key={deck.id}
+                                className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                            >
+                                <h3 className="text-lg font-semibold">{deck.name}</h3>
+                                <p className="text-sm text-gray-600">
+                                    {deck.is_public ? 'Public' : 'Private'}
+                                </p>
+                                <div className="mt-2 flex gap-2">
+                                    <button
+                                        onClick={() => handleDeckClick(deck)}
+                                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                                    >
+                                        View
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteDeck(deck.id);
+                                        }}
+                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
                         ))}
-                    </DeckList>
+                    </div>
                 )}
-                <form onSubmit={handleCreateDeck} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <form onSubmit={handleCreateDeck} className="flex flex-col gap-3 w-64">
                     <input
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Deck Name"
                         required
+                        className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <input
                         type="text"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Description (optional)"
+                        className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <button type="submit">Create Deck</button>
+                    <button
+                        type="submit"
+                        className="p-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                        Create Deck
+                    </button>
                 </form>
             </div>
-        </Container>
+        </div>
     );
 };
 

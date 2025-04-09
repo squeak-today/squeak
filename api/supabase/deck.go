@@ -3,6 +3,7 @@ package supabase
 
 import (
 	"log"
+	"strings"
 	"time"
 )
 
@@ -36,10 +37,10 @@ type DeckWithCards struct {
 
 // GetDecks retrieves all decks accessible to the user
 func (c *Client) GetDecks(userID string) ([]Deck, error) {
-    var decks []Deck
+	var decks []Deck
 
-    // Query personal decks + public decks
-    query := `
+	// Query personal decks + public decks
+	query := `
         SELECT id, user_id, name, description, is_public, 
                is_system, created_at, updated_at 
         FROM decks 
@@ -47,39 +48,39 @@ func (c *Client) GetDecks(userID string) ([]Deck, error) {
         ORDER BY is_system DESC, created_at DESC
     `
 
-    rows, err := c.db.Query(query, userID)
-    if err != nil {
-        log.Printf("Error querying decks: %v", err)
-        return nil, err
-    }
-    defer rows.Close()
+	rows, err := c.db.Query(query, userID)
+	if err != nil {
+		log.Printf("Error querying decks: %v", err)
+		return nil, err
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var deck Deck
-        err := rows.Scan(
-            &deck.ID, 
-            &deck.UserID, 
-            &deck.Name, 
-            &deck.Description, 
-            &deck.IsPublic, 
-            &deck.IsSystem, 
-            &deck.CreatedAt, 
-            &deck.UpdatedAt)
-        
-        if err != nil {
-            log.Printf("Error scanning row: %v", err)
-            return nil, err
-        }
-        decks = append(decks, deck)
-    }
+	for rows.Next() {
+		var deck Deck
+		err := rows.Scan(
+			&deck.ID,
+			&deck.UserID,
+			&deck.Name,
+			&deck.Description,
+			&deck.IsPublic,
+			&deck.IsSystem,
+			&deck.CreatedAt,
+			&deck.UpdatedAt)
 
-    // Check for errors from iterating over rows
-    if err := rows.Err(); err != nil {
-        log.Printf("Error iterating over rows: %v", err)
-        return nil, err
-    }
+		if err != nil {
+			log.Printf("Error scanning row: %v", err)
+			return nil, err
+		}
+		decks = append(decks, deck)
+	}
 
-    return decks, nil
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		log.Printf("Error iterating over rows: %v", err)
+		return nil, err
+	}
+
+	return decks, nil
 }
 
 // GetDeck retrieves a specific deck by ID
@@ -87,7 +88,9 @@ func (c *Client) GetDeck(deckID int, userID string) (Deck, error) {
 	var deck Deck
 
 	query := `
-		SELECT * FROM decks 
+		SELECT id, user_id, name, description, is_public, 
+			is_system, created_at, updated_at 
+		FROM decks 
 		WHERE id = $1 AND (user_id = $2 OR is_public = true)
 	`
 
@@ -101,8 +104,6 @@ func (c *Client) GetDeck(deckID int, userID string) (Deck, error) {
 
 // GetDeckWithCards retrieves a deck with all its flashcards
 func (c *Client) GetDeckWithCards(deckID int, userID string) (DeckWithCards, error) {
-	var deckWithCards DeckWithCards
-
 	// First get the deck
 	deck, err := c.GetDeck(deckID, userID)
 	if err != nil {
@@ -112,11 +113,15 @@ func (c *Client) GetDeckWithCards(deckID int, userID string) (DeckWithCards, err
 	// Get all flashcards for this deck
 	flashcards, err := c.GetFlashcardsByDeckID(deckID)
 	if err != nil {
-		return DeckWithCards{}, err
+		if strings.Contains(err.Error(), "no flashcards found") {
+			flashcards = []Flashcard{} // Initialize as an empty slice
+		} else {
+			return DeckWithCards{}, err // Return the error if it's not the specific "no flashcards found" error
+		}
 	}
 
 	// Combine into response
-	deckWithCards = DeckWithCards{
+	deckWithCards := DeckWithCards{
 		ID:          deck.ID,
 		UserID:      deck.UserID,
 		Name:        deck.Name,
@@ -133,27 +138,27 @@ func (c *Client) GetDeckWithCards(deckID int, userID string) (DeckWithCards, err
 
 // CreateDeck creates a new deck
 func (c *Client) CreateDeck(deck Deck) (Deck, error) {
-    query := `
+	query := `
         INSERT INTO decks (user_id, name, description, is_public, is_system)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING id, user_id, name, description, is_public, is_system, created_at, updated_at
     `
-    var createdDeck Deck
-    err := c.db.QueryRow(query, deck.UserID, deck.Name, deck.Description, deck.IsPublic, deck.IsSystem).Scan(
-        &createdDeck.ID,
-        &createdDeck.UserID,
-        &createdDeck.Name,
-        &createdDeck.Description,
-        &createdDeck.IsPublic,
-        &createdDeck.IsSystem,
-        &createdDeck.CreatedAt,
-        &createdDeck.UpdatedAt,
-    )
-    if err != nil {
-        log.Printf("Error creating deck: %v", err) 
-        return Deck{}, err
-    }
-    return createdDeck, nil
+	var createdDeck Deck
+	err := c.db.QueryRow(query, deck.UserID, deck.Name, deck.Description, deck.IsPublic, deck.IsSystem).Scan(
+		&createdDeck.ID,
+		&createdDeck.UserID,
+		&createdDeck.Name,
+		&createdDeck.Description,
+		&createdDeck.IsPublic,
+		&createdDeck.IsSystem,
+		&createdDeck.CreatedAt,
+		&createdDeck.UpdatedAt,
+	)
+	if err != nil {
+		log.Printf("Error creating deck: %v", err)
+		return Deck{}, err
+	}
+	return createdDeck, nil
 }
 
 // DeleteDeck deletes a deck and all associated flashcards

@@ -274,7 +274,6 @@ module "organization_join" {
 }
 
 # Deck endpoints
-# Deck endpoints
 module "deck" {
   source       = "./api_gateway"
   rest_api_id  = aws_api_gateway_rest_api.story_api.id
