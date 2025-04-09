@@ -53,9 +53,10 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
 
   const fetchClassrooms = useCallback(async () => {
     const classroomsData = await getClassroomList();
+    console.log(classroomsData);
     setClassrooms(classroomsData.classrooms);
     
-    if (classroomsData.classrooms.length > 0) {
+    if (classroomsData.classrooms && classroomsData.classrooms.length > 0) {
       const currentSelectionExists = classroomsData.classrooms.some(
         (classroom: ClassroomListItem) => classroom.classroom_id === selectedClassroom
       );
