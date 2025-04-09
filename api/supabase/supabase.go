@@ -141,11 +141,16 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 				CASE 
 					WHEN '%[1]s' = 'stories' THEN 'Story'::text 
 					ELSE 'News'::text 
-				END as content_type`, tableAlias)
+				END as content_type,
+				CASE
+					WHEN '%[1]s' = 'stories' THEN 'NONE'::text
+					ELSE COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.news_id = %[1]s.id), 'NONE')::text
+				END as audiobook_tier`, tableAlias)
 		}
 
 		if contentType == "News" {
-			return baseSelect
+			return baseSelect + fmt.Sprintf(`, 
+				COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.news_id = %[1]s.id), 'NONE')::text as audiobook_tier`, tableAlias)
 		}
 
 		return baseSelect + fmt.Sprintf(`, %[1]s.pages`, tableAlias)
@@ -315,6 +320,7 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 		var dateCreated sql.NullTime
 		var pages sql.NullInt32
 		var contentTypeStr sql.NullString
+		var audiobookTier sql.NullString
 
 		var scanArgs []interface{}
 		scanArgs = append(scanArgs,
@@ -323,9 +329,11 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 
 		// add scan fields based on content type
 		if contentType == "All" {
-			scanArgs = append(scanArgs, &pages, &contentTypeStr) // since if its All, then content type is an additional column
+			scanArgs = append(scanArgs, &pages, &contentTypeStr, &audiobookTier)
 		} else if contentType == "Story" {
-			scanArgs = append(scanArgs, &pages) // similarly, pages is here
+			scanArgs = append(scanArgs, &pages)
+		} else if contentType == "News" {
+			scanArgs = append(scanArgs, &audiobookTier)
 		}
 
 		if err := rows.Scan(scanArgs...); err != nil {
@@ -355,6 +363,14 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 		// Add content_type for All content type
 		if contentType == "All" {
 			result["content_type"] = contentTypeStr.String
+		}
+
+		if contentType == "News" || contentType == "All" {
+			if audiobookTier.Valid {
+				result["audiobook_tier"] = audiobookTier.String
+			} else {
+				result["audiobook_tier"] = "NONE"
+			}
 		}
 
 		results = append(results, result)

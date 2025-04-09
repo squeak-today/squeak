@@ -982,6 +982,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| audiobook_tier | string | *Example:* `"NONE"` | Yes |
 | cefr_level | string | *Example:* `"B1"` | Yes |
 | content_type | string | *Example:* `"News"` | Yes |
 | created_at | string | *Example:* `"2025-02-26T13:01:13.390612Z"` | Yes |
@@ -1073,7 +1074,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| code | [models.ERROR_CODE](#modelserror_code) | *Enum:* `"PROFILE_NOT_FOUND"`, `"NO_TRANSCRIPT"`, `"AUTH_REQUIRED"`, `"USAGE_LIMIT_REACHED"`<br>*Example:* `"PROFILE_NOT_FOUND"` | No |
+| code | [models.ERROR_CODE](#modelserror_code) | *Enum:* `"PROFILE_NOT_FOUND"`, `"NO_TRANSCRIPT"`, `"AUTH_REQUIRED"`, `"USAGE_LIMIT_REACHED"`, `"USAGE_RESTRICTED"`<br>*Example:* `"PROFILE_NOT_FOUND"` | No |
 | error | string | *Example:* `"Something went wrong"` | Yes |
 
 #### models.EvaluateAnswerRequest
@@ -1202,6 +1203,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| audiobook_tier | string | *Example:* `"NONE"` | Yes |
 | cefr_level | string | *Example:* `"B1"` | Yes |
 | created_at | string | *Example:* `"2024-02-26T13:01:13.390612Z"` | Yes |
 | date_created | string | *Example:* `"2024-02-26"` | Yes |

@@ -2094,6 +2094,8 @@ export interface components {
             success: boolean;
         };
         "models.ClassroomContentItem": {
+            /** @example NONE */
+            audiobook_tier: string;
             /** @example B1 */
             cefr_level: string;
             /** @example News */
@@ -2163,13 +2165,13 @@ export interface components {
             message: string;
         };
         /** @enum {string} */
-        "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
+        "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED" | "USAGE_RESTRICTED";
         "models.ErrorResponse": {
             /**
              * @example PROFILE_NOT_FOUND
              * @enum {unknown}
              */
-            code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
+            code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED" | "USAGE_RESTRICTED";
             /** @example Something went wrong */
             error: string;
         };
@@ -2300,6 +2302,8 @@ export interface components {
             teacher_id: string;
         };
         "models.NewsItem": {
+            /** @example NONE */
+            audiobook_tier: string;
             /** @example B1 */
             cefr_level: string;
             /** @example 2024-02-26T13:01:13.390612Z */

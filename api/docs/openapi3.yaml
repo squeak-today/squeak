@@ -1160,6 +1160,9 @@ components:
       type: object
     models.ClassroomContentItem:
       properties:
+        audiobook_tier:
+          example: NONE
+          type: string
         cefr_level:
           example: B1
           type: string
@@ -1197,6 +1200,7 @@ components:
           example: Music
           type: string
       required:
+        - audiobook_tier
         - cefr_level
         - content_type
         - created_at
@@ -1300,12 +1304,14 @@ components:
         - NO_TRANSCRIPT
         - AUTH_REQUIRED
         - USAGE_LIMIT_REACHED
+        - USAGE_RESTRICTED
       type: string
       x-enum-varnames:
         - PROFILE_NOT_FOUND
         - NO_TRANSCRIPT
         - AUTH_REQUIRED
         - USAGE_LIMIT_REACHED
+        - USAGE_RESTRICTED
     models.ErrorResponse:
       properties:
         code:
@@ -1316,6 +1322,7 @@ components:
             - NO_TRANSCRIPT
             - AUTH_REQUIRED
             - USAGE_LIMIT_REACHED
+            - USAGE_RESTRICTED
           example: PROFILE_NOT_FOUND
         error:
           example: Something went wrong
@@ -1580,6 +1587,9 @@ components:
       type: object
     models.NewsItem:
       properties:
+        audiobook_tier:
+          example: NONE
+          type: string
         cefr_level:
           example: B1
           type: string
@@ -1605,6 +1615,7 @@ components:
           example: Music
           type: string
       required:
+        - audiobook_tier
         - cefr_level
         - created_at
         - date_created

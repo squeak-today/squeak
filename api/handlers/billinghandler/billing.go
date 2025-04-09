@@ -7,6 +7,7 @@ import (
 	"log"
 	"story-api/handlers"
 	"story-api/models"
+	"story-api/plans"
 	useStripe "story-api/stripe"
 	"story-api/supabase"
 	"time"
@@ -61,19 +62,19 @@ func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
 	if reqPlan == "" {
 		reqPlan = "FREE"
 	}
-	naturalTTSUsage, err := h.DBClient.GetUsage(userID, supabase.NATURAL_TTS_FEATURE, reqPlan)
+	naturalTTSUsage, err := h.DBClient.GetUsage(userID, plans.NATURAL_TTS_FEATURE, reqPlan)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
 	}
-	premiumSTTUsage, err := h.DBClient.GetUsage(userID, supabase.PREMIUM_STT_FEATURE, reqPlan)
+	premiumSTTUsage, err := h.DBClient.GetUsage(userID, plans.PREMIUM_STT_FEATURE, reqPlan)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
 	}
 	c.JSON(http.StatusOK, models.BillingAccountUsageResponse{
 		NaturalTTSUsage:    naturalTTSUsage,
-		MaxNaturalTTSUsage: handlers.NATURAL_TTS_USAGE_LIMIT_FREE,
+		MaxNaturalTTSUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.NATURAL_TTS_FEATURE].Plan[reqPlan],
 		PremiumSTTUsage:    premiumSTTUsage,
-		MaxPremiumSTTUsage: handlers.PREMIUM_STT_USAGE_LIMIT_FREE,
+		MaxPremiumSTTUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.PREMIUM_STT_FEATURE].Plan[reqPlan],
 	})
 }
 
