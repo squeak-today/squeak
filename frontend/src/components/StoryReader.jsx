@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -25,7 +25,7 @@ const StoryText = styled.div`
 	flex-wrap: wrap; // Enable wrapping within the flex container
 `;
 
-const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLanguage }) => {
+const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLanguage, addWordRef, highlightedWords }) => {
     const getSentences = (text) => {
         // big regex for sentence detection:
         /**
@@ -66,11 +66,25 @@ const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLan
                 10: 'rounded-[10px]',
             }
             
+            const wordKey = `${word.trim()}-${sentence.trim()}`;
+            const isHighlighted = highlightedWords.has(wordKey);
+            
+            const setWordRef = (element) => {
+                if (element && addWordRef && word.trim()) {
+                    addWordRef({
+                        word: word.trim(),
+                        reference: element,
+                        sentence: sentence.trim()
+                    });
+                }
+            };
+            
             return (
                 <span
                     key={index}
+                    ref={setWordRef}
                     onClick={(e) => handleWordClick(e, word.trim(), sourceLanguage, sentence.trim())}
-                    className={`inline cursor-pointer -my-[2px] mx-0 py-[2px] px-[1px] ${roundingVariants[highlightRounding]} transition-colors duration-150 ease-in hover:bg-[#fbd48f] word`}
+                    className={`inline cursor-pointer -my-[2px] mx-0 py-[2px] px-[1px] ${roundingVariants[highlightRounding]} ${isHighlighted ? 'bg-[#fbd48f]' : 'bg-transparent'} transition-colors duration-150 ease-in hover:bg-[#fbd48f] word`}
                 >
                     {word}
                 </span>
@@ -101,15 +115,15 @@ const ClickableText = ({ children, highlightRounding, handleWordClick, sourceLan
     return <>{React.Children.map(children, child => processNode(child))}</>;
 };
 
-const createComponentOverrides = (handleWordClick, sourceLanguage) => ({
-    p: props => <p><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></p>,
-    li: props => <li><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></li>,
-    h1: props => <h1><ClickableText highlightRounding={10} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h1>,
-    h2: props => <h2><ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h2>,
-    h3: props => <h3><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h3>,
-    h4: props => <h4><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></h4>,
-    div: props => <div><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></div>,
-    span: props => <span><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} {...props} /></span>,
+const createComponentOverrides = (handleWordClick, sourceLanguage, addWordRef, highlightedWords) => ({
+    p: props => <p><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></p>,
+    li: props => <li><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></li>,
+    h1: props => <h1><ClickableText highlightRounding={10} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></h1>,
+    h2: props => <h2><ClickableText highlightRounding={8} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></h2>,
+    h3: props => <h3><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></h3>,
+    h4: props => <h4><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></h4>,
+    div: props => <div><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></div>,
+    span: props => <span><ClickableText highlightRounding={5} handleWordClick={handleWordClick} sourceLanguage={sourceLanguage} addWordRef={addWordRef} highlightedWords={highlightedWords} {...props} /></span>,
 });
 
 const PageNavigationButton = styled.button`
@@ -157,6 +171,38 @@ const StoryReader = ({ content, paged, onNeedPages, handleWordClick, sourceLangu
     const [currentPage, setCurrentPage] = useState(0);
     const [compiledPages, setCompiledPages] = useState(new Map());
     const [singleComponent, setSingleComponent] = useState(null);
+    const [highlightedWords, setHighlightedWords] = useState(new Set());
+    const wordElementsRef = useRef([]);
+    const processedWordsRef = useRef(new Set());
+
+    const addWordRef = (wordData) => {
+        const wordKey = `${wordData.word}-${wordData.sentence}`;
+        if (!processedWordsRef.current.has(wordKey)) {
+            processedWordsRef.current.add(wordKey);
+            wordElementsRef.current.push(wordData);
+        }
+    };
+
+    const highlightWord = (index) => {
+        if (wordElementsRef.current[index]) {
+            const wordData = wordElementsRef.current[index];
+            const wordKey = `${wordData.word}-${wordData.sentence}`;
+            setHighlightedWords(prev => {
+                const newHighlighted = new Set(prev);
+                if (newHighlighted.has(wordKey)) {
+                    newHighlighted.delete(wordKey);
+                } else {
+                    newHighlighted.add(wordKey);
+                }
+                return newHighlighted;
+            });
+        }
+    }
+
+    useEffect(() => {
+        wordElementsRef.current = [];
+        processedWordsRef.current.clear();
+    }, [content, currentPage]);
 
     useEffect(() => {
         if ((paged === 0) && content) {
@@ -278,10 +324,11 @@ const StoryReader = ({ content, paged, onNeedPages, handleWordClick, sourceLangu
                             </PageNavigationButton>
                         </PageControls>
                     )}
+                    <button onClick={() => highlightWord(2)}>Log word elements</button>
                     <StoryText>
                         {CurrentMDXComponent && 
                             <CurrentMDXComponent 
-                                components={createComponentOverrides(handleWordClick, sourceLanguage)}
+                                components={createComponentOverrides(handleWordClick, sourceLanguage, addWordRef, highlightedWords)}
                             />
                         }
                     </StoryText>
