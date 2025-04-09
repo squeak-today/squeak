@@ -79,7 +79,9 @@ const SidePanel = ({
     isLoading,
     onIncrementProgress,
     useNaturalPronunciation,
-    setUseNaturalPronunciation
+    setUseNaturalPronunciation,
+    useAudiobookMode,
+    setUseAudiobookMode
 }) => {
     const { isTeacher, isStudent } = usePlatform();
     const [activeTab, setActiveTab] = useState('info');
@@ -92,7 +94,6 @@ const SidePanel = ({
     const [playingQuestion, setPlayingQuestion] = useState(null);
     
     const [usePremiumSpeechToText, setUsePremiumSpeechToText] = useState(false);
-    const [audiobookMode, setAudiobookMode] = useState(false);
 
     const isBeginnerLevel = contentData.difficulty === 'A1' || contentData.difficulty === 'A2';
 
@@ -246,8 +247,8 @@ const SidePanel = ({
                         <ItalicInfoText>Written on {formatDate(contentData.date_created)}</ItalicInfoText>
                     </ContentSection>
                     
-                    <div className="flex flex-col gap-2 bg-item-background rounded-lg px-4 py-4 w-[80%]">
-                        <p className="mt-0 mb-0 text-base">Click to enable or disable:</p>
+                    <div className="flex flex-col gap-2 rounded-lg px-0 py-0 w-[80%]">
+                        <p className="mt-0 mb-0 text-base font-primary text-[#666]">Click to enable or disable:</p>
                         <FeatureToggleButton 
                             $active={useNaturalPronunciation}
                             onClick={() => setUseNaturalPronunciation(!useNaturalPronunciation)}
@@ -259,11 +260,11 @@ const SidePanel = ({
                         />}
                         </FeatureToggleButton>
                         <FeatureToggleButton 
-                            $active={audiobookMode}
-                            onClick={() => setAudiobookMode(!audiobookMode)}
+                            $active={useAudiobookMode}
+                            onClick={() => setUseAudiobookMode(!useAudiobookMode)}
                         >
                         <span>Audiobook Mode</span>
-                        {audiobookMode && <ToggleIcon 
+                        {useAudiobookMode && <ToggleIcon 
                             src={checkIcon} 
                             alt={"Enabled"}
                         />}

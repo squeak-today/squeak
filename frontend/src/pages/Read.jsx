@@ -2,6 +2,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BasicPage from '../components/BasicPage';
 import StoryReader from '../components/StoryReader';
+import AudiobookReader from '../components/AudiobookReader';
 import { useNotification } from '../context/NotificationContext';
 import { ReadPageLayout, ReaderPanel, BackButton } from '../styles/ReadPageStyles';
 import SidePanel from '../components/SidePanel';
@@ -62,6 +63,7 @@ function Read() {
     const [isPlayingTTS, setIsPlayingTTS] = useState(false);
 
     const [useNaturalPronunciation, setUseNaturalPronunciation] = useState(false);
+    const [useAudiobookMode, setUseAudiobookMode] = useState(false);
 
     useEffect(() => {
         const loadInitialMetadata = async () => {
@@ -391,14 +393,18 @@ function Read() {
                 </BackButton>
                 <ReadPageLayout>
                     <ReaderPanel onScroll={handleReaderScroll}>
-                        <StoryReader 
+                        {!useAudiobookMode && <StoryReader 
                             content={type === 'Story' ? pagedData : contentData.content}
                             paged={type === 'Story' ? totalPages : 0}
                             onNeedPages={fetchStoryPages}
                             handleWordClick={handleWordClick}
                             sourceLanguage={sourceLanguage}
                             isLoading={isLoading || (!pagedData && type === 'Story')}
-                        />
+                        />}
+                        {useAudiobookMode && <AudiobookReader 
+                            id={id}
+                            contentType={type}
+                        />}
                     </ReaderPanel>
                     <SidePanel 
                         contentData={contentData}
@@ -411,6 +417,8 @@ function Read() {
                         onIncrementProgress={handleIncrementProgress}
                         useNaturalPronunciation={useNaturalPronunciation}
                         setUseNaturalPronunciation={setUseNaturalPronunciation}
+                        useAudiobookMode={useAudiobookMode}
+                        setUseAudiobookMode={setUseAudiobookMode}
                     />
                     {tooltip.show && (
                         <TranslationPanel
