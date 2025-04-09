@@ -178,12 +178,33 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 		return
 	}
 
+	if newsIDStr == "" {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "ID parameter is required"})
+		return
+	}
 	newsID, err := strconv.Atoi(newsIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
 			Error: "news_id must be a valid integer",
 		})
 		return
+	}
+
+	_, classroomID, err := h.DBClient.CheckStudentStatus(userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check student status"})
+		return
+	}
+	if classroomID != "" {
+		accepted, err := h.DBClient.CheckAcceptedContent(classroomID, "News", newsIDStr)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check accepted content"})
+			return
+		}
+		if !accepted {
+			c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Content not accepted in classroom"})
+			return
+		}
 	}
 
 	audiobookInfo, err := h.DBClient.GetAudiobook(newsID)
