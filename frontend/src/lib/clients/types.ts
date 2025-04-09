@@ -3,1502 +3,2501 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/audio": {
-    /**
-     * Check audio service health
-     * @description Check if the audio service is live
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.AudioHealthResponse"];
-          };
+    "/audio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
+        /**
+         * Check audio service health
+         * @description Check if the audio service is live
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.AudioHealthResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/audio/stt": {
-    /**
-     * Speech to text
-     * @description Convert speech audio to text
-     */
-    post: {
-      /** @description Speech to text request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.SpeechToTextRequest"];
+    "/audio/audiobook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.SpeechToTextResponse"];
-          };
+        /**
+         * Get audiobook
+         * @description Get audiobook for a news_id
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description News ID */
+                    news_id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.AudiobookResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/audio/translate": {
-    /**
-     * Translate text
-     * @description Translate text from source language to target language
-     */
-    post: {
-      /** @description Translation request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.TranslateRequest"];
+    "/audio/stt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.TranslateResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Speech to text
+         * @description Convert speech audio to text
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Speech to text request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.SpeechToTextRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.SpeechToTextResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/audio/tts": {
-    /**
-     * Text to speech
-     * @description Convert text to speech audio
-     */
-    post: {
-      /** @description Text to speech request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.TextToSpeechRequest"];
+    "/audio/translate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.TextToSpeechResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Translate text
+         * @description Translate text from source language to target language
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Translation request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.TranslateRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.TranslateResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Internal Server Error */
-        500: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/billing": {
-    /**
-     * Check Billing Account
-     * @description Check Billing Account
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.BillingAccountResponse"];
-          };
+    "/audio/tts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Unauthorized */
-        401: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Text to speech
+         * @description Convert text to speech audio
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Text to speech request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.TextToSpeechRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.TextToSpeechResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/billing/cancel-subscription-eop": {
-    /**
-     * Cancel a Stripe individual subscription at the end of the period
-     * @description Cancel a Stripe individual subscription at the end of the period
-     */
-    post: {
-      /** @description Cancel subscription request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.CancelIndividualSubscriptionRequest"];
+    "/billing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.CancelIndividualSubscriptionResponse"];
-          };
+        /**
+         * Check Billing Account
+         * @description Check Billing Account
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.BillingAccountResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/billing/create-checkout-session": {
-    /**
-     * Create a Stripe checkout session (individual)
-     * @description Creates a checkout session and redirects to Stripe's payment page
-     */
-    post: {
-      /** @description Create checkout session request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionRequest"];
+    "/billing/cancel-subscription-eop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Redirect to Stripe Checkout */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a Stripe individual subscription at the end of the period
+         * @description Cancel a Stripe individual subscription at the end of the period
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Cancel subscription request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CancelIndividualSubscriptionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CancelIndividualSubscriptionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/billing/usage": {
-    /**
-     * Get Billing Account Usage
-     * @description Get Billing Account Usage, assumes free plan
-     */
-    get: {
-      parameters: {
-        query?: {
-          /** @description Plan */
-          plan?: string;
+    "/billing/create-checkout-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.BillingAccountUsageResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Create a Stripe checkout session (individual)
+         * @description Creates a checkout session and redirects to Stripe's payment page
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Create checkout session request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionRequest"];
+                };
+            };
+            responses: {
+                /** @description Redirect to Stripe Checkout */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CreateIndividualCheckoutSessionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Unauthorized */
-        401: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/news": {
-    /**
-     * Get news content
-     * @description Get news content by ID
-     */
-    get: {
-      parameters: {
-        query: {
-          /** @description Content ID */
-          id: string;
+    "/billing/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.GetNewsResponse"];
-          };
+        /**
+         * Get Billing Account Usage
+         * @description Get Billing Account Usage, assumes free plan
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Plan */
+                    plan?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.BillingAccountUsageResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Not Found */
-        404: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Internal Server Error */
-        500: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/news/query": {
-    /**
-     * Get news content
-     * @description Get news content by ID
-     */
-    get: {
-      parameters: {
-        query: {
-          /** @description Language */
-          language: string;
-          /** @description CEFR */
-          cefr: string;
-          /** @description Subject */
-          subject: string;
-          /** @description Page */
-          page: string;
-          /** @description Page size */
-          pagesize: string;
+    "/news": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.NewsItem"][];
-          };
+        /**
+         * Get news content
+         * @description Get news content by ID
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Content ID */
+                    id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.GetNewsResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/organization": {
-    /**
-     * Check Organization for Teacher
-     * @description Check Organization for Teacher
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.OrganizationResponse"];
-          };
+    "/news/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Unauthorized */
-        401: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        /**
+         * Get news content
+         * @description Get news content by ID
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Language */
+                    language: string;
+                    /** @description CEFR */
+                    cefr: string;
+                    /** @description Subject */
+                    subject: string;
+                    /** @description Page */
+                    page: string;
+                    /** @description Page size */
+                    pagesize: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.NewsItem"][];
+                    };
+                };
+            };
         };
-        /** @description Not Found */
-        404: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/organization/create": {
-    /**
-     * Create Organization
-     * @description Create Organization. Automatically adds the calling user as a teacher.
-     */
-    post: {
-      /** @description Create organization request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.CreateOrganizationRequest"];
+    "/organization": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.CreateOrganizationResponse"];
-          };
+        /**
+         * Check Organization for Teacher
+         * @description Check Organization for Teacher
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.OrganizationResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Unauthorized */
-        401: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/organization/join": {
-    /**
-     * Join Organization
-     * @description Join Organization that has been created by another admin.
-     */
-    post: {
-      /** @description Join organization request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.JoinOrganizationRequest"];
+    "/organization/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.JoinOrganizationResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Create Organization
+         * @description Create Organization. Automatically adds the calling user as a teacher.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Create organization request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreateOrganizationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CreateOrganizationResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Unauthorized */
-        401: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/organization/payments": {
-    /**
-     * Ping Payments
-     * @description Ping Payments
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.PaymentsResponse"];
-          };
+    "/organization/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
+        get?: never;
+        put?: never;
+        /**
+         * Join Organization
+         * @description Join Organization that has been created by another admin.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Join organization request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.JoinOrganizationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.JoinOrganizationResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/organization/payments/cancel-subscription-eop": {
-    /**
-     * Cancel a Stripe subscription at the end of the period
-     * @description Cancel a Stripe subscription at the end of the period
-     */
-    post: {
-      /** @description Cancel subscription request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.CancelSubscriptionRequest"];
+    "/organization/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
-          };
+        /**
+         * Ping Payments
+         * @description Ping Payments
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.PaymentsResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/organization/payments/create-checkout-session": {
-    /**
-     * Create a Stripe checkout session
-     * @description Creates a checkout session and redirects to Stripe's payment page
-     */
-    post: {
-      /** @description Create checkout session request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.CreateCheckoutSessionRequest"];
+    "/organization/payments/cancel-subscription-eop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Redirect to Stripe Checkout */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.CreateCheckoutSessionResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Cancel a Stripe subscription at the end of the period
+         * @description Cancel a Stripe subscription at the end of the period
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Cancel subscription request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CancelSubscriptionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CancelSubscriptionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/profile": {
-    /**
-     * Get user profile
-     * @description Get the user's profile information
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.GetProfileResponse"];
-          };
+    "/organization/payments/create-checkout-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Not Found */
-        404: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Create a Stripe checkout session
+         * @description Creates a checkout session and redirects to Stripe's payment page
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Create checkout session request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreateCheckoutSessionRequest"];
+                };
+            };
+            responses: {
+                /** @description Redirect to Stripe Checkout */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CreateCheckoutSessionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/profile/upsert": {
-    /**
-     * Upsert user profile
-     * @description Create or update the user's profile
-     */
-    post: {
-      /** @description Profile information */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.UpsertProfileRequest"];
+    "/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.UpsertProfileResponse"];
-          };
+        /**
+         * Get user profile
+         * @description Get the user's profile information
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.GetProfileResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Conflict */
-        409: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/progress": {
-    /**
-     * Get today's progress
-     * @description Get the user's progress for today
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.TodayProgressResponse"];
-          };
+    "/profile/upsert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
+        get?: never;
+        put?: never;
+        /**
+         * Upsert user profile
+         * @description Create or update the user's profile
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Profile information */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.UpsertProfileRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.UpsertProfileResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/progress/increment": {
-    /**
-     * Increment questions completed
-     * @description Increment the number of questions completed for today
-     */
-    get: {
-      parameters: {
-        query: {
-          /** @description Amount to increment by */
-          amount: number;
+    "/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.IncrementProgressResponse"];
-          };
+        /**
+         * Get today's progress
+         * @description Get the user's progress for today
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.TodayProgressResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/progress/streak": {
-    /**
-     * Get streak information
-     * @description Get the user's current streak and completion status
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.StreakResponse"];
-          };
+    "/progress/increment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
+        /**
+         * Increment questions completed
+         * @description Increment the number of questions completed for today
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Amount to increment by */
+                    amount: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.IncrementProgressResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/qna": {
-    /**
-     * Get or generate a question
-     * @description Get an existing question or generate a new one for the given content
-     */
-    post: {
-      /** @description Question request parameters */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.GetQuestionRequest"];
+    "/progress/streak": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.GetQuestionResponse"];
-          };
+        /**
+         * Get streak information
+         * @description Get the user's current streak and completion status
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.StreakResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Not Found */
-        404: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/qna/evaluate": {
-    /**
-     * Evaluate an answer
-     * @description Evaluate a user's answer to a question
-     */
-    post: {
-      /** @description Answer evaluation request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.EvaluateAnswerRequest"];
+    "/qna": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.EvaluateAnswerResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Get or generate a question
+         * @description Get an existing question or generate a new one for the given content
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Question request parameters */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.GetQuestionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.GetQuestionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/story": {
-    /**
-     * Get story page content
-     * @description Get story content by ID
-     */
-    get: {
-      parameters: {
-        query: {
-          /** @description Content ID */
-          id: string;
-          /** @description Page */
-          page: string;
+    "/qna/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.GetStoryPageResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Evaluate an answer
+         * @description Evaluate a user's answer to a question
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Answer evaluation request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.EvaluateAnswerRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.EvaluateAnswerResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-        /** @description Not Found */
-        404: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/story/context": {
-    /**
-     * Get story QNA context
-     * @description Get story QNA context by ID
-     */
-    get: {
-      parameters: {
-        query: {
-          /** @description Content ID */
-          id: string;
+    "/story": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.GetStoryQNAContextResponse"];
-          };
+        /**
+         * Get story page content
+         * @description Get story content by ID
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Content ID */
+                    id: string;
+                    /** @description Page */
+                    page: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.GetStoryPageResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Not Found */
-        404: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/story/query": {
-    /**
-     * Get story query
-     * @description Get story query by ID
-     */
-    get: {
-      parameters: {
-        query: {
-          /** @description Language */
-          language: string;
-          /** @description CEFR */
-          cefr: string;
-          /** @description Subject */
-          subject: string;
-          /** @description Page */
-          page: string;
-          /** @description Page Size */
-          pagesize: string;
+    "/story/context": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.StoryItem"][];
-          };
+        /**
+         * Get story QNA context
+         * @description Get story QNA context by ID
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Content ID */
+                    id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.GetStoryQNAContextResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/student": {
-    /**
-     * Check user student status
-     * @description Check if the user is a student and get their classroom info
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.StudentStatusResponse"];
-          };
+    "/story/query": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        /**
+         * Get story query
+         * @description Get story query by ID
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Language */
+                    language: string;
+                    /** @description CEFR */
+                    cefr: string;
+                    /** @description Subject */
+                    subject: string;
+                    /** @description Page */
+                    page: string;
+                    /** @description Page Size */
+                    pagesize: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.StoryItem"][];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/student/classroom": {
-    /**
-     * Get classroom info
-     * @description Get classroom info for the student
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.GetStudentClassroomResponse"];
-          };
+    "/student": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        /**
+         * Check user student status
+         * @description Check if the user is a student and get their classroom info
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.StudentStatusResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/student/classroom/join": {
-    /**
-     * Join classroom
-     * @description Join a classroom as a student
-     */
-    post: {
-      /** @description Join classroom request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.JoinClassroomRequest"];
+    "/student/classroom": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.JoinClassroomResponse"];
-          };
+        /**
+         * Get classroom info
+         * @description Get classroom info for the student
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.GetStudentClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher": {
-    /**
-     * Check user teacher status
-     * @description Check if the user is a teacher
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.TeacherStatusResponse"];
-          };
+    "/student/classroom/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Join classroom
+         * @description Join a classroom as a student
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Join classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.JoinClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.JoinClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher/classroom": {
-    /**
-     * Get classrooms
-     * @description Get classrooms
-     */
-    get: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.GetClassroomListResponse"];
-          };
+    "/teacher": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        /**
+         * Check user teacher status
+         * @description Check if the user is a teacher
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.TeacherStatusResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher/classroom/accept": {
-    /**
-     * Accept content
-     * @description Accept content
-     */
-    post: {
-      /** @description Accept content request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.AcceptContentRequest"];
+    "/teacher/classroom": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.AcceptContentResponse"];
-          };
+        /**
+         * Get classrooms
+         * @description Get classrooms
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.GetClassroomListResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher/classroom/content": {
-    /**
-     * Query classroom content
-     * @description Query classroom content
-     */
-    get: {
-      parameters: {
-        query: {
-          /** @description Language */
-          language: string;
-          /** @description CEFR */
-          cefr: string;
-          /** @description Subject */
-          subject: string;
-          /** @description Page */
-          page: string;
-          /** @description Page size */
-          pagesize: string;
-          /** @description Whitelist status */
-          whitelist: string;
-          /** @description Content type */
-          content_type: string;
-          /** @description Classroom ID */
-          classroom_id: string;
+    "/teacher/classroom/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.ClassroomContentItem"][];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Accept content
+         * @description Accept content
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Accept content request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.AcceptContentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.AcceptContentResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher/classroom/create": {
-    /**
-     * Create classroom
-     * @description Create classroom
-     */
-    post: {
-      /** @description Create classroom request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.CreateClassroomRequest"];
+    "/teacher/classroom/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.CreateClassroomResponse"];
-          };
+        /**
+         * Query classroom content
+         * @description Query classroom content
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description Language */
+                    language: string;
+                    /** @description CEFR */
+                    cefr: string;
+                    /** @description Subject */
+                    subject: string;
+                    /** @description Page */
+                    page: string;
+                    /** @description Page size */
+                    pagesize: string;
+                    /** @description Whitelist status */
+                    whitelist: string;
+                    /** @description Content type */
+                    content_type: string;
+                    /** @description Classroom ID */
+                    classroom_id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ClassroomContentItem"][];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher/classroom/delete": {
-    /**
-     * Delete classroom
-     * @description Delete classroom
-     */
-    post: {
-      /** @description Delete classroom request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.DeleteClassroomRequest"];
+    "/teacher/classroom/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.DeleteClassroomResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Create classroom
+         * @description Create classroom
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Create classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.CreateClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.CreateClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher/classroom/reject": {
-    /**
-     * Accept content
-     * @description Accept content
-     */
-    post: {
-      /** @description Reject content request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.RejectContentRequest"];
+    "/teacher/classroom/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.RejectContentResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Delete classroom
+         * @description Delete classroom
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Delete classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.DeleteClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.DeleteClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/teacher/classroom/update": {
-    /**
-     * Update classroom
-     * @description Update classroom
-     */
-    post: {
-      /** @description Update classroom request */
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["models.UpdateClassroomRequest"];
+    "/teacher/classroom/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.UpdateClassroomResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Accept content
+         * @description Accept content
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Reject content request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.RejectContentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.RejectContentResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-        /** @description Forbidden */
-        403: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
-        };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
-  "/webhook": {
-    /**
-     * Process Stripe webhook
-     * @description Validates and processes incoming webhook events from Stripe
-     */
-    post: {
-      responses: {
-        /** @description OK */
-        200: {
-          content: {
-            "application/json": components["schemas"]["models.WebhookResponse"];
-          };
+    "/teacher/classroom/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        /** @description Bad Request */
-        400: {
-          content: {
-            "application/json": components["schemas"]["models.ErrorResponse"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Update classroom
+         * @description Update classroom
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Update classroom request */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["models.UpdateClassroomRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.UpdateClassroomResponse"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-  };
+    "/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Process Stripe webhook
+         * @description Validates and processes incoming webhook events from Stripe
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.WebhookResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: {
-    "models.AcceptContentRequest": {
-      /** @example 123 */
-      classroom_id: string;
-      /** @example 123 */
-      content_id?: number;
-      /** @example News */
-      content_type: string;
-    };
-    "models.AcceptContentResponse": {
-      /** @example Content accepted successfully */
-      message: string;
-    };
-    "models.AudioHealthResponse": {
-      /** @example live */
-      status: string;
-    };
-    "models.BillingAccountResponse": {
-      /** @example false */
-      canceled: boolean;
-      /** @example 2025-01-01T00:00:00Z */
-      expiration: string;
-      /** @example PRO */
-      plan: string;
-    };
-    "models.BillingAccountUsageResponse": {
-      /** @example 100 */
-      max_natural_tts_usage: number;
-      /** @example 100 */
-      max_premium_stt_usage: number;
-      /** @example 10 */
-      natural_tts_usage: number;
-      /** @example 10 */
-      premium_stt_usage: number;
-    };
-    "models.CancelIndividualSubscriptionRequest": Record<string, never>;
-    "models.CancelIndividualSubscriptionResponse": {
-      /** @example PREMIUM */
-      canceled_plan: string;
-      /** @example 2025-03-24T12:00:00Z */
-      current_expiration: string;
-      /** @example true */
-      success: boolean;
-    };
-    "models.CancelSubscriptionRequest": Record<string, never>;
-    "models.CancelSubscriptionResponse": {
-      /** @example CLASSROOM */
-      canceled_plan: string;
-      /** @example 2025-03-24T12:00:00Z */
-      current_expiration: string;
-      /** @example true */
-      success: boolean;
-    };
-    "models.ClassroomContentItem": {
-      /** @example B1 */
-      cefr_level: string;
-      /** @example News */
-      content_type: string;
-      /** @example 2025-02-26T13:01:13.390612Z */
-      created_at: string;
-      /** @example 2025-02-26 */
-      date_created: string;
-      /** @example 2479 */
-      id: string;
-      /** @example French */
-      language: string;
-      /** @example 10 */
-      pages: number;
-      /**
-       * @example # L'actualité musicale en bref
-       *
-       * ## Un flot de nouveautés...
-       */
-      preview_text: string;
-      /**
-       * @example # L'actualité musicale en bref
-       *
-       * ## Un fl...
-       */
-      title: string;
-      /** @example Music */
-      topic: string;
-    };
-    "models.ClassroomListItem": {
-      /** @example 123 */
-      classroom_id: string;
-      /** @example Connor */
-      name: string;
-      /** @example 10 */
-      students_count?: number;
-    };
-    "models.CreateCheckoutSessionRequest": Record<string, never>;
-    "models.CreateCheckoutSessionResponse": {
-      /** @example https://checkout.stripe.com/c/pay/123 */
-      redirect_url: string;
-    };
-    "models.CreateClassroomRequest": {
-      /** @example Tuesday 9am */
-      name: string;
-      /** @example 10 */
-      students_count?: number;
-    };
-    "models.CreateClassroomResponse": {
-      /** @example 123 */
-      classroom_id: string;
-    };
-    "models.CreateIndividualCheckoutSessionRequest": Record<string, never>;
-    "models.CreateIndividualCheckoutSessionResponse": {
-      /** @example https://checkout.stripe.com/c/pay/123 */
-      redirect_url: string;
-    };
-    "models.CreateOrganizationRequest": Record<string, never>;
-    "models.CreateOrganizationResponse": {
-      /** @example 123 */
-      organization_id: string;
-      /** @example 123 */
-      teacher_id: string;
-    };
-    "models.DeleteClassroomRequest": {
-      /** @example 123 */
-      classroom_id: string;
-    };
-    "models.DeleteClassroomResponse": {
-      /** @example Classroom deleted successfully */
-      message: string;
-    };
-    /** @enum {string} */
-    "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
-    "models.ErrorResponse": {
-      /**
-       * @example PROFILE_NOT_FOUND
-       * @enum {unknown}
-       */
-      code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
-      /** @example Something went wrong */
-      error: string;
-    };
-    "models.EvaluateAnswerRequest": {
-      /** @example Hello */
-      answer: string;
-      /** @example B1 */
-      cefr: string;
-      /** @example Bonjour, comment ça va? */
-      content: string;
-      /** @example What does 'bonjour' mean? */
-      question: string;
-    };
-    "models.EvaluateAnswerResponse": {
-      /** @example PASS */
-      evaluation: string;
-      /** @example Perfect! */
-      explanation: string;
-    };
-    "models.GetClassroomListResponse": {
-      classrooms: components["schemas"]["models.ClassroomListItem"][];
-    };
-    "models.GetNewsResponse": {
-      /** @example B1 */
-      cefr_level: string;
-      /** @example Le contenu complet de l'article... */
-      content: string;
-      /** @example News */
-      content_type: string;
-      /** @example 2024-02-26 */
-      date_created: string;
-      dictionary: components["schemas"]["storage.Dictionary"];
-      /** @example French */
-      language: string;
-      /** @example Un résumé des nouvelles musicales... */
-      preview_text: string;
-      sources: components["schemas"]["storage.Source"][];
-      /** @example L'actualité musicale en bref */
-      title: string;
-      /** @example Music */
-      topic: string;
-    };
-    "models.GetProfileResponse": {
-      /** @example 3 */
-      daily_questions_goal?: number;
-      /**
-       * @example [
-       *   "[\"NBA\"]"
-       * ]
-       */
-      interested_topics: string[];
-      /** @example French */
-      learning_language: string;
-      /** @example B1 */
-      skill_level: string;
-      /** @example connortbot */
-      username: string;
-    };
-    "models.GetQuestionRequest": {
-      /** @example B1 */
-      cefr_level: string;
-      /** @example News */
-      content_type: string;
-      /** @example 123 */
-      id: string;
-      /**
-       * @example vocab
-       * @enum {string}
-       */
-      question_type: "vocab" | "understanding";
-    };
-    "models.GetQuestionResponse": {
-      /** @example What does 'bonjour' mean? */
-      question: string;
-    };
-    "models.GetStoryPageResponse": {
-      /** @example B1 */
-      cefr_level: string;
-      /** @example Le contenu complet de l'article... */
-      content: string;
-      /** @example Story */
-      content_type: string;
-      /** @example 2024-02-26 */
-      date_created: string;
-      /** @example French */
-      language: string;
-      /** @example 10 */
-      pages: number;
-      /** @example Un résumé des nouvelles musicales... */
-      preview_text: string;
-      /** @example L'actualité musicale en bref */
-      title: string;
-      /** @example Music */
-      topic: string;
-    };
-    "models.GetStoryQNAContextResponse": {
-      /** @example Le contexte de l'histoire... */
-      context: string;
-    };
-    "models.GetStudentClassroomResponse": {
-      /** @example 10 */
-      students_count?: number;
-      /** @example 789 */
-      teacher_id: string;
-    };
-    "models.IncrementProgressResponse": {
-      /** @example 2025-02-26T00:00:00Z */
-      date: string;
-      /** @example true */
-      goal_met: boolean;
-      /** @example 5 */
-      questions_completed?: number;
-      /** @example 123 */
-      user_id: string;
-    };
-    "models.JoinClassroomRequest": {
-      /** @example 123 */
-      classroom_id: string;
-    };
-    "models.JoinClassroomResponse": {
-      /** @example Student added to classroom successfully */
-      message: string;
-    };
-    "models.JoinOrganizationRequest": {
-      /** @example 123 */
-      organization_id: string;
-    };
-    "models.JoinOrganizationResponse": {
-      /** @example 123 */
-      teacher_id: string;
-    };
-    "models.NewsItem": {
-      /** @example B1 */
-      cefr_level: string;
-      /** @example 2024-02-26T13:01:13.390612Z */
-      created_at: string;
-      /** @example 2024-02-26 */
-      date_created: string;
-      /** @example 123 */
-      id: string;
-      /** @example French */
-      language: string;
-      /** @example Un résumé des nouvelles musicales... */
-      preview_text: string;
-      /** @example L'actualité musicale en bref */
-      title: string;
-      /** @example Music */
-      topic: string;
-    };
-    "models.OrganizationResponse": {
-      /** @example false */
-      canceled?: boolean;
-      /** @example 2025-03-24T12:00:00Z */
-      expiration_date?: string;
-      /** @example 123 */
-      organization_id: string;
-      /** @example FREE */
-      plan: string;
-      /** @example 123 */
-      teacher_id: string;
-    };
-    "models.PaymentsResponse": {
-      /** @example true */
-      success: boolean;
-    };
-    "models.RejectContentRequest": {
-      /** @example 123 */
-      classroom_id: string;
-      /** @example 123 */
-      content_id?: number;
-      /** @example News */
-      content_type: string;
-    };
-    "models.RejectContentResponse": {
-      /** @example Content rejected successfully */
-      message: string;
-    };
-    "models.SpeechToTextRequest": {
-      /** @example base64-encoded-audio-content */
-      audio_content: string;
-      /** @example en-US */
-      language_code: string;
-      /** @example false */
-      premium?: boolean;
-    };
-    "models.SpeechToTextResponse": {
-      /** @example Hello, how are you? */
-      transcript: string;
-    };
-    "models.StoryItem": {
-      /** @example B1 */
-      cefr_level: string;
-      /** @example 2024-02-26T13:01:13.390612Z */
-      created_at: string;
-      /** @example 2024-02-26 */
-      date_created: string;
-      /** @example 123 */
-      id: string;
-      /** @example French */
-      language: string;
-      /** @example Un résumé des nouvelles musicales... */
-      preview_text: string;
-      /** @example L'actualité musicale en bref */
-      title: string;
-      /** @example Music */
-      topic: string;
-    };
-    "models.StreakResponse": {
-      /** @example true */
-      completed_today: boolean;
-      /** @example 7 */
-      streak?: number;
-    };
-    "models.StudentStatusResponse": {
-      /** @example 456 */
-      classroom_id: string;
-      /** @example FREE */
-      plan?: string;
-      /** @example 123 */
-      student_id: string;
-    };
-    "models.TeacherStatusResponse": {
-      /** @example true */
-      exists: boolean;
-      /** @example FREE */
-      plan?: string;
-    };
-    "models.TextToSpeechRequest": {
-      /** @example en-US */
-      language_code: string;
-      /** @example false */
-      natural?: boolean;
-      /** @example Hello, how are you? */
-      text: string;
-      /** @example en-US-Standard-A */
-      voice_name: string;
-    };
-    "models.TextToSpeechResponse": {
-      /** @example base64-encoded-audio-content */
-      audio_content: string;
-    };
-    "models.TodayProgressResponse": {
-      /** @example 2025-02-26T00:00:00Z */
-      date: string;
-      /** @example true */
-      goal_met: boolean;
-      /** @example 5 */
-      questions_completed?: number;
-      /** @example 123 */
-      user_id: string;
-    };
-    "models.TranslateRequest": {
-      /** @example Hello, how are you? */
-      sentence: string;
-      /** @example en */
-      source: string;
-      /** @example fr */
-      target: string;
-    };
-    "models.TranslateResponse": {
-      /** @example Bonjour, comment allez-vous? */
-      sentence?: string;
-    };
-    "models.UpdateClassroomRequest": {
-      /** @example 123 */
-      classroom_id: string;
-      /** @example Tuesday 9am */
-      name: string;
-    };
-    "models.UpdateClassroomResponse": {
-      /** @example Classroom updated successfully */
-      message: string;
-    };
-    "models.UpsertProfileRequest": {
-      /** @example 3 */
-      daily_questions_goal?: number;
-      /**
-       * @example [
-       *   "[\"NBA\"]"
-       * ]
-       */
-      interested_topics: string[];
-      /** @example French */
-      learning_language: string;
-      /** @example B1 */
-      skill_level: string;
-      /** @example johndoe */
-      username: string;
-    };
-    "models.UpsertProfileResponse": {
-      /** @example 123 */
-      id?: number;
-      /** @example Profile updated successfully */
-      message: string;
-    };
-    "models.WebhookResponse": {
-      received?: boolean;
-      type?: string;
-    };
-    "storage.Dictionary": {
-      translations?: {
-        sentences?: {
-          [key: string]: string;
+    schemas: {
+        "models.AcceptContentRequest": {
+            /** @example 123 */
+            classroom_id: string;
+            /** @example 123 */
+            content_id?: number;
+            /** @example News */
+            content_type: string;
         };
-        words?: {
-          [key: string]: string;
+        "models.AcceptContentResponse": {
+            /** @example Content accepted successfully */
+            message: string;
         };
-      };
+        "models.AudioHealthResponse": {
+            /** @example live */
+            status: string;
+        };
+        "models.AudiobookResponse": {
+            audiobook?: components["schemas"]["storage.Audiobook"];
+        };
+        "models.BillingAccountResponse": {
+            /** @example false */
+            canceled: boolean;
+            /** @example 2025-01-01T00:00:00Z */
+            expiration: string;
+            /** @example PRO */
+            plan: string;
+        };
+        "models.BillingAccountUsageResponse": {
+            /** @example 100 */
+            max_natural_tts_usage: number;
+            /** @example 100 */
+            max_premium_stt_usage: number;
+            /** @example 10 */
+            natural_tts_usage: number;
+            /** @example 10 */
+            premium_stt_usage: number;
+        };
+        "models.CancelIndividualSubscriptionRequest": Record<string, never>;
+        "models.CancelIndividualSubscriptionResponse": {
+            /** @example PREMIUM */
+            canceled_plan: string;
+            /** @example 2025-03-24T12:00:00Z */
+            current_expiration: string;
+            /** @example true */
+            success: boolean;
+        };
+        "models.CancelSubscriptionRequest": Record<string, never>;
+        "models.CancelSubscriptionResponse": {
+            /** @example CLASSROOM */
+            canceled_plan: string;
+            /** @example 2025-03-24T12:00:00Z */
+            current_expiration: string;
+            /** @example true */
+            success: boolean;
+        };
+        "models.ClassroomContentItem": {
+            /** @example B1 */
+            cefr_level: string;
+            /** @example News */
+            content_type: string;
+            /** @example 2025-02-26T13:01:13.390612Z */
+            created_at: string;
+            /** @example 2025-02-26 */
+            date_created: string;
+            /** @example 2479 */
+            id: string;
+            /** @example French */
+            language: string;
+            /** @example 10 */
+            pages: number;
+            /** @example # L'actualité musicale en bref
+             *
+             *     ## Un flot de nouveautés... */
+            preview_text: string;
+            /** @example # L'actualité musicale en bref
+             *
+             *     ## Un fl... */
+            title: string;
+            /** @example Music */
+            topic: string;
+        };
+        "models.ClassroomListItem": {
+            /** @example 123 */
+            classroom_id: string;
+            /** @example Connor */
+            name: string;
+            /** @example 10 */
+            students_count?: number;
+        };
+        "models.CreateCheckoutSessionRequest": Record<string, never>;
+        "models.CreateCheckoutSessionResponse": {
+            /** @example https://checkout.stripe.com/c/pay/123 */
+            redirect_url: string;
+        };
+        "models.CreateClassroomRequest": {
+            /** @example Tuesday 9am */
+            name: string;
+            /** @example 10 */
+            students_count?: number;
+        };
+        "models.CreateClassroomResponse": {
+            /** @example 123 */
+            classroom_id: string;
+        };
+        "models.CreateIndividualCheckoutSessionRequest": Record<string, never>;
+        "models.CreateIndividualCheckoutSessionResponse": {
+            /** @example https://checkout.stripe.com/c/pay/123 */
+            redirect_url: string;
+        };
+        "models.CreateOrganizationRequest": Record<string, never>;
+        "models.CreateOrganizationResponse": {
+            /** @example 123 */
+            organization_id: string;
+            /** @example 123 */
+            teacher_id: string;
+        };
+        "models.DeleteClassroomRequest": {
+            /** @example 123 */
+            classroom_id: string;
+        };
+        "models.DeleteClassroomResponse": {
+            /** @example Classroom deleted successfully */
+            message: string;
+        };
+        /** @enum {string} */
+        "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
+        "models.ErrorResponse": {
+            /**
+             * @example PROFILE_NOT_FOUND
+             * @enum {unknown}
+             */
+            code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
+            /** @example Something went wrong */
+            error: string;
+        };
+        "models.EvaluateAnswerRequest": {
+            /** @example Hello */
+            answer: string;
+            /** @example B1 */
+            cefr: string;
+            /** @example Bonjour, comment ça va? */
+            content: string;
+            /** @example What does 'bonjour' mean? */
+            question: string;
+        };
+        "models.EvaluateAnswerResponse": {
+            /** @example PASS */
+            evaluation: string;
+            /** @example Perfect! */
+            explanation: string;
+        };
+        "models.GetClassroomListResponse": {
+            classrooms: components["schemas"]["models.ClassroomListItem"][];
+        };
+        "models.GetNewsResponse": {
+            /** @example B1 */
+            cefr_level: string;
+            /** @example Le contenu complet de l'article... */
+            content: string;
+            /** @example News */
+            content_type: string;
+            /** @example 2024-02-26 */
+            date_created: string;
+            dictionary: components["schemas"]["storage.Dictionary"];
+            /** @example French */
+            language: string;
+            /** @example Un résumé des nouvelles musicales... */
+            preview_text: string;
+            sources: components["schemas"]["storage.Source"][];
+            /** @example L'actualité musicale en bref */
+            title: string;
+            /** @example Music */
+            topic: string;
+        };
+        "models.GetProfileResponse": {
+            /** @example 3 */
+            daily_questions_goal?: number;
+            /** @example [
+             *       "[\"NBA\"]"
+             *     ] */
+            interested_topics: string[];
+            /** @example French */
+            learning_language: string;
+            /** @example B1 */
+            skill_level: string;
+            /** @example connortbot */
+            username: string;
+        };
+        "models.GetQuestionRequest": {
+            /** @example B1 */
+            cefr_level: string;
+            /** @example News */
+            content_type: string;
+            /** @example 123 */
+            id: string;
+            /**
+             * @example vocab
+             * @enum {string}
+             */
+            question_type: "vocab" | "understanding";
+        };
+        "models.GetQuestionResponse": {
+            /** @example What does 'bonjour' mean? */
+            question: string;
+        };
+        "models.GetStoryPageResponse": {
+            /** @example B1 */
+            cefr_level: string;
+            /** @example Le contenu complet de l'article... */
+            content: string;
+            /** @example Story */
+            content_type: string;
+            /** @example 2024-02-26 */
+            date_created: string;
+            /** @example French */
+            language: string;
+            /** @example 10 */
+            pages: number;
+            /** @example Un résumé des nouvelles musicales... */
+            preview_text: string;
+            /** @example L'actualité musicale en bref */
+            title: string;
+            /** @example Music */
+            topic: string;
+        };
+        "models.GetStoryQNAContextResponse": {
+            /** @example Le contexte de l'histoire... */
+            context: string;
+        };
+        "models.GetStudentClassroomResponse": {
+            /** @example 10 */
+            students_count?: number;
+            /** @example 789 */
+            teacher_id: string;
+        };
+        "models.IncrementProgressResponse": {
+            /** @example 2025-02-26T00:00:00Z */
+            date: string;
+            /** @example true */
+            goal_met: boolean;
+            /** @example 5 */
+            questions_completed?: number;
+            /** @example 123 */
+            user_id: string;
+        };
+        "models.JoinClassroomRequest": {
+            /** @example 123 */
+            classroom_id: string;
+        };
+        "models.JoinClassroomResponse": {
+            /** @example Student added to classroom successfully */
+            message: string;
+        };
+        "models.JoinOrganizationRequest": {
+            /** @example 123 */
+            organization_id: string;
+        };
+        "models.JoinOrganizationResponse": {
+            /** @example 123 */
+            teacher_id: string;
+        };
+        "models.NewsItem": {
+            /** @example B1 */
+            cefr_level: string;
+            /** @example 2024-02-26T13:01:13.390612Z */
+            created_at: string;
+            /** @example 2024-02-26 */
+            date_created: string;
+            /** @example 123 */
+            id: string;
+            /** @example French */
+            language: string;
+            /** @example Un résumé des nouvelles musicales... */
+            preview_text: string;
+            /** @example L'actualité musicale en bref */
+            title: string;
+            /** @example Music */
+            topic: string;
+        };
+        "models.OrganizationResponse": {
+            /** @example false */
+            canceled?: boolean;
+            /** @example 2025-03-24T12:00:00Z */
+            expiration_date?: string;
+            /** @example 123 */
+            organization_id: string;
+            /** @example FREE */
+            plan: string;
+            /** @example 123 */
+            teacher_id: string;
+        };
+        "models.PaymentsResponse": {
+            /** @example true */
+            success: boolean;
+        };
+        "models.RejectContentRequest": {
+            /** @example 123 */
+            classroom_id: string;
+            /** @example 123 */
+            content_id?: number;
+            /** @example News */
+            content_type: string;
+        };
+        "models.RejectContentResponse": {
+            /** @example Content rejected successfully */
+            message: string;
+        };
+        "models.SpeechToTextRequest": {
+            /** @example base64-encoded-audio-content */
+            audio_content: string;
+            /** @example en-US */
+            language_code: string;
+            /** @example false */
+            premium?: boolean;
+        };
+        "models.SpeechToTextResponse": {
+            /** @example Hello, how are you? */
+            transcript: string;
+        };
+        "models.StoryItem": {
+            /** @example B1 */
+            cefr_level: string;
+            /** @example 2024-02-26T13:01:13.390612Z */
+            created_at: string;
+            /** @example 2024-02-26 */
+            date_created: string;
+            /** @example 123 */
+            id: string;
+            /** @example French */
+            language: string;
+            /** @example Un résumé des nouvelles musicales... */
+            preview_text: string;
+            /** @example L'actualité musicale en bref */
+            title: string;
+            /** @example Music */
+            topic: string;
+        };
+        "models.StreakResponse": {
+            /** @example true */
+            completed_today: boolean;
+            /** @example 7 */
+            streak?: number;
+        };
+        "models.StudentStatusResponse": {
+            /** @example 456 */
+            classroom_id: string;
+            /** @example FREE */
+            plan?: string;
+            /** @example 123 */
+            student_id: string;
+        };
+        "models.TeacherStatusResponse": {
+            /** @example true */
+            exists: boolean;
+            /** @example FREE */
+            plan?: string;
+        };
+        "models.TextToSpeechRequest": {
+            /** @example en-US */
+            language_code: string;
+            /** @example false */
+            natural?: boolean;
+            /** @example Hello, how are you? */
+            text: string;
+            /** @example en-US-Standard-A */
+            voice_name: string;
+        };
+        "models.TextToSpeechResponse": {
+            /** @example base64-encoded-audio-content */
+            audio_content: string;
+        };
+        "models.TodayProgressResponse": {
+            /** @example 2025-02-26T00:00:00Z */
+            date: string;
+            /** @example true */
+            goal_met: boolean;
+            /** @example 5 */
+            questions_completed?: number;
+            /** @example 123 */
+            user_id: string;
+        };
+        "models.TranslateRequest": {
+            /** @example Hello, how are you? */
+            sentence: string;
+            /** @example en */
+            source: string;
+            /** @example fr */
+            target: string;
+        };
+        "models.TranslateResponse": {
+            /** @example Bonjour, comment allez-vous? */
+            sentence?: string;
+        };
+        "models.UpdateClassroomRequest": {
+            /** @example 123 */
+            classroom_id: string;
+            /** @example Tuesday 9am */
+            name: string;
+        };
+        "models.UpdateClassroomResponse": {
+            /** @example Classroom updated successfully */
+            message: string;
+        };
+        "models.UpsertProfileRequest": {
+            /** @example 3 */
+            daily_questions_goal?: number;
+            /** @example [
+             *       "[\"NBA\"]"
+             *     ] */
+            interested_topics: string[];
+            /** @example French */
+            learning_language: string;
+            /** @example B1 */
+            skill_level: string;
+            /** @example johndoe */
+            username: string;
+        };
+        "models.UpsertProfileResponse": {
+            /** @example 123 */
+            id?: number;
+            /** @example Profile updated successfully */
+            message: string;
+        };
+        "models.WebhookResponse": {
+            received?: boolean;
+            type?: string;
+        };
+        "storage.AlignmentInfo": {
+            character_end_times_seconds?: number[];
+            character_start_times_seconds?: number[];
+            characters?: string[];
+        };
+        "storage.Audiobook": {
+            alignment?: components["schemas"]["storage.AlignmentInfo"];
+            audio_base64?: string;
+            normalized_alignment?: components["schemas"]["storage.AlignmentInfo"];
+            text?: string;
+        };
+        "storage.Dictionary": {
+            translations?: {
+                sentences?: {
+                    [key: string]: string;
+                };
+                words?: {
+                    [key: string]: string;
+                };
+            };
+        };
+        "storage.Source": {
+            content?: string;
+            score?: number;
+            title?: string;
+            url?: string;
+        };
     };
-    "storage.Source": {
-      content?: string;
-      score?: number;
-      title?: string;
-      url?: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export type operations = Record<string, never>;

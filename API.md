@@ -30,6 +30,30 @@ Check if the audio service is live
 | ---- | ----------- | ------ |
 | 200 | OK | [models.AudioHealthResponse](#modelsaudiohealthresponse) |
 
+### /audio/audiobook
+
+#### GET
+##### Summary
+
+Get audiobook
+
+##### Description
+
+Get audiobook for a news_id
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| news_id | query | News ID | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.AudiobookResponse](#modelsaudiobookresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /audio/stt
 
 #### POST
@@ -903,6 +927,12 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | status | string | *Example:* `"live"` | Yes |
 
+#### models.AudiobookResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| audiobook | [storage.Audiobook](#storageaudiobook) |  | No |
+
 #### models.BillingAccountResponse
 
 | Name | Type | Description | Required |
@@ -1334,6 +1364,23 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | received | boolean |  | No |
 | type | string |  | No |
+
+#### storage.AlignmentInfo
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| character_end_times_seconds | [ number ] |  | No |
+| character_start_times_seconds | [ number ] |  | No |
+| characters | [ string ] |  | No |
+
+#### storage.Audiobook
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| alignment | [storage.AlignmentInfo](#storagealignmentinfo) |  | No |
+| audio_base64 | string |  | No |
+| normalized_alignment | [storage.AlignmentInfo](#storagealignmentinfo) |  | No |
+| text | string |  | No |
 
 #### storage.Dictionary
 

@@ -20,6 +20,32 @@ paths:
         - audio
       description: Check if the audio service is live
       summary: Check audio service health
+  /audio/audiobook:
+    get:
+      parameters:
+        - description: News ID
+          in: query
+          name: news_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.AudiobookResponse'
+          description: OK
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+      tags:
+        - audio
+      description: Get audiobook for a news_id
+      summary: Get audiobook
   /audio/stt:
     post:
       responses:
@@ -1055,6 +1081,11 @@ components:
       required:
         - status
       type: object
+    models.AudiobookResponse:
+      properties:
+        audiobook:
+          $ref: '#/components/schemas/storage.Audiobook'
+      type: object
     models.BillingAccountResponse:
       properties:
         canceled:
@@ -1867,6 +1898,32 @@ components:
         received:
           type: boolean
         type:
+          type: string
+      type: object
+    storage.AlignmentInfo:
+      properties:
+        character_end_times_seconds:
+          items:
+            type: number
+          type: array
+        character_start_times_seconds:
+          items:
+            type: number
+          type: array
+        characters:
+          items:
+            type: string
+          type: array
+      type: object
+    storage.Audiobook:
+      properties:
+        alignment:
+          $ref: '#/components/schemas/storage.AlignmentInfo'
+        audio_base64:
+          type: string
+        normalized_alignment:
+          $ref: '#/components/schemas/storage.AlignmentInfo'
+        text:
           type: string
       type: object
     storage.Dictionary:

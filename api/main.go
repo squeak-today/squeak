@@ -200,6 +200,7 @@ func init() {
 		audioGroup.POST("/translate", audioHandler.Translate)
 		audioGroup.POST("/tts", audioHandler.TextToSpeech)
 		audioGroup.POST("/stt", audioHandler.SpeechToText)
+		audioGroup.GET("/audiobook", audioHandler.GetAudiobook)
 	}
 
 	progressHandler := progresshandler.New(dbClient)

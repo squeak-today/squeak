@@ -43,6 +43,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/audio/audiobook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get audiobook
+         * @description Get audiobook for a news_id
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description News ID */
+                    news_id: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.AudiobookResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/audio/stt": {
         parameters: {
             query?: never;
@@ -2003,6 +2054,9 @@ export interface components {
             /** @example live */
             status: string;
         };
+        "models.AudiobookResponse": {
+            audiobook?: components["schemas"]["storage.Audiobook"];
+        };
         "models.BillingAccountResponse": {
             /** @example false */
             canceled: boolean;
@@ -2410,6 +2464,17 @@ export interface components {
         "models.WebhookResponse": {
             received?: boolean;
             type?: string;
+        };
+        "storage.AlignmentInfo": {
+            character_end_times_seconds?: number[];
+            character_start_times_seconds?: number[];
+            characters?: string[];
+        };
+        "storage.Audiobook": {
+            alignment?: components["schemas"]["storage.AlignmentInfo"];
+            audio_base64?: string;
+            normalized_alignment?: components["schemas"]["storage.AlignmentInfo"];
+            text?: string;
         };
         "storage.Dictionary": {
             translations?: {
