@@ -86,10 +86,13 @@ export const Tag = styled.span<TagProps>`
   background: ${props => props.cefr ? getCEFRColor(props.cefr) : '#E0E0E0'};
   padding: 0.4em 1em;
   border-radius: 15px;
-  font-size: 0.875em;
+  font-size: ${theme.typography.fontSize.sm};
   color: ${props => props.cefr ? getCEFRTextColor(props.cefr) : '#333'};
   font-family: ${theme.typography.fontFamily.secondary};
   ${props => props.cefr && 'font-weight: bold;'}
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const AcceptButton = styled.button`
