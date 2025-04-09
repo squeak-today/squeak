@@ -74,25 +74,23 @@ func (c *Client) GetFlashcard(flashcardID int) (Flashcard, error) {
 	return flashcard, nil
 }
 
-// CreateFlashcard creates a new flashcard
 func (c *Client) CreateFlashcard(flashcard Flashcard) (Flashcard, error) {
-	query := `
-		INSERT INTO flashcards 
-		(deck_id, front_content, back_content, source_url)
-		VALUES ($1, $2, $3, $4)
-		RETURNING *
-	`
-
-	var createdFlashcard Flashcard
-	err := c.db.QueryRow(query, flashcard.DeckID, flashcard.FrontContent, flashcard.BackContent, flashcard.SourceURL).Scan(
-		&createdFlashcard.ID, &createdFlashcard.DeckID, &createdFlashcard.FrontContent, &createdFlashcard.BackContent,
-		&createdFlashcard.SourceURL, &createdFlashcard.LastReviewed, &createdFlashcard.ReviewCount,
-		&createdFlashcard.Confidence, &createdFlashcard.CreatedAt, &createdFlashcard.UpdatedAt)
-	if err != nil {
-		return Flashcard{}, err
-	}
-
-	return createdFlashcard, nil
+    query := `
+        INSERT INTO flashcards 
+        (deck_id, front_content, back_content, source_url)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, deck_id, front_content, back_content, source_url, 
+                  last_reviewed, review_count, confidence, created_at, updated_at
+    `
+    var createdFlashcard Flashcard
+    err := c.db.QueryRow(query, flashcard.DeckID, flashcard.FrontContent, flashcard.BackContent, flashcard.SourceURL).Scan(
+        &createdFlashcard.ID, &createdFlashcard.DeckID, &createdFlashcard.FrontContent, &createdFlashcard.BackContent,
+        &createdFlashcard.SourceURL, &createdFlashcard.LastReviewed, &createdFlashcard.ReviewCount,
+        &createdFlashcard.Confidence, &createdFlashcard.CreatedAt, &createdFlashcard.UpdatedAt)
+    if err != nil {
+        return Flashcard{}, err
+    }
+    return createdFlashcard, nil
 }
 
 // UpdateFlashcard updates a flashcard's content

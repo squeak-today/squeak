@@ -301,6 +301,57 @@ module "deck_create" {
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
+# Base /flashcard resource (no direct methods)
+module "flashcard" {
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = aws_api_gateway_rest_api.story_api.root_resource_id
+  path_part    = "flashcard"
+  http_methods = []  # No methods directly on /flashcard per Go code
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# /flashcard/create with POST method
+module "flashcard_create" {
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = module.flashcard.resource_id
+  path_part    = "create"
+  http_methods = ["POST"]
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+#flashcard endpoints
+# /flashcard/{flashcard_id} resource (no direct methods, parent for sub-resources)
+module "flashcard_id" {
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = module.flashcard.resource_id
+  path_part    = "{flashcard_id}"
+  http_methods = []  # No methods directly on /flashcard/{flashcard_id}
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# /flashcard/{flashcard_id}/update with POST method
+module "flashcard_id_update" {
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = module.flashcard_id.resource_id
+  path_part    = "update"
+  http_methods = ["POST"]
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
+# /flashcard/{flashcard_id}/delete with POST method
+module "flashcard_id_delete" {
+  source       = "./api_gateway"
+  rest_api_id  = aws_api_gateway_rest_api.story_api.id
+  parent_id    = module.flashcard_id.resource_id
+  path_part    = "delete"
+  http_methods = ["POST"]
+  lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
+}
+
 # module "organization_payments" {
 #   source      = "./api_gateway"
 #   rest_api_id = aws_api_gateway_rest_api.story_api.id

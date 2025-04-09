@@ -73,7 +73,7 @@ const DeckView: React.FC = () => {
             }
         };
         fetchDeck();
-    }, [id, getDeck, showNotification]);
+    }, [id]);
 
     const handleCreateFlashcard = async (e: React.FormEvent) => {
         e.preventDefault();
