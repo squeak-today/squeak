@@ -6,6 +6,7 @@ import (
 	"story-api/audio"
 	"story-api/handlers"
 	"story-api/models"
+	"story-api/plans"
 	"story-api/storage"
 	"story-api/supabase"
 	"strconv"
@@ -88,7 +89,7 @@ func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 	}
 
 	if infoBody.Natural {
-		if !h.CheckUsageLimit(c, userID, supabase.NATURAL_TTS_FEATURE, handlers.NATURAL_TTS_USAGE_LIMIT_FREE) {
+		if !h.CheckUsageLimit(c, userID, plans.NATURAL_TTS_FEATURE) {
 			return
 		}
 	}
@@ -103,7 +104,7 @@ func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 	}
 
 	if infoBody.Natural {
-		h.DBClient.InsertUsage(userID, supabase.NATURAL_TTS_FEATURE, 1)
+		h.DBClient.InsertUsage(userID, plans.NATURAL_TTS_FEATURE, 1)
 	}
 	c.JSON(http.StatusOK, models.TextToSpeechResponse{
 		AudioContent: audioContent,
@@ -128,7 +129,7 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	}
 
 	if infoBody.Premium {
-		if !h.CheckUsageLimit(c, userID, supabase.PREMIUM_STT_FEATURE, handlers.PREMIUM_STT_USAGE_LIMIT_FREE) {
+		if !h.CheckUsageLimit(c, userID, plans.PREMIUM_STT_FEATURE) {
 			return
 		}
 	}
@@ -150,7 +151,7 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	}
 
 	if infoBody.Premium {
-		h.DBClient.InsertUsage(userID, supabase.PREMIUM_STT_FEATURE, 1)
+		h.DBClient.InsertUsage(userID, plans.PREMIUM_STT_FEATURE, 1)
 	}
 
 	c.JSON(http.StatusOK, models.SpeechToTextResponse{
@@ -168,6 +169,7 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 // @Failure		404		{object}	models.ErrorResponse
 // @Router			/audio/audiobook [get]
 func (h *AudioHandler) GetAudiobook(c *gin.Context) {
+	userID := h.GetUserIDFromToken(c)
 	newsIDStr := c.Query("news_id")
 	if newsIDStr == "" {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -198,6 +200,16 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 			Error: "No audiobook available for this news_id",
 		})
 		return
+	}
+
+	if audiobookInfo.Tier == "BASIC" {
+		if !h.CheckUsageLimit(c, userID, plans.BASIC_AUDIOBOOKS_FEATURE) {
+			return
+		}
+	} else if audiobookInfo.Tier == "PREMIUM" {
+		if !h.CheckUsageLimit(c, userID, plans.PREMIUM_AUDIOBOOKS_FEATURE) {
+			return
+		}
 	}
 
 	audiobook, err := storage.PullAudiobook(audiobookInfo.Language, audiobookInfo.CEFRLevel, audiobookInfo.Topic, audiobookInfo.Date.Format("2006-01-02"))

@@ -1709,6 +1709,7 @@ const docTemplate = `{
         "models.ClassroomContentItem": {
             "type": "object",
             "required": [
+                "audiobook_tier",
                 "cefr_level",
                 "content_type",
                 "created_at",
@@ -1721,6 +1722,10 @@ const docTemplate = `{
                 "topic"
             ],
             "properties": {
+                "audiobook_tier": {
+                    "type": "string",
+                    "example": "NONE"
+                },
                 "cefr_level": {
                     "type": "string",
                     "example": "B1"
@@ -1894,13 +1899,15 @@ const docTemplate = `{
                 "PROFILE_NOT_FOUND",
                 "NO_TRANSCRIPT",
                 "AUTH_REQUIRED",
-                "USAGE_LIMIT_REACHED"
+                "USAGE_LIMIT_REACHED",
+                "USAGE_RESTRICTED"
             ],
             "x-enum-varnames": [
                 "PROFILE_NOT_FOUND",
                 "NO_TRANSCRIPT",
                 "AUTH_REQUIRED",
-                "USAGE_LIMIT_REACHED"
+                "USAGE_LIMIT_REACHED",
+                "USAGE_RESTRICTED"
             ]
         },
         "models.ErrorResponse": {
@@ -1914,7 +1921,8 @@ const docTemplate = `{
                         "PROFILE_NOT_FOUND",
                         "NO_TRANSCRIPT",
                         "AUTH_REQUIRED",
-                        "USAGE_LIMIT_REACHED"
+                        "USAGE_LIMIT_REACHED",
+                        "USAGE_RESTRICTED"
                     ],
                     "allOf": [
                         {
@@ -2284,6 +2292,7 @@ const docTemplate = `{
         "models.NewsItem": {
             "type": "object",
             "required": [
+                "audiobook_tier",
                 "cefr_level",
                 "created_at",
                 "date_created",
@@ -2294,6 +2303,10 @@ const docTemplate = `{
                 "topic"
             ],
             "properties": {
+                "audiobook_tier": {
+                    "type": "string",
+                    "example": "NONE"
+                },
                 "cefr_level": {
                     "type": "string",
                     "example": "B1"

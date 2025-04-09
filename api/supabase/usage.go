@@ -3,23 +3,10 @@ package supabase
 import (
 	"errors"
 	"fmt"
-	"slices"
 	"time"
+
+	"story-api/plans"
 )
-
-const (
-	NATURAL_TTS_FEATURE = "natural_tts"
-	PREMIUM_STT_FEATURE = "premium_stt"
-)
-
-func GetValidFeatureIDs() []string {
-	return []string{NATURAL_TTS_FEATURE, PREMIUM_STT_FEATURE}
-}
-
-func isValidFeatureID(featureID string) bool {
-	validIDs := GetValidFeatureIDs()
-	return slices.Contains(validIDs, featureID)
-}
 
 func getEndOfMonth() time.Time {
 	now := time.Now()
@@ -29,7 +16,7 @@ func getEndOfMonth() time.Time {
 }
 
 func (c *Client) InsertUsage(userID string, featureID string, amount int) error {
-	if !isValidFeatureID(featureID) {
+	if !plans.IsValidFeatureID(featureID) {
 		return errors.New("invalid feature ID: " + featureID)
 	}
 
@@ -54,7 +41,7 @@ func (c *Client) InsertUsage(userID string, featureID string, amount int) error 
 }
 
 func (c *Client) GetUsage(userID string, featureID string, plan string) (int, error) {
-	if !isValidFeatureID(featureID) {
+	if !plans.IsValidFeatureID(featureID) {
 		return 0, errors.New("invalid feature ID: " + featureID)
 	}
 
