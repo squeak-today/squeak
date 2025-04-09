@@ -2,6 +2,25 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeckAPI } from '../hooks/useDeckAPI';
 import { useNotification } from '../context/NotificationContext';
+import {
+    DeckBrowserContainer,
+    DeckBrowserTitle,
+    ContentLayout,
+    LoadingText,
+    EmptyStateText,
+    DeckGrid,
+    DeckCard,
+    DeckName,
+    DeckDescription,
+    DeckStatus,
+    DeckActionButtons,
+    ViewButton,
+    DeleteButton,
+    CreateDeckForm,
+    FormInput,
+    CreateButton,
+    FormTitle
+} from '../styles/DeckBrowserStyles';
 
 interface Deck {
     id: number;
@@ -45,6 +64,9 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
         };
         fetchDecks();
 
+        return () => {
+            isMounted.current = false;
+        };
     }, []);
 
     const handleCreateDeck = async (e: React.FormEvent) => {
@@ -65,7 +87,8 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
         navigate(`/decks/${deck.id}`);
     };
 
-    const handleDeleteDeck = async (deckId: number) => {
+    const handleDeleteDeck = async (e: React.MouseEvent, deckId: number) => {
+        e.stopPropagation();
         if (window.confirm('Are you sure you want to delete this deck?')) {
             try {
                 await deleteDeck(deckId);
@@ -79,70 +102,73 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
     };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Your Decks</h1>
-            <div className="flex flex-row gap-6 items-start">
+        <DeckBrowserContainer>
+            <DeckBrowserTitle>Your Flashcard Decks</DeckBrowserTitle>
+            
+            <ContentLayout>
                 {isLoading ? (
-                    <p>Loading...</p>
+                    <LoadingText>Loading your decks...</LoadingText>
                 ) : decks.length === 0 ? (
-                    <p className="text-gray-500">No decks available yet!</p>
+                    <EmptyStateText>You don't have any decks yet. Create your first deck to get started!</EmptyStateText>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <DeckGrid>
                         {decks.map((deck) => (
-                            <div
+                            <DeckCard
                                 key={deck.id}
-                                className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                                onClick={() => handleDeckClick(deck)}
                             >
-                                <h3 className="text-lg font-semibold">{deck.name}</h3>
-                                <p className="text-sm text-gray-600">
-                                    {deck.is_public ? 'Public' : 'Private'}
-                                </p>
-                                <div className="mt-2 flex gap-2">
-                                    <button
-                                        onClick={() => handleDeckClick(deck)}
-                                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    >
-                                        View
-                                    </button>
-                                    <button
+                                <div>
+                                    <DeckName>{deck.name}</DeckName>
+                                    {deck.description && (
+                                        <DeckDescription>{deck.description}</DeckDescription>
+                                    )}
+                                    <DeckStatus>
+                                        {deck.is_system ? 'System Deck' : deck.is_public ? 'Public Deck' : 'Private Deck'}
+                                    </DeckStatus>
+                                </div>
+                                <DeckActionButtons>
+                                    <ViewButton
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            handleDeleteDeck(deck.id);
+                                            handleDeckClick(deck);
                                         }}
-                                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                                     >
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
+                                        View
+                                    </ViewButton>
+                                    {!deck.is_system && (
+                                        <DeleteButton
+                                            onClick={(e) => handleDeleteDeck(e, deck.id)}
+                                        >
+                                            Delete
+                                        </DeleteButton>
+                                    )}
+                                </DeckActionButtons>
+                            </DeckCard>
                         ))}
-                    </div>
+                    </DeckGrid>
                 )}
-                <form onSubmit={handleCreateDeck} className="flex flex-col gap-3 w-64">
-                    <input
+                
+                <CreateDeckForm onSubmit={handleCreateDeck}>
+                    <FormTitle>Create New Deck</FormTitle>
+                    <FormInput
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Deck Name"
                         required
-                        className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <input
+                    <FormInput
                         type="text"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Description (optional)"
-                        className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <button
-                        type="submit"
-                        className="p-2 bg-green-500 text-white rounded hover:bg-green-600"
-                    >
+                    <CreateButton type="submit">
                         Create Deck
-                    </button>
-                </form>
-            </div>
-        </div>
+                    </CreateButton>
+                </CreateDeckForm>
+            </ContentLayout>
+        </DeckBrowserContainer>
     );
 };
 
