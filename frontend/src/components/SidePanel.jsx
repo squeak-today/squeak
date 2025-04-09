@@ -92,6 +92,7 @@ const SidePanel = ({
     const [playingQuestion, setPlayingQuestion] = useState(null);
     
     const [usePremiumSpeechToText, setUsePremiumSpeechToText] = useState(false);
+    const [audiobookMode, setAudiobookMode] = useState(false);
 
     const isBeginnerLevel = contentData.difficulty === 'A1' || contentData.difficulty === 'A2';
 
@@ -244,17 +245,30 @@ const SidePanel = ({
 
                         <ItalicInfoText>Written on {formatDate(contentData.date_created)}</ItalicInfoText>
                     </ContentSection>
-
-                    <FeatureToggleButton 
-                        $active={useNaturalPronunciation}
-                        onClick={() => setUseNaturalPronunciation(!useNaturalPronunciation)}
-                    >
+                    
+                    <div className="flex flex-col gap-2 bg-item-background rounded-lg px-4 py-4 w-[80%]">
+                        <p className="mt-0 mb-0 text-base">Click to enable or disable:</p>
+                        <FeatureToggleButton 
+                            $active={useNaturalPronunciation}
+                            onClick={() => setUseNaturalPronunciation(!useNaturalPronunciation)}
+                        >
                         <span>Natural Pronunciation</span>
                         {useNaturalPronunciation && <ToggleIcon 
                             src={checkIcon} 
                             alt={"Enabled"}
                         />}
-                    </FeatureToggleButton>
+                        </FeatureToggleButton>
+                        <FeatureToggleButton 
+                            $active={audiobookMode}
+                            onClick={() => setAudiobookMode(!audiobookMode)}
+                        >
+                        <span>Audiobook Mode</span>
+                        {audiobookMode && <ToggleIcon 
+                            src={checkIcon} 
+                            alt={"Enabled"}
+                        />}
+                        </FeatureToggleButton>
+                    </div>
 
                     <ContentSection>
                         <ButtonGroup>
