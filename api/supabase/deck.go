@@ -3,7 +3,6 @@ package supabase
 
 import (
 	"log"
-	"strings"
 	"time"
 )
 
@@ -104,36 +103,34 @@ func (c *Client) GetDeck(deckID int, userID string) (Deck, error) {
 
 // GetDeckWithCards retrieves a deck with all its flashcards
 func (c *Client) GetDeckWithCards(deckID int, userID string) (DeckWithCards, error) {
-	// First get the deck
-	deck, err := c.GetDeck(deckID, userID)
-	if err != nil {
-		return DeckWithCards{}, err
-	}
+    // First get the deck
+    deck, err := c.GetDeck(deckID, userID)
+    if err != nil {
+        return DeckWithCards{}, err
+    }
 
-	// Get all flashcards for this deck
-	flashcards, err := c.GetFlashcardsByDeckID(deckID)
-	if err != nil {
-		if strings.Contains(err.Error(), "no flashcards found") {
-			flashcards = []Flashcard{} // Initialize as an empty slice
-		} else {
-			return DeckWithCards{}, err // Return the error if it's not the specific "no flashcards found" error
-		}
-	}
+    // Get all flashcards for this deck
+    flashcards, err := c.GetFlashcardsByDeckID(deckID)
+    // We don't need to check for a specific error message anymore
+    // since GetFlashcardsByDeckID will return an empty slice for no cards
+    if err != nil {
+        return DeckWithCards{}, err
+    }
 
-	// Combine into response
-	deckWithCards := DeckWithCards{
-		ID:          deck.ID,
-		UserID:      deck.UserID,
-		Name:        deck.Name,
-		Description: deck.Description,
-		IsPublic:    deck.IsPublic,
-		IsSystem:    deck.IsSystem,
-		CreatedAt:   deck.CreatedAt,
-		UpdatedAt:   deck.UpdatedAt,
-		Flashcards:  flashcards,
-	}
+    // Combine into response
+    deckWithCards := DeckWithCards{
+        ID:          deck.ID,
+        UserID:      deck.UserID,
+        Name:        deck.Name,
+        Description: deck.Description,
+        IsPublic:    deck.IsPublic,
+        IsSystem:    deck.IsSystem,
+        CreatedAt:   deck.CreatedAt,
+        UpdatedAt:   deck.UpdatedAt,
+        Flashcards:  flashcards,
+    }
 
-	return deckWithCards, nil
+    return deckWithCards, nil
 }
 
 // CreateDeck creates a new deck

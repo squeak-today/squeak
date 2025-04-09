@@ -2,20 +2,21 @@
 package supabase
 
 import (
+	"database/sql"
 	"time"
 )
 
 type Flashcard struct {
-	ID           int       `json:"id"`
-	DeckID       int       `json:"deck_id"`
-	FrontContent string    `json:"front_content"`
-	BackContent  string    `json:"back_content"`
-	SourceURL    string    `json:"source_url"`
-	LastReviewed time.Time `json:"last_reviewed"`
-	ReviewCount  int       `json:"review_count"`
-	Confidence   int       `json:"confidence"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+    ID           int       `json:"id"`
+    DeckID       int       `json:"deck_id"`
+    FrontContent string    `json:"front_content"`
+    BackContent  string    `json:"back_content"`
+    SourceURL    string    `json:"source_url"`
+    LastReviewed time.Time `json:"last_reviewed"`
+    ReviewCount  int       `json:"review_count"`
+    Confidence   int       `json:"confidence_level"` // Make sure this matches your DB column name
+    CreatedAt    time.Time `json:"created_at"`
+    UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type FlashcardCreate struct {
@@ -32,29 +33,54 @@ type FlashcardUpdate struct {
 
 // GetFlashcardsByDeckID retrieves all flashcards in a deck
 func (c *Client) GetFlashcardsByDeckID(deckID int) ([]Flashcard, error) {
-	var flashcards []Flashcard
+    var flashcards []Flashcard
 
-	query := `
-		SELECT * FROM flashcards 
-		WHERE deck_id = $1
-		ORDER BY created_at DESC
-	`
+    query := `
+        SELECT id, deck_id, front_content, back_content, source_url, 
+               last_reviewed, review_count, confidence_level, created_at, updated_at 
+        FROM flashcards 
+        WHERE deck_id = $1
+        ORDER BY created_at DESC
+    `
 
-	rows, err := c.db.Query(query, deckID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+    rows, err := c.db.Query(query, deckID)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
 
-	for rows.Next() {
-		var flashcard Flashcard
-		if err := rows.Scan(&flashcard.ID, &flashcard.DeckID, &flashcard.FrontContent, &flashcard.BackContent, &flashcard.SourceURL, &flashcard.LastReviewed, &flashcard.ReviewCount, &flashcard.Confidence, &flashcard.CreatedAt, &flashcard.UpdatedAt); err != nil {
-			return nil, err
-		}
-		flashcards = append(flashcards, flashcard)
-	}
+    for rows.Next() {
+        var flashcard Flashcard
+        var lastReviewedSQL sql.NullTime // Handle NULL values for last_reviewed
+        
+        if err := rows.Scan(
+            &flashcard.ID, 
+            &flashcard.DeckID, 
+            &flashcard.FrontContent, 
+            &flashcard.BackContent, 
+            &flashcard.SourceURL, 
+            &lastReviewedSQL, 
+            &flashcard.ReviewCount, 
+            &flashcard.Confidence, // This should match confidence_level column
+            &flashcard.CreatedAt, 
+            &flashcard.UpdatedAt); err != nil {
+            return nil, err
+        }
+        
+        // Convert sql.NullTime to time.Time
+        if lastReviewedSQL.Valid {
+            flashcard.LastReviewed = lastReviewedSQL.Time
+        }
+        
+        flashcards = append(flashcards, flashcard)
+    }
 
-	return flashcards, nil
+    // Handle empty result case
+    if len(flashcards) == 0 {
+        return []Flashcard{}, nil // Return empty slice instead of nil
+    }
+
+    return flashcards, nil
 }
 
 // GetFlashcard retrieves a specific flashcard by ID
