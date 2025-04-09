@@ -3,20 +3,21 @@ package supabase
 
 import (
 	"database/sql"
+	"log"
 	"time"
 )
 
 type Flashcard struct {
-    ID           int       `json:"id"`
-    DeckID       int       `json:"deck_id"`
-    FrontContent string    `json:"front_content"`
-    BackContent  string    `json:"back_content"`
-    SourceURL    string    `json:"source_url"`
-    LastReviewed time.Time `json:"last_reviewed"`
-    ReviewCount  int       `json:"review_count"`
-    Confidence   int       `json:"confidence_level"` // Make sure this matches your DB column name
-    CreatedAt    time.Time `json:"created_at"`
-    UpdatedAt    time.Time `json:"updated_at"`
+	ID           int       `json:"id"`
+	DeckID       int       `json:"deck_id"`
+	FrontContent string    `json:"front_content"`
+	BackContent  string    `json:"back_content"`
+	SourceURL    string    `json:"source_url"`
+	LastReviewed time.Time `json:"last_reviewed"`
+	ReviewCount  int       `json:"review_count"`
+	Confidence   int       `json:"confidence_level"` // Make sure this matches your DB column name
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type FlashcardCreate struct {
@@ -33,9 +34,9 @@ type FlashcardUpdate struct {
 
 // GetFlashcardsByDeckID retrieves all flashcards in a deck
 func (c *Client) GetFlashcardsByDeckID(deckID int) ([]Flashcard, error) {
-    var flashcards []Flashcard
+	var flashcards []Flashcard
 
-    query := `
+	query := `
         SELECT id, deck_id, front_content, back_content, source_url, 
                last_reviewed, review_count, confidence_level, created_at, updated_at 
         FROM flashcards 
@@ -43,98 +44,157 @@ func (c *Client) GetFlashcardsByDeckID(deckID int) ([]Flashcard, error) {
         ORDER BY created_at DESC
     `
 
-    rows, err := c.db.Query(query, deckID)
-    if err != nil {
-        return nil, err
-    }
-    defer rows.Close()
+	rows, err := c.db.Query(query, deckID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var flashcard Flashcard
-        var lastReviewedSQL sql.NullTime // Handle NULL values for last_reviewed
-        
-        if err := rows.Scan(
-            &flashcard.ID, 
-            &flashcard.DeckID, 
-            &flashcard.FrontContent, 
-            &flashcard.BackContent, 
-            &flashcard.SourceURL, 
-            &lastReviewedSQL, 
-            &flashcard.ReviewCount, 
-            &flashcard.Confidence, // This should match confidence_level column
-            &flashcard.CreatedAt, 
-            &flashcard.UpdatedAt); err != nil {
-            return nil, err
-        }
-        
-        // Convert sql.NullTime to time.Time
-        if lastReviewedSQL.Valid {
-            flashcard.LastReviewed = lastReviewedSQL.Time
-        }
-        
-        flashcards = append(flashcards, flashcard)
-    }
+	for rows.Next() {
+		var flashcard Flashcard
+		var lastReviewedSQL sql.NullTime // Handle NULL values for last_reviewed
 
-    // Handle empty result case
-    if len(flashcards) == 0 {
-        return []Flashcard{}, nil // Return empty slice instead of nil
-    }
+		if err := rows.Scan(
+			&flashcard.ID,
+			&flashcard.DeckID,
+			&flashcard.FrontContent,
+			&flashcard.BackContent,
+			&flashcard.SourceURL,
+			&lastReviewedSQL,
+			&flashcard.ReviewCount,
+			&flashcard.Confidence, // This should match confidence_level column
+			&flashcard.CreatedAt,
+			&flashcard.UpdatedAt); err != nil {
+			return nil, err
+		}
 
-    return flashcards, nil
+		// Convert sql.NullTime to time.Time
+		if lastReviewedSQL.Valid {
+			flashcard.LastReviewed = lastReviewedSQL.Time
+		}
+
+		flashcards = append(flashcards, flashcard)
+	}
+
+	// Handle empty result case
+	if len(flashcards) == 0 {
+		return []Flashcard{}, nil // Return empty slice instead of nil
+	}
+
+	return flashcards, nil
 }
 
-// GetFlashcard retrieves a specific flashcard by ID
 func (c *Client) GetFlashcard(flashcardID int) (Flashcard, error) {
 	var flashcard Flashcard
+	var lastReviewedSQL sql.NullTime
 
 	query := `
-		SELECT * FROM flashcards 
-		WHERE id = $1
-	`
+        SELECT id, deck_id, front_content, back_content, source_url, 
+               last_reviewed, review_count, confidence_level, created_at, updated_at 
+        FROM flashcards 
+        WHERE id = $1
+    `
 
-	err := c.db.QueryRow(query, flashcardID).Scan(&flashcard.ID, &flashcard.DeckID, &flashcard.FrontContent, &flashcard.BackContent, &flashcard.SourceURL, &flashcard.LastReviewed, &flashcard.ReviewCount, &flashcard.Confidence, &flashcard.CreatedAt, &flashcard.UpdatedAt)
+	err := c.db.QueryRow(query, flashcardID).Scan(
+		&flashcard.ID,
+		&flashcard.DeckID,
+		&flashcard.FrontContent,
+		&flashcard.BackContent,
+		&flashcard.SourceURL,
+		&lastReviewedSQL,
+		&flashcard.ReviewCount,
+		&flashcard.Confidence,
+		&flashcard.CreatedAt,
+		&flashcard.UpdatedAt)
+
 	if err != nil {
 		return Flashcard{}, err
+	}
+
+	// Convert sql.NullTime to time.Time
+	if lastReviewedSQL.Valid {
+		flashcard.LastReviewed = lastReviewedSQL.Time
 	}
 
 	return flashcard, nil
 }
 
 func (c *Client) CreateFlashcard(flashcard Flashcard) (Flashcard, error) {
-    query := `
+	var createdFlashcard Flashcard
+	var lastReviewedSQL sql.NullTime
+
+	query := `
         INSERT INTO flashcards 
         (deck_id, front_content, back_content, source_url)
         VALUES ($1, $2, $3, $4)
         RETURNING id, deck_id, front_content, back_content, source_url, 
-                  last_reviewed, review_count, confidence, created_at, updated_at
+                  last_reviewed, review_count, confidence_level, created_at, updated_at
     `
-    var createdFlashcard Flashcard
-    err := c.db.QueryRow(query, flashcard.DeckID, flashcard.FrontContent, flashcard.BackContent, flashcard.SourceURL).Scan(
-        &createdFlashcard.ID, &createdFlashcard.DeckID, &createdFlashcard.FrontContent, &createdFlashcard.BackContent,
-        &createdFlashcard.SourceURL, &createdFlashcard.LastReviewed, &createdFlashcard.ReviewCount,
-        &createdFlashcard.Confidence, &createdFlashcard.CreatedAt, &createdFlashcard.UpdatedAt)
-    if err != nil {
-        return Flashcard{}, err
-    }
-    return createdFlashcard, nil
+
+	err := c.db.QueryRow(query,
+		flashcard.DeckID,
+		flashcard.FrontContent,
+		flashcard.BackContent,
+		flashcard.SourceURL).Scan(
+		&createdFlashcard.ID,
+		&createdFlashcard.DeckID,
+		&createdFlashcard.FrontContent,
+		&createdFlashcard.BackContent,
+		&createdFlashcard.SourceURL,
+		&lastReviewedSQL,
+		&createdFlashcard.ReviewCount,
+		&createdFlashcard.Confidence,
+		&createdFlashcard.CreatedAt,
+		&createdFlashcard.UpdatedAt)
+
+	if err != nil {
+		log.Printf("Error creating flashcard: %v", err)
+		return Flashcard{}, err
+	}
+
+	// Convert sql.NullTime to time.Time
+	if lastReviewedSQL.Valid {
+		createdFlashcard.LastReviewed = lastReviewedSQL.Time
+	}
+
+	return createdFlashcard, nil
 }
 
-// UpdateFlashcard updates a flashcard's content
 func (c *Client) UpdateFlashcard(flashcard Flashcard) (Flashcard, error) {
-	query := `
-		UPDATE flashcards
-		SET front_content = $1, back_content = $2, updated_at = now()
-		WHERE id = $3
-		RETURNING *
-	`
-
 	var updatedFlashcard Flashcard
-	err := c.db.QueryRow(query, flashcard.FrontContent, flashcard.BackContent, flashcard.ID).Scan(
-		&updatedFlashcard.ID, &updatedFlashcard.DeckID, &updatedFlashcard.FrontContent, &updatedFlashcard.BackContent,
-		&updatedFlashcard.SourceURL, &updatedFlashcard.LastReviewed, &updatedFlashcard.ReviewCount,
-		&updatedFlashcard.Confidence, &updatedFlashcard.CreatedAt, &updatedFlashcard.UpdatedAt)
+	var lastReviewedSQL sql.NullTime
+
+	query := `
+        UPDATE flashcards
+        SET front_content = $1, back_content = $2, updated_at = now()
+        WHERE id = $3
+        RETURNING id, deck_id, front_content, back_content, source_url, 
+                  last_reviewed, review_count, confidence_level, created_at, updated_at
+    `
+
+	err := c.db.QueryRow(query,
+		flashcard.FrontContent,
+		flashcard.BackContent,
+		flashcard.ID).Scan(
+		&updatedFlashcard.ID,
+		&updatedFlashcard.DeckID,
+		&updatedFlashcard.FrontContent,
+		&updatedFlashcard.BackContent,
+		&updatedFlashcard.SourceURL,
+		&lastReviewedSQL,
+		&updatedFlashcard.ReviewCount,
+		&updatedFlashcard.Confidence,
+		&updatedFlashcard.CreatedAt,
+		&updatedFlashcard.UpdatedAt)
+
 	if err != nil {
+		log.Printf("Error updating flashcard: %v", err)
 		return Flashcard{}, err
+	}
+
+	// Convert sql.NullTime to time.Time
+	if lastReviewedSQL.Valid {
+		updatedFlashcard.LastReviewed = lastReviewedSQL.Time
 	}
 
 	return updatedFlashcard, nil
