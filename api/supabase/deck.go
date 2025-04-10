@@ -96,6 +96,7 @@ func (c *Client) GetDeck(deckID int, userID string) (Deck, error) {
 
 	err := c.db.QueryRow(query, deckID, userID).Scan(&deck.ID, &deck.UserID, &deck.Name, &deck.Description, &deck.IsPublic, &deck.IsSystem, &deck.CreatedAt, &deck.UpdatedAt)
 	if err != nil {
+		log.Printf("Error fetching deck %d for user %s: %v", deckID, userID, err)
 		return Deck{}, err
 	}
 
