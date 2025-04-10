@@ -91,6 +91,15 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
 
     const handleDeleteDeck = async (e: React.MouseEvent, deckId: number) => {
         e.stopPropagation();
+        
+        // Find the deck to check if it's public
+        const deckToDelete = decks.find(deck => deck.id === deckId);
+        
+        if (deckToDelete?.is_public) {
+            showNotification('Public decks cannot be deleted.', 'error');
+            return;
+        }
+        
         if (window.confirm('Are you sure you want to delete this deck?')) {
             try {
                 await deleteDeck(deckId);
@@ -373,11 +382,11 @@ const DeckGrid: React.FC<DeckGridProps> = ({ decks, onDeckClick, onDeleteDeck, g
                                     e.stopPropagation();
                                     onDeckClick(deck);
                                 }}
-                                className="flex-1 px-4 py-2 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors font-['Montserrat',_sans-serif]"
+                                className={`${deck.is_public || deck.is_system ? 'w-full' : 'flex-1'} px-4 py-2 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors font-['Montserrat',_sans-serif]`}
                             >
                                 View
                             </Button>
-                            {!deck.is_system && (
+                            {!deck.is_system && !deck.is_public && (
                                 <Button
                                     onClick={(e) => onDeleteDeck(e, deck.id)}
                                     variant="outline"

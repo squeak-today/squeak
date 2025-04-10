@@ -27,7 +27,7 @@ const DeckView: React.FC = () => {
                 const deckData = await getDeck(Number(id));
                 if (!deckData.flashcards) deckData.flashcards = [];
                 setDeck(deckData);
-                if (deckData.flashcards.length === 0) setIsFormDialogOpen(true);
+                if (deckData.flashcards.length === 0 && !deckData.is_public) setIsFormDialogOpen(true);
             } catch (error) {
                 console.error('Error fetching deck:', error);
                 showNotification('Failed to fetch deck.', 'error');
@@ -37,6 +37,11 @@ const DeckView: React.FC = () => {
     }, []);
 
     const handleCreateFlashcard = async (frontContent: string, backContent: string) => {
+        if (deck?.is_public) {
+            showNotification('Cannot modify public decks.', 'error');
+            return;
+        }
+        
         try {
             const newCard = await createFlashcard({
                 deck_id: Number(id),
@@ -52,7 +57,11 @@ const DeckView: React.FC = () => {
     };
 
     const handleUpdateFlashcard = async (frontContent: string, backContent: string) => {
-        if (!editingCard) return;
+        if (!editingCard || deck?.is_public) {
+            if (deck?.is_public) showNotification('Cannot modify public decks.', 'error');
+            return;
+        }
+        
         try {
             await updateFlashcard(editingCard.id, {
                 front_content: frontContent,
@@ -77,6 +86,11 @@ const DeckView: React.FC = () => {
     };
 
     const handleDeleteFlashcard = async (flashcardId: number) => {
+        if (deck?.is_public) {
+            showNotification('Cannot delete flashcards from public decks.', 'error');
+            return;
+        }
+        
         if (window.confirm('Delete this flashcard?')) {
             try {
                 await deleteFlashcard(flashcardId);
@@ -91,6 +105,11 @@ const DeckView: React.FC = () => {
     };
 
     const handleSubmitForm = (frontContent: string, backContent: string) => {
+        if (deck?.is_public) {
+            showNotification('Cannot modify public decks.', 'error');
+            return;
+        }
+        
         if (editingCard) {
             handleUpdateFlashcard(frontContent, backContent);
         } else {
@@ -99,6 +118,11 @@ const DeckView: React.FC = () => {
     };
 
     const handleEditCard = (card: Flashcard) => {
+        if (deck?.is_public) {
+            showNotification('Cannot edit flashcards in public decks.', 'error');
+            return;
+        }
+        
         setEditingCard(card);
         setIsFormDialogOpen(true);
     };
@@ -118,6 +142,11 @@ const DeckView: React.FC = () => {
             <div className="mb-8">
                 <h1 className="text-3xl font-['Lora',_serif] font-bold mb-2 text-black">{deck.name}</h1>
                 <p className="text-[#333333]">{deck.description}</p>
+                {deck.is_public && (
+                    <div className="mt-2 inline-block bg-[#E6F4EA] text-[#1B873B] px-3 py-1 rounded-md text-sm font-medium">
+                        Public Deck • View Only
+                    </div>
+                )}
             </div>
             
             <div className="flex items-center gap-4 mb-8">
@@ -138,23 +167,27 @@ const DeckView: React.FC = () => {
                     />
                 )}
                 
-                {/* Create/Edit Flashcard Dialog */}
-                <Button 
-                    className="px-6 py-3 bg-[#E6F4EA] hover:bg-[#d7eadd] text-[#1B873B] rounded-md transition-colors"
-                    onClick={() => {
-                        setEditingCard(null);
-                        setIsFormDialogOpen(true);
-                    }}
-                >
-                    Add Flashcard
-                </Button>
-                
-                <FlashcardFormDialog 
-                    isOpen={isFormDialogOpen}
-                    setIsOpen={setIsFormDialogOpen}
-                    editingCard={editingCard}
-                    onSubmit={handleSubmitForm}
-                />
+                {/* Create/Edit Flashcard Dialog - Hidden for public decks */}
+                {!deck.is_public && (
+                    <>
+                        <Button 
+                            className="px-6 py-3 bg-[#E6F4EA] hover:bg-[#d7eadd] text-[#1B873B] rounded-md transition-colors"
+                            onClick={() => {
+                                setEditingCard(null);
+                                setIsFormDialogOpen(true);
+                            }}
+                        >
+                            Add Flashcard
+                        </Button>
+                        
+                        <FlashcardFormDialog 
+                            isOpen={isFormDialogOpen}
+                            setIsOpen={setIsFormDialogOpen}
+                            editingCard={editingCard}
+                            onSubmit={handleSubmitForm}
+                        />
+                    </>
+                )}
             </div>
 
             {deck.flashcards.length > 0 ? (
@@ -163,20 +196,23 @@ const DeckView: React.FC = () => {
                     flashcards={deck.flashcards}
                     onEdit={handleEditCard}
                     onDelete={handleDeleteFlashcard}
+                    isPublic={deck.is_public}
                 />
             ) : (
                 <div className="bg-white border border-[#e0e0e0] rounded-lg p-8 text-center shadow-sm">
                     <h2 className="text-xl font-['Lora',_serif] font-semibold mb-3 text-black">No Flashcards Yet</h2>
-                    <p className="text-[#666666] mb-6">This deck doesn't have any flashcards yet. Add your first flashcard to get started!</p>
-                    <Button 
-                        onClick={() => {
-                            setEditingCard(null);
-                            setIsFormDialogOpen(true);
-                        }}
-                        className="px-6 py-3 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors"
-                    >
-                        Add Your First Flashcard
-                    </Button>
+                    <p className="text-[#666666] mb-6">This deck doesn't have any flashcards yet. {!deck.is_public ? "Add your first flashcard to get started!" : "Please check back later for content updates."}</p>
+                    {!deck.is_public && (
+                        <Button 
+                            onClick={() => {
+                                setEditingCard(null);
+                                setIsFormDialogOpen(true);
+                            }}
+                            className="px-6 py-3 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors"
+                        >
+                            Add Your First Flashcard
+                        </Button>
+                    )}
                 </div>
             )}
         </div>

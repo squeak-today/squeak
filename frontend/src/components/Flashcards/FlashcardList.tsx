@@ -14,12 +14,14 @@ interface FlashcardListProps {
     flashcards: Flashcard[];
     onEdit: (card: Flashcard) => void;
     onDelete: (id: number) => void;
+    isPublic?: boolean;
 }
 
 const FlashcardList: React.FC<FlashcardListProps> = ({ 
     flashcards, 
     onEdit, 
-    onDelete 
+    onDelete,
+    isPublic = false
 }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 6;
@@ -43,7 +45,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
                         key={card.id} 
                         card={card} 
                         onEdit={onEdit} 
-                        onDelete={onDelete} 
+                        onDelete={onDelete}
+                        isPublic={isPublic}
                     />
                 ))}
             </div>
