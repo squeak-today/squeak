@@ -5,42 +5,41 @@ resource "aws_api_gateway_resource" "resource" {
   path_part   = var.path_part
 }
 
-// Define the endpoint method
-resource "aws_api_gateway_method" "method" {
-  count         = var.is_resource_only ? 0 : 1
+// Define the endpoint methods
+resource "aws_api_gateway_method" "methods" {
+  count         = length(var.http_methods) > 0 ? length(var.http_methods) : (var.is_resource_only ? 0 : 1)
   rest_api_id   = var.rest_api_id
   resource_id   = aws_api_gateway_resource.resource.id
-  http_method   = var.http_method
+  http_method   = length(var.http_methods) > 0 ? var.http_methods[count.index] : var.http_method
   authorization = "NONE"
 }
 
-// Define endpoint response
-resource "aws_api_gateway_method_response" "get_method_response" {
-  count       = var.is_resource_only ? 0 : 1
+// Define endpoint responses
+resource "aws_api_gateway_method_response" "method_responses" {
+  count       = length(var.http_methods) > 0 ? length(var.http_methods) : (var.is_resource_only ? 0 : 1)
   rest_api_id = var.rest_api_id
   resource_id = aws_api_gateway_resource.resource.id
-  http_method = aws_api_gateway_method.method[count.index].http_method
+  http_method = aws_api_gateway_method.methods[count.index].http_method
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Headers" = true
     "method.response.header.Access-Control-Max-Age"       = true
   }
 }
 
 // Integrate
-resource "aws_api_gateway_integration" "integration" {
-  count                   = var.is_resource_only ? 0 : 1
+resource "aws_api_gateway_integration" "integrations" {
+  count                   = length(var.http_methods) > 0 ? length(var.http_methods) : (var.is_resource_only ? 0 : 1)
   rest_api_id             = var.rest_api_id
   resource_id             = aws_api_gateway_resource.resource.id
-  http_method             = aws_api_gateway_method.method[count.index].http_method
+  http_method             = aws_api_gateway_method.methods[count.index].http_method
   type                    = "AWS_PROXY"
   integration_http_method = "POST"
   uri                     = var.lambda_arn
 }
-
 
 // DEFINE OPTIONS FOR PREFLIGHTS
 resource "aws_api_gateway_method" "options_method" {
@@ -57,8 +56,8 @@ resource "aws_api_gateway_method_response" "options_method_response" {
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
+    "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Allow-Methods" = true
     "method.response.header.Access-Control-Allow-Headers" = true
   }
 }
@@ -81,8 +80,8 @@ resource "aws_api_gateway_integration_response" "options_integration_response" {
   status_code = "200"
 
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'" // unsafe currently
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'" // Consider narrowing this for security
+    "method.response.header.Access-Control-Allow-Methods" = length(var.http_methods) > 0 ? "'OPTIONS,${join(",", var.http_methods)}'" : "'OPTIONS,${var.http_method}'"
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization'"
   }
 

@@ -12,6 +12,7 @@ import Read from './pages/Read';
 import Welcome from './pages/Welcome';
 import BecomeStudent from './pages/BecomeStudent';
 import Profile from './pages/Profile';
+import DeckView from './pages/DeckView';
 
 const App: React.FC = () => {
 	return (
@@ -52,6 +53,14 @@ const App: React.FC = () => {
 						element={
 							<ProtectedRoute>
 								<Read />
+							</ProtectedRoute>
+						} 
+					/>
+					<Route 
+						path="/decks/:id" 
+						element={
+							<ProtectedRoute>
+								<DeckView />
 							</ProtectedRoute>
 						} 
 					/>

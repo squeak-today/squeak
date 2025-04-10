@@ -14,9 +14,15 @@ variable "path_part" {
 }
 
 variable "http_method" {
-  description = "GET, POST, etc."
+  description = "GET, POST, etc. (used if http_methods is not provided)"
   type        = string
   default     = "GET"
+}
+
+variable "http_methods" {
+  description = "List of HTTP methods to support (e.g., ['GET', 'POST'])"
+  type        = list(string)
+  default     = []
 }
 
 variable "lambda_arn" {
