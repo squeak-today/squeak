@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import {theme} from '../styles/theme';
 
 export const Title = styled.h1`
   text-align: center;
@@ -195,10 +196,10 @@ export const HeaderTitle = styled.h1`
 export const HeaderButton = styled.button`
   white-space: nowrap; /* Prevents text from wrapping */
   width: auto; /* Let the button grow with its content */
-  min-width: 8.5em; /* Optional: set a minimum width if needed */
+  min-width: 9em; /* Optional: set a minimum width if needed */
   aspect-ratio: 7 / 1.5;
-  font-family: 'Lora', serif;
-  font-size: 1.5em;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.md};
   border-radius: 10px;
   background: #fad48f;
   border: none;
@@ -332,13 +333,11 @@ export const NavHeader = styled.header`
   top: 0;
   left: 50%;
   transform: translateX(-50%); /* Centers the header */
-  width: 90%; /* Adds margin from the sides */
-  max-width: 90%; /* Restricts the maximum width */
+  width: 60vw; /* Adds margin from the sides */
+  max-width: 80%; /* Restricts the maximum width */
   left: 50%;
   transform: translateX(-50%); /* Centers the header */
-  width: 90%; /* Adds margin from the sides */
-  max-width: 90%; /* Restricts the maximum width */
-  height: 80px;  
+  height: 100px;  
   display: flex;
   align-items: center;
   justify-content: space-between; /* Ensures elements are spaced properly */
@@ -487,8 +486,8 @@ export const LogoText = styled.span`
 
 
 export const HeaderText = styled.span`
-  font-family: 'Lora', serif;
-  font-size: 1.5em;
+  font-family: ${theme.typography.fontFamily.secondary};
+  font-size: ${theme.typography.fontSize.base};
   font-weight: 400;
   color: #000000;
   cursor: pointer;

@@ -114,7 +114,7 @@ const BasicPage: React.FC<BasicPageProps> = ({
                   </HeaderText>
                 )}
                 <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
-                  Contact Us
+                  Contact
                 </HeaderText>
                 <HeaderText onClick={onLogout}>
                   Logout
@@ -178,7 +178,7 @@ const BasicPage: React.FC<BasicPageProps> = ({
                   setIsMobileMenuOpen(false);
                 }}
               >
-                Contact Us
+                Contact
               </MenuText>
               <MenuText
                 onClick={() => {
@@ -193,7 +193,7 @@ const BasicPage: React.FC<BasicPageProps> = ({
             {showGetStarted && (
               <>
                 <HeaderText onClick={() => window.open('/contact-support.html', '_blank')}>
-                  Contact Us
+                  Contact
                 </HeaderText>
                 <HeaderButton onClick={handleGetStarted}>
                   Get Started
