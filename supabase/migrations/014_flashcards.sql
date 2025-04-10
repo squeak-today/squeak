@@ -80,10 +80,11 @@ CREATE POLICY "Users can insert own decks"
     ON decks FOR INSERT
     WITH CHECK (auth.uid() = user_id);
 
+-- Modify the "Users can delete own decks" policy to exclude public decks
 DROP POLICY IF EXISTS "Users can delete own decks" ON decks;
 CREATE POLICY "Users can delete own decks"
     ON decks FOR DELETE
-    USING (auth.uid() = user_id);
+    USING (auth.uid() = user_id AND is_public = FALSE);
 
 -- Add RLS Policies for Flashcards
 ALTER TABLE flashcards ENABLE ROW LEVEL SECURITY;
@@ -106,6 +107,7 @@ CREATE POLICY "Users can view flashcards from public decks"
         AND decks.is_public = TRUE
     ));
 
+-- Modify the flashcard policies to prevent modifications to public decks
 DROP POLICY IF EXISTS "Users can update flashcards in owned decks" ON flashcards;
 CREATE POLICY "Users can update flashcards in owned decks"
     ON flashcards FOR UPDATE
@@ -113,6 +115,7 @@ CREATE POLICY "Users can update flashcards in owned decks"
         SELECT 1 FROM decks
         WHERE decks.id = flashcards.deck_id
         AND decks.user_id = auth.uid()
+        AND decks.is_public = FALSE
     ));
 
 DROP POLICY IF EXISTS "Users can insert flashcards in owned decks" ON flashcards;
@@ -122,6 +125,7 @@ CREATE POLICY "Users can insert flashcards in owned decks"
         SELECT 1 FROM decks
         WHERE decks.id = flashcards.deck_id
         AND decks.user_id = auth.uid()
+        AND decks.is_public = FALSE
     ));
 
 DROP POLICY IF EXISTS "Users can delete flashcards in owned decks" ON flashcards;
@@ -131,6 +135,7 @@ CREATE POLICY "Users can delete flashcards in owned decks"
         SELECT 1 FROM decks
         WHERE decks.id = flashcards.deck_id
         AND decks.user_id = auth.uid()
+        AND decks.is_public = FALSE
     ));
 
 -- Add RLS Policies for Study Stats

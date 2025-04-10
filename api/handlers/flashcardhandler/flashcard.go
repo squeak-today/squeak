@@ -51,6 +51,18 @@ func (h *Handler) CreateFlashcard(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot add cards to system decks"})
 		return
 	}
+	
+	// Prevent adding cards to public decks
+	if deck.IsPublic {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot add cards to public decks"})
+		return
+	}
+	
+	// Verify user owns the deck (extra protection)
+	if deck.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You can only add cards to your own decks"})
+		return
+	}
 
 	flashcard := supabase.Flashcard{
 		DeckID:       flashcardCreate.DeckID,
@@ -117,6 +129,12 @@ func (h *Handler) UpdateFlashcard(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot modify cards in system decks"})
 		return
 	}
+	
+	// Prevent updating cards in public decks
+	if deck.IsPublic {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot modify cards in public decks"})
+		return
+	}
 
 	// Update fields
 	flashcard.FrontContent = flashcardUpdate.FrontContent
@@ -171,6 +189,12 @@ func (h *Handler) DeleteFlashcard(c *gin.Context) {
 	// Prevent deleting cards in system decks
 	if deck.IsSystem {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot delete cards in system decks"})
+		return
+	}
+	
+	// Prevent deleting cards in public decks
+	if deck.IsPublic {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Cannot delete cards in public decks"})
 		return
 	}
 

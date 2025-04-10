@@ -2,6 +2,7 @@
 package supabase
 
 import (
+	"fmt"
 	"log"
 	"time"
 )
@@ -162,12 +163,30 @@ func (c *Client) CreateDeck(deck Deck) (Deck, error) {
 func (c *Client) DeleteDeck(deckID int, userID string) error {
 	query := `
 		DELETE FROM decks
-		WHERE id = $1 AND user_id = $2 AND is_system = false
+		WHERE id = $1 AND user_id = $2 AND is_system = false AND is_public = false
 	`
 
-	_, err := c.db.Exec(query, deckID, userID)
+	result, err := c.db.Exec(query, deckID, userID)
 	if err != nil {
 		return err
+	}
+	
+	// Check if any rows were affected
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	
+	// If no rows were affected, it might be because of the is_public condition
+	if rows == 0 {
+		// Check if the deck exists but is public
+		var isPublic bool
+		checkQuery := `SELECT is_public FROM decks WHERE id = $1 AND user_id = $2`
+		err := c.db.QueryRow(checkQuery, deckID, userID).Scan(&isPublic)
+		
+		if err == nil && isPublic {
+			return fmt.Errorf("cannot delete public deck")
+		}
 	}
 
 	return nil

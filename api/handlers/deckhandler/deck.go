@@ -112,7 +112,7 @@ func (h *Handler) CreateDeck(c *gin.Context) {
 
 // DeleteDeck godoc
 // @Summary Delete a deck
-// @Description Deletes a user's deck by ID (system decks cannot be deleted)
+// @Description Deletes a user's deck by ID (system decks and public decks cannot be deleted)
 // @Tags deck
 // @Accept json
 // @Produce json
@@ -143,6 +143,18 @@ func (h *Handler) DeleteDeck(c *gin.Context) {
 	// Prevent deletion of system decks
 	if deck.IsSystem {
 		c.JSON(http.StatusForbidden, gin.H{"error": "System decks cannot be deleted"})
+		return
+	}
+	
+	// Prevent deletion of public decks
+	if deck.IsPublic {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Public decks cannot be deleted"})
+		return
+	}
+
+	// Check if deck belongs to the user (extra protection)
+	if deck.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You can only delete your own decks"})
 		return
 	}
 
