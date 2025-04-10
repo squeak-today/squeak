@@ -279,7 +279,7 @@ module "deck" {
   rest_api_id  = aws_api_gateway_rest_api.story_api.id
   parent_id    = aws_api_gateway_rest_api.story_api.root_resource_id
   path_part    = "deck"
-  http_methods = ["GET", "POST"]  # GET to list decks, POST to create a deck
+  http_methods = ["GET", "POST"] # GET to list decks, POST to create a deck
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
@@ -288,7 +288,7 @@ module "deck_id" {
   rest_api_id  = aws_api_gateway_rest_api.story_api.id
   parent_id    = module.deck.resource_id
   path_part    = "{deck_id}"
-  http_methods = ["GET", "PUT", "DELETE"]  # CRUD operations on a specific deck
+  http_methods = ["GET", "PUT", "DELETE"] # CRUD operations on a specific deck
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
@@ -317,7 +317,7 @@ module "flashcard" {
   rest_api_id  = aws_api_gateway_rest_api.story_api.id
   parent_id    = aws_api_gateway_rest_api.story_api.root_resource_id
   path_part    = "flashcard"
-  http_methods = []  # No methods directly on /flashcard per Go code
+  http_methods = [] # No methods directly on /flashcard per Go code
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 
@@ -338,7 +338,7 @@ module "flashcard_id" {
   rest_api_id  = aws_api_gateway_rest_api.story_api.id
   parent_id    = module.flashcard.resource_id
   path_part    = "{flashcard_id}"
-  http_methods = []  # No methods directly on /flashcard/{flashcard_id}
+  http_methods = [] # No methods directly on /flashcard/{flashcard_id}
   lambda_arn   = aws_lambda_function.story_api_lambda.invoke_arn
 }
 

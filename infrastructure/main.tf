@@ -9,7 +9,7 @@ terraform {
   cloud {
     organization = "squeak_team"
     workspaces {
-     tags = ["shared"]
+      tags = ["shared"]
     }
   }
 
