@@ -1,3 +1,4 @@
+-- re run migrations
 -- Deck Table
 CREATE TABLE IF NOT EXISTS decks (
     id SERIAL PRIMARY KEY,
