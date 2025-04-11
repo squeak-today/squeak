@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"mime/multipart"
+	"net/http"
 )
 
 const (
-	ELEVENLABS_FRENCH_VOICE_ID string = "Ndm6bI6wo3Ycnlx1PPZS" // Luca
+	ELEVENLABS_FRENCH_VOICE_ID  string = "Ndm6bI6wo3Ycnlx1PPZS" // Luca
 	ELEVENLABS_SPANISH_VOICE_ID string = "rEVYTKPqwSMhytFPayIb" // Sandra
 )
 
