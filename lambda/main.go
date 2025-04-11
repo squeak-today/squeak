@@ -10,23 +10,25 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 
 	"database/sql"
 
 	_ "github.com/lib/pq"
 
+	"story-gen-lambda/elevenlabs"
 	"story-gen-lambda/gemini"
 	"story-gen-lambda/stripmd"
 )
 
 type GenerationRequest struct {
-	Language string `json:"language"`
-	CEFRLevel string `json:"cefrLevel"`
-	Subject string `json:"subject"`
-	ContentType string `json:"contentType"`
+	Language        string `json:"language"`
+	CEFRLevel       string `json:"cefrLevel"`
+	Subject         string `json:"subject"`
+	ContentType     string `json:"contentType"`
+	CreateAudiobook bool   `json:"createAudiobook"`
 }
 
 func buildInfoBlockFromNewsSources(sources []Result) string {
@@ -48,36 +50,40 @@ func generateTitleAndPreview(text string) (string, string) {
 
 	title := strings.Split(rawText, "\n")[0]
 	titleRunes := []rune(title)
-	if len(titleRunes) > 140 { title = string(titleRunes[:140]) + "..." }
+	if len(titleRunes) > 140 {
+		title = string(titleRunes[:140]) + "..."
+	}
 
 	previewText := rawText
 	rawTextRunes := []rune(rawText)
-	if len(rawTextRunes) > 500 { previewText = string(rawTextRunes[:500]) + "..." }
+	if len(rawTextRunes) > 500 {
+		previewText = string(rawTextRunes[:500]) + "..."
+	}
 	return title, previewText
 }
 
 func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
-    log.Println("IX 5: Executing Aya Story Generation...")
+	log.Println("IX 5: Executing Aya Story Generation...")
 	log.Println("Processing SQS Events of length ", len(sqsEvent.Records))
 
-    connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
-        os.Getenv("SUPABASE_HOST"),
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
+		os.Getenv("SUPABASE_HOST"),
 		os.Getenv("SUPABASE_PORT"),
-        os.Getenv("SUPABASE_USER"),
-        os.Getenv("SUPABASE_PASSWORD"),
-        os.Getenv("SUPABASE_DATABASE"),
-    )
+		os.Getenv("SUPABASE_USER"),
+		os.Getenv("SUPABASE_PASSWORD"),
+		os.Getenv("SUPABASE_DATABASE"),
+	)
 
-    db, err := sql.Open("postgres", connStr)
-    if err != nil {
-        log.Println("Database connection failed:", err)
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		log.Println("Database connection failed:", err)
 		return err
-    }
-    log.Println("Supabase connection success!")
-    defer db.Close()
+	}
+	log.Println("Supabase connection success!")
+	defer db.Close()
 
 	language_ids := map[string]string{
-		"French": "fr",
+		"French":  "fr",
 		"Spanish": "es",
 	}
 
@@ -139,9 +145,9 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 		language := genRequest.Language
 		CEFRLevel := genRequest.CEFRLevel
 		subject := genRequest.Subject
-					
+		createAudiobook := genRequest.CreateAudiobook
 		// News Generation
-		newsText, err := geminiClient.GenerateNewsArticle(language, CEFRLevel, "today " + subject + " news", webResults[subject])
+		newsText, err := geminiClient.GenerateNewsArticle(language, CEFRLevel, "today "+subject+" news", webResults[subject])
 
 		if err == nil {
 			words, sentences := getWordsAndSentences(newsText)
@@ -165,11 +171,61 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 			}
 
 			title, previewText := generateTitleAndPreview(newsText)
-			err := supabaseClient.InsertNews(title, language, subject, CEFRLevel, previewText)
+			news_id, err := supabaseClient.InsertNews(title, language, subject, CEFRLevel, previewText)
 			if err != nil {
 				log.Println(err)
 				return err
 			}
+
+			// create audiobook step
+			if createAudiobook {
+				// strip markdown from text
+				plainText := stripmd.Strip(newsText)
+
+				var voiceId string
+				switch language {
+				case "French":
+					voiceId = elevenlabs.ELEVENLABS_FRENCH_VOICE_ID
+				case "Spanish":
+					voiceId = elevenlabs.ELEVENLABS_SPANISH_VOICE_ID
+				default:
+					log.Printf("Unsupported language for audiobook: %s", language)
+					continue
+				}
+
+				elevenLabsResponse, err := elevenlabs.ElevenLabsTTSWithTiming(
+					plainText,
+					voiceId,
+					os.Getenv("ELEVENLABS_API_KEY"),
+				)
+				if err != nil {
+					log.Printf("Failed to generate audiobook: %v", err)
+					continue
+				}
+
+				audiobookContent, err := buildAudiobookBody(plainText, elevenLabsResponse)
+				if err != nil {
+					log.Printf("Failed to build audiobook content: %v", err)
+					continue
+				}
+
+				audiobookPath := path + "audiobook_" + CEFRLevel + "_News_" + subject + "_" + current_time + ".json"
+				if err := uploadStoryS3(
+					os.Getenv("STORY_BUCKET_NAME"),
+					audiobookPath,
+					audiobookContent,
+				); err != nil {
+					log.Printf("Failed to upload audiobook: %v", err)
+					continue
+				}
+
+				err = supabaseClient.InsertAudiobook(news_id, "PREMIUM")
+				if err != nil {
+					log.Printf("Failed to insert audiobook: %v", err)
+					continue
+				}
+			}
+
 		} else {
 			log.Println(err)
 			return err

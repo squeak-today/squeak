@@ -52,5 +52,21 @@ export function useAudioAPI() {
         })
     }, [client, requireAuthWithErrors]);
 
-    return { isAuthenticated, pingAudio, translate, tts, stt };
+    const getAudiobook = useCallback(async (params: {
+        news_id: string;
+    }) => {
+        return requireAuthWithErrors(async () => {    
+            const { data, error } = await client!.GET('/audio/audiobook', {
+                params: {
+                    query: { ...params }
+                }
+            });
+            return { 
+                data: data as components["schemas"]["models.AudiobookResponse"] | null, 
+                error: error as components["schemas"]["models.ErrorResponse"] | null 
+            };
+        })
+    }, [client, requireAuthWithErrors]);
+
+    return { isAuthenticated, pingAudio, translate, tts, stt, getAudiobook };
 }

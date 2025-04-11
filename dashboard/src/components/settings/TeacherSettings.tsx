@@ -53,8 +53,9 @@ const TeacherSettings: React.FC = () => {
 
     try {
       setIsCreating(true);
+      const classroomCount = classrooms ? classrooms.length + 1 : 1;
       await createClassroom({
-        name: 'Classroom ' + (classrooms.length + 1)
+        name: 'Classroom ' + classroomCount
       });
     } catch (error) {
       console.error('Error creating classroom:', error);
@@ -109,7 +110,7 @@ const TeacherSettings: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {classrooms.map((classroom) => (
+            {classrooms && classrooms.map((classroom) => (
               <TableRow 
                 key={classroom.classroom_id} 
                 className={`hover:bg-gray-100 border-b border-border`}

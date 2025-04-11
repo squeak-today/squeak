@@ -25,6 +25,7 @@ interface Story {
   cefr_level: string;
   date_created: string;
   content_type: string;
+  audiobook_tier: string;
   [key: string]: any;
 }
 
