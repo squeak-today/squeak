@@ -48,7 +48,8 @@ resource "aws_iam_role" "story_api_role" {
           "Effect" : "Allow",
           "Action" : [
             "s3:GetObject",
-            "s3:ListBucket"
+            "s3:ListBucket",
+            "s3:PutObjectAcl"
           ],
           "Resource" : [
             "arn:aws:s3:::${aws_s3_bucket.story_gen_bucket.id}",

@@ -23,6 +23,21 @@ interface SentenceMap {
   endTime: number;
 }
 
+interface Audiobook {
+  text: string;
+  audio_base64: string;
+  alignment: {
+    characters: string[];
+    character_start_times_seconds: number[];
+    character_end_times_seconds: number[];
+  };
+  normalized_alignment: {
+    characters: string[];
+    character_start_times_seconds: number[];
+    character_end_times_seconds: number[];
+  };
+}
+
 const Word: React.FC<{ 
   text: string; 
   isActive: boolean; 
@@ -69,39 +84,51 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
     
     useEffect(() => {
       const fetchAudiobook = async () => {
-        const { data, error } = await getAudiobook({ news_id: id });
-        if (error) {
-          if (error.code === 'USAGE_RESTRICTED') {
-            setUsageError('Your plan does not provide access to this audiobook!');
-            showNotification('Your plan does not provide access to this audiobook!', 'error');
-          } else if (error.code === 'USAGE_LIMIT_REACHED') {
-            setUsageError('You have reached your limit of audiobooks for this month!');
-            showNotification('You have reached your limit of audiobooks for this month!', 'error');
-          } else if (error.error === 'No audiobook available for this news_id') {
-            setUsageError('No audiobook available for this article!');
-          } else {
-            setUsageError('An error occurred while fetching the audiobook!');
-            showNotification('An error occurred while fetching the audiobook!', 'error');
+        try {
+          const { data, error } = await getAudiobook({ news_id: id });
+          if (error) {
+            if (error.code === 'USAGE_RESTRICTED') {
+              setUsageError('Your plan does not provide access to this audiobook!');
+              showNotification('Your plan does not provide access to this audiobook!', 'error');
+            } else if (error.code === 'USAGE_LIMIT_REACHED') {
+              setUsageError('You have reached your limit of audiobooks for this month!');
+              showNotification('You have reached your limit of audiobooks for this month!', 'error');
+            } else if (error.error === 'No audiobook available for this news_id') {
+              setUsageError('No audiobook available for this article!');
+            } else {
+              setUsageError('An error occurred while fetching the audiobook!');
+              showNotification('An error occurred while fetching the audiobook!', 'error');
+            }
+            console.error('Error fetching audiobook:', error);
+          } else if (data?.url) {
+            const response = await fetch(data.url);
+            if (!response.ok) {
+              throw new Error('Failed to fetch audiobook content');
+            }
+            const audiobookData: Audiobook = await response.json();
+            
+            setText(audiobookData.text || '');
+            setAudioData(audiobookData.audio_base64 || '');
+            
+            if (audiobookData.alignment) {
+              const { characters, character_start_times_seconds, character_end_times_seconds } = audiobookData.alignment;
+              const wordTimings = extractWordTimings(
+                audiobookData.text,
+                characters || [],
+                character_start_times_seconds || [],
+                character_end_times_seconds || []
+              );
+              setWords(wordTimings);
+              setSentences(extractSentences(wordTimings));
+            }
           }
-          console.error('Error fetching audiobook:', error);
-        } else if (data?.audiobook) {
-          const textContent = data.audiobook.text || '';
-          setText(textContent);
-          setAudioData(data.audiobook.audio_base64 || '');
-          
-          if (data.audiobook.alignment) {
-            const { characters, character_start_times_seconds, character_end_times_seconds } = data.audiobook.alignment;
-            const wordTimings = extractWordTimings(
-              textContent,
-              characters || [],
-              character_start_times_seconds || [],
-              character_end_times_seconds || []
-            );
-            setWords(wordTimings);
-            setSentences(extractSentences(wordTimings));
-          }
+        } catch (err) {
+          console.error('Error processing audiobook:', err);
+          setUsageError('An error occurred while processing the audiobook!');
+          showNotification('An error occurred while processing the audiobook!', 'error');
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
       fetchAudiobook();
     }, [id])

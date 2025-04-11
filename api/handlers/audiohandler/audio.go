@@ -233,16 +233,24 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 		}
 	}
 
-	audiobook, err := storage.PullAudiobook(audiobookInfo.Language, audiobookInfo.CEFRLevel, audiobookInfo.Topic, audiobookInfo.Date.Format("2006-01-02"))
+	s3Key := storage.GetAudiobookKey(audiobookInfo.Language, audiobookInfo.CEFRLevel, audiobookInfo.Topic, audiobookInfo.Date.Format("2006-01-02"))
+	presignedURL, err := storage.GetPresignedURL(s3Key, 5) // 5 minute exp
 	if err != nil {
-		log.Printf("Error getting audiobook: %v", err)
+		log.Printf("Error generating pre-signed URL: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
-			Error: "Error getting audiobook",
+			Error: "Error accessing audiobook",
 		})
 		return
 	}
 
+	if audiobookInfo.Tier == "BASIC" {
+		h.DBClient.InsertUsage(userID, plans.BASIC_AUDIOBOOKS_FEATURE, 1)
+	} else if audiobookInfo.Tier == "PREMIUM" {
+		h.DBClient.InsertUsage(userID, plans.PREMIUM_AUDIOBOOKS_FEATURE, 1)
+	}
+
 	c.JSON(http.StatusOK, models.AudiobookResponse{
-		Audiobook: audiobook,
+		URL:       presignedURL,
+		ExpiresIn: 300,
 	})
 }

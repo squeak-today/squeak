@@ -1601,9 +1601,18 @@ const docTemplate = `{
         },
         "models.AudiobookResponse": {
             "type": "object",
+            "required": [
+                "expires_in",
+                "url"
+            ],
             "properties": {
-                "audiobook": {
-                    "$ref": "#/definitions/storage.Audiobook"
+                "expires_in": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "url": {
+                    "type": "string",
+                    "example": "https://bucket.s3.amazonaws.com/path/to/file?signed-params"
                 }
             }
         },
@@ -2737,46 +2746,6 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "storage.AlignmentInfo": {
-            "type": "object",
-            "properties": {
-                "character_end_times_seconds": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "character_start_times_seconds": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "characters": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "storage.Audiobook": {
-            "type": "object",
-            "properties": {
-                "alignment": {
-                    "$ref": "#/definitions/storage.AlignmentInfo"
-                },
-                "audio_base64": {
-                    "type": "string"
-                },
-                "normalized_alignment": {
-                    "$ref": "#/definitions/storage.AlignmentInfo"
-                },
-                "text": {
                     "type": "string"
                 }
             }
