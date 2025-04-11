@@ -70,11 +70,17 @@ func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
 	}
+	premiumAudiobooksUsage, err := h.DBClient.GetUsage(userID, plans.PREMIUM_AUDIOBOOKS_FEATURE, reqPlan)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
+	}
 	c.JSON(http.StatusOK, models.BillingAccountUsageResponse{
 		NaturalTTSUsage:    naturalTTSUsage,
 		MaxNaturalTTSUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.NATURAL_TTS_FEATURE].Plan[reqPlan],
 		PremiumSTTUsage:    premiumSTTUsage,
 		MaxPremiumSTTUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.PREMIUM_STT_FEATURE].Plan[reqPlan],
+		PremiumAudiobooksUsage: premiumAudiobooksUsage,
+		MaxPremiumAudiobooksUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.PREMIUM_AUDIOBOOKS_FEATURE].Plan[reqPlan],
 	})
 }
 

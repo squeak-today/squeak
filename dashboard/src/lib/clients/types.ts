@@ -2072,9 +2072,13 @@ export interface components {
             /** @example 100 */
             max_natural_tts_usage: number;
             /** @example 100 */
+            max_premium_audiobooks_usage: number;
+            /** @example 100 */
             max_premium_stt_usage: number;
             /** @example 10 */
             natural_tts_usage: number;
+            /** @example 10 */
+            premium_audiobooks_usage: number;
             /** @example 10 */
             premium_stt_usage: number;
         };

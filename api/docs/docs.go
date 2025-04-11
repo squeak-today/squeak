@@ -1642,12 +1642,18 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "max_natural_tts_usage",
+                "max_premium_audiobooks_usage",
                 "max_premium_stt_usage",
                 "natural_tts_usage",
+                "premium_audiobooks_usage",
                 "premium_stt_usage"
             ],
             "properties": {
                 "max_natural_tts_usage": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "max_premium_audiobooks_usage": {
                     "type": "integer",
                     "example": 100
                 },
@@ -1656,6 +1662,10 @@ const docTemplate = `{
                     "example": 100
                 },
                 "natural_tts_usage": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "premium_audiobooks_usage": {
                     "type": "integer",
                     "example": 10
                 },

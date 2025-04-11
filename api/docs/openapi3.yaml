@@ -1114,10 +1114,16 @@ components:
         max_natural_tts_usage:
           example: 100
           type: integer
+        max_premium_audiobooks_usage:
+          example: 100
+          type: integer
         max_premium_stt_usage:
           example: 100
           type: integer
         natural_tts_usage:
+          example: 10
+          type: integer
+        premium_audiobooks_usage:
           example: 10
           type: integer
         premium_stt_usage:
@@ -1125,8 +1131,10 @@ components:
           type: integer
       required:
         - max_natural_tts_usage
+        - max_premium_audiobooks_usage
         - max_premium_stt_usage
         - natural_tts_usage
+        - premium_audiobooks_usage
         - premium_stt_usage
       type: object
     models.CancelIndividualSubscriptionRequest:

@@ -48,7 +48,7 @@ var FEATURE_ACCESS_LIMITS_BY_PLAN = map[string]AccessLimitByPlan{
 	},
 	PREMIUM_AUDIOBOOKS_FEATURE: {
 		Plan: map[string]int{
-			"FREE": 0,
+			"FREE": 5,
 			"BASIC": 5,
 			"PREMIUM": -1,
 			"CLASSROOM": 20,

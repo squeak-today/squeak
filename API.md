@@ -947,8 +947,10 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | max_natural_tts_usage | integer | *Example:* `100` | Yes |
+| max_premium_audiobooks_usage | integer | *Example:* `100` | Yes |
 | max_premium_stt_usage | integer | *Example:* `100` | Yes |
 | natural_tts_usage | integer | *Example:* `10` | Yes |
+| premium_audiobooks_usage | integer | *Example:* `10` | Yes |
 | premium_stt_usage | integer | *Example:* `10` | Yes |
 
 #### models.CancelIndividualSubscriptionRequest
