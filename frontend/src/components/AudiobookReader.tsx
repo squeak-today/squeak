@@ -7,6 +7,8 @@ import { FaPlay, FaPause, FaForward, FaBackward } from 'react-icons/fa';
 interface AudiobookReaderProps {
     id: string;
     contentType: string;
+    sourceLanguage: string;
+    handleWordClick: (event: React.MouseEvent, word: string, language: string, sentence: string) => void;
 }
 
 interface WordTiming {
@@ -15,18 +17,45 @@ interface WordTiming {
   endTime: number;
 }
 
+interface SentenceMap {
+  text: string;
+  startTime: number;
+  endTime: number;
+}
+
+interface Audiobook {
+  text: string;
+  audio_base64: string;
+  alignment: {
+    characters: string[];
+    character_start_times_seconds: number[];
+    character_end_times_seconds: number[];
+  };
+  normalized_alignment: {
+    characters: string[];
+    character_start_times_seconds: number[];
+    character_end_times_seconds: number[];
+  };
+}
+
 const Word: React.FC<{ 
   text: string; 
   isActive: boolean; 
   startTime: number;
+  sourceLanguage: string;
   onClick: (time: number) => void;
-}> = ({ text, isActive, startTime, onClick }) => {
+  handleWordClick: (event: React.MouseEvent, word: string, language: string, sentence: string) => void;
+  sentence: string;
+}> = ({ text, isActive, startTime, sourceLanguage, onClick, handleWordClick, sentence }) => {
   return (
     <span 
       className={`inline-block transition-colors duration-100 ease-in rounded px-[1px] py-[2px] cursor-pointer ${
         isActive ? 'bg-[var(--color-selected)]' : 'hover:bg-[var(--color-selected)] hover:bg-opacity-50'
       }`}
-      onClick={() => onClick(startTime)}
+      onClick={(e) => {
+        onClick(startTime);
+        handleWordClick(e, text, sourceLanguage, sentence);
+      }}
     >
       {text}
     </span>
@@ -35,7 +64,9 @@ const Word: React.FC<{
 
 const AudiobookReader: React.FC<AudiobookReaderProps> = ({ 
   id, 
-  contentType
+  contentType,
+  sourceLanguage,
+  handleWordClick
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [audioData, setAudioData] = useState<string>('');
@@ -44,6 +75,7 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [words, setWords] = useState<WordTiming[]>([]);
+    const [sentences, setSentences] = useState<SentenceMap[]>([]);
     const [activeWordIndex, setActiveWordIndex] = useState<number>(0);
     const [usageError, setUsageError] = useState<string>('');
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -52,38 +84,51 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
     
     useEffect(() => {
       const fetchAudiobook = async () => {
-        const { data, error } = await getAudiobook({ news_id: id });
-        if (error) {
-          if (error.code === 'USAGE_RESTRICTED') {
-            setUsageError('Your plan does not provide access to this audiobook!');
-            showNotification('Your plan does not provide access to this audiobook!', 'error');
-          } else if (error.code === 'USAGE_LIMIT_REACHED') {
-            setUsageError('You have reached your limit of audiobooks for this month!');
-            showNotification('You have reached your limit of audiobooks for this month!', 'error');
-          } else if (error.error === 'No audiobook available for this news_id') {
-            setUsageError('No audiobook available for this article!');
-          } else {
-            setUsageError('An error occurred while fetching the audiobook!');
-            showNotification('An error occurred while fetching the audiobook!', 'error');
+        try {
+          const { data, error } = await getAudiobook({ news_id: id });
+          if (error) {
+            if (error.code === 'USAGE_RESTRICTED') {
+              setUsageError('Your plan does not provide access to this audiobook!');
+              showNotification('Your plan does not provide access to this audiobook!', 'error');
+            } else if (error.code === 'USAGE_LIMIT_REACHED') {
+              setUsageError('You have reached your limit of audiobooks for this month!');
+              showNotification('You have reached your limit of audiobooks for this month!', 'error');
+            } else if (error.error === 'No audiobook available for this news_id') {
+              setUsageError('No audiobook available for this article!');
+            } else {
+              setUsageError('An error occurred while fetching the audiobook!');
+              showNotification('An error occurred while fetching the audiobook!', 'error');
+            }
+            console.error('Error fetching audiobook:', error);
+          } else if (data?.url) {
+            const response = await fetch(data.url);
+            if (!response.ok) {
+              throw new Error('Failed to fetch audiobook content');
+            }
+            const audiobookData: Audiobook = await response.json();
+            
+            setText(audiobookData.text || '');
+            setAudioData(audiobookData.audio_base64 || '');
+            
+            if (audiobookData.alignment) {
+              const { characters, character_start_times_seconds, character_end_times_seconds } = audiobookData.alignment;
+              const wordTimings = extractWordTimings(
+                audiobookData.text,
+                characters || [],
+                character_start_times_seconds || [],
+                character_end_times_seconds || []
+              );
+              setWords(wordTimings);
+              setSentences(extractSentences(wordTimings));
+            }
           }
-          console.error('Error fetching audiobook:', error);
-        } else if (data?.audiobook) {
-          const textContent = data.audiobook.text || '';
-          setText(textContent);
-          setAudioData(data.audiobook.audio_base64 || '');
-          
-          if (data.audiobook.alignment) {
-            const { characters, character_start_times_seconds, character_end_times_seconds } = data.audiobook.alignment;
-            const wordTimings = extractWordTimings(
-              textContent,
-              characters || [],
-              character_start_times_seconds || [],
-              character_end_times_seconds || []
-            );
-            setWords(wordTimings);
-          }
+        } catch (err) {
+          console.error('Error processing audiobook:', err);
+          setUsageError('An error occurred while processing the audiobook!');
+          showNotification('An error occurred while processing the audiobook!', 'error');
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
       fetchAudiobook();
     }, [id])
@@ -132,6 +177,29 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
       }
       
       return result;
+    };
+
+    const extractSentences = (words: WordTiming[]): SentenceMap[] => {
+      const sentences: SentenceMap[] = [];
+      let currentSentence: string[] = [];
+      let startTime = words[0]?.startTime || 0;
+      
+      words.forEach((word, index) => {
+        currentSentence.push(word.text);
+        
+        // check if word ends with sentence-ending punctuation
+        if (word.text.match(/[.!?]$/) || index === words.length - 1) {
+          sentences.push({
+            text: currentSentence.join(' '),
+            startTime: startTime,
+            endTime: word.endTime
+          });
+          startTime = words[index + 1]?.startTime || word.endTime;
+          currentSentence = [];
+        }
+      });
+      
+      return sentences;
     };
 
     const handlePlayPause = () => {
@@ -233,7 +301,7 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
       }
     };
 
-    const handleWordClick = (time: number) => {
+    const handleWordTimeSeek = (time: number) => {
       if (audioRef.current) {
         audioRef.current.currentTime = time;
         setCurrentTime(time);
@@ -250,23 +318,34 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
       return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
+    const getSentenceForTime = (time: number): string => {
+      const sentence = sentences.find(s => time >= s.startTime && time <= s.endTime);
+      return sentence?.text || '';
+    };
+
     const renderWords = () => {
       if (words.length === 0) {
+        const basicSentences = text.split(/(?<=[.!?])\s+/);
         return text.split(/(\s+)/).map((word, index) => {
           if (word.trim() === '') {
             return word;
           }
+          const sentence = basicSentences.find(s => s.includes(word)) || word;
           return <Word 
             key={index} 
             text={word} 
             isActive={false}
             startTime={0}
             onClick={() => {}}
+            handleWordClick={handleWordClick}
+            sourceLanguage={sourceLanguage}
+            sentence={sentence}
           />;
         });
       }
       
       return words.map((word, index) => {
+        const sentence = getSentenceForTime(word.startTime);
         return (
           <React.Fragment key={index}>
             {index > 0 && ' '}
@@ -274,7 +353,10 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
               text={word.text} 
               isActive={index === activeWordIndex}
               startTime={word.startTime}
-              onClick={handleWordClick}
+              onClick={handleWordTimeSeek}
+              handleWordClick={handleWordClick}
+              sourceLanguage={sourceLanguage}
+              sentence={sentence}
             />
           </React.Fragment>
         );

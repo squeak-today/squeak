@@ -931,7 +931,8 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| audiobook | [storage.Audiobook](#storageaudiobook) |  | No |
+| expires_in | integer | *Example:* `300` | Yes |
+| url | string | *Example:* `"https://bucket.s3.amazonaws.com/path/to/file?signed-params"` | Yes |
 
 #### models.BillingAccountResponse
 
@@ -1366,23 +1367,6 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | received | boolean |  | No |
 | type | string |  | No |
-
-#### storage.AlignmentInfo
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| character_end_times_seconds | [ number ] |  | No |
-| character_start_times_seconds | [ number ] |  | No |
-| characters | [ string ] |  | No |
-
-#### storage.Audiobook
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| alignment | [storage.AlignmentInfo](#storagealignmentinfo) |  | No |
-| audio_base64 | string |  | No |
-| normalized_alignment | [storage.AlignmentInfo](#storagealignmentinfo) |  | No |
-| text | string |  | No |
 
 #### storage.Dictionary
 

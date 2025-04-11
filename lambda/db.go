@@ -67,8 +67,7 @@ func (c *Client) GetCurrentNewsSources(topic string) ([]Result, error) {
 	return sources, nil
 }
 
-
-func (c *Client) InsertNews(title, language, topic, cefrLevel, preview_text string) error {
+func (c *Client) InsertNews(title, language, topic, cefrLevel, preview_text string) (int, error) {
 	query := `
         INSERT INTO news (title, language, topic, cefr_level, preview_text, created_at, date_created)
         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
@@ -77,12 +76,30 @@ func (c *Client) InsertNews(title, language, topic, cefrLevel, preview_text stri
             title = EXCLUDED.title,
             preview_text = EXCLUDED.preview_text,
             created_at = NOW()
+        RETURNING id
     `
 
-    _, err := c.db.Exec(query, title, language, topic, cefrLevel, preview_text)
-    if err != nil {
-        return fmt.Errorf("failed to insert news: %v", err)
-    }
-    
-    return nil
+	var id int
+	err := c.db.QueryRow(query, title, language, topic, cefrLevel, preview_text).Scan(&id)
+	if err != nil {
+		return 0, fmt.Errorf("failed to insert news: %v", err)
+	}
+
+	return id, nil
+}
+
+func (c *Client) InsertAudiobook(news_id int, tier string) error {
+	query := `
+		INSERT INTO audiobooks (news_id, tier)
+		VALUES ($1, $2)
+		ON CONFLICT ON CONSTRAINT unique_audiobook_entry
+		DO UPDATE SET
+			tier = EXCLUDED.tier
+	`
+	_, err := c.db.Exec(query, news_id, tier)
+	if err != nil {
+		return fmt.Errorf("failed to insert audiobook: %v", err)
+	}
+
+	return nil
 }

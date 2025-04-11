@@ -2055,7 +2055,10 @@ export interface components {
             status: string;
         };
         "models.AudiobookResponse": {
-            audiobook?: components["schemas"]["storage.Audiobook"];
+            /** @example 300 */
+            expires_in: number;
+            /** @example https://bucket.s3.amazonaws.com/path/to/file?signed-params */
+            url: string;
         };
         "models.BillingAccountResponse": {
             /** @example false */
@@ -2468,17 +2471,6 @@ export interface components {
         "models.WebhookResponse": {
             received?: boolean;
             type?: string;
-        };
-        "storage.AlignmentInfo": {
-            character_end_times_seconds?: number[];
-            character_start_times_seconds?: number[];
-            characters?: string[];
-        };
-        "storage.Audiobook": {
-            alignment?: components["schemas"]["storage.AlignmentInfo"];
-            audio_base64?: string;
-            normalized_alignment?: components["schemas"]["storage.AlignmentInfo"];
-            text?: string;
         };
         "storage.Dictionary": {
             translations?: {

@@ -404,6 +404,8 @@ function Read() {
                         {useAudiobookMode && <AudiobookReader 
                             id={id}
                             contentType={type}
+                            sourceLanguage={sourceLanguage}
+                            handleWordClick={handleWordClick}
                         />}
                     </ReaderPanel>
                     <SidePanel 

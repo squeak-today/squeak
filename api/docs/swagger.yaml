@@ -34,8 +34,15 @@ definitions:
     type: object
   models.AudiobookResponse:
     properties:
-      audiobook:
-        $ref: '#/definitions/storage.Audiobook'
+      expires_in:
+        example: 300
+        type: integer
+      url:
+        example: https://bucket.s3.amazonaws.com/path/to/file?signed-params
+        type: string
+    required:
+    - expires_in
+    - url
     type: object
   models.BillingAccountResponse:
     properties:
@@ -860,32 +867,6 @@ definitions:
       received:
         type: boolean
       type:
-        type: string
-    type: object
-  storage.AlignmentInfo:
-    properties:
-      character_end_times_seconds:
-        items:
-          type: number
-        type: array
-      character_start_times_seconds:
-        items:
-          type: number
-        type: array
-      characters:
-        items:
-          type: string
-        type: array
-    type: object
-  storage.Audiobook:
-    properties:
-      alignment:
-        $ref: '#/definitions/storage.AlignmentInfo'
-      audio_base64:
-        type: string
-      normalized_alignment:
-        $ref: '#/definitions/storage.AlignmentInfo'
-      text:
         type: string
     type: object
   storage.Dictionary:
