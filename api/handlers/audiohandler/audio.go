@@ -27,28 +27,28 @@ func New(dbClient *supabase.Client, audioClient *audio.Client) *AudioHandler {
 	}
 }
 
-// @Summary		Check audio service health
-// @Description	Check if the audio service is live
-// @Tags			audio
-// @Accept			json
-// @Produce		json
-// @Success		200	{object}	models.AudioHealthResponse
-// @Router			/audio [get]
+//	@Summary		Check audio service health
+//	@Description	Check if the audio service is live
+//	@Tags			audio
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.AudioHealthResponse
+//	@Router			/audio [get]
 func (h *AudioHandler) CheckHealth(c *gin.Context) {
 	c.JSON(http.StatusOK, models.AudioHealthResponse{
 		Status: "live",
 	})
 }
 
-// @Summary		Translate text
-// @Description	Translate text from source language to target language
-// @Tags			audio
-// @Accept			json
-// @Produce		json
-// @Param			request	body		models.TranslateRequest	true	"Translation request"
-// @Success		200		{object}	models.TranslateResponse
-// @Failure		400		{object}	models.ErrorResponse
-// @Router			/audio/translate [post]
+//	@Summary		Translate text
+//	@Description	Translate text from source language to target language
+//	@Tags			audio
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.TranslateRequest	true	"Translation request"
+//	@Success		200		{object}	models.TranslateResponse
+//	@Failure		400		{object}	models.ErrorResponse
+//	@Router			/audio/translate [post]
 func (h *AudioHandler) Translate(c *gin.Context) {
 	var infoBody models.TranslateRequest
 	if err := c.ShouldBindJSON(&infoBody); err != nil {
@@ -70,16 +70,16 @@ func (h *AudioHandler) Translate(c *gin.Context) {
 	})
 }
 
-// @Summary		Text to speech
-// @Description	Convert text to speech audio
-// @Tags			audio
-// @Accept			json
-// @Produce		json
-// @Param			request	body		models.TextToSpeechRequest	true	"Text to speech request"
-// @Success		200		{object}	models.TextToSpeechResponse
-// @Failure		400		{object}	models.ErrorResponse
-// @Failure		500		{object}	models.ErrorResponse
-// @Router			/audio/tts [post]
+//	@Summary		Text to speech
+//	@Description	Convert text to speech audio
+//	@Tags			audio
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.TextToSpeechRequest	true	"Text to speech request"
+//	@Success		200		{object}	models.TextToSpeechResponse
+//	@Failure		400		{object}	models.ErrorResponse
+//	@Failure		500		{object}	models.ErrorResponse
+//	@Router			/audio/tts [post]
 func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	var infoBody models.TextToSpeechRequest
@@ -111,15 +111,15 @@ func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 	})
 }
 
-// @Summary		Speech to text
-// @Description	Convert speech audio to text
-// @Tags			audio
-// @Accept			json
-// @Produce		json
-// @Param			request	body		models.SpeechToTextRequest	true	"Speech to text request"
-// @Success		200		{object}	models.SpeechToTextResponse
-// @Failure		400		{object}	models.ErrorResponse
-// @Router			/audio/stt [post]
+//	@Summary		Speech to text
+//	@Description	Convert speech audio to text
+//	@Tags			audio
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.SpeechToTextRequest	true	"Speech to text request"
+//	@Success		200		{object}	models.SpeechToTextResponse
+//	@Failure		400		{object}	models.ErrorResponse
+//	@Router			/audio/stt [post]
 func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	var infoBody models.SpeechToTextRequest
@@ -159,15 +159,15 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	})
 }
 
-// @Summary		Get audiobook
-// @Description	Get audiobook for a news_id
-// @Tags			audio
-// @Accept			json
-// @Produce		json
-// @Param			news_id	query		string	true	"News ID"
-// @Success		200		{object}	models.AudiobookResponse
-// @Failure		404		{object}	models.ErrorResponse
-// @Router			/audio/audiobook [get]
+//	@Summary		Get audiobook
+//	@Description	Get audiobook for a news_id
+//	@Tags			audio
+//	@Accept			json
+//	@Produce		json
+//	@Param			news_id	query		string	true	"News ID"
+//	@Success		200		{object}	models.AudiobookResponse
+//	@Failure		404		{object}	models.ErrorResponse
+//	@Router			/audio/audiobook [get]
 func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	newsIDStr := c.Query("news_id")
