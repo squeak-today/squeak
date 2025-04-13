@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { BrowserBox, LearnPageLayout, StoryBrowserContainer, GreetingHeader, TabsContainer, Tab } from '../styles/LearnPageStyles';
 import ContentBrowser from '../components/ContentBrowser';
 import WelcomeModal from '../components/WelcomeModal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
 import NavPage from '../components/NavPage';
@@ -26,11 +26,15 @@ const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject,
 
 function Learn() {
 	const [showWelcome, setShowWelcome] = useState(false);
-	const [activeTab, setActiveTab] = useState('today');
+	const [searchParams, setSearchParams] = useSearchParams();
+	const validTabs = ['today', 'search'];
+	const defaultTab = 'today';
+	
+	const initialTab = searchParams.get('tab');
+	const [activeTab, setActiveTab] = useState(validTabs.includes(initialTab) ? initialTab : defaultTab);
+	
 	const { showNotification } = useNotification();
-
 	const apiBase = import.meta.env.VITE_API_BASE;
-
 	const navigate = useNavigate();
 
 	const [profile, setProfile] = useState(null);
@@ -130,6 +134,11 @@ function Learn() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const handleTabChange = (tab) => {
+		setActiveTab(tab);
+		setSearchParams({ tab }, { replace: true });
+	};
+
 	return (
 		<NavPage isLoading={isInitializing}>
 			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
@@ -144,12 +153,12 @@ function Learn() {
 						
 						<TabsContainer>
 							<Tab isActive={activeTab === 'today'} 
-								onClick={() => setActiveTab('today')}
+								onClick={() => handleTabChange('today')}
 							>
 								Today
 							</Tab>
 							<Tab isActive={activeTab === 'search'} 
-								onClick={() => setActiveTab('search')}
+								onClick={() => handleTabChange('search')}
 							>
 								Search
 							</Tab>
