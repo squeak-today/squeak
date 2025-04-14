@@ -56,6 +56,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious 
+                                size="default"
                                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                 className={`px-4 py-2 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors ${
                                     currentPage === 1 ? 'opacity-50 pointer-events-none' : ''
@@ -66,6 +67,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
                         {Array.from({ length: totalPages }).map((_, i) => (
                             <PaginationItem key={i}>
                                 <PaginationLink
+                                    size="default"
                                     onClick={() => setCurrentPage(i + 1)}
                                     isActive={currentPage === i + 1}
                                     className={currentPage === i + 1 
@@ -80,6 +82,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({
                         
                         <PaginationItem>
                             <PaginationNext 
+                                size="default"
                                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                 className={`px-4 py-2 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors ${
                                     currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''

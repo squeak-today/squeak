@@ -151,7 +151,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
                     onClick={() => setIsCreateDialogOpen(true)}
                     className="px-6 py-3 bg-[#E6F4EA] hover:bg-[#d7eadd] text-[#1B873B] rounded-md transition-colors"
                 >
-                    <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-5 h-5 mr-2" size={20} />
                     Create New Deck
                 </Button>
             </div>
@@ -311,6 +311,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious 
+                                size="default"
                                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                                 className={`px-4 py-2 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors ${
                                     currentPage === 1 ? 'opacity-50 pointer-events-none' : ''
@@ -321,6 +322,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
                         {Array.from({ length: totalPages }).map((_, i) => (
                             <PaginationItem key={i}>
                                 <PaginationLink
+                                    size="default"
                                     onClick={() => setCurrentPage(i + 1)}
                                     isActive={currentPage === i + 1}
                                     className={currentPage === i + 1 
@@ -335,6 +337,7 @@ const DeckBrowser: React.FC<DeckBrowserProps> = ({ userID }) => {
                         
                         <PaginationItem>
                             <PaginationNext 
+                                size="default"
                                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                                 className={`px-4 py-2 bg-[#fad48f] hover:bg-[#f8c976] text-black rounded-md transition-colors ${
                                     currentPage === totalPages ? 'opacity-50 pointer-events-none' : ''
