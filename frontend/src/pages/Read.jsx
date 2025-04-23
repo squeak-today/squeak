@@ -386,7 +386,7 @@ function Read() {
     return (
         <BasicPage showLogout onLogout={handleLogout}>
             <div style={{ width: '95%', alignSelf: 'center' }}>
-                <BackButton onClick={() => navigate(state?.backTo || '/learn')}>
+                <BackButton onClick={() => navigate(state?.backTo || '/learn?tab=search')}>
                     ← Back to Browse
                 </BackButton>
                 <ReadPageLayout>
