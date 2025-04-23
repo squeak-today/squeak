@@ -52,12 +52,39 @@ interface ContentBrowserProps {
 
 type ContentType = 'News' | 'Story';
 
+const STORAGE_KEY = 'squeak_content_preferences';
+
+interface StoredPreferences {
+  filterLanguage: string;
+  filterLevel: string;
+  filterTopic: string;
+  contentType: ContentType;
+  currentPage: number;
+}
+
 const ContentBrowser: React.FC<ContentBrowserProps> = ({ defaultLanguage }) => {
-	const [filterLanguage, setFilterLanguage] = useState<string>(defaultLanguage);
-	const [filterLevel, setFilterLevel] = useState<string>('any');
-	const [filterTopic, setFilterTopic] = useState<string>('any');
-	const [contentType, setContentType] = useState<ContentType>('News');
-	const [currentPage, setCurrentPage] = useState<number>(1);
+	const loadStoredPreferences = (): StoredPreferences => {
+		const stored = localStorage.getItem(STORAGE_KEY);
+		if (stored) {
+			console.log("stored", stored);
+			return JSON.parse(stored);
+		}
+		return {
+			filterLanguage: defaultLanguage,
+			filterLevel: 'any',
+			filterTopic: 'any',
+			contentType: 'News' as ContentType,
+			currentPage: 1
+		};
+	};
+
+	const storedPrefs = loadStoredPreferences();
+
+	const [filterLanguage, setFilterLanguage] = useState<string>(storedPrefs.filterLanguage);
+	const [filterLevel, setFilterLevel] = useState<string>(storedPrefs.filterLevel);
+	const [filterTopic, setFilterTopic] = useState<string>(storedPrefs.filterTopic);
+	const [contentType, setContentType] = useState<ContentType>(storedPrefs.contentType);
+	const [currentPage, setCurrentPage] = useState<number>(storedPrefs.currentPage);
 	const [contentItems, setContentItems] = useState<ContentItem[]>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const storiesPerPage = 6;
@@ -65,6 +92,17 @@ const ContentBrowser: React.FC<ContentBrowserProps> = ({ defaultLanguage }) => {
 	const { queryNews } = useNewsAPI();
 	const { queryStories } = useStoryAPI();
 	const { showNotification } = useNotification();
+
+	useEffect(() => {
+		const prefsToStore: StoredPreferences = {
+			filterLanguage,
+			filterLevel,
+			filterTopic,
+			contentType,
+			currentPage
+		};
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(prefsToStore));
+	}, [filterLanguage, filterLevel, filterTopic, contentType, currentPage]);
 
 	useEffect(() => {
 		setFilterLanguage(defaultLanguage);
