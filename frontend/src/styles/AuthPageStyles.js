@@ -1,158 +1,168 @@
-import styled from 'styled-components';
+// AuthStyles.js
 
+import styled from 'styled-components';
+import { FcGoogle } from 'react-icons/fc';
+import { FaApple } from 'react-icons/fa';
+
+// Wrapper for the entire auth box
 export const AuthBox = styled.div`
-	width: 100%;
-	flex: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	padding: 20px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	margin: 0px auto 0 auto;
-	box-sizing: border-box;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
 `;
 
-export const ToggleButton = styled.button`
-  flex: 1;
-  position: relative;
-  z-index: 1; /* ensures text is above the white slider */
-  background: transparent; /* so we can see the slider behind it */
-  border: none;
-  cursor: pointer;
-  font-size: 1em;
+
+export const AuthText = styled.p`
+  text-align: center;
   font-family: 'Lora', serif;
-  color: ${({ active }) => (active ? '#000000' : '#8f8f8f')};
-  transition: color 0.3s ease;
+  margin: 0.5rem 0;
+`;
+
+// A centered container with a white background and slight shadow
+export const AuthContainer = styled.div`
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  padding: 2rem;
+  box-sizing: border-box;
+`;
+
+// A large heading for "Welcome back!"
+export const AuthTitle = styled.h2`
+  font-family: 'Lora', serif;
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+`;
+
+// The two big social-login buttons (Apple, Google)
+export const SocialButton = styled.button`
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
 
   &:hover {
-    color: ${({ active }) => (active ? '#000000' : '#666666')};
+    background-color: #f8f8f8;
+  }
+
+  svg {
+    margin-right: 8px;
+    font-size: 1.2rem;
+  }
+`;
+
+// A horizontal separator with text in the middle
+export const Separator = styled.div`
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ccc;
+  }
+  &::before {
+    margin-right: 0.75rem;
+  }
+  &::after {
+    margin-left: 0.75rem;
+  }
+`;
+
+export const SeparatorText = styled.span`
+  color: #999;
+  font-size: 0.9rem;
+`;
+
+// The email/password form
+export const AuthForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch; /* ensures inputs fill the container’s width */
+  width: 100%;
+  /* text-align: center; if you want text content centered */
+`;
+
+// Inputs
+export const AuthInput = styled.input`
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  background-color: #fff;
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #aaa;
   }
 `;
 
 
-export const ToggleContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 60%;
-  height: 36px;
-  margin: 0 auto 20px auto;
-  background: #f5f5f5;
-  border-radius: 10px;
-  border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-`;
-
-export const Slider = styled.div`
-  position: absolute;
-  top: 0;
-  left: ${({ isLogin }) => (isLogin ? '50%' : '0%')};
-  width: 50%;
-  height: 100%;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease;
-`;
-
-export const AuthTitle = styled.h2`
-  font-family: 'Lora', serif;
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  font-weight: 400;
-  text-align: center;
-`;
-
-
-export const AuthContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 90%;
-	max-width: 24rem;
-	padding: 2rem;
-	background: white;
-	border-radius: 10px;
-	border: 1px solid #e0e0e0;
-`;
-
-export const AuthForm = styled.form`
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	align-items: center;
-`;
-
-export const AuthInput = styled.input`
-	width: 100%;
-	padding: 0.5em;
-	border: 1px solid #e0e0e0;
-	border-radius: 5px;
-	font-family: 'Lora', serif;
-	font-size: 16px;
-	background: white;
-	transition: border-color 0.2s ease, box-shadow 0.2s ease;
-	box-sizing: border-box;
-
-	&:focus {
-		outline: none;
-		border-color: #666;
-		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
-	}
-
-	&::placeholder {
-		color: #999;
-	}
-`;
-
+// The main submit button
 export const AuthButton = styled.button`
-	width: 100%;
-	padding: 0.5em 1em;
-	border: 1px solid #e0e0e0;
-	border-radius: 10px;
-	background:rgb(255, 255, 255);
-	cursor: pointer;
-	color: black;
-	font-family: 'Lora', serif;
-	font-size: 16px;
-	transition: all 0.2s ease;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-family: 'Lora', serif;
+  font-size: 1rem;
+  transition: background 0.2s ease;
+  margin-top: 0.5rem;
 
-	&:hover {
-		background:rgb(228, 228, 228);
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-	}
+  &:hover {
+    background-color: #f8f8f8;
+  }
 
-	&:disabled {
-		background: #fad48f;
-		cursor: not-allowed;
-		opacity: 0.7;
-	}
+  &:disabled {
+    background: #eee;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
 `;
 
-export const AuthToggle = styled.button`
-	background: none;
-	border: none;
-	color: #333;
-	text-decoration: underline;
-	cursor: pointer;
-	font-family: 'Lora', serif;
-	margin-top: 1rem;
-	padding: 0.5em 1em;
-	font-size: 16px;
-	transition: color 0.2s ease;
+// A smaller link-style button for “Forgot password?” or “Sign up”
+export const AuthLink = styled.button`
+  background: none;
+  border: none;
+  color: #666;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: 'Lora', serif;
+  font-size: 0.9rem;
+  padding: 0;
 
-	&:hover {
-		color: #666;
-	}
+  &:hover {
+    color: #333;
+  }
 `;
 
-export const AuthText = styled.p`
-	text-align: center;
-	font-family: 'Lora', serif;
-	margin: 0.5rem 0;
-`;
+// You can use these icons in your SocialButton:
+export const GoogleIcon = styled(FcGoogle)``;
+export const AppleIcon = styled(FaApple)``;
