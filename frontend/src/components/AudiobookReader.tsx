@@ -36,6 +36,7 @@ interface Audiobook {
     character_start_times_seconds: number[];
     character_end_times_seconds: number[];
   };
+  pages: number;
 }
 
 const Word: React.FC<{ 
@@ -81,70 +82,77 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
     const audioRef = useRef<HTMLAudioElement>(null);
     const { getAudiobook } = useAudioAPI();
     const { showNotification } = useNotification();
+
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<number>(0); 
     
-    useEffect(() => {
-      const fetchAudiobook = async () => {
-        try {
-          let args = {
-            news_id: "0",
-            story_id: "0",
-            page: "0",
-            type: "news",
-          }
-          if (contentType == "News") {
-            args.news_id = id;
-          } else if (contentType == "Story") {
-            args.story_id = id;
-            args.type = "story";
-          }
-          const { data, error } = await getAudiobook(args);
-          if (error) {
-            if (error.code === 'USAGE_RESTRICTED') {
-              setUsageError('Your plan does not provide access to this audiobook!');
-              showNotification('Your plan does not provide access to this audiobook!', 'error');
-            } else if (error.code === 'USAGE_LIMIT_REACHED') {
-              setUsageError('You have reached your limit of audiobooks for this month!');
-              showNotification('You have reached your limit of audiobooks for this month!', 'error');
-            } else if (error.error === 'No audiobook available for this news_id') {
-              setUsageError('No audiobook available for this article!');
-            } else if (error.error === 'No audiobook available for this story_id') {
-              setUsageError('No audiobook available for this story!')
-            } else {
-              setUsageError('An error occurred while fetching the audiobook!');
-              showNotification('An error occurred while fetching the audiobook!', 'error');
-            }
-            console.error('Error fetching audiobook:', error);
-          } else if (data?.url) {
-            const response = await fetch(data.url);
-            if (!response.ok) {
-              throw new Error('Failed to fetch audiobook content');
-            }
-            const audiobookData: Audiobook = await response.json();
-            
-            setText(audiobookData.text || '');
-            setAudioData(audiobookData.audio_base64 || '');
-            
-            if (audiobookData.alignment) {
-              const { characters, character_start_times_seconds, character_end_times_seconds } = audiobookData.alignment;
-              const wordTimings = extractWordTimings(
-                audiobookData.text,
-                characters || [],
-                character_start_times_seconds || [],
-                character_end_times_seconds || []
-              );
-              setWords(wordTimings);
-              setSentences(extractSentences(wordTimings));
-            }
-          }
-        } catch (err) {
-          console.error('Error processing audiobook:', err);
-          setUsageError('An error occurred while processing the audiobook!');
-          showNotification('An error occurred while processing the audiobook!', 'error');
-        } finally {
-          setIsLoading(false);
+    const fetchAudiobook = async(page: number) => {
+      setIsPlaying(false);
+      try {
+        setIsLoading(true);
+        let args = {
+          news_id: "0",
+          story_id: "0",
+          page: page.toString(),
+          type: "news",
         }
+        if (contentType == "News") {
+          args.news_id = id;
+        } else if (contentType == "Story") {
+          args.story_id = id;
+          args.type = "story";
+        }
+        const { data, error } = await getAudiobook(args);
+        if (error) {
+          if (error.code === 'USAGE_RESTRICTED') {
+            setUsageError('Your plan does not provide access to this audiobook!');
+            showNotification('Your plan does not provide access to this audiobook!', 'error');
+          } else if (error.code === 'USAGE_LIMIT_REACHED') {
+            setUsageError('You have reached your limit of audiobooks for this month!');
+            showNotification('You have reached your limit of audiobooks for this month!', 'error');
+          } else if (error.error === 'No audiobook available for this news_id') {
+            setUsageError('No audiobook available for this article!');
+          } else if (error.error === 'No audiobook available for this story_id') {
+            setUsageError('No audiobook available for this story!')
+          } else {
+            setUsageError('An error occurred while fetching the audiobook!');
+            showNotification('An error occurred while fetching the audiobook!', 'error');
+          }
+          console.error('Error fetching audiobook:', error);
+        } else if (data?.url) {
+          const response = await fetch(data.url);
+          if (!response.ok) {
+            throw new Error('Failed to fetch audiobook content');
+          }
+          const audiobookData: Audiobook = await response.json();
+          if (audiobookData.pages) {
+            setTotalPages(audiobookData.pages)
+          }
+          setText(audiobookData.text || '');
+          setAudioData(audiobookData.audio_base64 || '');
+          
+          if (audiobookData.alignment) {
+            const { characters, character_start_times_seconds, character_end_times_seconds } = audiobookData.alignment;
+            const wordTimings = extractWordTimings(
+              audiobookData.text,
+              characters || [],
+              character_start_times_seconds || [],
+              character_end_times_seconds || []
+            );
+            setWords(wordTimings);
+            setSentences(extractSentences(wordTimings));
+          }
+        }
+      } catch (err) {
+        console.error('Error processing audiobook:', err);
+        setUsageError('An error occurred while processing the audiobook!');
+        showNotification('An error occurred while processing the audiobook!', 'error');
+      } finally {
+        setIsLoading(false);
       }
-      fetchAudiobook();
+    }
+    useEffect(() => {
+      fetchAudiobook(0);
     }, [id])
 
     const extractWordTimings = (
@@ -379,21 +387,58 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
 
     return (
       <div className="flex flex-col h-full relative">
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : usageError ? (
+        {usageError ? (
           <div className="flex flex-col items-center justify-center h-full p-6">
             <p className="text-lg font-bold mb-2">Access Restricted</p>
             <p>{usageError}</p>
           </div>
         ) : (
           <>
-            <p className="mt-0 mb-2 text-lg font-bold mx-auto ">Transcript</p>
-            <div className="flex-grow overflow-y-auto px-0 py-6 font-primary bg-background rounded-[16px]">
-              <div className="max-w-2xl mx-auto px-4">
-                {renderWords()}
-              </div>
+            <p className="mt-0 mb-2 text-lg font-bold mx-auto">Transcript</p>
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <button
+                onClick={() => {
+                  const newPage = currentPage - 1;
+                  setCurrentPage(newPage);
+                  fetchAudiobook(newPage);
+                }}
+                disabled={currentPage === 0}
+                className={`border-none px-4 py-2 rounded-lg font-secondary text-sm
+                  ${currentPage === 0 
+                    ? 'bg-[var(--color-border)] cursor-not-allowed opacity-50' 
+                    : 'bg-[var(--color-item-background)] hover:opacity-90 transition-opacity'
+                  }`}
+              >
+                Prev
+              </button>
+              <p className="font-secondary text-base">
+                Page: {currentPage + 1}/{totalPages}
+              </p>
+              <button
+                onClick={() => {
+                  const newPage = currentPage + 1;
+                  setCurrentPage(newPage);
+                  fetchAudiobook(newPage);
+                }}
+                disabled={currentPage >= totalPages - 1}
+                className={`border-none px-4 py-2 rounded-lg font-secondary text-sm
+                  ${currentPage >= totalPages - 1 
+                    ? 'bg-[var(--color-border)] cursor-not-allowed opacity-50' 
+                    : 'bg-[var(--color-item-background)] hover:opacity-90 transition-opacity'
+                  }`}
+              >
+                Next
+              </button>
             </div>
+            {isLoading ? (
+              <LoadingSpinner/>
+            ) : (
+              <div className="flex-grow overflow-y-auto px-0 py-6 font-primary bg-background rounded-[16px]">
+                <div className="max-w-2xl mx-auto px-4">
+                  {renderWords()}
+                </div>
+              </div>
+            )}
             
             <div className="sticky bottom-0 left-0 right-0 bg-white shadow-[var(--shadow-base)] p-4 rounded-xl">
               <audio 

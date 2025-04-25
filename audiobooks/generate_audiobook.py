@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 import requests
 import argparse
 from pathlib import Path
@@ -59,7 +60,7 @@ def generate_audiobook_files(folder_path: str, language: str):
             resp["pages"] = total_pages
 
             with open(f"{folder_path}/page{i}.json", 'w') as nf:
-                nf.write(str(resp))
+                json.dump(resp, nf, ensure_ascii=False, indent=2)
             print(f"Created audiobook JSON for page {i}")
 
 def main():

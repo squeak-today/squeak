@@ -67,7 +67,7 @@ def upload_story_sql(conn, folder_name, title, language, cefr, topic, preview):
             INSERT INTO stories (id, title, language, topic, cefr_level, preview_text)
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
-            (int(folder_name), title, language, topic, cefr, preview)
+            (int(folder_name), title, language.title(), topic, cefr, preview)
         )
     conn.commit()
 
