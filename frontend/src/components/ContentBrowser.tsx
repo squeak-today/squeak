@@ -33,6 +33,7 @@ interface StoryItem {
   topic: string;
   cefr_level: string;
   date_created: string;
+  audiobook_tier: string;
 }
 
 interface ContentItem {
@@ -178,7 +179,7 @@ const ContentBrowser: React.FC<ContentBrowserProps> = ({ defaultLanguage }) => {
 						tags: [story.language, story.topic],
 						difficulty: story.cefr_level,
 						date_created: story.date_created,
-						audiobook_tier: "NONE"
+						audiobook_tier: story.audiobook_tier
 					});
 				}
 			}

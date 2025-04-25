@@ -365,6 +365,10 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 			result["content_type"] = contentTypeStr.String
 		}
 
+		if audiobookTier.Valid {
+			result["audiobook_tier"] = audiobookTier.String
+		}
+
 		results = append(results, result)
 	}
 
