@@ -25,6 +25,7 @@ type StoryItem struct {
 	PreviewText string `json:"preview_text" binding:"required" example:"Un résumé des nouvelles musicales..."`
 	Title string `json:"title" binding:"required" example:"L'actualité musicale en bref"`
 	Topic string `json:"topic" binding:"required" example:"Music"`
+	AudiobookTier string `json:"audiobook_tier" binding:"required" example:"NONE"`
 }
 
 type GetStoryQueryResponse []StoryItem

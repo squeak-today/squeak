@@ -11,6 +11,7 @@ import {
   AcceptButton,
   RejectButton
 } from '../styles/components/ContentBlockStyles';
+import checkIcon from '../assets/icons/check.png';
 
 interface Story {
   id: string;
@@ -21,6 +22,7 @@ interface Story {
   cefr_level: string;
   date_created: string;
   content_type: string;
+  audiobook_tier: string;
   [key: string]: any;
 }
 
@@ -67,6 +69,20 @@ const TeacherContentBlock: React.FC<TeacherContentBlockProps> = ({
     }
   };
 
+  function getTag(tier: string) {
+    if (tier === 'NONE') {
+      return (<></>)
+    }
+    tier = tier.toLowerCase();
+    const text = String(tier).charAt(0).toUpperCase() + String(tier).slice(1);
+    return (
+      <span className="bg-purple-200 px-4 py-1.5 sm:rounded-full rounded-[12px] text-sm text-gray-800 flex items-center">
+        {text}{" Audiobook Available"}
+        <img src={checkIcon} alt="checkmark" className="ml-1 h-4 w-4 opacity-50" />
+      </span>
+    )
+  }
+
   const handleClick = () => {
     const baseUrl = window.location.hostname === 'localhost' 
       ? 'http://localhost:3000'
@@ -82,6 +98,7 @@ const TeacherContentBlock: React.FC<TeacherContentBlockProps> = ({
           <Tag cefr={story.cefr_level}>{story.cefr_level}</Tag>
           <Tag>{story.language}</Tag>
           <Tag>{story.topic}</Tag>
+          {story.audiobook_tier && getTag(story.audiobook_tier)}
         </TagContainer>
         <DateText>{formatDate(story.date_created)}</DateText>
       </TopSection>

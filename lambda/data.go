@@ -4,31 +4,46 @@ package main
 // squeak-library
 
 import (
-	"encoding/json"
 	"context"
+	"encoding/json"
 	"log"
+	"story-gen-lambda/elevenlabs"
 	"strings"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
-    "github.com/aws/aws-sdk-go-v2/config"
-    "github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type StoryData struct {
-	Story string `json:"story"`
+	Story        string          `json:"story"`
 	Translations StoryDictionary `json:"dictionary"`
 }
 
 type NewsData struct {
-	Article string `json:"article"`
+	Article      string          `json:"article"`
 	Translations StoryDictionary `json:"dictionary"`
-	Sources []Result `json:"sources"`
+	Sources      []Result        `json:"sources"`
+}
+
+type AlignmentInfo struct {
+	Characters []string  `json:"characters"`
+	StartTimes []float64 `json:"character_start_times_seconds"`
+	EndTimes   []float64 `json:"character_end_times_seconds"`
+}
+
+type Audiobook struct {
+	Text                string        `json:"text"`
+	Audio               string        `json:"audio_base64"`
+	Alignment           AlignmentInfo `json:"alignment"`
+	NormalizedAlignment AlignmentInfo `json:"normalized_alignment"`
 }
 
 func buildNewsBody(article string, dictionary StoryDictionary, sources []Result) ([]byte, error) {
 	newsData := NewsData{
-		Article: article,
+		Article:      article,
 		Translations: dictionary,
-		Sources: sources,
+		Sources:      sources,
 	}
 	log.Println("Length of Translations.Words: ", len(dictionary.Translations.Words))
 	log.Println("Length of Translations.Sentences: ", len(dictionary.Translations.Sentences))
@@ -65,4 +80,29 @@ func uploadStoryS3(bucket string, key string, content []byte) error {
     }
 	log.Printf("Story uploaded to S3 bucket '%s' with key '%s'", bucket, key)
 	return nil
+}
+
+func buildAudiobookBody(text string, response *elevenlabs.ElevenLabsResponse) ([]byte, error) {
+	audiobook := Audiobook{
+		Text:  text,
+		Audio: response.AudioBase64,
+		Alignment: AlignmentInfo{
+			Characters: response.Alignment.Characters,
+			StartTimes: response.Alignment.CharacterStartTimesSeconds,
+			EndTimes:   response.Alignment.CharacterEndTimesSeconds,
+		},
+		NormalizedAlignment: AlignmentInfo{
+			Characters: response.NormalizedAlignment.Characters,
+			StartTimes: response.NormalizedAlignment.CharacterStartTimesSeconds,
+			EndTimes:   response.NormalizedAlignment.CharacterEndTimesSeconds,
+		},
+	}
+
+	jsonContent, err := json.Marshal(audiobook)
+	if err != nil {
+		log.Printf("failed to marshal audiobook data: %v", err)
+		return nil, err
+	}
+
+	return jsonContent, nil
 }

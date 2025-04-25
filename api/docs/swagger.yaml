@@ -32,6 +32,18 @@ definitions:
     required:
     - status
     type: object
+  models.AudiobookResponse:
+    properties:
+      expires_in:
+        example: 300
+        type: integer
+      url:
+        example: https://bucket.s3.amazonaws.com/path/to/file?signed-params
+        type: string
+    required:
+    - expires_in
+    - url
+    type: object
   models.BillingAccountResponse:
     properties:
       canceled:
@@ -53,10 +65,16 @@ definitions:
       max_natural_tts_usage:
         example: 100
         type: integer
+      max_premium_audiobooks_usage:
+        example: 100
+        type: integer
       max_premium_stt_usage:
         example: 100
         type: integer
       natural_tts_usage:
+        example: 10
+        type: integer
+      premium_audiobooks_usage:
         example: 10
         type: integer
       premium_stt_usage:
@@ -64,8 +82,10 @@ definitions:
         type: integer
     required:
     - max_natural_tts_usage
+    - max_premium_audiobooks_usage
     - max_premium_stt_usage
     - natural_tts_usage
+    - premium_audiobooks_usage
     - premium_stt_usage
     type: object
   models.CancelIndividualSubscriptionRequest:
@@ -106,6 +126,9 @@ definitions:
     type: object
   models.ClassroomContentItem:
     properties:
+      audiobook_tier:
+        example: NONE
+        type: string
       cefr_level:
         example: B1
         type: string
@@ -143,6 +166,7 @@ definitions:
         example: Music
         type: string
     required:
+    - audiobook_tier
     - cefr_level
     - content_type
     - created_at
@@ -246,12 +270,14 @@ definitions:
     - NO_TRANSCRIPT
     - AUTH_REQUIRED
     - USAGE_LIMIT_REACHED
+    - USAGE_RESTRICTED
     type: string
     x-enum-varnames:
     - PROFILE_NOT_FOUND
     - NO_TRANSCRIPT
     - AUTH_REQUIRED
     - USAGE_LIMIT_REACHED
+    - USAGE_RESTRICTED
   models.ErrorResponse:
     properties:
       code:
@@ -262,6 +288,7 @@ definitions:
         - NO_TRANSCRIPT
         - AUTH_REQUIRED
         - USAGE_LIMIT_REACHED
+        - USAGE_RESTRICTED
         example: PROFILE_NOT_FOUND
       error:
         example: Something went wrong
@@ -526,6 +553,9 @@ definitions:
     type: object
   models.NewsItem:
     properties:
+      audiobook_tier:
+        example: NONE
+        type: string
       cefr_level:
         example: B1
         type: string
@@ -551,6 +581,7 @@ definitions:
         example: Music
         type: string
     required:
+    - audiobook_tier
     - cefr_level
     - created_at
     - date_created
@@ -639,6 +670,9 @@ definitions:
     type: object
   models.StoryItem:
     properties:
+      audiobook_tier:
+        example: NONE
+        type: string
       cefr_level:
         example: B1
         type: string
@@ -664,6 +698,7 @@ definitions:
         example: Music
         type: string
     required:
+    - audiobook_tier
     - cefr_level
     - created_at
     - date_created
@@ -891,6 +926,44 @@ paths:
           schema:
             $ref: '#/definitions/models.AudioHealthResponse'
       summary: Check audio service health
+      tags:
+      - audio
+  /audio/audiobook:
+    get:
+      consumes:
+      - application/json
+      description: Get audiobook for a news_id
+      parameters:
+      - description: News ID
+        in: query
+        name: news_id
+        type: string
+      - description: Story ID
+        in: query
+        name: story_id
+        type: string
+      - description: story
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: "1"
+        in: query
+        name: page
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AudiobookResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get audiobook
       tags:
       - audio
   /audio/stt:

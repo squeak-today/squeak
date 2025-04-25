@@ -4,6 +4,7 @@ import { useTeacherAPI } from '../hooks/useTeacherAPI';
 import { components } from '../lib/clients/types';
 import { theme } from '../styles/theme';
 import { useAuth } from './AuthContext';
+import { useNotification } from './NotificationContext';
 
 type ClassroomListItem = components['schemas']['models.ClassroomListItem'];
 
@@ -41,6 +42,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
   const [isSidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [classrooms, setClassrooms] = useState<ClassroomListItem[]>([]);
   const [selectedClassroom, setSelectedClassroom] = useState<string>('');
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const checkInitialScreenSize = () => {
@@ -55,7 +57,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     const classroomsData = await getClassroomList();
     setClassrooms(classroomsData.classrooms);
     
-    if (classroomsData.classrooms.length > 0) {
+    if (classroomsData.classrooms && classroomsData.classrooms.length > 0) {
       const currentSelectionExists = classroomsData.classrooms.some(
         (classroom: ClassroomListItem) => classroom.classroom_id === selectedClassroom
       );
@@ -63,6 +65,9 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
       if (!currentSelectionExists) {
         setSelectedClassroom(classroomsData.classrooms[0].classroom_id);
       }
+    }
+    if (!classroomsData.classrooms) {
+      showNotification('No classrooms found, try creating one in settings!', 'error');
     }
   }, [getClassroomList, selectedClassroom]);
 

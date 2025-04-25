@@ -32,11 +32,12 @@ module "generation" {
   gemini_api_key = var.gemini_api_key
   tavily_api_key = var.tavily_api_key
 
-  supabase_host     = var.supabase_host
-  supabase_port     = var.supabase_port
-  supabase_user     = var.supabase_user
-  supabase_password = var.supabase_password
-  supabase_database = var.supabase_database
+  supabase_host      = var.supabase_host
+  supabase_port      = var.supabase_port
+  supabase_user      = var.supabase_user
+  supabase_password  = var.supabase_password
+  supabase_database  = var.supabase_database
+  elevenlabs_api_key = var.elevenlabs_api_key
 
   content_generation_interval = var.content_generation_interval
 }

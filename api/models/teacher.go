@@ -35,6 +35,7 @@ type ClassroomContentItem struct {
 	PreviewText string  `json:"preview_text" binding:"required" example:"# L'actualité musicale en bref\n\n## Un flot de nouveautés..."`
 	Title       string  `json:"title" binding:"required" example:"# L'actualité musicale en bref\n\n## Un fl..."`
 	Topic       string  `json:"topic" binding:"required" example:"Music"`
+	AudiobookTier string `json:"audiobook_tier" binding:"required" example:"NONE"`
 }
 
 type QueryClassroomContentResponse []ClassroomContentItem
