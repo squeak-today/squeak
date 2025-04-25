@@ -11,6 +11,7 @@ import (
 	"story-api/supabase"
 	"strconv"
 	"strings"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -164,32 +165,26 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 //	@Tags			audio
 //	@Accept			json
 //	@Produce		json
-//	@Param			news_id	query		string	true	"News ID"
-//	@Success		200		{object}	models.AudiobookResponse
-//	@Failure		404		{object}	models.ErrorResponse
+//	@Param			news_id		query		string	false	"News ID"
+//	@Param			story_id	query		string	false	"Story ID"
+//	@Param			type		query		string	true	"story"
+//	@Param			page		query		string	true	"1"
+//	@Success		200			{object}	models.AudiobookResponse
+//	@Failure		404			{object}	models.ErrorResponse
 //	@Router			/audio/audiobook [get]
 func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
-	newsIDStr := c.Query("news_id")
-	if newsIDStr == "" {
+	pageStr := c.Query("page")
+	contentType := c.Query("type")
+	newsIDStr := c.Query("news_id")	
+	storyIDStr := c.Query("story_id")
+	if newsIDStr == "" && storyIDStr == "" {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error: "news_id is required",
+			Error: "Must specify a story_id or a news_id",
 		})
 		return
 	}
-
-	if newsIDStr == "" {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "ID parameter is required"})
-		return
-	}
-	newsID, err := strconv.Atoi(newsIDStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{
-			Error: "news_id must be a valid integer",
-		})
-		return
-	}
-
+	
 	_, classroomID, err := h.DBClient.CheckStudentStatus(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check student status"})
@@ -206,8 +201,16 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 			return
 		}
 	}
-
-	audiobookInfo, err := h.DBClient.GetAudiobook(newsID)
+	idStr := newsIDStr
+	if contentType == "story" { idStr = storyIDStr }
+	_, err = strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Given id must be a valid integer",
+		})
+		return
+	}
+	audiobookInfo, err := h.DBClient.GetAudiobook(contentType, idStr)
 	if err != nil {
 		log.Printf("Error getting audiobook: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
@@ -216,9 +219,24 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 		return
 	}
 
+	pageInt, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: fmt.Sprint("Given page must be a valid integer", contentType),
+		})
+		return
+	}
+
 	if audiobookInfo.Tier == "" {
 		c.JSON(http.StatusNotFound, models.ErrorResponse{
-			Error: "No audiobook available for this news_id",
+			Error: fmt.Sprintf("No audiobook available for this %s_id", contentType),
+		})
+		return
+	}
+
+	if pageInt >= audiobookInfo.Pages || pageInt < 0 {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: "Incorrect page index",
 		})
 		return
 	}
@@ -232,8 +250,10 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 			return
 		}
 	}
-
-	s3Key := storage.GetAudiobookKey(audiobookInfo.Language, audiobookInfo.CEFRLevel, audiobookInfo.Topic, audiobookInfo.Date.Format("2006-01-02"))
+	
+	keyContentType := "News"
+	if contentType == "story" { keyContentType = "Story" }
+	s3Key := storage.GetAudiobookKey(audiobookInfo.Language, audiobookInfo.CEFRLevel, audiobookInfo.Topic, audiobookInfo.Date.Format("2006-01-02"), pageInt, keyContentType)
 	presignedURL, err := storage.GetPresignedURL(s3Key, 5) // 5 minute exp
 	if err != nil {
 		log.Printf("Error generating pre-signed URL: %v", err)

@@ -216,6 +216,7 @@ func (h *StoryHandler) GetStoryQuery(c *gin.Context) {
 	}
 	results, err := h.DBClient.QueryStories(params)
 	if err != nil {
+		log.Printf("Query failed: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Query execution failed"})
 		return
 	}

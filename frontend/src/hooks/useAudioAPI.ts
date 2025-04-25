@@ -54,6 +54,9 @@ export function useAudioAPI() {
 
     const getAudiobook = useCallback(async (params: {
         news_id: string;
+        story_id: string;
+        type: string;
+        page: string;
     }) => {
         return requireAuthWithErrors(async () => {    
             const { data, error } = await client!.GET('/audio/audiobook', {

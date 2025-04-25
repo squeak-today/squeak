@@ -28,14 +28,15 @@ type Audiobook struct {
 	NormalizedAlignment AlignmentInfo `json:"normalized_alignment"`
 }
 
-func GetAudiobookKey(language string, cefr string, subject string, date string) string {
-	return fmt.Sprintf("%s/%s/%s/%s/audiobook_%s_%s_%s_%s.json",
+func GetAudiobookKey(language string, cefr string, subject string, date string, page int, contentType string) string {
+	return fmt.Sprintf("%s/%s/%s/%s/audiobook_%d_%s_%s_%s_%s.json",
 		strings.ToLower(language),
 		strings.ToUpper(cefr),
 		strings.Title(subject),
-		"News",
+		contentType,
+		page,
 		strings.ToUpper(cefr),
-		"News",
+		contentType,
 		strings.Title(subject),
 		date,
 	)
@@ -75,7 +76,7 @@ func PullAudiobook(language string, cefr string, subject string, date string) (A
 	}
 
 	client := s3.NewFromConfig(cfg)
-	key := GetAudiobookKey(language, cefr, subject, date)
+	key := GetAudiobookKey(language, cefr, subject, date, 0, "News")
 
 	resp, err := client.GetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: aws.String(os.Getenv("STORY_BUCKET_NAME")),

@@ -56,6 +56,25 @@ const docTemplate = `{
                         "type": "string",
                         "description": "News ID",
                         "name": "news_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Story ID",
+                        "name": "story_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "story",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1",
+                        "name": "page",
                         "in": "query",
                         "required": true
                     }
@@ -2472,6 +2491,7 @@ const docTemplate = `{
         "models.StoryItem": {
             "type": "object",
             "required": [
+                "audiobook_tier",
                 "cefr_level",
                 "created_at",
                 "date_created",
@@ -2482,6 +2502,10 @@ const docTemplate = `{
                 "topic"
             ],
             "properties": {
+                "audiobook_tier": {
+                    "type": "string",
+                    "example": "NONE"
+                },
                 "cefr_level": {
                     "type": "string",
                     "example": "B1"

@@ -26,6 +26,22 @@ paths:
         - description: News ID
           in: query
           name: news_id
+          schema:
+            type: string
+        - description: Story ID
+          in: query
+          name: story_id
+          schema:
+            type: string
+        - description: story
+          in: query
+          name: type
+          required: true
+          schema:
+            type: string
+        - description: '1'
+          in: query
+          name: page
           required: true
           schema:
             type: string
@@ -1719,6 +1735,9 @@ components:
       type: object
     models.StoryItem:
       properties:
+        audiobook_tier:
+          example: NONE
+          type: string
         cefr_level:
           example: B1
           type: string
@@ -1744,6 +1763,7 @@ components:
           example: Music
           type: string
       required:
+        - audiobook_tier
         - cefr_level
         - created_at
         - date_created

@@ -670,6 +670,9 @@ definitions:
     type: object
   models.StoryItem:
     properties:
+      audiobook_tier:
+        example: NONE
+        type: string
       cefr_level:
         example: B1
         type: string
@@ -695,6 +698,7 @@ definitions:
         example: Music
         type: string
     required:
+    - audiobook_tier
     - cefr_level
     - created_at
     - date_created
@@ -933,6 +937,19 @@ paths:
       - description: News ID
         in: query
         name: news_id
+        type: string
+      - description: Story ID
+        in: query
+        name: story_id
+        type: string
+      - description: story
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: "1"
+        in: query
+        name: page
         required: true
         type: string
       produces:

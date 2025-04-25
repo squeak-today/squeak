@@ -143,9 +143,9 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 					ELSE 'News'::text 
 				END as content_type,
 				CASE
-					WHEN '%[1]s' = 'stories' THEN 'NONE'::text
+					WHEN '%[1]s' = 'stories' COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.story_id = %[1].s.id), 'NONE')::text
 					ELSE COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.news_id = %[1]s.id), 'NONE')::text
-				END as audiobook_tier`, tableAlias)
+			END as audiobook_tier`, tableAlias)
 		}
 
 		if contentType == "News" {
@@ -153,7 +153,7 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 				COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.news_id = %[1]s.id), 'NONE')::text as audiobook_tier`, tableAlias)
 		}
 
-		return baseSelect + fmt.Sprintf(`, %[1]s.pages`, tableAlias)
+		return baseSelect + fmt.Sprintf(`, %[1]s.pages, COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.story_id = %[1]s.id), 'NONE')::text`, tableAlias)
 	}
 
 	if params.ClassroomID != "" {
@@ -331,7 +331,7 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 		if contentType == "All" {
 			scanArgs = append(scanArgs, &pages, &contentTypeStr, &audiobookTier)
 		} else if contentType == "Story" {
-			scanArgs = append(scanArgs, &pages)
+			scanArgs = append(scanArgs, &pages, &audiobookTier)
 		} else if contentType == "News" {
 			scanArgs = append(scanArgs, &audiobookTier)
 		}
@@ -363,14 +363,6 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 		// Add content_type for All content type
 		if contentType == "All" {
 			result["content_type"] = contentTypeStr.String
-		}
-
-		if contentType == "News" || contentType == "All" {
-			if audiobookTier.Valid {
-				result["audiobook_tier"] = audiobookTier.String
-			} else {
-				result["audiobook_tier"] = "NONE"
-			}
 		}
 
 		results = append(results, result)
