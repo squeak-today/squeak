@@ -18,7 +18,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"story-gen-lambda/elevenlabs"
+	// "story-gen-lambda/elevenlabs"
 	"story-gen-lambda/gemini"
 	"story-gen-lambda/stripmd"
 )
@@ -171,59 +171,61 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 			}
 
 			title, previewText := generateTitleAndPreview(newsText)
-			news_id, err := supabaseClient.InsertNews(title, language, subject, CEFRLevel, previewText)
+			_, err := supabaseClient.InsertNews(title, language, subject, CEFRLevel, previewText)
 			if err != nil {
 				log.Println(err)
 				return err
 			}
 
-			// create audiobook step
+			// disabled automatic generation of audiobooks for news articles
+			// this code works before the system was changed for pages so its not quite right
+			// if uncommenting then fix
 			if createAudiobook {
 				// strip markdown from text
-				plainText := stripmd.Strip(newsText)
-
-				var voiceId string
-				switch language {
-				case "French":
-					voiceId = elevenlabs.ELEVENLABS_FRENCH_VOICE_ID
-				case "Spanish":
-					voiceId = elevenlabs.ELEVENLABS_SPANISH_VOICE_ID
-				default:
-					log.Printf("Unsupported language for audiobook: %s", language)
-					continue
-				}
-
-				elevenLabsResponse, err := elevenlabs.ElevenLabsTTSWithTiming(
-					plainText,
-					voiceId,
-					os.Getenv("ELEVENLABS_API_KEY"),
-				)
-				if err != nil {
-					log.Printf("Failed to generate audiobook: %v", err)
-					continue
-				}
-
-				audiobookContent, err := buildAudiobookBody(plainText, elevenLabsResponse)
-				if err != nil {
-					log.Printf("Failed to build audiobook content: %v", err)
-					continue
-				}
-
-				audiobookPath := path + "audiobook_" + CEFRLevel + "_News_" + subject + "_" + current_time + ".json"
-				if err := uploadStoryS3(
-					os.Getenv("STORY_BUCKET_NAME"),
-					audiobookPath,
-					audiobookContent,
-				); err != nil {
-					log.Printf("Failed to upload audiobook: %v", err)
-					continue
-				}
-
-				err = supabaseClient.InsertAudiobook(news_id, "PREMIUM")
-				if err != nil {
-					log.Printf("Failed to insert audiobook: %v", err)
-					continue
-				}
+				// plainText := stripmd.Strip(newsText)
+				//
+				// var voiceId string
+				// switch language {
+				// case "French":
+				// 	voiceId = elevenlabs.ELEVENLABS_FRENCH_VOICE_ID
+				// case "Spanish":
+				// 	voiceId = elevenlabs.ELEVENLABS_SPANISH_VOICE_ID
+				// default:
+				// 	log.Printf("Unsupported language for audiobook: %s", language)
+				// 	continue
+				// }
+				//
+				// elevenLabsResponse, err := elevenlabs.ElevenLabsTTSWithTiming(
+				// 	plainText,
+				// 	voiceId,
+				// 	os.Getenv("ELEVENLABS_API_KEY"),
+				// )
+				// if err != nil {
+				// 	log.Printf("Failed to generate audiobook: %v", err)
+				// 	continue
+				// }
+				//
+				// audiobookContent, err := buildAudiobookBody(plainText, elevenLabsResponse)
+				// if err != nil {
+				// 	log.Printf("Failed to build audiobook content: %v", err)
+				// 	continue
+				// }
+				//
+				// audiobookPath := path + "audiobook_" + CEFRLevel + "_News_" + subject + "_" + current_time + ".json"
+				// if err := uploadStoryS3(
+				// 	os.Getenv("STORY_BUCKET_NAME"),
+				// 	audiobookPath,
+				// 	audiobookContent,
+				// ); err != nil {
+				// 	log.Printf("Failed to upload audiobook: %v", err)
+				// 	continue
+				// }
+				//
+				// err = supabaseClient.InsertAudiobook(news_id, "PREMIUM")
+				// if err != nil {
+				// 	log.Printf("Failed to insert audiobook: %v", err)
+				// 	continue
+				// }
 			}
 
 		} else {

@@ -58,7 +58,13 @@ export interface paths {
             parameters: {
                 query: {
                     /** @description News ID */
-                    news_id: string;
+                    news_id?: string;
+                    /** @description Story ID */
+                    story_id?: string;
+                    /** @description story */
+                    type: string;
+                    /** @description 1 */
+                    page: string;
                 };
                 header?: never;
                 path?: never;
@@ -2369,6 +2375,8 @@ export interface components {
             transcript: string;
         };
         "models.StoryItem": {
+            /** @example NONE */
+            audiobook_tier: string;
             /** @example B1 */
             cefr_level: string;
             /** @example 2024-02-26T13:01:13.390612Z */

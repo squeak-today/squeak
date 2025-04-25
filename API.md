@@ -45,7 +45,10 @@ Get audiobook for a news_id
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
-| news_id | query | News ID | Yes | string |
+| news_id | query | News ID | No | string |
+| story_id | query | Story ID | No | string |
+| type | query | story | Yes | string |
+| page | query | 1 | Yes | string |
 
 ##### Responses
 
@@ -1264,6 +1267,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| audiobook_tier | string | *Example:* `"NONE"` | Yes |
 | cefr_level | string | *Example:* `"B1"` | Yes |
 | created_at | string | *Example:* `"2024-02-26T13:01:13.390612Z"` | Yes |
 | date_created | string | *Example:* `"2024-02-26"` | Yes |

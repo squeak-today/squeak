@@ -85,7 +85,19 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
     useEffect(() => {
       const fetchAudiobook = async () => {
         try {
-          const { data, error } = await getAudiobook({ news_id: id });
+          let args = {
+            news_id: "0",
+            story_id: "0",
+            page: "0",
+            type: "news",
+          }
+          if (contentType == "News") {
+            args.news_id = id;
+          } else if (contentType == "Story") {
+            args.story_id = id;
+            args.type = "story";
+          }
+          const { data, error } = await getAudiobook(args);
           if (error) {
             if (error.code === 'USAGE_RESTRICTED') {
               setUsageError('Your plan does not provide access to this audiobook!');
@@ -95,6 +107,8 @@ const AudiobookReader: React.FC<AudiobookReaderProps> = ({
               showNotification('You have reached your limit of audiobooks for this month!', 'error');
             } else if (error.error === 'No audiobook available for this news_id') {
               setUsageError('No audiobook available for this article!');
+            } else if (error.error === 'No audiobook available for this story_id') {
+              setUsageError('No audiobook available for this story!')
             } else {
               setUsageError('An error occurred while fetching the audiobook!');
               showNotification('An error occurred while fetching the audiobook!', 'error');
