@@ -42,6 +42,9 @@ import (
 	"story-api/handlers/teacher"
 	"story-api/handlers/orghandler"
 	"story-api/handlers/billinghandler"
+	"story-api/handlers/deckhandler"
+	"story-api/handlers/stathandler"
+	"story-api/handlers/flashcardhandler"
 )
 
 type Profile = supabase.Profile
@@ -240,6 +243,33 @@ func init() {
 	}
 
 	ginLambda = ginadapter.New(router)
+
+	// In main.go, add these handlers with the imports
+	deckHandler := deckhandler.New(dbClient)
+	flashcardHandler := flashcardhandler.New(dbClient)
+	statsHandler := statshandler.New(dbClient)
+
+	// Add these route groups after your existing ones
+	deckGroup := router.Group("/deck")
+	{
+		deckGroup.GET("", deckHandler.GetDecks)
+		deckGroup.GET("/:id", deckHandler.GetDeck)
+		deckGroup.POST("/create", deckHandler.CreateDeck)
+		deckGroup.POST("/:id/delete", deckHandler.DeleteDeck)
+	}
+
+	flashcardGroup := router.Group("/flashcard")
+	{
+		flashcardGroup.POST("/create", flashcardHandler.CreateFlashcard)
+		flashcardGroup.POST("/:id/update", flashcardHandler.UpdateFlashcard)
+		flashcardGroup.POST("/:id/delete", flashcardHandler.DeleteFlashcard)
+	}
+
+	statsGroup := router.Group("/stats")
+	{
+		statsGroup.GET("", statsHandler.GetUserStats)
+		statsGroup.POST("/record", statsHandler.RecordStudySession)
+	}
 }
 
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
