@@ -9,7 +9,7 @@ import {
 } from "../styles/LearnPageStyles";
 import ContentBrowser from "../components/ContentBrowser";
 import WelcomeModal from "../components/WelcomeModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useNotification } from "../context/NotificationContext";
 import supabase from "../lib/supabase";
 import NavPage from "../components/NavPage";
@@ -17,7 +17,7 @@ import NewsRecommendations from "../components/NewsRecommendations";
 import StoryRecommendations from "../components/StoryRecommendations";
 import { useProfileAPI } from "../hooks/useProfileAPI";
 import { welcomeMsg } from "../lib/welcome_msg";
-import DeckBrowser from "../components/DeckBrowser"; // New component import
+import DeckBrowser from "../components/DeckBrowser"; // Keep this import
 
 const fetchContentList = async (
   apiBase,
@@ -43,13 +43,20 @@ const fetchContentList = async (
 
 function Learn() {
   const [showWelcome, setShowWelcome] = useState(false);
-  const [activeTab, setActiveTab] = useState("today");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const validTabs = ['today', 'search', 'decks'];
+  const defaultTab = 'today';
+  
+  const initialTab = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(validTabs.includes(initialTab) ? initialTab : defaultTab);
+  
   const { showNotification } = useNotification();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [storyRecommendations, setStoryRecommendations] = useState([]);
   const [isInitializing, setIsInitializing] = useState(true);
   const { getProfile } = useProfileAPI();
+  const apiBase = import.meta.env.VITE_API_BASE;
 
   const handleCloseWelcome = async () => {
     try {
@@ -63,7 +70,11 @@ function Learn() {
       setShowWelcome(false);
     }
   };
-  const apiBase = import.meta.env.VITE_API_BASE;
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab }, { replace: true });
+  };
 
   const handleGetProfile = useCallback(async () => {
     try {
@@ -172,19 +183,19 @@ function Learn() {
             <TabsContainer>
               <Tab
                 isActive={activeTab === "today"}
-                onClick={() => setActiveTab("today")}
+                onClick={() => handleTabChange("today")}
               >
                 Today
               </Tab>
               <Tab
                 isActive={activeTab === "search"}
-                onClick={() => setActiveTab("search")}
+                onClick={() => handleTabChange("search")}
               >
                 Search
               </Tab>
               <Tab
                 isActive={activeTab === "decks"}
-                onClick={() => setActiveTab("decks")}
+                onClick={() => handleTabChange("decks")}
               >
                 Decks
               </Tab>

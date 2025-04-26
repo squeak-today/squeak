@@ -25,7 +25,7 @@ const formatDate = (dateString: string): string => {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
-    });
+    }); 
 };
 
 const ContentBlock: React.FC<ContentBlockProps> = ({ 
