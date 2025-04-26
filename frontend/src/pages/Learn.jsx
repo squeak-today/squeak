@@ -17,7 +17,7 @@ import NewsRecommendations from "../components/NewsRecommendations";
 import StoryRecommendations from "../components/StoryRecommendations";
 import { useProfileAPI } from "../hooks/useProfileAPI";
 import { welcomeMsg } from "../lib/welcome_msg";
-import DeckBrowser from "../components/DeckBrowser"; // Keep this import
+import DeckBrowser from "../components/DeckBrowser"; // Keep the DeckBrowser import
 
 const fetchContentList = async (
   apiBase,
@@ -44,25 +44,28 @@ const fetchContentList = async (
 function Learn() {
   const [showWelcome, setShowWelcome] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const validTabs = ['today', 'search', 'decks'];
-  const defaultTab = 'today';
-  
-  const initialTab = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(validTabs.includes(initialTab) ? initialTab : defaultTab);
-  
+  const validTabs = ["today", "search", "decks"]; // Include all three tabs
+  const defaultTab = "today";
+
+  const initialTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState(
+    validTabs.includes(initialTab) ? initialTab : defaultTab
+  );
+
   const { showNotification } = useNotification();
+  const apiBase = import.meta.env.VITE_API_BASE;
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [storyRecommendations, setStoryRecommendations] = useState([]);
   const [isInitializing, setIsInitializing] = useState(true);
   const { getProfile } = useProfileAPI();
-  const apiBase = import.meta.env.VITE_API_BASE;
 
   const handleCloseWelcome = async () => {
     try {
       const { error } = await supabase.auth.updateUser({
         data: { has_seen_welcome: true },
       });
+
       if (error) throw error;
       setShowWelcome(false);
     } catch (error) {
@@ -71,18 +74,15 @@ function Learn() {
     }
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setSearchParams({ tab }, { replace: true });
-  };
-
   const handleGetProfile = useCallback(async () => {
     try {
       const { data, error } = await getProfile();
+
       if (error?.code === "PROFILE_NOT_FOUND") {
         navigate("/welcome");
         return null;
       }
+
       setProfile(data);
       return data;
     } catch (error) {
@@ -149,6 +149,7 @@ function Learn() {
           data: { user },
         } = await supabase.auth.getUser();
         const hasSeenWelcome = user?.user_metadata?.has_seen_welcome;
+
         if (!hasSeenWelcome) {
           setShowWelcome(true);
         }
@@ -166,7 +167,12 @@ function Learn() {
       }
     };
     init();
-  }, []);
+  }, []); // Add proper dependencies here
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab }, { replace: true });
+  };
 
   return (
     <NavPage isLoading={isInitializing}>
@@ -180,6 +186,7 @@ function Learn() {
                   ` ${profile.username}!`}
               </GreetingHeader>
             )}
+
             <TabsContainer>
               <Tab
                 isActive={activeTab === "today"}
@@ -200,6 +207,7 @@ function Learn() {
                 Decks
               </Tab>
             </TabsContainer>
+
             {activeTab === "today" && (
               <>
                 {profile && (
@@ -212,11 +220,13 @@ function Learn() {
                 <StoryRecommendations recommendations={storyRecommendations} />
               </>
             )}
+
             {activeTab === "search" && (
               <ContentBrowser
                 defaultLanguage={profile?.learning_language || "any"}
               />
             )}
+
             {activeTab === "decks" && profile && (
               <DeckBrowser userID={profile.user_id} />
             )}
