@@ -35,6 +35,8 @@ resource "aws_lambda_function" "story_gen_lambda" {
       SUPABASE_USER     = var.supabase_user
       SUPABASE_PASSWORD = var.supabase_password
       SUPABASE_DATABASE = var.supabase_database
+
+      ELEVENLABS_API_KEY = var.elevenlabs_api_key
     }
   }
 

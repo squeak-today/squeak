@@ -69,6 +69,19 @@
   --breakpoint-mobile: 480px;
   --breakpoint-tablet: 768px;
   --breakpoint-desktop: 1200px;
+
+  
+  --animate-fadein-short: fadeIn 0.5s ease forwards;
+  --animate-fadein-med: fadeIn 1.0s ease forwards;
+  --animate-fadein-long: fadeIn 2.5s ease forwards;
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 @layer base {

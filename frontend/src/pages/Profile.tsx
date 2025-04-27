@@ -101,6 +101,8 @@ type UsageData = {
   max_natural_tts_usage: number;
   premium_stt_usage: number;
   max_premium_stt_usage: number;
+  premium_audiobooks_usage: number;
+  max_premium_audiobooks_usage: number;
 }
 
 const getLanguageBackground = (language: string) => {
@@ -181,6 +183,7 @@ function Profile() {
   const fetchUsageData = async (plan: string) => {
     try {
       const result = await getBillingAccountUsage({ plan });
+      console.log(result.data);
       if (result.data) {
         setUsageData(result.data as UsageData);
       }
@@ -486,6 +489,35 @@ function Profile() {
                   </UsageLimitBarWrapper>
                   <UsageLimitValue>
                     {usageData.premium_stt_usage}/{usageData.max_premium_stt_usage}
+                  </UsageLimitValue>
+                </>
+              )}
+            </UsageLimitBarContainer>
+          </UsageLimitItem>
+
+          <UsageLimitItem>
+            <UsageLimitLabel>Premium Audiobooks</UsageLimitLabel>
+            <UsageLimitBarContainer>
+              {isPremium ? (
+                <>
+                  <UsageLimitBarWrapper>
+                    <UsageLimitBarFill 
+                      $percentage={100} 
+                      $atLimit={false}
+                    />
+                  </UsageLimitBarWrapper>
+                  <UsageLimitUnlimited>Unlimited</UsageLimitUnlimited>
+                </>
+              ) : (
+                <>
+                  <UsageLimitBarWrapper>
+                    <UsageLimitBarFill 
+                      $percentage={(usageData.premium_audiobooks_usage / usageData.max_premium_audiobooks_usage) * 100} 
+                      $atLimit={usageData.premium_audiobooks_usage >= usageData.max_premium_audiobooks_usage}
+                    />
+                  </UsageLimitBarWrapper>
+                  <UsageLimitValue>
+                    {usageData.premium_audiobooks_usage}/{usageData.max_premium_audiobooks_usage}
                   </UsageLimitValue>
                 </>
               )}
