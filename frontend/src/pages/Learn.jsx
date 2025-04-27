@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BrowserBox, LearnPageLayout, StoryBrowserContainer, GreetingHeader, TabsContainer, Tab } from '../styles/LearnPageStyles';
 import ContentBrowser from '../components/ContentBrowser';
-import WelcomeModal from '../components/WelcomeModal';
+import { updateVer, UpdateModal } from '../components/UpdateModal';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useNotification } from '../context/NotificationContext';
 import supabase from '../lib/supabase';
@@ -25,7 +25,8 @@ const fetchContentList = async (apiBase, endpoint, language, cefrLevel, subject,
 };
 
 function Learn() {
-	const [showWelcome, setShowWelcome] = useState(false);
+	const [userUpdateVer, setUserUpdateVer] = useState(999);
+  const [showUpdate, setShowUpdate] = useState(true);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const validTabs = ['today', 'search'];
 	const defaultTab = 'today';
@@ -45,19 +46,18 @@ function Learn() {
 
 	const { getProfile } = useProfileAPI();
 
-	const handleCloseWelcome = async () => {
+	const handleCloseUpdate = async () => {
 		try {
-			// Update user metadata to record that they've seen the welcome message
 			const { error } = await supabase.auth.updateUser({
-				data: { has_seen_welcome: true }
+				data: { update_seen: updateVer }
 			});
 
 			if (error) throw error;
-			setShowWelcome(false);
+			setShowUpdate(false);
 		} catch (error) {
 			console.error('Error updating user metadata:', error);
-			setShowWelcome(false); // Still close the modal even if update fails
-		}
+			setShowUpdate(false);
+    }
 	};
 
 	const handleGetProfile = useCallback(async () => {
@@ -108,22 +108,18 @@ function Learn() {
 			}
 		};
 
-		const checkWelcomeStatus = async () => {
+		const checkUserUpdateVer = async () => {
 			const { data: { session } } = await supabase.auth.getSession();
 			if (session) {
 				const { data: { user } } = await supabase.auth.getUser();
-				const hasSeenWelcome = user?.user_metadata?.has_seen_welcome;
-				
-				if (!hasSeenWelcome) {
-					setShowWelcome(true);
-				}
+				setUserUpdateVer(user?.user_metadata?.update_seen ?? 0);
 			}
 		};
 
 		const init = async () => {
 			try {
 				await initializeProfile();
-				await checkWelcomeStatus();
+				await checkUserUpdateVer();
 			} catch (error) {
 				console.error('Error initializing profile:', error);
 			} finally {
@@ -141,7 +137,7 @@ function Learn() {
 
 	return (
 		<NavPage isLoading={isInitializing}>
-			{showWelcome && <WelcomeModal onClose={handleCloseWelcome} />}
+      {showUpdate && <UpdateModal userUpdateVer={userUpdateVer} onClose={handleCloseUpdate} />}
 			<BrowserBox>
 				<LearnPageLayout>
 					<StoryBrowserContainer>
