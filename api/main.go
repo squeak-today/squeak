@@ -12,27 +12,24 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
 
-	"net/http"
-
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
-	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
-
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
 	"story-api/audio"
 	"story-api/supabase"
 
 	"story-api/handlers/audiohandler"
+	billing "story-api/handlers/billinghandler"
 	"story-api/handlers/newshandler"
+	org "story-api/handlers/orghandler"
 	"story-api/handlers/profilehandler"
 	"story-api/handlers/progresshandler"
 	"story-api/handlers/qnahandler"
@@ -40,13 +37,10 @@ import (
 	"story-api/handlers/stripehandler"
 	"story-api/handlers/student"
 	"story-api/handlers/teacher"
-	"story-api/handlers/orghandler"
-	"story-api/handlers/billinghandler"
 )
 
 type Profile = supabase.Profile
 
-var ginLambda *ginadapter.GinLambda
 var dbClient *supabase.Client
 
 func authMiddleware() gin.HandlerFunc {
@@ -99,15 +93,22 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
-func init() {
-	log.Println("Gin cold start")
+func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found or error loading .env file - using environment variables")
+	}
+
+	if os.Getenv("WORKSPACE") == "prod" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	var err error
 	dbClient, err = supabase.NewClient()
-	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"), os.Getenv("ELEVENLABS_API_KEY"))
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v", err)
 	}
+
+	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"), os.Getenv("ELEVENLABS_API_KEY"))
 
 	router := gin.Default()
 
@@ -240,13 +241,5 @@ func init() {
 		qnaGroup.POST("/evaluate", qnaHandler.EvaluateAnswer)
 	}
 
-	ginLambda = ginadapter.New(router)
-}
-
-func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	return ginLambda.ProxyWithContext(ctx, req)
-}
-
-func main() {
-	lambda.Start(Handler)
+	router.Run()
 }
