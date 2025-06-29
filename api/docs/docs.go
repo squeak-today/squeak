@@ -38,6 +38,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/audio/audiobook": {
+            "get": {
+                "description": "Get audiobook for a news_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "audio"
+                ],
+                "summary": "Get audiobook",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "News ID",
+                        "name": "news_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Story ID",
+                        "name": "story_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "story",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AudiobookResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/audio/stt": {
             "post": {
                 "description": "Convert speech audio to text",
@@ -1561,6 +1618,23 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AudiobookResponse": {
+            "type": "object",
+            "required": [
+                "expires_in",
+                "url"
+            ],
+            "properties": {
+                "expires_in": {
+                    "type": "integer",
+                    "example": 300
+                },
+                "url": {
+                    "type": "string",
+                    "example": "https://bucket.s3.amazonaws.com/path/to/file?signed-params"
+                }
+            }
+        },
         "models.BillingAccountResponse": {
             "type": "object",
             "required": [
@@ -1587,12 +1661,18 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "max_natural_tts_usage",
+                "max_premium_audiobooks_usage",
                 "max_premium_stt_usage",
                 "natural_tts_usage",
+                "premium_audiobooks_usage",
                 "premium_stt_usage"
             ],
             "properties": {
                 "max_natural_tts_usage": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "max_premium_audiobooks_usage": {
                     "type": "integer",
                     "example": 100
                 },
@@ -1601,6 +1681,10 @@ const docTemplate = `{
                     "example": 100
                 },
                 "natural_tts_usage": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "premium_audiobooks_usage": {
                     "type": "integer",
                     "example": 10
                 },
@@ -1663,6 +1747,7 @@ const docTemplate = `{
         "models.ClassroomContentItem": {
             "type": "object",
             "required": [
+                "audiobook_tier",
                 "cefr_level",
                 "content_type",
                 "created_at",
@@ -1675,6 +1760,10 @@ const docTemplate = `{
                 "topic"
             ],
             "properties": {
+                "audiobook_tier": {
+                    "type": "string",
+                    "example": "NONE"
+                },
                 "cefr_level": {
                     "type": "string",
                     "example": "B1"
@@ -1848,13 +1937,15 @@ const docTemplate = `{
                 "PROFILE_NOT_FOUND",
                 "NO_TRANSCRIPT",
                 "AUTH_REQUIRED",
-                "USAGE_LIMIT_REACHED"
+                "USAGE_LIMIT_REACHED",
+                "USAGE_RESTRICTED"
             ],
             "x-enum-varnames": [
                 "PROFILE_NOT_FOUND",
                 "NO_TRANSCRIPT",
                 "AUTH_REQUIRED",
-                "USAGE_LIMIT_REACHED"
+                "USAGE_LIMIT_REACHED",
+                "USAGE_RESTRICTED"
             ]
         },
         "models.ErrorResponse": {
@@ -1868,7 +1959,8 @@ const docTemplate = `{
                         "PROFILE_NOT_FOUND",
                         "NO_TRANSCRIPT",
                         "AUTH_REQUIRED",
-                        "USAGE_LIMIT_REACHED"
+                        "USAGE_LIMIT_REACHED",
+                        "USAGE_RESTRICTED"
                     ],
                     "allOf": [
                         {
@@ -2238,6 +2330,7 @@ const docTemplate = `{
         "models.NewsItem": {
             "type": "object",
             "required": [
+                "audiobook_tier",
                 "cefr_level",
                 "created_at",
                 "date_created",
@@ -2248,6 +2341,10 @@ const docTemplate = `{
                 "topic"
             ],
             "properties": {
+                "audiobook_tier": {
+                    "type": "string",
+                    "example": "NONE"
+                },
                 "cefr_level": {
                     "type": "string",
                     "example": "B1"
@@ -2394,6 +2491,7 @@ const docTemplate = `{
         "models.StoryItem": {
             "type": "object",
             "required": [
+                "audiobook_tier",
                 "cefr_level",
                 "created_at",
                 "date_created",
@@ -2404,6 +2502,10 @@ const docTemplate = `{
                 "topic"
             ],
             "properties": {
+                "audiobook_tier": {
+                    "type": "string",
+                    "example": "NONE"
+                },
                 "cefr_level": {
                     "type": "string",
                     "example": "B1"

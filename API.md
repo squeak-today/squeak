@@ -30,6 +30,33 @@ Check if the audio service is live
 | ---- | ----------- | ------ |
 | 200 | OK | [models.AudioHealthResponse](#modelsaudiohealthresponse) |
 
+### /audio/audiobook
+
+#### GET
+##### Summary
+
+Get audiobook
+
+##### Description
+
+Get audiobook for a news_id
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| news_id | query | News ID | No | string |
+| story_id | query | Story ID | No | string |
+| type | query | story | Yes | string |
+| page | query | 1 | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.AudiobookResponse](#modelsaudiobookresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /audio/stt
 
 #### POST
@@ -903,6 +930,13 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | status | string | *Example:* `"live"` | Yes |
 
+#### models.AudiobookResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| expires_in | integer | *Example:* `300` | Yes |
+| url | string | *Example:* `"https://bucket.s3.amazonaws.com/path/to/file?signed-params"` | Yes |
+
 #### models.BillingAccountResponse
 
 | Name | Type | Description | Required |
@@ -916,8 +950,10 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | max_natural_tts_usage | integer | *Example:* `100` | Yes |
+| max_premium_audiobooks_usage | integer | *Example:* `100` | Yes |
 | max_premium_stt_usage | integer | *Example:* `100` | Yes |
 | natural_tts_usage | integer | *Example:* `10` | Yes |
+| premium_audiobooks_usage | integer | *Example:* `10` | Yes |
 | premium_stt_usage | integer | *Example:* `10` | Yes |
 
 #### models.CancelIndividualSubscriptionRequest
@@ -952,6 +988,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| audiobook_tier | string | *Example:* `"NONE"` | Yes |
 | cefr_level | string | *Example:* `"B1"` | Yes |
 | content_type | string | *Example:* `"News"` | Yes |
 | created_at | string | *Example:* `"2025-02-26T13:01:13.390612Z"` | Yes |
@@ -1043,7 +1080,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| code | [models.ERROR_CODE](#modelserror_code) | *Enum:* `"PROFILE_NOT_FOUND"`, `"NO_TRANSCRIPT"`, `"AUTH_REQUIRED"`, `"USAGE_LIMIT_REACHED"`<br>*Example:* `"PROFILE_NOT_FOUND"` | No |
+| code | [models.ERROR_CODE](#modelserror_code) | *Enum:* `"PROFILE_NOT_FOUND"`, `"NO_TRANSCRIPT"`, `"AUTH_REQUIRED"`, `"USAGE_LIMIT_REACHED"`, `"USAGE_RESTRICTED"`<br>*Example:* `"PROFILE_NOT_FOUND"` | No |
 | error | string | *Example:* `"Something went wrong"` | Yes |
 
 #### models.EvaluateAnswerRequest
@@ -1172,6 +1209,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| audiobook_tier | string | *Example:* `"NONE"` | Yes |
 | cefr_level | string | *Example:* `"B1"` | Yes |
 | created_at | string | *Example:* `"2024-02-26T13:01:13.390612Z"` | Yes |
 | date_created | string | *Example:* `"2024-02-26"` | Yes |
@@ -1229,6 +1267,7 @@ Validates and processes incoming webhook events from Stripe
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| audiobook_tier | string | *Example:* `"NONE"` | Yes |
 | cefr_level | string | *Example:* `"B1"` | Yes |
 | created_at | string | *Example:* `"2024-02-26T13:01:13.390612Z"` | Yes |
 | date_created | string | *Example:* `"2024-02-26"` | Yes |

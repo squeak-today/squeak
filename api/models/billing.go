@@ -27,4 +27,6 @@ type BillingAccountUsageResponse struct {
 	MaxNaturalTTSUsage int `json:"max_natural_tts_usage" binding:"required" example:"100"`
 	PremiumSTTUsage int `json:"premium_stt_usage" binding:"required" example:"10"`
 	MaxPremiumSTTUsage int `json:"max_premium_stt_usage" binding:"required" example:"100"`
+	PremiumAudiobooksUsage int `json:"premium_audiobooks_usage" binding:"required" example:"10"`
+	MaxPremiumAudiobooksUsage int `json:"max_premium_audiobooks_usage" binding:"required" example:"100"`
 }

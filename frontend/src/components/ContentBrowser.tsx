@@ -22,6 +22,7 @@ interface NewsItem {
   topic: string;
   cefr_level: string;
   date_created: string;
+  audiobook_tier: string;
 }
 
 interface StoryItem {
@@ -32,6 +33,7 @@ interface StoryItem {
   topic: string;
   cefr_level: string;
   date_created: string;
+  audiobook_tier: string;
 }
 
 interface ContentItem {
@@ -42,6 +44,7 @@ interface ContentItem {
   tags: string[];
   difficulty: string;
   date_created: string;
+  audiobook_tier: string;
 }
 
 interface ContentBrowserProps {
@@ -147,7 +150,8 @@ const ContentBrowser: React.FC<ContentBrowserProps> = ({ defaultLanguage }) => {
 						preview: news.preview_text,
 						tags: [news.language, news.topic],
 						difficulty: news.cefr_level,
-						date_created: news.date_created
+						date_created: news.date_created,
+						audiobook_tier: news.audiobook_tier
 					});
 				}
 			} else if (contentType === 'Story') {
@@ -174,7 +178,8 @@ const ContentBrowser: React.FC<ContentBrowserProps> = ({ defaultLanguage }) => {
 						preview: story.preview_text || 'Start reading this story...',
 						tags: [story.language, story.topic],
 						difficulty: story.cefr_level,
-						date_created: story.date_created
+						date_created: story.date_created,
+						audiobook_tier: story.audiobook_tier
 					});
 				}
 			}

@@ -43,6 +43,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/audio/audiobook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get audiobook
+         * @description Get audiobook for a news_id
+         */
+        get: {
+            parameters: {
+                query: {
+                    /** @description News ID */
+                    news_id?: string;
+                    /** @description Story ID */
+                    story_id?: string;
+                    /** @description story */
+                    type: string;
+                    /** @description 1 */
+                    page: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.AudiobookResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/audio/stt": {
         parameters: {
             query?: never;
@@ -2003,6 +2060,12 @@ export interface components {
             /** @example live */
             status: string;
         };
+        "models.AudiobookResponse": {
+            /** @example 300 */
+            expires_in: number;
+            /** @example https://bucket.s3.amazonaws.com/path/to/file?signed-params */
+            url: string;
+        };
         "models.BillingAccountResponse": {
             /** @example false */
             canceled: boolean;
@@ -2015,9 +2078,13 @@ export interface components {
             /** @example 100 */
             max_natural_tts_usage: number;
             /** @example 100 */
+            max_premium_audiobooks_usage: number;
+            /** @example 100 */
             max_premium_stt_usage: number;
             /** @example 10 */
             natural_tts_usage: number;
+            /** @example 10 */
+            premium_audiobooks_usage: number;
             /** @example 10 */
             premium_stt_usage: number;
         };
@@ -2040,6 +2107,8 @@ export interface components {
             success: boolean;
         };
         "models.ClassroomContentItem": {
+            /** @example NONE */
+            audiobook_tier: string;
             /** @example B1 */
             cefr_level: string;
             /** @example News */
@@ -2109,13 +2178,13 @@ export interface components {
             message: string;
         };
         /** @enum {string} */
-        "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
+        "models.ERROR_CODE": "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED" | "USAGE_RESTRICTED";
         "models.ErrorResponse": {
             /**
              * @example PROFILE_NOT_FOUND
              * @enum {unknown}
              */
-            code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED";
+            code?: "PROFILE_NOT_FOUND" | "NO_TRANSCRIPT" | "AUTH_REQUIRED" | "USAGE_LIMIT_REACHED" | "USAGE_RESTRICTED";
             /** @example Something went wrong */
             error: string;
         };
@@ -2246,6 +2315,8 @@ export interface components {
             teacher_id: string;
         };
         "models.NewsItem": {
+            /** @example NONE */
+            audiobook_tier: string;
             /** @example B1 */
             cefr_level: string;
             /** @example 2024-02-26T13:01:13.390612Z */
@@ -2304,6 +2375,8 @@ export interface components {
             transcript: string;
         };
         "models.StoryItem": {
+            /** @example NONE */
+            audiobook_tier: string;
             /** @example B1 */
             cefr_level: string;
             /** @example 2024-02-26T13:01:13.390612Z */

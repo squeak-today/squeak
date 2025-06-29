@@ -29,6 +29,7 @@ const StoryList = ({ stories }) => {
                     tags={story.tags}
                     difficulty={story.difficulty}
                     date={story.date_created}
+                    audiobookTier={story.audiobook_tier}
                     onContentBlockClick={() => { handleContentBlockClick(story) }}
                 />
             ))}
