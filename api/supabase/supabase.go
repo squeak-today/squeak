@@ -44,13 +44,18 @@ type DailyProgress struct {
 
 func NewClient() (*Client, error) {
 	// Create a pgx connection config
-	// postgresql://postgres.hmwqjuylgsoytagxgoyq:[YOUR-PASSWORD]@aws-0-ca-central-1.pooler.supabase.com:6543/postgres
-	config, err := pgx.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require",
+	sslMode := "require"
+	if os.Getenv("WORKSPACE") == "dev" {
+		sslMode = "disable"
+	}
+
+	config, err := pgx.ParseConfig(fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		os.Getenv("SUPABASE_USER"),
 		os.Getenv("SUPABASE_PASSWORD"),
 		os.Getenv("SUPABASE_HOST"),
 		os.Getenv("SUPABASE_PORT"),
 		os.Getenv("SUPABASE_DATABASE"),
+		sslMode,
 	))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse config: %v", err)
@@ -143,7 +148,7 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 					ELSE 'News'::text 
 				END as content_type,
 				CASE
-					WHEN '%[1]s' = 'stories' COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.story_id = %[1].s.id), 'NONE')::text
+					WHEN '%[1]s' = 'stories' COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.story_id = %[1]s.id), 'NONE')::text
 					ELSE COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.news_id = %[1]s.id), 'NONE')::text
 			END as audiobook_tier`, tableAlias)
 		}
