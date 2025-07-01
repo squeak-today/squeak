@@ -276,139 +276,6 @@ Get news content by ID
 | 200 | OK | [ [models.NewsItem](#modelsnewsitem) ] |
 
 ---
-### /organization
-
-#### GET
-##### Summary
-
-Check Organization for Teacher
-
-##### Description
-
-Check Organization for Teacher
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.OrganizationResponse](#modelsorganizationresponse) |
-| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
-| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
-
-### /organization/create
-
-#### POST
-##### Summary
-
-Create Organization
-
-##### Description
-
-Create Organization. Automatically adds the calling user as a teacher.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Create organization request | Yes | [models.CreateOrganizationRequest](#modelscreateorganizationrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.CreateOrganizationResponse](#modelscreateorganizationresponse) |
-| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
-
-### /organization/join
-
-#### POST
-##### Summary
-
-Join Organization
-
-##### Description
-
-Join Organization that has been created by another admin.
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Join organization request | Yes | [models.JoinOrganizationRequest](#modelsjoinorganizationrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.JoinOrganizationResponse](#modelsjoinorganizationresponse) |
-| 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
-
-### /organization/payments
-
-#### GET
-##### Summary
-
-Ping Payments
-
-##### Description
-
-Ping Payments
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.PaymentsResponse](#modelspaymentsresponse) |
-
-### /organization/payments/cancel-subscription-eop
-
-#### POST
-##### Summary
-
-Cancel a Stripe subscription at the end of the period
-
-##### Description
-
-Cancel a Stripe subscription at the end of the period
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Cancel subscription request | Yes | [models.CancelSubscriptionRequest](#modelscancelsubscriptionrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.CancelSubscriptionResponse](#modelscancelsubscriptionresponse) |
-| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
-
-### /organization/payments/create-checkout-session
-
-#### POST
-##### Summary
-
-Create a Stripe checkout session
-
-##### Description
-
-Creates a checkout session and redirects to Stripe's payment page
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Create checkout session request | Yes | [models.CreateCheckoutSessionRequest](#modelscreatecheckoutsessionrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | Redirect to Stripe Checkout | [models.CreateCheckoutSessionResponse](#modelscreatecheckoutsessionresponse) |
-| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
-
----
 ### /profile
 
 #### GET
@@ -640,255 +507,6 @@ Get story query by ID
 | 200 | OK | [ [models.StoryItem](#modelsstoryitem) ] |
 
 ---
-### /student
-
-#### GET
-##### Summary
-
-Check user student status
-
-##### Description
-
-Check if the user is a student and get their classroom info
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.StudentStatusResponse](#modelsstudentstatusresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /student/classroom
-
-#### GET
-##### Summary
-
-Get classroom info
-
-##### Description
-
-Get classroom info for the student
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.GetStudentClassroomResponse](#modelsgetstudentclassroomresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /student/classroom/join
-
-#### POST
-##### Summary
-
-Join classroom
-
-##### Description
-
-Join a classroom as a student
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Join classroom request | Yes | [models.JoinClassroomRequest](#modelsjoinclassroomrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.JoinClassroomResponse](#modelsjoinclassroomresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
----
-### /teacher
-
-#### GET
-##### Summary
-
-Check user teacher status
-
-##### Description
-
-Check if the user is a teacher
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.TeacherStatusResponse](#modelsteacherstatusresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /teacher/classroom
-
-#### GET
-##### Summary
-
-Get classrooms
-
-##### Description
-
-Get classrooms
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.GetClassroomListResponse](#modelsgetclassroomlistresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /teacher/classroom/accept
-
-#### POST
-##### Summary
-
-Accept content
-
-##### Description
-
-Accept content
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Accept content request | Yes | [models.AcceptContentRequest](#modelsacceptcontentrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.AcceptContentResponse](#modelsacceptcontentresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /teacher/classroom/content
-
-#### GET
-##### Summary
-
-Query classroom content
-
-##### Description
-
-Query classroom content
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| language | query | Language | Yes | string |
-| cefr | query | CEFR | Yes | string |
-| subject | query | Subject | Yes | string |
-| page | query | Page | Yes | string |
-| pagesize | query | Page size | Yes | string |
-| whitelist | query | Whitelist status | Yes | string |
-| content_type | query | Content type | Yes | string |
-| classroom_id | query | Classroom ID | Yes | string |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [ [models.ClassroomContentItem](#modelsclassroomcontentitem) ] |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /teacher/classroom/create
-
-#### POST
-##### Summary
-
-Create classroom
-
-##### Description
-
-Create classroom
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Create classroom request | Yes | [models.CreateClassroomRequest](#modelscreateclassroomrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.CreateClassroomResponse](#modelscreateclassroomresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /teacher/classroom/delete
-
-#### POST
-##### Summary
-
-Delete classroom
-
-##### Description
-
-Delete classroom
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Delete classroom request | Yes | [models.DeleteClassroomRequest](#modelsdeleteclassroomrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.DeleteClassroomResponse](#modelsdeleteclassroomresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /teacher/classroom/reject
-
-#### POST
-##### Summary
-
-Accept content
-
-##### Description
-
-Accept content
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Reject content request | Yes | [models.RejectContentRequest](#modelsrejectcontentrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.RejectContentResponse](#modelsrejectcontentresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
-### /teacher/classroom/update
-
-#### POST
-##### Summary
-
-Update classroom
-
-##### Description
-
-Update classroom
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Update classroom request | Yes | [models.UpdateClassroomRequest](#modelsupdateclassroomrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.UpdateClassroomResponse](#modelsupdateclassroomresponse) |
-| 403 | Forbidden | [models.ErrorResponse](#modelserrorresponse) |
-
----
 ### /webhook
 
 #### POST
@@ -909,20 +527,6 @@ Validates and processes incoming webhook events from Stripe
 
 ---
 ### Models
-
-#### models.AcceptContentRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-| content_id | integer | *Example:* `123` | No |
-| content_type | string | *Example:* `"News"` | Yes |
-
-#### models.AcceptContentResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| message | string | *Example:* `"Content accepted successfully"` | Yes |
 
 #### models.AudioHealthResponse
 
@@ -970,69 +574,6 @@ Validates and processes incoming webhook events from Stripe
 | current_expiration | string | *Example:* `"2025-03-24T12:00:00Z"` | Yes |
 | success | boolean | *Example:* `true` | Yes |
 
-#### models.CancelSubscriptionRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| models.CancelSubscriptionRequest | object |  |  |
-
-#### models.CancelSubscriptionResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| canceled_plan | string | *Example:* `"CLASSROOM"` | Yes |
-| current_expiration | string | *Example:* `"2025-03-24T12:00:00Z"` | Yes |
-| success | boolean | *Example:* `true` | Yes |
-
-#### models.ClassroomContentItem
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| audiobook_tier | string | *Example:* `"NONE"` | Yes |
-| cefr_level | string | *Example:* `"B1"` | Yes |
-| content_type | string | *Example:* `"News"` | Yes |
-| created_at | string | *Example:* `"2025-02-26T13:01:13.390612Z"` | Yes |
-| date_created | string | *Example:* `"2025-02-26"` | Yes |
-| id | string | *Example:* `"2479"` | Yes |
-| language | string | *Example:* `"French"` | Yes |
-| pages | integer | *Example:* `10` | Yes |
-| preview_text | string | *Example:* `"# L'actualité musicale en bref\n\n## Un flot de nouveautés..."` | Yes |
-| title | string | *Example:* `"# L'actualité musicale en bref\n\n## Un fl..."` | Yes |
-| topic | string | *Example:* `"Music"` | Yes |
-
-#### models.ClassroomListItem
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-| name | string | *Example:* `"Connor"` | Yes |
-| students_count | integer | *Example:* `10` | No |
-
-#### models.CreateCheckoutSessionRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| models.CreateCheckoutSessionRequest | object |  |  |
-
-#### models.CreateCheckoutSessionResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| redirect_url | string | *Example:* `"https://checkout.stripe.com/c/pay/123"` | Yes |
-
-#### models.CreateClassroomRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| name | string | *Example:* `"Tuesday 9am"` | Yes |
-| students_count | integer | *Example:* `10` | No |
-
-#### models.CreateClassroomResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-
 #### models.CreateIndividualCheckoutSessionRequest
 
 | Name | Type | Description | Required |
@@ -1044,31 +585,6 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | redirect_url | string | *Example:* `"https://checkout.stripe.com/c/pay/123"` | Yes |
-
-#### models.CreateOrganizationRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| models.CreateOrganizationRequest | object |  |  |
-
-#### models.CreateOrganizationResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| organization_id | string | *Example:* `"123"` | Yes |
-| teacher_id | string | *Example:* `"123"` | Yes |
-
-#### models.DeleteClassroomRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-
-#### models.DeleteClassroomResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| message | string | *Example:* `"Classroom deleted successfully"` | Yes |
 
 #### models.ERROR_CODE
 
@@ -1098,12 +614,6 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | evaluation | string | *Example:* `"PASS"` | Yes |
 | explanation | string | *Example:* `"Perfect!"` | Yes |
-
-#### models.GetClassroomListResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classrooms | [ [models.ClassroomListItem](#modelsclassroomlistitem) ] |  | Yes |
 
 #### models.GetNewsResponse
 
@@ -1165,13 +675,6 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | context | string | *Example:* `"Le contexte de l'histoire..."` | Yes |
 
-#### models.GetStudentClassroomResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| students_count | integer | *Example:* `10` | No |
-| teacher_id | string | *Example:* `"789"` | Yes |
-
 #### models.IncrementProgressResponse
 
 | Name | Type | Description | Required |
@@ -1180,30 +683,6 @@ Validates and processes incoming webhook events from Stripe
 | goal_met | boolean | *Example:* `true` | Yes |
 | questions_completed | integer | *Example:* `5` | No |
 | user_id | string | *Example:* `"123"` | Yes |
-
-#### models.JoinClassroomRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-
-#### models.JoinClassroomResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| message | string | *Example:* `"Student added to classroom successfully"` | Yes |
-
-#### models.JoinOrganizationRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| organization_id | string | *Example:* `"123"` | Yes |
-
-#### models.JoinOrganizationResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| teacher_id | string | *Example:* `"123"` | Yes |
 
 #### models.NewsItem
 
@@ -1218,36 +697,6 @@ Validates and processes incoming webhook events from Stripe
 | preview_text | string | *Example:* `"Un résumé des nouvelles musicales..."` | Yes |
 | title | string | *Example:* `"L'actualité musicale en bref"` | Yes |
 | topic | string | *Example:* `"Music"` | Yes |
-
-#### models.OrganizationResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| canceled | boolean | *Example:* `false` | No |
-| expiration_date | string | *Example:* `"2025-03-24T12:00:00Z"` | No |
-| organization_id | string | *Example:* `"123"` | Yes |
-| plan | string | *Example:* `"FREE"` | Yes |
-| teacher_id | string | *Example:* `"123"` | Yes |
-
-#### models.PaymentsResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| success | boolean | *Example:* `true` | Yes |
-
-#### models.RejectContentRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-| content_id | integer | *Example:* `123` | No |
-| content_type | string | *Example:* `"News"` | Yes |
-
-#### models.RejectContentResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| message | string | *Example:* `"Content rejected successfully"` | Yes |
 
 #### models.SpeechToTextRequest
 
@@ -1283,21 +732,6 @@ Validates and processes incoming webhook events from Stripe
 | ---- | ---- | ----------- | -------- |
 | completed_today | boolean | *Example:* `true` | Yes |
 | streak | integer | *Example:* `7` | No |
-
-#### models.StudentStatusResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"456"` | Yes |
-| plan | string | *Example:* `"FREE"` | No |
-| student_id | string | *Example:* `"123"` | Yes |
-
-#### models.TeacherStatusResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| exists | boolean | *Example:* `true` | Yes |
-| plan | string | *Example:* `"FREE"` | No |
 
 #### models.TextToSpeechRequest
 
@@ -1336,19 +770,6 @@ Validates and processes incoming webhook events from Stripe
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | sentence | string | *Example:* `"Bonjour, comment allez-vous?"` | No |
-
-#### models.UpdateClassroomRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| classroom_id | string | *Example:* `"123"` | Yes |
-| name | string | *Example:* `"Tuesday 9am"` | Yes |
-
-#### models.UpdateClassroomResponse
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| message | string | *Example:* `"Classroom updated successfully"` | Yes |
 
 #### models.UpsertProfileRequest
 
