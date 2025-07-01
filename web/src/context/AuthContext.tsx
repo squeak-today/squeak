@@ -1,35 +1,50 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import supabase from '../lib/supabase';
+import supabase from '@/lib/supabase';
 
 const AuthContext = createContext<{
-    jwtToken: string | null;
-    isLoading: boolean;
-}>({ jwtToken: null, isLoading: true });
+  jwtToken: string | null;
+  isLoading: boolean;
+  logout: () => Promise<void>;
+}>({
+  jwtToken: null,
+  isLoading: true,
+  logout: async () => {}
+});
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [jwtToken, setJwtToken] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const initSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setJwtToken(session?.access_token || null);
-            setIsLoading(false);
-        };
-        initSession();
+  useEffect(() => {
+    const initSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setJwtToken(session?.access_token || null);
+      setIsLoading(false);
+    };
+    initSession();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setJwtToken(session?.access_token || null);
-        });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('AuthContext: Auth state change:', event, session?.access_token ? 'token present' : 'no token');
+      setJwtToken(session?.access_token || null);
+    });
 
-        return () => subscription.unsubscribe();
-    }, []);
+    return () => subscription.unsubscribe();
+  }, []);
 
-    return (
-        <AuthContext.Provider value={{ jwtToken, isLoading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setJwtToken(null);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ jwtToken, isLoading, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);

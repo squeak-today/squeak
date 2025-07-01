@@ -1,30 +1,30 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React, { useEffect } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { useAuth } from '@/context/AuthContext';
 
 interface ProtectedRouteProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const navigate = useNavigate();
-    const { jwtToken, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { jwtToken, isLoading } = useAuth();
 
-    React.useEffect(() => {
-        if (!isLoading && !jwtToken) {
-            navigate('/auth');
-        }
-    }, [jwtToken, isLoading, navigate]);
-
-    if (isLoading) {
-        return null;
+  useEffect(() => {
+    if (!isLoading && !jwtToken) {
+      navigate({ to: '/login', search: { mode: 'login' } });
     }
+  }, [jwtToken, isLoading, navigate]);
 
-    if (!jwtToken) {
-        return null;
-    }
+  if (isLoading) {
+    return null;
+  }
 
-    return <>{children}</>;
+  if (!jwtToken) {
+    return null;
+  }
+
+  return <>{children}</>;
 }
 
-export default ProtectedRoute; 
+export default ProtectedRoute;

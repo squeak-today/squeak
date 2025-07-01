@@ -100,13 +100,17 @@ file_size_limit = "50MiB"
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "https://squeak.today"
+site_url = "http://localhost:3000"
 # Add additional redirect URLs for local development and production
 additional_redirect_urls = [
     "https://127.0.0.1:3000",
     "http://localhost:3000",
+    "https://squeak.today",
     "https://squeak.today/welcome",
-    "http://localhost:3000/welcome"
+    "http://localhost:3000/welcome",
+    "http://localhost:3000/login",
+    "http://localhost:3000/update-password",
+    "https://squeak.today/update-password"
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
