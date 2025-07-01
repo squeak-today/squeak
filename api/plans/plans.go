@@ -27,7 +27,6 @@ var FEATURE_ACCESS_LIMITS_BY_PLAN = map[string]AccessLimitByPlan{
 			"FREE": 20,
 			"BASIC": -1,
 			"PREMIUM": -1,
-			"CLASSROOM": -1,
 		},
 	},
 	PREMIUM_STT_FEATURE: {
@@ -35,7 +34,6 @@ var FEATURE_ACCESS_LIMITS_BY_PLAN = map[string]AccessLimitByPlan{
 			"FREE": 20,
 			"BASIC": -1,
 			"PREMIUM": -1,
-			"CLASSROOM": -1,
 		},
 	},
 	BASIC_AUDIOBOOKS_FEATURE: {
@@ -43,7 +41,6 @@ var FEATURE_ACCESS_LIMITS_BY_PLAN = map[string]AccessLimitByPlan{
 			"FREE": 0,
 			"BASIC": -1,
 			"PREMIUM": -1,
-			"CLASSROOM": -1,
 		},
 	},
 	PREMIUM_AUDIOBOOKS_FEATURE: {
@@ -51,7 +48,6 @@ var FEATURE_ACCESS_LIMITS_BY_PLAN = map[string]AccessLimitByPlan{
 			"FREE": 5,
 			"BASIC": 5,
 			"PREMIUM": -1,
-			"CLASSROOM": 20,
 		},
 	},
 }

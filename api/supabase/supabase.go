@@ -22,8 +22,6 @@ type QueryParams struct {
 	Subject         string
 	Page            int
 	PageSize        int
-	ClassroomID     string // if not querying for class, leave as default ""
-	WhitelistStatus string // if not querying for whitelist, leave as default ""
 }
 
 // Add these near the top with other type definitions
@@ -71,38 +69,6 @@ func (c *Client) Close() error {
 	return c.db.Close()
 }
 
-func (c *Client) CheckAcceptedContent(classroomID string, contentType string, contentID string) (bool, error) {
-	var exists bool
-	var query string
-
-	if contentType == "Story" {
-		query = `
-			SELECT EXISTS (
-				SELECT 1 
-				FROM accepted_content 
-				WHERE classroom_id = $1 
-				AND story_id = $2
-			)`
-	} else if contentType == "News" {
-		query = `
-			SELECT EXISTS (
-				SELECT 1 
-				FROM accepted_content 
-				WHERE classroom_id = $1 
-				AND news_id = $2
-			)`
-	} else {
-		return false, fmt.Errorf("invalid content type: %s", contentType)
-	}
-
-	err := c.db.QueryRow(query, classroomID, contentID).Scan(&exists)
-	if err != nil {
-		return false, fmt.Errorf("failed to check accepted content: %v", err)
-	}
-
-	return exists, nil
-}
-
 func (c *Client) QueryNews(params QueryParams) ([]map[string]interface{}, error) {
 	return c.queryContent(params, "News")
 }
@@ -115,14 +81,11 @@ func (c *Client) QueryAllContent(params QueryParams) ([]map[string]interface{}, 
 	return c.queryContent(params, "All")
 }
 
-// helper function called in the QueryNews and QueryStories functions
-// builds the SQL query string based on the query params
 func (c *Client) queryContent(params QueryParams, contentType string) ([]map[string]interface{}, error) {
 	var baseQuery string
 	var queryParams []interface{}
 	paramCount := 1
 
-	// helper func to build the select part of the query
 	buildSelect := func(tableAlias string) string {
 		baseSelect := fmt.Sprintf(`
 			SELECT 
@@ -161,132 +124,26 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 		return baseSelect + fmt.Sprintf(`, %[1]s.pages, COALESCE((SELECT tier FROM audiobooks WHERE audiobooks.story_id = %[1]s.id), 'NONE')::text`, tableAlias)
 	}
 
-	if params.ClassroomID != "" {
-		if params.WhitelistStatus == "rejected" {
-			if contentType == "All" {
-				baseQuery = fmt.Sprintf(`
-					SELECT * FROM (
-						(
-							%s
-							FROM stories stories
-							WHERE NOT EXISTS (
-								SELECT 1 FROM accepted_content ac 
-								WHERE ac.classroom_id = $1 
-								AND ac.story_id = stories.id
-							)
-						)
-						UNION ALL
-						(
-							%s
-							FROM news news
-							WHERE NOT EXISTS (
-								SELECT 1 FROM accepted_content ac 
-								WHERE ac.classroom_id = $1 
-								AND ac.news_id = news.id
-							)
-						)
-					) combined_results
-					WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
-				queryParams = append(queryParams, params.ClassroomID)
-				paramCount = 2
-			} else if contentType == "Story" {
-				baseQuery = fmt.Sprintf(`
+	if contentType == "All" {
+		baseQuery = fmt.Sprintf(`
+			SELECT * FROM (
+				(
 					%s
 					FROM stories stories
-					WHERE NOT EXISTS (
-						SELECT 1 FROM accepted_content ac 
-						WHERE ac.classroom_id = $1 
-						AND ac.story_id = stories.id
-					)`, buildSelect("stories"))
-			} else {
-				baseQuery = fmt.Sprintf(`
+					WHERE 1=1
+				)
+				UNION ALL
+				(
 					%s
 					FROM news news
-					WHERE NOT EXISTS (
-						SELECT 1 FROM accepted_content ac 
-						WHERE ac.classroom_id = $1 
-						AND ac.news_id = news.id
-					)`, buildSelect("news"))
-			}
-		} else if params.WhitelistStatus == "accepted" {
-			if contentType == "All" {
-				baseQuery = fmt.Sprintf(`
-					SELECT * FROM (
-						(
-							%s
-							FROM stories stories
-							INNER JOIN accepted_content ac ON stories.id = ac.story_id 
-							WHERE ac.classroom_id = $1
-						)
-						UNION ALL
-						(
-							%s
-							FROM news news
-							INNER JOIN accepted_content ac ON news.id = ac.news_id 
-							WHERE ac.classroom_id = $1
-						)
-					) combined_results
-					WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
-			} else if contentType == "Story" {
-				baseQuery = fmt.Sprintf(`
-					%s
-					FROM stories stories
-					INNER JOIN accepted_content ac ON stories.id = ac.story_id 
-					WHERE ac.classroom_id = $1`, buildSelect("stories"))
-			} else {
-				baseQuery = fmt.Sprintf(`
-					%s
-					FROM news news
-					INNER JOIN accepted_content ac ON news.id = ac.news_id 
-					WHERE ac.classroom_id = $1`, buildSelect("news"))
-			}
-			queryParams = append(queryParams, params.ClassroomID)
-			paramCount = 2
-		} else {
-			if contentType == "All" {
-				baseQuery = fmt.Sprintf(`
-					SELECT * FROM (
-						(
-							%s
-							FROM stories stories
-							WHERE 1=1
-						)
-						UNION ALL
-						(
-							%s
-							FROM news news
-							WHERE 1=1
-						)
-					) combined_results
-					WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
-			} else if contentType == "Story" {
-				baseQuery = fmt.Sprintf(`%s FROM stories stories WHERE 1=1`, buildSelect("stories"))
-			} else {
-				baseQuery = fmt.Sprintf(`%s FROM news news WHERE 1=1`, buildSelect("news"))
-			}
-		}
+					WHERE 1=1
+				)
+			) combined_results
+			WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
+	} else if contentType == "Story" {
+		baseQuery = fmt.Sprintf(`%s FROM stories stories WHERE 1=1`, buildSelect("stories"))
 	} else {
-		if contentType == "All" {
-			baseQuery = fmt.Sprintf(`
-				SELECT * FROM (
-					(
-						%s
-						FROM stories stories
-						WHERE 1=1
-					)
-					UNION ALL
-					(
-						%s
-						FROM news news
-						WHERE 1=1
-					)
-				) combined_results
-				WHERE 1=1`, buildSelect("stories"), buildSelect("news"))
-		} else if contentType == "Story" {
-			baseQuery = fmt.Sprintf(`%s FROM stories stories WHERE 1=1`, buildSelect("stories"))
-		} else {
-			baseQuery = fmt.Sprintf(`%s FROM news news WHERE 1=1`, buildSelect("news"))
-		}
+		baseQuery = fmt.Sprintf(`%s FROM news news WHERE 1=1`, buildSelect("news"))
 	}
 
 	if params.Language != "" && params.Language != "any" {
@@ -356,7 +213,6 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 			"date_created": dateCreated.Time.Format("2006-01-02"),
 		}
 
-		// add pages for Story or All content type
 		if contentType == "Story" || contentType == "All" {
 			if pages.Valid {
 				result["pages"] = pages.Int32
@@ -365,7 +221,6 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 			}
 		}
 
-		// Add content_type for All content type
 		if contentType == "All" {
 			result["content_type"] = contentTypeStr.String
 		}
@@ -384,7 +239,6 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 	return results, nil
 }
 
-// retrieves a question for the given content type, id, question type and CEFR level
 func (c *Client) GetContentQuestion(contentType string, contentID string, questionType string, cefrLevel string) (map[string]interface{}, error) {
 	var query string
 	if contentType == "Story" {
@@ -440,7 +294,6 @@ func (c *Client) GetContentQuestion(contentType string, contentID string, questi
 	return result, nil
 }
 
-// creates a new question for the given content (story/news)
 func (c *Client) CreateContentQuestion(contentType string, contentID string, questionType string, cefrLevel string, question string) error {
 	var query string
 	if contentType == "Story" {
@@ -472,7 +325,6 @@ func (c *Client) CreateContentQuestion(contentType string, contentID string, que
 	return nil
 }
 
-// retrieves a single content row (news or story) by its ID
 func (c *Client) GetContentByID(contentType string, contentID string) (map[string]interface{}, error) {
 	var query string
 	if contentType == "Story" {
@@ -695,150 +547,4 @@ func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
 		return 0, false, err
 	}
 	return streak, completedToday, nil
-}
-
-func (c *Client) GetClassroomById(classroomID string) (string, int, error) {
-	var teacher_id string
-	var students_count int
-	err := c.db.QueryRow(`
-		SELECT teacher_id, student_count
-		FROM classrooms
-		WHERE id = $1
-	`, classroomID).Scan(&teacher_id, &students_count)
-
-	if err != nil {
-		return "", 0, err
-	}
-
-	return teacher_id, students_count, nil
-}
-
-func (c *Client) CheckStudentStatus(userID string) (string, string, error) {
-	var studentID string
-	var classroomID string
-	err := c.db.QueryRow(`
-		SELECT student_id, classroom_id
-		FROM students
-		WHERE user_id = $1
-	`, userID).Scan(&studentID, &classroomID)
-
-	if err == sql.ErrNoRows {
-		return "", "", nil
-	}
-	if err != nil {
-		return "", "", fmt.Errorf("failed to check student status: %v", err)
-	}
-
-	return studentID, classroomID, nil
-}
-
-func (c *Client) CreateClassroom(teacherID string, name string, student_count int) (string, error) {
-	var classroomID string
-	err := c.db.QueryRow(`
-		INSERT INTO classrooms (teacher_id, student_count, name)
-		VALUES ($1, $2, $3)
-		RETURNING id
-	`, teacherID, student_count, name).Scan(&classroomID)
-
-	if err == sql.ErrNoRows {
-		return "", fmt.Errorf("failed to create classroom: Teacher already has a classroom")
-	}
-
-	if err != nil {
-		return "", fmt.Errorf("failed to create classroom: %v", err)
-	}
-
-	return classroomID, nil
-}
-
-func (c *Client) AddStudentToClassroom(classroomID string, studentID string) error {
-	tx, err := c.db.Begin()
-	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %v", err)
-	}
-	_, err = tx.Exec(`
-		INSERT INTO students (user_id, classroom_id)
-		VALUES ($1, $2)
-	`, studentID, classroomID)
-	if err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to add student to classroom: %v", err)
-	}
-
-	_, err = tx.Exec(`
-		UPDATE classrooms
-		SET student_count = student_count + 1
-		WHERE id = $1
-	`, classroomID)
-	if err != nil {
-		tx.Rollback()
-		return fmt.Errorf("failed to update student count: %v", err)
-	}
-
-	// Commit transaction
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction: %v", err)
-	}
-
-	return nil
-}
-
-func (c *Client) AcceptContent(classroomID int, contentType string, contentID int) error {
-	var query string
-
-	if contentType == "Story" {
-		query = `
-            INSERT INTO accepted_content (classroom_id, story_id)
-            VALUES ($1, $2)
-            ON CONFLICT (classroom_id, story_id) DO NOTHING
-        `
-	} else if contentType == "News" {
-		query = `
-            INSERT INTO accepted_content (classroom_id, news_id)
-            VALUES ($1, $2)
-            ON CONFLICT (classroom_id, news_id) DO NOTHING
-        `
-	} else {
-		return fmt.Errorf("invalid content type: %s", contentType)
-	}
-
-	_, err := c.db.Exec(query, classroomID, contentID)
-	if err != nil {
-		return fmt.Errorf("failed to accept content: %v", err)
-	}
-
-	return nil
-}
-
-func (c *Client) RejectContent(classroomID int, contentType string, contentID int) error {
-	var query string
-	if contentType == "Story" {
-		query = `
-            DELETE FROM accepted_content 
-            WHERE classroom_id = $1 AND story_id = $2
-        `
-	} else if contentType == "News" {
-		query = `
-            DELETE FROM accepted_content 
-            WHERE classroom_id = $1 AND news_id = $2
-        `
-	} else {
-		return fmt.Errorf("invalid content type: %s", contentType)
-	}
-
-	result, err := c.db.Exec(query, classroomID, contentID)
-	if err != nil {
-		return fmt.Errorf("failed to reject content: %v", err)
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("failed to get rows affected: %v", err)
-	}
-
-	if rowsAffected == 0 {
-		return fmt.Errorf("content was not accepted in classroom")
-	}
-
-	return nil
 }
