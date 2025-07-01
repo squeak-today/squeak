@@ -35,7 +35,7 @@ func New(dbClient *supabase.Client) *StoryHandler {
 //	@Failure		404		{object}	models.ErrorResponse
 //	@Router			/story [get]
 func (h *StoryHandler) GetStoryPage(c *gin.Context) {
-	userID := h.GetUserIDFromToken(c)
+	// userID := h.GetUserIDFromToken(c)
 	id := c.Query("id")
 	page := c.Query("page")
 
@@ -48,23 +48,6 @@ func (h *StoryHandler) GetStoryPage(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Page parameter incorrect"})
 		return
-	}
-
-	_, classroomID, err := h.DBClient.CheckStudentStatus(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check student status"})
-		return
-	}
-	if classroomID != "" {
-		accepted, err := h.DBClient.CheckAcceptedContent(classroomID, "News", id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check accepted content"})
-			return
-		}
-		if !accepted {
-			c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Content not accepted in classroom"})
-			return
-		}
 	}
 
 	// Get the record from supabase db
@@ -170,7 +153,7 @@ func (h *StoryHandler) GetStoryQNAContext(c *gin.Context) {
 //	@Success		200			{object}	models.GetStoryQueryResponse
 //	@Router			/story/query [get]
 func (h *StoryHandler) GetStoryQuery(c *gin.Context) {
-	userID := h.GetUserIDFromToken(c)
+	// userID := h.GetUserIDFromToken(c)
 	language := c.Query("language")
 	cefr := c.Query("cefr")
 	subject := c.Query("subject")
@@ -204,16 +187,6 @@ func (h *StoryHandler) GetStoryQuery(c *gin.Context) {
 		PageSize: pageSizeNum,
 	}
 
-	_, classroomID, err := h.DBClient.CheckStudentStatus(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check student status"})
-		return
-	}
-
-	if classroomID != "" {
-		params.ClassroomID = classroomID
-		params.WhitelistStatus = "accepted"
-	}
 	results, err := h.DBClient.QueryStories(params)
 	if err != nil {
 		log.Printf("Query failed: %v", err)

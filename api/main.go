@@ -29,14 +29,11 @@ import (
 	"story-api/handlers/audiohandler"
 	billing "story-api/handlers/billinghandler"
 	"story-api/handlers/newshandler"
-	org "story-api/handlers/orghandler"
 	"story-api/handlers/profilehandler"
 	"story-api/handlers/progresshandler"
 	"story-api/handlers/qnahandler"
 	"story-api/handlers/storyhandler"
 	"story-api/handlers/stripehandler"
-	"story-api/handlers/student"
-	"story-api/handlers/teacher"
 )
 
 type Profile = supabase.Profile
@@ -148,50 +145,6 @@ func main() {
 		billingGroup.GET("/usage", billingHandler.GetBillingAccountUsage)
 		billingGroup.POST("/create-checkout-session", billingHandler.CreateCheckoutSession)
 		billingGroup.POST("/cancel-subscription-eop", billingHandler.CancelSubscriptionAtEndOfPeriod)
-	}
-
-	orgHandler := org.New(dbClient)
-	orgGroup := router.Group("/organization")
-	{
-		orgGroup.GET("", orgHandler.CheckOrganization)
-		orgGroup.POST("/create", orgHandler.CreateOrganization)
-		orgGroup.POST("/join", orgHandler.JoinOrganization)
-
-		paymentsGroup := orgGroup.Group("/payments")
-		{
-			paymentsGroup.GET("", orgHandler.GetOrganizationPayments)
-			paymentsGroup.POST("/create-checkout-session", orgHandler.CreateCheckoutSession)
-			paymentsGroup.POST("/cancel-subscription-eop", orgHandler.CancelSubscriptionAtEndOfPeriod)
-		}
-	}
-
-	teacherHandler := teacher.New(dbClient)
-	teacherGroup := router.Group("/teacher")
-	{
-		teacherGroup.GET("", teacherHandler.CheckTeacherStatus)
-
-		classroomGroup := teacherGroup.Group("/classroom")
-		{
-			classroomGroup.GET("", teacherHandler.GetClassroomList)
-			classroomGroup.POST("/update", teacherHandler.UpdateClassroom)
-			classroomGroup.GET("/content", teacherHandler.QueryClassroomContent)
-			classroomGroup.POST("/create", teacherHandler.CreateClassroom)
-			classroomGroup.POST("/delete", teacherHandler.DeleteClassroom)
-			classroomGroup.POST("/accept", teacherHandler.AcceptContent)
-			classroomGroup.POST("/reject", teacherHandler.RejectContent)
-		}
-	}
-
-	studentHandler := student.New(dbClient)
-	studentGroup := router.Group("/student")
-	{
-		studentGroup.GET("", studentHandler.CheckStudentStatus)
-
-		classroomGroup := studentGroup.Group("/classroom")
-		{
-			classroomGroup.GET("", studentHandler.GetClassroomInfo)
-			classroomGroup.POST("/join", studentHandler.JoinClassroom)
-		}
 	}
 
 	audioHandler := audiohandler.New(dbClient, audioClient)

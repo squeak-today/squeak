@@ -34,29 +34,12 @@ func New(dbClient *supabase.Client) *NewsHandler {
 //	@Failure		500	{object}	models.ErrorResponse
 //	@Router			/news [get]
 func (h *NewsHandler) GetNews(c *gin.Context) {
-	userID := h.GetUserIDFromToken(c)
+	// userID := h.GetUserIDFromToken(c)
 	id := c.Query("id")
 
 	if id == "" {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "ID parameter is required"})
 		return
-	}
-
-	_, classroomID, err := h.DBClient.CheckStudentStatus(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check student status"})
-		return
-	}
-	if classroomID != "" {
-		accepted, err := h.DBClient.CheckAcceptedContent(classroomID, "News", id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check accepted content"})
-			return
-		}
-		if !accepted {
-			c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Content not accepted in classroom"})
-			return
-		}
 	}
 
 	// Get the record from supabase db
@@ -114,7 +97,7 @@ func (h *NewsHandler) GetNews(c *gin.Context) {
 //	@Success		200			{object}	models.GetNewsQueryResponse
 //	@Router			/news/query [get]
 func (h *NewsHandler) GetNewsQuery(c *gin.Context) {
-	userID := h.GetUserIDFromToken(c)
+	// userID := h.GetUserIDFromToken(c)
 	language := c.Query("language")
 	cefr := c.Query("cefr")
 	subject := c.Query("subject")
@@ -146,17 +129,6 @@ func (h *NewsHandler) GetNewsQuery(c *gin.Context) {
 		Subject:  subject,
 		Page:     pageNum,
 		PageSize: pageSizeNum,
-	}
-
-	_, classroomID, err := h.DBClient.CheckStudentStatus(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check student status"})
-		return
-	}
-
-	if classroomID != "" {
-		params.ClassroomID = classroomID
-		params.WhitelistStatus = "accepted"
 	}
 
 	results, err := h.DBClient.QueryNews(params)
