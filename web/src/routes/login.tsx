@@ -306,7 +306,6 @@ function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Mode Toggle */}
             <div className="flex mb-6 p-1 bg-muted rounded-lg">
               <button
                 type="button"
