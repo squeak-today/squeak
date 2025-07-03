@@ -1,14 +1,14 @@
 package stripehandler
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"os"
-	"encoding/json"
-	"story-api/handlers"
-	"story-api/models"
-	"story-api/supabase"
+	"squeak-api/handlers"
+	"squeak-api/models"
+	"squeak-api/supabase"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v81"
@@ -27,21 +27,21 @@ func New(dbClient *supabase.Client) *StripeHandler {
 	}
 }
 
-type HandleMode int 
+type HandleMode int
+
 const (
 	HandleModeIndividual HandleMode = iota
 	HandleModeOrganization
 )
 
-
-//	@Summary		Process Stripe webhook
-//	@Description	Validates and processes incoming webhook events from Stripe
-//	@Tags			stripe
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.WebhookResponse
-//	@Failure		400	{object}	models.ErrorResponse
-//	@Router			/webhook [post]
+// @Summary		Process Stripe webhook
+// @Description	Validates and processes incoming webhook events from Stripe
+// @Tags			stripe
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	models.WebhookResponse
+// @Failure		400	{object}	models.ErrorResponse
+// @Router			/webhook [post]
 func (h *StripeHandler) HandleWebhook(c *gin.Context) {
 	payload, err := io.ReadAll(c.Request.Body)
 	if err != nil {
@@ -74,11 +74,11 @@ func (h *StripeHandler) HandleWebhook(c *gin.Context) {
 	case "checkout.session.completed":
 		var checkout stripe.CheckoutSession
 		err := json.Unmarshal(event.Data.Raw, &checkout)
-        if err != nil {
-            log.Printf("Error parsing webhook JSON: %v\n", err)
-            c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error parsing webhook JSON"})
-            return
-        }
+		if err != nil {
+			log.Printf("Error parsing webhook JSON: %v\n", err)
+			c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error parsing webhook JSON"})
+			return
+		}
 		HandleCheckoutSessionCompleted(checkout, h.DBClient)
 	case "invoice.payment_succeeded":
 		var invoice stripe.Invoice

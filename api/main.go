@@ -23,17 +23,18 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
-	"story-api/audio"
-	"story-api/supabase"
+	"squeak-api/audio"
+	"squeak-api/supabase"
 
-	"story-api/handlers/audiohandler"
-	billing "story-api/handlers/billinghandler"
-	"story-api/handlers/newshandler"
-	"story-api/handlers/profilehandler"
-	"story-api/handlers/progresshandler"
-	"story-api/handlers/qnahandler"
-	"story-api/handlers/storyhandler"
-	"story-api/handlers/stripehandler"
+	"squeak-api/handlers/audiohandler"
+	billing "squeak-api/handlers/billinghandler"
+	"squeak-api/handlers/newshandler"
+	"squeak-api/handlers/profilehandler"
+	"squeak-api/handlers/progresshandler"
+	"squeak-api/handlers/qnahandler"
+	"squeak-api/handlers/storyhandler"
+	"squeak-api/handlers/stripehandler"
+	"squeak-api/handlers/workspaceshandler"
 )
 
 type Profile = supabase.Profile
@@ -192,6 +193,12 @@ func main() {
 	{
 		qnaGroup.POST("", qnaHandler.GetQuestion)
 		qnaGroup.POST("/evaluate", qnaHandler.EvaluateAnswer)
+	}
+
+	workspacesHandler := workspaceshandler.New(dbClient)
+	workspacesGroup := router.Group("/workspaces")
+	{
+		workspacesGroup.GET("", workspacesHandler.GetWorkspaces)
 	}
 
 	router.Run()

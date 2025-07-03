@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"story-api/plans"
+	"squeak-api/plans"
 )
 
 func getEndOfMonth() time.Time {
@@ -32,7 +32,7 @@ func (c *Client) InsertUsage(userID string, featureID string, amount int) error 
 		periodEnd = expiration
 	}
 
-	_, err = c.db.Exec(`
+	_, err = c.Db.Exec(`
 		INSERT INTO metered_usage (user_id, feature_id, plan, amount, period_end)
 		VALUES ($1, $2, $3, $4, $5)
 	`, userID, featureID, plan, amount, periodEnd.Format("2006-01-02"))
@@ -62,7 +62,7 @@ func (c *Client) GetUsage(userID string, featureID string, plan string) (int, er
 	}
 
 	var totalAmount int
-	err = c.db.QueryRow(`
+	err = c.Db.QueryRow(`
 		SELECT COALESCE(SUM(amount), 0)
 		FROM metered_usage
 		WHERE user_id = $1

@@ -1,15 +1,15 @@
 package storyhandler
 
-
 import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"story-api/handlers"
-	"story-api/models"
-	"story-api/supabase"
-	"story-api/storage"
+	"squeak-api/handlers"
+	"squeak-api/models"
+	"squeak-api/storage"
+	"squeak-api/supabase"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,17 +23,17 @@ func New(dbClient *supabase.Client) *StoryHandler {
 	}
 }
 
-//	@Summary		Get story page content
-//	@Description	Get story content by ID
-//	@Tags			story
-//	@Accept			json
-//	@Produce		json
-//	@Param			id		query		string	true	"Content ID"
-//	@Param			page	query		string	true	"Page"
-//	@Success		200		{object}	models.GetStoryPageResponse
-//	@Failure		403		{object}	models.ErrorResponse
-//	@Failure		404		{object}	models.ErrorResponse
-//	@Router			/story [get]
+// @Summary		Get story page content
+// @Description	Get story content by ID
+// @Tags			story
+// @Accept			json
+// @Produce		json
+// @Param			id		query		string	true	"Content ID"
+// @Param			page	query		string	true	"Page"
+// @Success		200		{object}	models.GetStoryPageResponse
+// @Failure		403		{object}	models.ErrorResponse
+// @Failure		404		{object}	models.ErrorResponse
+// @Router			/story [get]
 func (h *StoryHandler) GetStoryPage(c *gin.Context) {
 	// userID := h.GetUserIDFromToken(c)
 	id := c.Query("id")
@@ -91,15 +91,15 @@ func (h *StoryHandler) GetStoryPage(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//	@Summary		Get story QNA context
-//	@Description	Get story QNA context by ID
-//	@Tags			story
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	query		string	true	"Content ID"
-//	@Success		200	{object}	models.GetStoryQNAContextResponse
-//	@Failure		404	{object}	models.ErrorResponse
-//	@Router			/story/context [get]
+// @Summary		Get story QNA context
+// @Description	Get story QNA context by ID
+// @Tags			story
+// @Accept			json
+// @Produce		json
+// @Param			id	query		string	true	"Content ID"
+// @Success		200	{object}	models.GetStoryQNAContextResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Router			/story/context [get]
 func (h *StoryHandler) GetStoryQNAContext(c *gin.Context) {
 	id := c.Query("id")
 
@@ -140,18 +140,18 @@ func (h *StoryHandler) GetStoryQNAContext(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//	@Summary		Get story query
-//	@Description	Get story query by ID
-//	@Tags			story
-//	@Accept			json
-//	@Produce		json
-//	@Param			language	query		string	true	"Language"
-//	@Param			cefr		query		string	true	"CEFR"
-//	@Param			subject		query		string	true	"Subject"
-//	@Param			page		query		string	true	"Page"
-//	@Param			pagesize	query		string	true	"Page Size"
-//	@Success		200			{object}	models.GetStoryQueryResponse
-//	@Router			/story/query [get]
+// @Summary		Get story query
+// @Description	Get story query by ID
+// @Tags			story
+// @Accept			json
+// @Produce		json
+// @Param			language	query		string	true	"Language"
+// @Param			cefr		query		string	true	"CEFR"
+// @Param			subject		query		string	true	"Subject"
+// @Param			page		query		string	true	"Page"
+// @Param			pagesize	query		string	true	"Page Size"
+// @Success		200			{object}	models.GetStoryQueryResponse
+// @Router			/story/query [get]
 func (h *StoryHandler) GetStoryQuery(c *gin.Context) {
 	// userID := h.GetUserIDFromToken(c)
 	language := c.Query("language")

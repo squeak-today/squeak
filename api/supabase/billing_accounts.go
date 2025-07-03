@@ -7,7 +7,7 @@ import (
 
 func (c *Client) GetUserIDByCustomerID(customerID string) (string, error) {
 	var userID string
-	err := c.db.QueryRow(`
+	err := c.Db.QueryRow(`
 		SELECT user_id FROM billing_accounts WHERE customer_id = $1`,
 		customerID).Scan(&userID)
 	if err != nil {
@@ -23,12 +23,12 @@ func (c *Client) GetBillingAccount(userID string) (string, time.Time, bool, stri
 	var customerID *string
 	var subscriptionID *string
 
-	err := c.db.QueryRow(`
+	err := c.Db.QueryRow(`
 		SELECT plan, expiration, canceled, customer_id, subscription_id FROM billing_accounts WHERE user_id = $1`,
 		userID).Scan(&plan, &expiration, &canceled, &customerID, &subscriptionID)
 
 	if err != nil && err.Error() == "sql: no rows in result set" {
-		_, err = c.db.Exec(`
+		_, err = c.Db.Exec(`
 			INSERT INTO billing_accounts (user_id, plan, canceled)
 			VALUES ($1, 'FREE', false)`, userID)
 		if err != nil {
@@ -82,7 +82,7 @@ func (c *Client) UpdateBillingAccount(userID, plan, customerID, subscriptionID s
 			updated_at = CURRENT_TIMESTAMP
 		WHERE user_id = $6`
 
-	result, err := c.db.Exec(query, plan, customerID, subscriptionID, expirationValue, canceled, userID)
+	result, err := c.Db.Exec(query, plan, customerID, subscriptionID, expirationValue, canceled, userID)
 	if err != nil {
 		return fmt.Errorf("failed to update billing account: %w", err)
 	}

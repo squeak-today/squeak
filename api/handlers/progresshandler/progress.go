@@ -3,9 +3,9 @@ package progresshandler
 import (
 	"log"
 	"net/http"
-	"story-api/handlers"
-	"story-api/models"
-	"story-api/supabase"
+	"squeak-api/handlers"
+	"squeak-api/models"
+	"squeak-api/supabase"
 
 	"strconv"
 

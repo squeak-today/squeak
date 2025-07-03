@@ -8,10 +8,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"story-api/gemini"
-	"story-api/models"
-	"story-api/storage"
-	"story-api/supabase"
+	"squeak-api/gemini"
+	"squeak-api/models"
+	"squeak-api/storage"
+	"squeak-api/supabase"
 )
 
 type QNAHandler struct {
@@ -24,16 +24,16 @@ func New(dbClient *supabase.Client) *QNAHandler {
 	}
 }
 
-//	@Summary		Get or generate a question
-//	@Description	Get an existing question or generate a new one for the given content
-//	@Tags			qna
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.GetQuestionRequest	true	"Question request parameters"
-//	@Success		200		{object}	models.GetQuestionResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Failure		404		{object}	models.ErrorResponse
-//	@Router			/qna [post]
+// @Summary		Get or generate a question
+// @Description	Get an existing question or generate a new one for the given content
+// @Tags			qna
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.GetQuestionRequest	true	"Question request parameters"
+// @Success		200		{object}	models.GetQuestionResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Failure		404		{object}	models.ErrorResponse
+// @Router			/qna [post]
 func (h *QNAHandler) GetQuestion(c *gin.Context) {
 	var infoBody models.GetQuestionRequest
 
@@ -139,15 +139,15 @@ func (h *QNAHandler) GetQuestion(c *gin.Context) {
 	})
 }
 
-//	@Summary		Evaluate an answer
-//	@Description	Evaluate a user's answer to a question
-//	@Tags			qna
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.EvaluateAnswerRequest	true	"Answer evaluation request"
-//	@Success		200		{object}	models.EvaluateAnswerResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Router			/qna/evaluate [post]
+// @Summary		Evaluate an answer
+// @Description	Evaluate a user's answer to a question
+// @Tags			qna
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.EvaluateAnswerRequest	true	"Answer evaluation request"
+// @Success		200		{object}	models.EvaluateAnswerResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Router			/qna/evaluate [post]
 func (h *QNAHandler) EvaluateAnswer(c *gin.Context) {
 	var infoBody models.EvaluateAnswerRequest
 

@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"story-api/handlers"
-	"story-api/models"
-	"story-api/supabase"
+	"squeak-api/handlers"
+	"squeak-api/models"
+	"squeak-api/supabase"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -22,14 +22,14 @@ func New(dbClient *supabase.Client) *ProfileHandler {
 	}
 }
 
-//	@Summary		Get user profile
-//	@Description	Get the user's profile information
-//	@Tags			profile
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.GetProfileResponse
-//	@Failure		404	{object}	models.ErrorResponse
-//	@Router			/profile [get]
+// @Summary		Get user profile
+// @Description	Get the user's profile information
+// @Tags			profile
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	models.GetProfileResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Router			/profile [get]
 func (h *ProfileHandler) GetProfile(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 
@@ -58,16 +58,16 @@ func (h *ProfileHandler) GetProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//	@Summary		Upsert user profile
-//	@Description	Create or update the user's profile
-//	@Tags			profile
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.UpsertProfileRequest	true	"Profile information"
-//	@Success		200		{object}	models.UpsertProfileResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Failure		409		{object}	models.ErrorResponse
-//	@Router			/profile/upsert [post]
+// @Summary		Upsert user profile
+// @Description	Create or update the user's profile
+// @Tags			profile
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.UpsertProfileRequest	true	"Profile information"
+// @Success		200		{object}	models.UpsertProfileResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Failure		409		{object}	models.ErrorResponse
+// @Router			/profile/upsert [post]
 func (h *ProfileHandler) UpsertProfile(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 
@@ -84,10 +84,10 @@ func (h *ProfileHandler) UpsertProfile(c *gin.Context) {
 	}
 
 	supabaseProfile := &supabase.Profile{
-		Username:         profile.Username,
-		LearningLanguage: profile.LearningLanguage,
-		SkillLevel:       profile.SkillLevel,
-		InterestedTopics: profile.InterestedTopics,
+		Username:           profile.Username,
+		LearningLanguage:   profile.LearningLanguage,
+		SkillLevel:         profile.SkillLevel,
+		InterestedTopics:   profile.InterestedTopics,
 		DailyQuestionsGoal: profile.DailyQuestionsGoal,
 	}
 

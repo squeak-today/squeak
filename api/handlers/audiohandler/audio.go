@@ -1,17 +1,17 @@
 package audiohandler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"story-api/audio"
-	"story-api/handlers"
-	"story-api/models"
-	"story-api/plans"
-	"story-api/storage"
-	"story-api/supabase"
+	"squeak-api/audio"
+	"squeak-api/handlers"
+	"squeak-api/models"
+	"squeak-api/plans"
+	"squeak-api/storage"
+	"squeak-api/supabase"
 	"strconv"
 	"strings"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,28 +28,28 @@ func New(dbClient *supabase.Client, audioClient *audio.Client) *AudioHandler {
 	}
 }
 
-//	@Summary		Check audio service health
-//	@Description	Check if the audio service is live
-//	@Tags			audio
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.AudioHealthResponse
-//	@Router			/audio [get]
+// @Summary		Check audio service health
+// @Description	Check if the audio service is live
+// @Tags			audio
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	models.AudioHealthResponse
+// @Router			/audio [get]
 func (h *AudioHandler) CheckHealth(c *gin.Context) {
 	c.JSON(http.StatusOK, models.AudioHealthResponse{
 		Status: "live",
 	})
 }
 
-//	@Summary		Translate text
-//	@Description	Translate text from source language to target language
-//	@Tags			audio
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.TranslateRequest	true	"Translation request"
-//	@Success		200		{object}	models.TranslateResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Router			/audio/translate [post]
+// @Summary		Translate text
+// @Description	Translate text from source language to target language
+// @Tags			audio
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.TranslateRequest	true	"Translation request"
+// @Success		200		{object}	models.TranslateResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Router			/audio/translate [post]
 func (h *AudioHandler) Translate(c *gin.Context) {
 	var infoBody models.TranslateRequest
 	if err := c.ShouldBindJSON(&infoBody); err != nil {
@@ -71,16 +71,16 @@ func (h *AudioHandler) Translate(c *gin.Context) {
 	})
 }
 
-//	@Summary		Text to speech
-//	@Description	Convert text to speech audio
-//	@Tags			audio
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.TextToSpeechRequest	true	"Text to speech request"
-//	@Success		200		{object}	models.TextToSpeechResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Failure		500		{object}	models.ErrorResponse
-//	@Router			/audio/tts [post]
+// @Summary		Text to speech
+// @Description	Convert text to speech audio
+// @Tags			audio
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.TextToSpeechRequest	true	"Text to speech request"
+// @Success		200		{object}	models.TextToSpeechResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Failure		500		{object}	models.ErrorResponse
+// @Router			/audio/tts [post]
 func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	var infoBody models.TextToSpeechRequest
@@ -112,15 +112,15 @@ func (h *AudioHandler) TextToSpeech(c *gin.Context) {
 	})
 }
 
-//	@Summary		Speech to text
-//	@Description	Convert speech audio to text
-//	@Tags			audio
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.SpeechToTextRequest	true	"Speech to text request"
-//	@Success		200		{object}	models.SpeechToTextResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Router			/audio/stt [post]
+// @Summary		Speech to text
+// @Description	Convert speech audio to text
+// @Tags			audio
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.SpeechToTextRequest	true	"Speech to text request"
+// @Success		200		{object}	models.SpeechToTextResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Router			/audio/stt [post]
 func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	var infoBody models.SpeechToTextRequest
@@ -160,23 +160,23 @@ func (h *AudioHandler) SpeechToText(c *gin.Context) {
 	})
 }
 
-//	@Summary		Get audiobook
-//	@Description	Get audiobook for a news_id
-//	@Tags			audio
-//	@Accept			json
-//	@Produce		json
-//	@Param			news_id		query		string	false	"News ID"
-//	@Param			story_id	query		string	false	"Story ID"
-//	@Param			type		query		string	true	"story"
-//	@Param			page		query		string	true	"1"
-//	@Success		200			{object}	models.AudiobookResponse
-//	@Failure		404			{object}	models.ErrorResponse
-//	@Router			/audio/audiobook [get]
+// @Summary		Get audiobook
+// @Description	Get audiobook for a news_id
+// @Tags			audio
+// @Accept			json
+// @Produce		json
+// @Param			news_id		query		string	false	"News ID"
+// @Param			story_id	query		string	false	"Story ID"
+// @Param			type		query		string	true	"story"
+// @Param			page		query		string	true	"1"
+// @Success		200			{object}	models.AudiobookResponse
+// @Failure		404			{object}	models.ErrorResponse
+// @Router			/audio/audiobook [get]
 func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	pageStr := c.Query("page")
 	contentType := c.Query("type")
-	newsIDStr := c.Query("news_id")	
+	newsIDStr := c.Query("news_id")
 	storyIDStr := c.Query("story_id")
 	if newsIDStr == "" && storyIDStr == "" {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -184,9 +184,11 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	idStr := newsIDStr
-	if contentType == "story" { idStr = storyIDStr }
+	if contentType == "story" {
+		idStr = storyIDStr
+	}
 	_, err := strconv.Atoi(idStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{
@@ -234,9 +236,11 @@ func (h *AudioHandler) GetAudiobook(c *gin.Context) {
 			return
 		}
 	}
-	
+
 	keyContentType := "News"
-	if contentType == "story" { keyContentType = "Story" }
+	if contentType == "story" {
+		keyContentType = "Story"
+	}
 	s3Key := storage.GetAudiobookKey(audiobookInfo.Language, audiobookInfo.CEFRLevel, audiobookInfo.Topic, audiobookInfo.Date.Format("2006-01-02"), pageInt, keyContentType)
 	presignedURL, err := storage.GetPresignedURL(s3Key, 5) // 5 minute exp
 	if err != nil {

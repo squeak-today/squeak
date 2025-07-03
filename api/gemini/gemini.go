@@ -11,7 +11,7 @@ import (
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 
-	"story-api/prompts"
+	"squeak-api/prompts"
 )
 
 type GeminiClient struct {
@@ -34,7 +34,7 @@ const (
 	UNDERSTANDING_QUESTION_TEMPERATURE = 1.0
 	VOCAB_QUESTION_TEMPERATURE         = 0.3
 
-	EXPLANATION_MODEL = "gemini-1.5-flash"
+	EXPLANATION_MODEL       = "gemini-1.5-flash"
 	EXPLANATION_TEMPERATURE = 0.8
 )
 
@@ -71,7 +71,7 @@ func (c *GeminiClient) ExecutePrompt(model_name string, temperature float32, pro
 	model.ResponseMIMEType = "text/plain"
 
 	session := model.StartChat()
-    session.History = history
+	session.History = history
 
 	var result string
 	var lastErr error

@@ -581,6 +581,22 @@ definitions:
       url:
         type: string
     type: object
+  workspaces.GetWorkspacesResponse:
+    properties:
+      workspaces:
+        items:
+          $ref: '#/definitions/workspaces.Workspace'
+        type: array
+    type: object
+  workspaces.Workspace:
+    properties:
+      id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+      name:
+        example: My Workspace
+        type: string
+    type: object
 host: api.squeak.today
 info:
   contact: {}
@@ -1175,6 +1191,33 @@ paths:
       summary: Process Stripe webhook
       tags:
       - stripe
+  /workspaces:
+    get:
+      consumes:
+      - application/json
+      description: Get workspaces
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.GetWorkspacesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get workspaces
+      tags:
+      - workspace
 securityDefinitions:
   Bearer:
     description: JWT Authorization header using Bearer

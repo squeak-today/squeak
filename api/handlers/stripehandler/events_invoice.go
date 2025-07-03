@@ -2,9 +2,9 @@ package stripehandler
 
 import (
 	"log"
-	"story-api/supabase"
-	"time"
 	"os"
+	"squeak-api/supabase"
+	"time"
 
 	stripe "github.com/stripe/stripe-go/v81"
 	subscription "github.com/stripe/stripe-go/v81/subscription"
@@ -37,7 +37,7 @@ func HandleInvoicePaymentSucceeded(invoice stripe.Invoice, dbClient *supabase.Cl
 func HandleInvoicePaymentFailed(invoice stripe.Invoice, dbClient *supabase.Client) {
 	stripe.Key = os.Getenv("STRIPE_KEY")
 	customerRef := invoice.Customer
-	
+
 	userID, err := dbClient.GetUserIDByCustomerID(customerRef.ID)
 	if err != nil {
 		log.Printf("Error getting user ID: %v", err)

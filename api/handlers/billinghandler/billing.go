@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"log"
-	"story-api/handlers"
-	"story-api/models"
-	"story-api/plans"
-	useStripe "story-api/stripe"
-	"story-api/supabase"
+	"squeak-api/handlers"
+	"squeak-api/models"
+	"squeak-api/plans"
+	useStripe "squeak-api/stripe"
+	"squeak-api/supabase"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -27,18 +27,17 @@ func New(dbClient *supabase.Client) *BillingHandler {
 	}
 }
 
-
-//	@Summary		Check Billing Account
-//	@Description	Check Billing Account
-//	@Tags			billing
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.BillingAccountResponse
-//	@Failure		401	{object}	models.ErrorResponse
-//	@Router			/billing [get]
+// @Summary		Check Billing Account
+// @Description	Check Billing Account
+// @Tags			billing
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	models.BillingAccountResponse
+// @Failure		401	{object}	models.ErrorResponse
+// @Router			/billing [get]
 func (h *BillingHandler) GetBillingAccount(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
-	
+
 	plan, expiration, canceled, _, _, err := h.DBClient.GetBillingAccount(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get billing account"})
@@ -47,15 +46,15 @@ func (h *BillingHandler) GetBillingAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, models.BillingAccountResponse{Plan: plan, Expiration: expiration, Canceled: canceled})
 }
 
-//	@Summary		Get Billing Account Usage
-//	@Description	Get Billing Account Usage, assumes free plan
-//	@Tags			billing
-//	@Accept			json
-//	@Produce		json
-//	@Param			plan	query		string	false	"Plan"
-//	@Success		200		{object}	models.BillingAccountUsageResponse
-//	@Failure		401		{object}	models.ErrorResponse
-//	@Router			/billing/usage [get]
+// @Summary		Get Billing Account Usage
+// @Description	Get Billing Account Usage, assumes free plan
+// @Tags			billing
+// @Accept			json
+// @Produce		json
+// @Param			plan	query		string	false	"Plan"
+// @Success		200		{object}	models.BillingAccountUsageResponse
+// @Failure		401		{object}	models.ErrorResponse
+// @Router			/billing/usage [get]
 func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	reqPlan := c.Query("plan")
@@ -75,24 +74,24 @@ func (h *BillingHandler) GetBillingAccountUsage(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get usage"})
 	}
 	c.JSON(http.StatusOK, models.BillingAccountUsageResponse{
-		NaturalTTSUsage:    naturalTTSUsage,
-		MaxNaturalTTSUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.NATURAL_TTS_FEATURE].Plan[reqPlan],
-		PremiumSTTUsage:    premiumSTTUsage,
-		MaxPremiumSTTUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.PREMIUM_STT_FEATURE].Plan[reqPlan],
-		PremiumAudiobooksUsage: premiumAudiobooksUsage,
+		NaturalTTSUsage:           naturalTTSUsage,
+		MaxNaturalTTSUsage:        plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.NATURAL_TTS_FEATURE].Plan[reqPlan],
+		PremiumSTTUsage:           premiumSTTUsage,
+		MaxPremiumSTTUsage:        plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.PREMIUM_STT_FEATURE].Plan[reqPlan],
+		PremiumAudiobooksUsage:    premiumAudiobooksUsage,
 		MaxPremiumAudiobooksUsage: plans.FEATURE_ACCESS_LIMITS_BY_PLAN[plans.PREMIUM_AUDIOBOOKS_FEATURE].Plan[reqPlan],
 	})
 }
 
-//	@Summary		Create a Stripe checkout session (individual)
-//	@Description	Creates a checkout session and redirects to Stripe's payment page
-//	@Tags			billing
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.CreateIndividualCheckoutSessionRequest	true	"Create checkout session request"
-//	@Success		200		{object}	models.CreateIndividualCheckoutSessionResponse	"Redirect to Stripe Checkout"
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Router			/billing/create-checkout-session [post]
+// @Summary		Create a Stripe checkout session (individual)
+// @Description	Creates a checkout session and redirects to Stripe's payment page
+// @Tags			billing
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.CreateIndividualCheckoutSessionRequest	true	"Create checkout session request"
+// @Success		200		{object}	models.CreateIndividualCheckoutSessionResponse	"Redirect to Stripe Checkout"
+// @Failure		400		{object}	models.ErrorResponse
+// @Router			/billing/create-checkout-session [post]
 func (h *BillingHandler) CreateCheckoutSession(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	plan, _, _, customerID, _, err := h.DBClient.GetBillingAccount(userID) // primarily to ensure user has a bbilling account on supa
@@ -142,16 +141,15 @@ func (h *BillingHandler) CreateCheckoutSession(c *gin.Context) {
 	c.JSON(http.StatusOK, models.CreateIndividualCheckoutSessionResponse{RedirectUrl: s.URL})
 }
 
-
-//	@Summary		Cancel a Stripe individual subscription at the end of the period
-//	@Description	Cancel a Stripe individual subscription at the end of the period
-//	@Tags			billing
-//	@Accept			json
-//	@Produce		json
-//	@Param			request	body		models.CancelIndividualSubscriptionRequest	true	"Cancel subscription request"
-//	@Success		200		{object}	models.CancelIndividualSubscriptionResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Router			/billing/cancel-subscription-eop [post]
+// @Summary		Cancel a Stripe individual subscription at the end of the period
+// @Description	Cancel a Stripe individual subscription at the end of the period
+// @Tags			billing
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.CancelIndividualSubscriptionRequest	true	"Cancel subscription request"
+// @Success		200		{object}	models.CancelIndividualSubscriptionResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Router			/billing/cancel-subscription-eop [post]
 func (h *BillingHandler) CancelSubscriptionAtEndOfPeriod(c *gin.Context) {
 	userID := h.GetUserIDFromToken(c)
 	plan, expiration, _, _, subscriptionID, err := h.DBClient.GetBillingAccount(userID)

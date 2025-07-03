@@ -2,14 +2,13 @@ package stripehandler
 
 import (
 	"log"
-	"story-api/supabase"
-	"time"
 	"os"
+	"squeak-api/supabase"
+	"time"
 
 	stripe "github.com/stripe/stripe-go/v81"
 	subscription "github.com/stripe/stripe-go/v81/subscription"
 )
-
 
 // We need to handle INDIVIDUAL vs ORGANIZATION by checking "Premium" vs "Classroom"
 func HandleCheckoutSessionCompleted(checkout stripe.CheckoutSession, dbClient *supabase.Client) {

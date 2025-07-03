@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"story-api/handlers"
-	"story-api/models"
-	"story-api/supabase"
-	"story-api/storage"
+	"squeak-api/handlers"
+	"squeak-api/models"
+	"squeak-api/storage"
+	"squeak-api/supabase"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,17 +23,17 @@ func New(dbClient *supabase.Client) *NewsHandler {
 	}
 }
 
-//	@Summary		Get news content
-//	@Description	Get news content by ID
-//	@Tags			news
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	query		string	true	"Content ID"
-//	@Success		200	{object}	models.GetNewsResponse
-//	@Failure		400	{object}	models.ErrorResponse
-//	@Failure		404	{object}	models.ErrorResponse
-//	@Failure		500	{object}	models.ErrorResponse
-//	@Router			/news [get]
+// @Summary		Get news content
+// @Description	Get news content by ID
+// @Tags			news
+// @Accept			json
+// @Produce		json
+// @Param			id	query		string	true	"Content ID"
+// @Success		200	{object}	models.GetNewsResponse
+// @Failure		400	{object}	models.ErrorResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Failure		500	{object}	models.ErrorResponse
+// @Router			/news [get]
 func (h *NewsHandler) GetNews(c *gin.Context) {
 	// userID := h.GetUserIDFromToken(c)
 	id := c.Query("id")
@@ -84,18 +85,18 @@ func (h *NewsHandler) GetNews(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//	@Summary		Get news content
-//	@Description	Get news content by ID
-//	@Tags			news
-//	@Accept			json
-//	@Produce		json
-//	@Param			language	query		string	true	"Language"
-//	@Param			cefr		query		string	true	"CEFR"
-//	@Param			subject		query		string	true	"Subject"
-//	@Param			page		query		string	true	"Page"
-//	@Param			pagesize	query		string	true	"Page size"
-//	@Success		200			{object}	models.GetNewsQueryResponse
-//	@Router			/news/query [get]
+// @Summary		Get news content
+// @Description	Get news content by ID
+// @Tags			news
+// @Accept			json
+// @Produce		json
+// @Param			language	query		string	true	"Language"
+// @Param			cefr		query		string	true	"CEFR"
+// @Param			subject		query		string	true	"Subject"
+// @Param			page		query		string	true	"Page"
+// @Param			pagesize	query		string	true	"Page size"
+// @Success		200			{object}	models.GetNewsQueryResponse
+// @Router			/news/query [get]
 func (h *NewsHandler) GetNewsQuery(c *gin.Context) {
 	// userID := h.GetUserIDFromToken(c)
 	language := c.Query("language")

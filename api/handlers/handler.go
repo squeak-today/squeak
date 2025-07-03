@@ -3,9 +3,9 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"story-api/models"
-	"story-api/plans"
-	"story-api/supabase"
+	"squeak-api/models"
+	"squeak-api/plans"
+	"squeak-api/supabase"
 
 	"github.com/gin-gonic/gin"
 )

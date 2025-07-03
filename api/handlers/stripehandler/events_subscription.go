@@ -2,7 +2,7 @@ package stripehandler
 
 import (
 	"log"
-	"story-api/supabase"
+	"squeak-api/supabase"
 	"time"
 
 	"github.com/stripe/stripe-go/v81"
@@ -10,7 +10,7 @@ import (
 
 func HandleSubscriptionUpdated(subscription stripe.Subscription, dbClient *supabase.Client) {
 	customerID := subscription.Customer.ID
-	
+
 	userID, err := dbClient.GetUserIDByCustomerID(customerID)
 	if err != nil {
 		log.Printf("Error getting user ID: %v", err)
@@ -49,5 +49,5 @@ func HandleSubscriptionDeleted(subscription stripe.Subscription, dbClient *supab
 		log.Printf("Error updating billing account: %v", err)
 		return
 	}
-	log.Printf("HandleSubscriptionDeleted: Neither Organization nor Individual mode!")	
+	log.Printf("HandleSubscriptionDeleted: Neither Organization nor Individual mode!")
 }

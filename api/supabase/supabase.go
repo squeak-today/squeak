@@ -13,7 +13,7 @@ import (
 
 // supabase database client
 type Client struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 type QueryParams struct {
@@ -62,11 +62,11 @@ func NewClient() (*Client, error) {
 	config.PreferSimpleProtocol = true
 	db := stdlib.OpenDB(*config)
 
-	return &Client{db: db}, nil
+	return &Client{Db: db}, nil
 }
 
 func (c *Client) Close() error {
-	return c.db.Close()
+	return c.Db.Close()
 }
 
 func (c *Client) QueryNews(params QueryParams) ([]map[string]interface{}, error) {
@@ -168,7 +168,7 @@ func (c *Client) queryContent(params QueryParams, contentType string) ([]map[str
 	baseQuery += fmt.Sprintf(" LIMIT $%d OFFSET $%d", paramCount, paramCount+1)
 	queryParams = append(queryParams, params.PageSize, (params.Page-1)*params.PageSize)
 
-	rows, err := c.db.Query(baseQuery, queryParams...)
+	rows, err := c.Db.Query(baseQuery, queryParams...)
 	if err != nil {
 		return nil, fmt.Errorf("query execution failed: %v", err)
 	}
@@ -260,7 +260,7 @@ func (c *Client) GetContentQuestion(contentType string, contentID string, questi
 	var qType, cefr, question string
 	var createdAt time.Time
 
-	err := c.db.QueryRow(query, contentID, questionType, cefrLevel).Scan(
+	err := c.Db.QueryRow(query, contentID, questionType, cefrLevel).Scan(
 		&id,
 		&contentRefID,
 		&qType,
@@ -308,7 +308,7 @@ func (c *Client) CreateContentQuestion(contentType string, contentID string, que
 		return fmt.Errorf("invalid content type: %s", contentType)
 	}
 
-	result, err := c.db.Exec(query, contentID, questionType, cefrLevel, question)
+	result, err := c.Db.Exec(query, contentID, questionType, cefrLevel, question)
 	if err != nil {
 		return fmt.Errorf("failed to insert question: %v", err)
 	}
@@ -352,7 +352,7 @@ func (c *Client) GetContentByID(contentType string, contentID string) (map[strin
 		scanArgs = append(scanArgs, &pages)
 	}
 
-	err := c.db.QueryRow(query, contentID).Scan(scanArgs...)
+	err := c.Db.QueryRow(query, contentID).Scan(scanArgs...)
 
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -387,7 +387,7 @@ func (c *Client) GetProfile(userID string) (*Profile, error) {
 		WHERE user_id = $1`
 
 	var profile Profile
-	err := c.db.QueryRow(query, userID).Scan(
+	err := c.Db.QueryRow(query, userID).Scan(
 		&profile.Username,
 		&profile.LearningLanguage,
 		&profile.SkillLevel,
@@ -422,7 +422,7 @@ func (c *Client) UpsertProfile(userID string, profile *Profile) (int, error) {
 		RETURNING id`
 
 	var id int
-	err := c.db.QueryRow(
+	err := c.Db.QueryRow(
 		query,
 		userID,
 		profile.Username,
@@ -441,14 +441,14 @@ func (c *Client) UpsertProfile(userID string, profile *Profile) (int, error) {
 
 func (c *Client) GetTodayProgress(userID string) (*DailyProgress, error) {
 	var progress DailyProgress
-	err := c.db.QueryRow(`
+	err := c.Db.QueryRow(`
         SELECT user_id, date, questions_completed, goal_met
         FROM daily_progress
         WHERE user_id = $1 AND date = CURRENT_DATE
     `, userID).Scan(&progress.UserID, &progress.Date, &progress.QuestionsCompleted, &progress.GoalMet)
 
 	if err == sql.ErrNoRows {
-		err = c.db.QueryRow(`
+		err = c.Db.QueryRow(`
             INSERT INTO daily_progress (user_id, date)
             VALUES ($1, CURRENT_DATE)
             RETURNING user_id, date, questions_completed, goal_met
@@ -463,7 +463,7 @@ func (c *Client) GetTodayProgress(userID string) (*DailyProgress, error) {
 
 func (c *Client) IncrementQuestionsCompleted(userID string, amount int) error {
 	var dailyGoal int
-	err := c.db.QueryRow(`
+	err := c.Db.QueryRow(`
         SELECT daily_questions_goal 
         FROM profiles 
         WHERE user_id = $1
@@ -491,14 +491,14 @@ func (c *Client) IncrementQuestionsCompleted(userID string, amount int) error {
             goal_met = ((daily_progress.questions_completed + (SELECT increment_by FROM new_amount)) >= $3)
     `
 
-	_, err = c.db.Exec(query, userID, amount, dailyGoal)
+	_, err = c.Db.Exec(query, userID, amount, dailyGoal)
 	return err
 }
 
 func (c *Client) GetProgressStreak(userID string) (int, bool, error) {
 	var streak int
 	var completedToday bool
-	err := c.db.QueryRow(`
+	err := c.Db.QueryRow(`
 		WITH consecutive_days AS (
 			SELECT
 				date,

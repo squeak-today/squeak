@@ -526,6 +526,27 @@ Validates and processes incoming webhook events from Stripe
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
+### /workspaces
+
+#### GET
+##### Summary
+
+Get workspaces
+
+##### Description
+
+Get workspaces
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.GetWorkspacesResponse](#workspacesgetworkspacesresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
+---
 ### Models
 
 #### models.AudioHealthResponse
@@ -809,3 +830,16 @@ Validates and processes incoming webhook events from Stripe
 | score | number |  | No |
 | title | string |  | No |
 | url | string |  | No |
+
+#### workspaces.GetWorkspacesResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | No |
+
+#### workspaces.Workspace
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
+| name | string | *Example:* `"My Workspace"` | No |

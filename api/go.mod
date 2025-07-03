@@ -1,4 +1,4 @@
-module story-api
+module squeak-api
 
 go 1.23.2
 
