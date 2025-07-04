@@ -6,6 +6,7 @@ import (
 	"snout/handlers"
 	models "snout/models"
 	workspaces_models "snout/models/workspaces"
+	"snout/producer"
 	"snout/supabase"
 	workspaces "snout/supabase/workspaces"
 
@@ -14,11 +15,13 @@ import (
 
 type WorkspacesHandler struct {
 	*handlers.Handler
+	Producer *producer.Producer
 }
 
-func New(dbClient *supabase.Client) *WorkspacesHandler {
+func New(dbClient *supabase.Client, producer *producer.Producer) *WorkspacesHandler {
 	return &WorkspacesHandler{
-		Handler: handlers.New(dbClient),
+		Handler:  handlers.New(dbClient),
+		Producer: producer,
 	}
 }
 

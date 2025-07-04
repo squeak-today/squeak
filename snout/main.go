@@ -12,18 +12,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
 	"snout/audio"
+	"snout/producer"
 	"snout/supabase"
 
 	"snout/handlers/audiohandler"
@@ -100,7 +104,14 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	var err error
+	cfg, err := config.LoadDefaultConfig(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to load AWS configuration: %v", err)
+	}
+	sqsClient := sqs.NewFromConfig(cfg)
+
+	producer := producer.New(sqsClient)
+
 	dbClient, err = supabase.NewClient()
 	if err != nil {
 		log.Fatalf("Failed to initialize database connection: %v", err)
@@ -195,10 +206,16 @@ func main() {
 		qnaGroup.POST("/evaluate", qnaHandler.EvaluateAnswer)
 	}
 
-	workspacesHandler := workspaceshandler.New(dbClient)
+	workspacesHandler := workspaceshandler.New(dbClient, producer)
 	workspacesGroup := router.Group("/workspaces")
 	{
 		workspacesGroup.GET("", workspacesHandler.GetWorkspaces)
+
+		// /workspaces/{}/databases/{}/content
+		contentGroup := workspacesGroup.Group("/:workspace_id/databases/:database_id/content")
+		{
+			contentGroup.POST("/create", workspacesHandler.CreateContent)
+		}
 	}
 
 	router.Run()

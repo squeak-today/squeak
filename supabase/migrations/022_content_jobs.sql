@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS content_jobs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     database_id UUID REFERENCES content_databases(id) ON DELETE CASCADE,
     status TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

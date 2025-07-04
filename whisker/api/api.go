@@ -5,28 +5,48 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"whisker/types"
+	"whisker/worker"
 )
 
-type CreateRequest struct{}
+type API struct {
+	pool *worker.Pool
+}
 
-func SetupRoutes(r *gin.Engine) {
+func NewAPI(pool *worker.Pool) *API {
+	return &API{
+		pool: pool,
+	}
+}
+
+func (a *API) SetupRoutes(r *gin.Engine) {
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"status": "ok",
+			"status":      "ok",
+			"active_jobs": a.pool.ActiveJobs(),
 		})
 	})
 
 	r.POST("/create", func(c *gin.Context) {
-		var req CreateRequest
-		if err := c.ShouldBindJSON(&req); err != nil {
+		var jobRequest types.ContentJobRequest
+		if err := c.ShouldBindJSON(&jobRequest); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Invalid request payload: " + err.Error(),
 			})
 			return
 		}
 
-		log.Printf("Received creation request")
+		if err := a.pool.ProcessJob(&jobRequest, nil); err != nil {
+			log.Printf("Failed to process job: %v", err)
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"error": "Failed to process job: " + err.Error(),
+			})
+			return
+		}
 
-		c.JSON(http.StatusAccepted, gin.H{})
+		c.JSON(http.StatusAccepted, gin.H{
+			"message": "Job started successfully",
+		})
 	})
 }
