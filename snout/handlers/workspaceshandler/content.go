@@ -1,12 +1,15 @@
 package workspaceshandler
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	models "snout/models"
 	workspaces_models "snout/models/workspaces"
-	// workspaces "snout/supabase/workspaces"
+	workspaces "snout/supabase/workspaces"
+
+	whisker "whisker/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,7 +40,18 @@ func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	log.Println(userId, workspaceId, databaseId)
 	log.Println(req)
 
-	h.Producer.Send(req)
+	err := workspaces.UpsertContentJob(context.Background(), h.DBClient, userId, databaseId, "creation")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	h.Producer.Send(whisker.ContentJobRequest{
+		Job: whisker.ContentJob{
+			UserID:     userId,
+			DatabaseID: databaseId,
+		},
+	})
 
 	c.JSON(http.StatusOK, workspaces_models.CreateContentResponse{})
 }

@@ -1,13 +1,13 @@
 module snout
 
-go 1.23.2
+go 1.23.7
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.36.5
 	github.com/aws/aws-sdk-go-v2/config v1.29.17
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.66.2
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.38.8
-	github.com/gin-gonic/gin v1.10.0
+	github.com/gin-gonic/gin v1.10.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/generative-ai-go v0.19.0
 	github.com/jackc/pgx/v4 v4.18.3
