@@ -112,3 +112,33 @@ output "api_gateway_url_audio_tts" {
   value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/audio/tts"
   description = "Audio Text-to-Speech URL for Story API"
 }
+
+output "api_gateway_url_deck" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/deck"
+  description = "Deck URL for Story API (GET to list, POST to create)"
+}
+
+output "api_gateway_url_deck_id" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/deck/{deck_id}"
+  description = "Specific Deck URL for Story API (GET, PUT, DELETE operations)"
+}
+
+output "api_gateway_url_flashcard_create" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/flashcard/create"
+  description = "Flashcard Create URL for Story API (POST to create a flashcard)"
+}
+
+output "api_gateway_url_flashcard_id_update" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/flashcard/{flashcard_id}/update"
+  description = "Flashcard Update URL for Story API (POST to update a flashcard)"
+}
+
+output "api_gateway_url_flashcard_id_delete" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/flashcard/{flashcard_id}/delete"
+  description = "Flashcard Delete URL for Story API (POST to delete a flashcard)"
+}
+
+output "api_gateway_url_deck_id_delete" {
+  value       = "https://${aws_api_gateway_rest_api.story_api.id}.execute-api.us-east-2.amazonaws.com/${terraform.workspace}/deck/{deck_id}/delete"
+  description = "Deck Delete URL for Story API (POST to delete a deck)"
+}
