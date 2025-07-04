@@ -1,0 +1,38 @@
+name: Snout Go Lint
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'snout/**'
+  pull_request:
+    paths:
+      - 'snout/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.2'
+
+    - name: Download dependencies
+      run: |
+        cd snout
+        go mod download
+
+    - name: Lint
+      run: |
+        cd snout
+        if [[ -n "$(gofmt -d .)" ]]; then
+          echo "Code is not properly formatted. Please run 'go fmt ./...'"
+          gofmt -d .
+          exit 1
+        fi

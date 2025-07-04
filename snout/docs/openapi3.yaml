@@ -1,0 +1,1258 @@
+openapi: 3.0.0
+info:
+  contact: {}
+  description: Backend API for Squeak Platform
+  title: Squeak API
+  version: '1.0'
+servers:
+  - url: /
+paths:
+  /audio:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.AudioHealthResponse'
+          description: OK
+      tags:
+        - audio
+      description: Check if the audio service is live
+      summary: Check audio service health
+  /audio/audiobook:
+    get:
+      parameters:
+        - description: News ID
+          in: query
+          name: news_id
+          schema:
+            type: string
+        - description: Story ID
+          in: query
+          name: story_id
+          schema:
+            type: string
+        - description: story
+          in: query
+          name: type
+          required: true
+          schema:
+            type: string
+        - description: '1'
+          in: query
+          name: page
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.AudiobookResponse'
+          description: OK
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+      tags:
+        - audio
+      description: Get audiobook for a news_id
+      summary: Get audiobook
+  /audio/stt:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.SpeechToTextResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - audio
+      description: Convert speech audio to text
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.SpeechToTextRequest'
+        description: Speech to text request
+        required: true
+      summary: Speech to text
+  /audio/translate:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.TranslateResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - audio
+      description: Translate text from source language to target language
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.TranslateRequest'
+        description: Translation request
+        required: true
+      summary: Translate text
+  /audio/tts:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.TextToSpeechResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - audio
+      description: Convert text to speech audio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.TextToSpeechRequest'
+        description: Text to speech request
+        required: true
+      summary: Text to speech
+  /billing:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.BillingAccountResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - billing
+      description: Check Billing Account
+      summary: Check Billing Account
+  /billing/cancel-subscription-eop:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/models.CancelIndividualSubscriptionResponse
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - billing
+      description: Cancel a Stripe individual subscription at the end of the period
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.CancelIndividualSubscriptionRequest'
+        description: Cancel subscription request
+        required: true
+      summary: Cancel a Stripe individual subscription at the end of the period
+  /billing/create-checkout-session:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/models.CreateIndividualCheckoutSessionResponse
+          description: Redirect to Stripe Checkout
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - billing
+      description: Creates a checkout session and redirects to Stripe's payment page
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: >-
+                #/components/schemas/models.CreateIndividualCheckoutSessionRequest
+        description: Create checkout session request
+        required: true
+      summary: Create a Stripe checkout session (individual)
+  /billing/usage:
+    get:
+      parameters:
+        - description: Plan
+          in: query
+          name: plan
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.BillingAccountUsageResponse'
+          description: OK
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Unauthorized
+      tags:
+        - billing
+      description: 'Get Billing Account Usage, assumes free plan'
+      summary: Get Billing Account Usage
+  /news:
+    get:
+      parameters:
+        - description: Content ID
+          in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.GetNewsResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - news
+      description: Get news content by ID
+      summary: Get news content
+  /news/query:
+    get:
+      parameters:
+        - description: Language
+          in: query
+          name: language
+          required: true
+          schema:
+            type: string
+        - description: CEFR
+          in: query
+          name: cefr
+          required: true
+          schema:
+            type: string
+        - description: Subject
+          in: query
+          name: subject
+          required: true
+          schema:
+            type: string
+        - description: Page
+          in: query
+          name: page
+          required: true
+          schema:
+            type: string
+        - description: Page size
+          in: query
+          name: pagesize
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/models.NewsItem'
+                type: array
+          description: OK
+      tags:
+        - news
+      description: Get news content by ID
+      summary: Get news content
+  /profile:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.GetProfileResponse'
+          description: OK
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+      tags:
+        - profile
+      description: Get the user's profile information
+      summary: Get user profile
+  /profile/upsert:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.UpsertProfileResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Conflict
+      tags:
+        - profile
+      description: Create or update the user's profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.UpsertProfileRequest'
+        description: Profile information
+        required: true
+      summary: Upsert user profile
+  /progress:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.TodayProgressResponse'
+          description: OK
+      tags:
+        - progress
+      description: Get the user's progress for today
+      summary: Get today's progress
+  /progress/increment:
+    get:
+      parameters:
+        - description: Amount to increment by
+          in: query
+          name: amount
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.IncrementProgressResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - progress
+      description: Increment the number of questions completed for today
+      summary: Increment questions completed
+  /progress/streak:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.StreakResponse'
+          description: OK
+      tags:
+        - progress
+      description: Get the user's current streak and completion status
+      summary: Get streak information
+  /qna:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.GetQuestionResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+      tags:
+        - qna
+      description: Get an existing question or generate a new one for the given content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.GetQuestionRequest'
+        description: Question request parameters
+        required: true
+      summary: Get or generate a question
+  /qna/evaluate:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.EvaluateAnswerResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - qna
+      description: Evaluate a user's answer to a question
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.EvaluateAnswerRequest'
+        description: Answer evaluation request
+        required: true
+      summary: Evaluate an answer
+  /story:
+    get:
+      parameters:
+        - description: Content ID
+          in: query
+          name: id
+          required: true
+          schema:
+            type: string
+        - description: Page
+          in: query
+          name: page
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.GetStoryPageResponse'
+          description: OK
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Forbidden
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+      tags:
+        - story
+      description: Get story content by ID
+      summary: Get story page content
+  /story/context:
+    get:
+      parameters:
+        - description: Content ID
+          in: query
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.GetStoryQNAContextResponse'
+          description: OK
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+      tags:
+        - story
+      description: Get story QNA context by ID
+      summary: Get story QNA context
+  /story/query:
+    get:
+      parameters:
+        - description: Language
+          in: query
+          name: language
+          required: true
+          schema:
+            type: string
+        - description: CEFR
+          in: query
+          name: cefr
+          required: true
+          schema:
+            type: string
+        - description: Subject
+          in: query
+          name: subject
+          required: true
+          schema:
+            type: string
+        - description: Page
+          in: query
+          name: page
+          required: true
+          schema:
+            type: string
+        - description: Page Size
+          in: query
+          name: pagesize
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/models.StoryItem'
+                type: array
+          description: OK
+      tags:
+        - story
+      description: Get story query by ID
+      summary: Get story query
+  /webhook:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.WebhookResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - stripe
+      description: Validates and processes incoming webhook events from Stripe
+      summary: Process Stripe webhook
+  /workspaces:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.GetWorkspacesResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Get workspaces
+      summary: Get workspaces
+components:
+  schemas:
+    models.AudioHealthResponse:
+      properties:
+        status:
+          example: live
+          type: string
+      required:
+        - status
+      type: object
+    models.AudiobookResponse:
+      properties:
+        expires_in:
+          example: 300
+          type: integer
+        url:
+          example: 'https://bucket.s3.amazonaws.com/path/to/file?signed-params'
+          type: string
+      required:
+        - expires_in
+        - url
+      type: object
+    models.BillingAccountResponse:
+      properties:
+        canceled:
+          example: false
+          type: boolean
+        expiration:
+          example: '2025-01-01T00:00:00Z'
+          type: string
+        plan:
+          example: PRO
+          type: string
+      required:
+        - canceled
+        - expiration
+        - plan
+      type: object
+    models.BillingAccountUsageResponse:
+      properties:
+        max_natural_tts_usage:
+          example: 100
+          type: integer
+        max_premium_audiobooks_usage:
+          example: 100
+          type: integer
+        max_premium_stt_usage:
+          example: 100
+          type: integer
+        natural_tts_usage:
+          example: 10
+          type: integer
+        premium_audiobooks_usage:
+          example: 10
+          type: integer
+        premium_stt_usage:
+          example: 10
+          type: integer
+      required:
+        - max_natural_tts_usage
+        - max_premium_audiobooks_usage
+        - max_premium_stt_usage
+        - natural_tts_usage
+        - premium_audiobooks_usage
+        - premium_stt_usage
+      type: object
+    models.CancelIndividualSubscriptionRequest:
+      type: object
+    models.CancelIndividualSubscriptionResponse:
+      properties:
+        canceled_plan:
+          example: PREMIUM
+          type: string
+        current_expiration:
+          example: '2025-03-24T12:00:00Z'
+          type: string
+        success:
+          example: true
+          type: boolean
+      required:
+        - canceled_plan
+        - current_expiration
+        - success
+      type: object
+    models.CreateIndividualCheckoutSessionRequest:
+      type: object
+    models.CreateIndividualCheckoutSessionResponse:
+      properties:
+        redirect_url:
+          example: 'https://checkout.stripe.com/c/pay/123'
+          type: string
+      required:
+        - redirect_url
+      type: object
+    models.ERROR_CODE:
+      enum:
+        - PROFILE_NOT_FOUND
+        - NO_TRANSCRIPT
+        - AUTH_REQUIRED
+        - USAGE_LIMIT_REACHED
+        - USAGE_RESTRICTED
+      type: string
+      x-enum-varnames:
+        - PROFILE_NOT_FOUND
+        - NO_TRANSCRIPT
+        - AUTH_REQUIRED
+        - USAGE_LIMIT_REACHED
+        - USAGE_RESTRICTED
+    models.ErrorResponse:
+      properties:
+        code:
+          allOf:
+            - $ref: '#/components/schemas/models.ERROR_CODE'
+          enum:
+            - PROFILE_NOT_FOUND
+            - NO_TRANSCRIPT
+            - AUTH_REQUIRED
+            - USAGE_LIMIT_REACHED
+            - USAGE_RESTRICTED
+          example: PROFILE_NOT_FOUND
+        error:
+          example: Something went wrong
+          type: string
+      required:
+        - error
+      type: object
+    models.EvaluateAnswerRequest:
+      properties:
+        answer:
+          example: Hello
+          type: string
+        cefr:
+          example: B1
+          type: string
+        content:
+          example: 'Bonjour, comment ça va?'
+          type: string
+        question:
+          example: What does 'bonjour' mean?
+          type: string
+      required:
+        - answer
+        - cefr
+        - content
+        - question
+      type: object
+    models.EvaluateAnswerResponse:
+      properties:
+        evaluation:
+          example: PASS
+          type: string
+        explanation:
+          example: Perfect!
+          type: string
+      required:
+        - evaluation
+        - explanation
+      type: object
+    models.GetNewsResponse:
+      properties:
+        cefr_level:
+          example: B1
+          type: string
+        content:
+          example: Le contenu complet de l'article...
+          type: string
+        content_type:
+          example: News
+          type: string
+        date_created:
+          example: '2024-02-26'
+          type: string
+        dictionary:
+          $ref: '#/components/schemas/storage.Dictionary'
+        language:
+          example: French
+          type: string
+        preview_text:
+          example: Un résumé des nouvelles musicales...
+          type: string
+        sources:
+          items:
+            $ref: '#/components/schemas/storage.Source'
+          type: array
+        title:
+          example: L'actualité musicale en bref
+          type: string
+        topic:
+          example: Music
+          type: string
+      required:
+        - cefr_level
+        - content
+        - content_type
+        - date_created
+        - dictionary
+        - language
+        - preview_text
+        - sources
+        - title
+        - topic
+      type: object
+    models.GetProfileResponse:
+      properties:
+        daily_questions_goal:
+          example: 3
+          minimum: 0
+          type: integer
+        interested_topics:
+          example:
+            - '["NBA"]'
+          items:
+            type: string
+          type: array
+        learning_language:
+          example: French
+          type: string
+        skill_level:
+          example: B1
+          type: string
+        username:
+          example: connortbot
+          type: string
+      required:
+        - interested_topics
+        - learning_language
+        - skill_level
+        - username
+      type: object
+    models.GetQuestionRequest:
+      properties:
+        cefr_level:
+          example: B1
+          type: string
+        content_type:
+          example: News
+          type: string
+        id:
+          example: '123'
+          type: string
+        question_type:
+          enum:
+            - vocab
+            - understanding
+          example: vocab
+          type: string
+      required:
+        - cefr_level
+        - content_type
+        - id
+        - question_type
+      type: object
+    models.GetQuestionResponse:
+      properties:
+        question:
+          example: What does 'bonjour' mean?
+          type: string
+      required:
+        - question
+      type: object
+    models.GetStoryPageResponse:
+      properties:
+        cefr_level:
+          example: B1
+          type: string
+        content:
+          example: Le contenu complet de l'article...
+          type: string
+        content_type:
+          example: Story
+          type: string
+        date_created:
+          example: '2024-02-26'
+          type: string
+        language:
+          example: French
+          type: string
+        pages:
+          example: 10
+          type: integer
+        preview_text:
+          example: Un résumé des nouvelles musicales...
+          type: string
+        title:
+          example: L'actualité musicale en bref
+          type: string
+        topic:
+          example: Music
+          type: string
+      required:
+        - cefr_level
+        - content
+        - content_type
+        - date_created
+        - language
+        - pages
+        - preview_text
+        - title
+        - topic
+      type: object
+    models.GetStoryQNAContextResponse:
+      properties:
+        context:
+          example: Le contexte de l'histoire...
+          type: string
+      required:
+        - context
+      type: object
+    models.IncrementProgressResponse:
+      properties:
+        date:
+          example: '2025-02-26T00:00:00Z'
+          type: string
+        goal_met:
+          example: true
+          type: boolean
+        questions_completed:
+          example: 5
+          minimum: 0
+          type: integer
+        user_id:
+          example: '123'
+          type: string
+      required:
+        - date
+        - goal_met
+        - user_id
+      type: object
+    models.NewsItem:
+      properties:
+        audiobook_tier:
+          example: NONE
+          type: string
+        cefr_level:
+          example: B1
+          type: string
+        created_at:
+          example: '2024-02-26T13:01:13.390612Z'
+          type: string
+        date_created:
+          example: '2024-02-26'
+          type: string
+        id:
+          example: '123'
+          type: string
+        language:
+          example: French
+          type: string
+        preview_text:
+          example: Un résumé des nouvelles musicales...
+          type: string
+        title:
+          example: L'actualité musicale en bref
+          type: string
+        topic:
+          example: Music
+          type: string
+      required:
+        - audiobook_tier
+        - cefr_level
+        - created_at
+        - date_created
+        - id
+        - language
+        - preview_text
+        - title
+        - topic
+      type: object
+    models.SpeechToTextRequest:
+      properties:
+        audio_content:
+          example: base64-encoded-audio-content
+          type: string
+        language_code:
+          example: en-US
+          type: string
+        premium:
+          example: false
+          type: boolean
+      required:
+        - audio_content
+        - language_code
+      type: object
+    models.SpeechToTextResponse:
+      properties:
+        transcript:
+          example: 'Hello, how are you?'
+          type: string
+      required:
+        - transcript
+      type: object
+    models.StoryItem:
+      properties:
+        audiobook_tier:
+          example: NONE
+          type: string
+        cefr_level:
+          example: B1
+          type: string
+        created_at:
+          example: '2024-02-26T13:01:13.390612Z'
+          type: string
+        date_created:
+          example: '2024-02-26'
+          type: string
+        id:
+          example: '123'
+          type: string
+        language:
+          example: French
+          type: string
+        preview_text:
+          example: Un résumé des nouvelles musicales...
+          type: string
+        title:
+          example: L'actualité musicale en bref
+          type: string
+        topic:
+          example: Music
+          type: string
+      required:
+        - audiobook_tier
+        - cefr_level
+        - created_at
+        - date_created
+        - id
+        - language
+        - preview_text
+        - title
+        - topic
+      type: object
+    models.StreakResponse:
+      properties:
+        completed_today:
+          example: true
+          type: boolean
+        streak:
+          example: 7
+          minimum: 0
+          type: integer
+      required:
+        - completed_today
+      type: object
+    models.TextToSpeechRequest:
+      properties:
+        language_code:
+          example: en-US
+          type: string
+        natural:
+          example: false
+          type: boolean
+        text:
+          example: 'Hello, how are you?'
+          type: string
+        voice_name:
+          example: en-US-Standard-A
+          type: string
+      required:
+        - language_code
+        - text
+        - voice_name
+      type: object
+    models.TextToSpeechResponse:
+      properties:
+        audio_content:
+          example: base64-encoded-audio-content
+          type: string
+      required:
+        - audio_content
+      type: object
+    models.TodayProgressResponse:
+      properties:
+        date:
+          example: '2025-02-26T00:00:00Z'
+          type: string
+        goal_met:
+          example: true
+          type: boolean
+        questions_completed:
+          example: 5
+          minimum: 0
+          type: integer
+        user_id:
+          example: '123'
+          type: string
+      required:
+        - date
+        - goal_met
+        - user_id
+      type: object
+    models.TranslateRequest:
+      properties:
+        sentence:
+          example: 'Hello, how are you?'
+          type: string
+        source:
+          example: en
+          type: string
+        target:
+          example: fr
+          type: string
+      required:
+        - sentence
+        - source
+        - target
+      type: object
+    models.TranslateResponse:
+      properties:
+        sentence:
+          example: 'Bonjour, comment allez-vous?'
+          type: string
+      type: object
+    models.UpsertProfileRequest:
+      properties:
+        daily_questions_goal:
+          example: 3
+          minimum: 0
+          type: integer
+        interested_topics:
+          example:
+            - '["NBA"]'
+          items:
+            type: string
+          type: array
+        learning_language:
+          example: French
+          type: string
+        skill_level:
+          example: B1
+          type: string
+        username:
+          example: johndoe
+          type: string
+      required:
+        - interested_topics
+        - learning_language
+        - skill_level
+        - username
+      type: object
+    models.UpsertProfileResponse:
+      properties:
+        id:
+          example: 123
+          minimum: 0
+          type: integer
+        message:
+          example: Profile updated successfully
+          type: string
+      required:
+        - message
+      type: object
+    models.WebhookResponse:
+      properties:
+        received:
+          type: boolean
+        type:
+          type: string
+      type: object
+    storage.Dictionary:
+      properties:
+        translations:
+          properties:
+            sentences:
+              additionalProperties:
+                type: string
+              type: object
+            words:
+              additionalProperties:
+                type: string
+              type: object
+          type: object
+      type: object
+    storage.Source:
+      properties:
+        content:
+          type: string
+        score:
+          type: number
+        title:
+          type: string
+        url:
+          type: string
+      type: object
+    workspaces.GetWorkspacesResponse:
+      properties:
+        workspaces:
+          items:
+            $ref: '#/components/schemas/workspaces.Workspace'
+          type: array
+      type: object
+    workspaces.Workspace:
+      properties:
+        id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+        name:
+          example: My Workspace
+          type: string
+      type: object
+  securitySchemes:
+    Bearer:
+      description: JWT Authorization header using Bearer
+      in: header
+      name: Authorization
+      type: apiKey
+

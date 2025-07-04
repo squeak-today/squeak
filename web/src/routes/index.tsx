@@ -27,6 +27,9 @@ function Index() {
       </div>
     );
   }
+  if (process.env.NODE_ENV === 'development') {
+    console.log(jwtToken);
+  }
 
   if (!jwtToken) {
     return null;
