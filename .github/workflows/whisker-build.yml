@@ -1,0 +1,34 @@
+name: Whisker Go Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'whisker/**'
+  pull_request:
+    paths:
+      - 'whisker/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23.2'
+
+    - name: Download dependencies
+      run: |
+        cd whisker
+        go mod download
+
+    - name: Build
+      run: |
+        cd whisker
+        go build -v ./... 
