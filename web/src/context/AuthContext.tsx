@@ -19,6 +19,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setJwtToken(session?.access_token || null);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(session?.access_token);
+      }
       setIsLoading(false);
     };
     initSession();
