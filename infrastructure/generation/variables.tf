@@ -72,3 +72,9 @@ variable "content_generation_interval" {
   type        = string
   default     = "rate(30 minutes)"
 }
+
+variable "elevenlabs_api_key" {
+  description = "ElevenLabs API Key"
+  type        = string
+  sensitive   = true
+}

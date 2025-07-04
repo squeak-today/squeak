@@ -28,6 +28,7 @@ interface NewsItem {
     topic: string;
     cefr_level: string;
     date_created: string;
+    audiobook_tier: string;
 }
 
 const formatDate = () => {
@@ -184,6 +185,7 @@ const NewsRecommendations: React.FC<NewsRecommendationsProps> = ({ userLanguage,
                             tags={[newsItem.language, newsItem.topic]}
                             difficulty={newsItem.cefr_level}
                             date={newsItem.date_created}
+                            audiobookTier={newsItem.audiobook_tier}
                             onContentBlockClick={() => handleClick(newsItem)}
                         />
                     </RecommendationItem>

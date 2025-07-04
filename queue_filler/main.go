@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"math/rand"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,10 +16,11 @@ import (
 )
 
 type GenerationRequest struct {
-	Language    string `json:"language"`
-	CEFRLevel   string `json:"cefrLevel"`
-	Subject     string `json:"subject"`
-	ContentType string `json:"contentType"`
+	Language        string `json:"language"`
+	CEFRLevel       string `json:"cefrLevel"`
+	Subject         string `json:"subject"`
+	ContentType     string `json:"contentType"`
+	CreateAudiobook bool   `json:"createAudiobook"`
 }
 
 func handler(ctx context.Context) error {
@@ -37,6 +40,16 @@ func handler(ctx context.Context) error {
 	}
 	contentTypes := []string{"News"}
 
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	audiobookSubject := subjects[rng.Intn(len(subjects))]
+	log.Printf("Selected subject for audiobook generation: %s\n", audiobookSubject)
+
+	audiobookLevels := map[string]bool{
+		"A2": true,
+		"B1": true,
+		"C1": true,
+	}
+
 	store, err := NewClient()
 	if err != nil {
 		log.Printf("Failed to create store: %v\n", err)
@@ -45,7 +58,7 @@ func handler(ctx context.Context) error {
 	defer store.Close()
 
 	for _, subject := range subjects {
-		resp, err := webSearch("today " + subject + " news", 20)
+		resp, err := webSearch("today "+subject+" news", 20)
 		if err != nil {
 			log.Printf("Failed to search for %s: %v\n", subject, err)
 			continue
@@ -53,11 +66,11 @@ func handler(ctx context.Context) error {
 
 		for _, result := range resp.Results {
 			source := NewsSource{
-				Topic: subject,
-				Title: result.Title,
-				URL: result.URL,
+				Topic:   subject,
+				Title:   result.Title,
+				URL:     result.URL,
 				Content: result.Content,
-				Score: int(result.Score * 100),
+				Score:   int(result.Score * 100),
 			}
 			err := store.InsertNewsSource(&source)
 			if err != nil {
@@ -75,10 +88,11 @@ func handler(ctx context.Context) error {
 			for _, subject := range subjects {
 				for _, contentType := range contentTypes {
 					message := GenerationRequest{
-						Language: language,
-						CEFRLevel: cefrLevel,
-						Subject: subject,
-						ContentType: contentType,
+						Language:        language,
+						CEFRLevel:       cefrLevel,
+						Subject:         subject,
+						ContentType:     contentType,
+						CreateAudiobook: subject == audiobookSubject && audiobookLevels[cefrLevel],
 					}
 
 					messageBody, err := json.Marshal(message)
@@ -89,7 +103,7 @@ func handler(ctx context.Context) error {
 
 					// add to batch
 					batch = append(batch, &sqs.SendMessageBatchRequestEntry{
-						Id: aws.String(strconv.Itoa(len(batch))), // unique ID for the batch entry
+						Id:          aws.String(strconv.Itoa(len(batch))), // unique ID for the batch entry
 						MessageBody: aws.String(string(messageBody)),
 					})
 					batchSize++
