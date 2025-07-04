@@ -25,7 +25,9 @@ func (c *Client) GetAudiobook(contentType string, id string) (AudiobookInfo, err
 	}
 
 	tableName := contentType
-	if contentType == "story" { tableName = "stories" }
+	if contentType == "story" {
+		tableName = "stories"
+	}
 
 	err := c.Db.QueryRow(fmt.Sprintf("SELECT language, topic, cefr_level, date_created FROM %s WHERE id = $1", tableName),
 		id).Scan(&language, &topic, &cefr_level, &date)

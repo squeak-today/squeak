@@ -1,9 +1,9 @@
 package models
 
 type GetQuestionRequest struct {
-	ContentType string `json:"content_type" binding:"required" example:"News"`
-	ID          string `json:"id" binding:"required" example:"123"`
-	CEFRLevel   string `json:"cefr_level" binding:"required" example:"B1"`
+	ContentType  string `json:"content_type" binding:"required" example:"News"`
+	ID           string `json:"id" binding:"required" example:"123"`
+	CEFRLevel    string `json:"cefr_level" binding:"required" example:"B1"`
 	QuestionType string `json:"question_type" binding:"required,oneof=vocab understanding" example:"vocab"`
 }
 

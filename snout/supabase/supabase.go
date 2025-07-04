@@ -17,11 +17,11 @@ type Client struct {
 }
 
 type QueryParams struct {
-	Language        string
-	CEFR            string
-	Subject         string
-	Page            int
-	PageSize        int
+	Language string
+	CEFR     string
+	Subject  string
+	Page     int
+	PageSize int
 }
 
 // Add these near the top with other type definitions

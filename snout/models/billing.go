@@ -8,25 +8,25 @@ type BillingAccountResponse struct {
 	Canceled   bool      `json:"canceled" binding:"required" example:"false"`
 }
 
-type CreateIndividualCheckoutSessionRequest struct {}
+type CreateIndividualCheckoutSessionRequest struct{}
 
 type CreateIndividualCheckoutSessionResponse struct {
 	RedirectUrl string `json:"redirect_url" binding:"required" example:"https://checkout.stripe.com/c/pay/123"`
 }
 
-type CancelIndividualSubscriptionRequest struct {}
+type CancelIndividualSubscriptionRequest struct{}
 
 type CancelIndividualSubscriptionResponse struct {
-	Success bool `json:"success" binding:"required" example:"true"`
+	Success           bool   `json:"success" binding:"required" example:"true"`
 	CurrentExpiration string `json:"current_expiration" binding:"required" example:"2025-03-24T12:00:00Z"`
-	CanceledPlan string `json:"canceled_plan" binding:"required" example:"PREMIUM"`
+	CanceledPlan      string `json:"canceled_plan" binding:"required" example:"PREMIUM"`
 }
 
 type BillingAccountUsageResponse struct {
-	NaturalTTSUsage int `json:"natural_tts_usage" binding:"required" example:"10"`
-	MaxNaturalTTSUsage int `json:"max_natural_tts_usage" binding:"required" example:"100"`
-	PremiumSTTUsage int `json:"premium_stt_usage" binding:"required" example:"10"`
-	MaxPremiumSTTUsage int `json:"max_premium_stt_usage" binding:"required" example:"100"`
-	PremiumAudiobooksUsage int `json:"premium_audiobooks_usage" binding:"required" example:"10"`
+	NaturalTTSUsage           int `json:"natural_tts_usage" binding:"required" example:"10"`
+	MaxNaturalTTSUsage        int `json:"max_natural_tts_usage" binding:"required" example:"100"`
+	PremiumSTTUsage           int `json:"premium_stt_usage" binding:"required" example:"10"`
+	MaxPremiumSTTUsage        int `json:"max_premium_stt_usage" binding:"required" example:"100"`
+	PremiumAudiobooksUsage    int `json:"premium_audiobooks_usage" binding:"required" example:"10"`
 	MaxPremiumAudiobooksUsage int `json:"max_premium_audiobooks_usage" binding:"required" example:"100"`
 }

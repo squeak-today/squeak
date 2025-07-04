@@ -1,0 +1,10 @@
+- name: Check formatting
+  run: |
+    cd snout
+    files=$(gofmt -l .)
+    if [ -n "$files" ]; then
+      echo "These files need formatting:"
+      echo "$files"
+      echo "Run 'gofmt -w .' to fix"
+      exit 1
+    fi

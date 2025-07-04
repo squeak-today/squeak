@@ -12,7 +12,7 @@ const (
 	NATURAL_TTS_FEATURE = "natural_tts"
 	PREMIUM_STT_FEATURE = "premium_stt"
 
-	BASIC_AUDIOBOOKS_FEATURE = "basic_audiobooks"
+	BASIC_AUDIOBOOKS_FEATURE   = "basic_audiobooks"
 	PREMIUM_AUDIOBOOKS_FEATURE = "premium_audiobooks"
 )
 
@@ -24,29 +24,29 @@ type AccessLimitByPlan struct {
 var FEATURE_ACCESS_LIMITS_BY_PLAN = map[string]AccessLimitByPlan{
 	NATURAL_TTS_FEATURE: {
 		Plan: map[string]int{
-			"FREE": 20,
-			"BASIC": -1,
+			"FREE":    20,
+			"BASIC":   -1,
 			"PREMIUM": -1,
 		},
 	},
 	PREMIUM_STT_FEATURE: {
 		Plan: map[string]int{
-			"FREE": 20,
-			"BASIC": -1,
+			"FREE":    20,
+			"BASIC":   -1,
 			"PREMIUM": -1,
 		},
 	},
 	BASIC_AUDIOBOOKS_FEATURE: {
 		Plan: map[string]int{
-			"FREE": 0,
-			"BASIC": -1,
+			"FREE":    0,
+			"BASIC":   -1,
 			"PREMIUM": -1,
 		},
 	},
 	PREMIUM_AUDIOBOOKS_FEATURE: {
 		Plan: map[string]int{
-			"FREE": 5,
-			"BASIC": 5,
+			"FREE":    5,
+			"BASIC":   5,
 			"PREMIUM": -1,
 		},
 	},

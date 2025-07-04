@@ -7,7 +7,7 @@ import (
 func CreateQNAExplanationPrompt(cefr string, content string, question string, answer string, evaluation string) string {
 	var sb strings.Builder
 
-	if (evaluation == "PASS") {
+	if evaluation == "PASS" {
 		sb.WriteString("If there are any grammatical or spelling errors in the answer, write maximum 2 sentences pointing them out as POSSIBLE improvements. ")
 		sb.WriteString("If there are no errors, you must respond with 'Perfect!")
 		sb.WriteString("Answer with no more than 2 short sentences. Do NOT add an other preamble or comment.")
@@ -16,7 +16,7 @@ func CreateQNAExplanationPrompt(cefr string, content string, question string, an
 		sb.WriteString("You must ONLY provide tips such as 'Try explaining X...' or 'Maybe explain X with more detail...'.")
 		sb.WriteString("Answer with no more than 2 short sentences. Do NOT add an other preamble or comment.")
 	}
-	
+
 	prompt := sb.String()
 	return prompt
 }
