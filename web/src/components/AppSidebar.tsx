@@ -13,13 +13,21 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
-import { Folder, ChevronRight } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Folder, ChevronRight, LogOut, ChevronDown } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState } from 'react';
 
 export function AppSidebar() {
   const { workspacesSummary } = useSidebarMenu();
+  const { logout } = useAuth();
   const [openWorkspaces, setOpenWorkspaces] = useState<Set<string>>(new Set());
   console.log(workspacesSummary);
 
@@ -43,9 +51,53 @@ export function AppSidebar() {
     });
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <Sidebar>
-      <SidebarHeader />
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="focus:outline-none focus:ring-0 focus:border-0"
+                >
+                  <div className="flex aspect-square size-8 items-center justify-center">
+                    <img 
+                      src="/logo500-transparent.png" 
+                      alt="Squeak Logo" 
+                      className="size-8 rounded"
+                    />
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">Squeak</span>
+                  </div>
+                  <ChevronDown className="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[var(--radix-dropdown-menu-trigger-width)] rounded-lg"
+                side="bottom"
+                align="start"
+                sideOffset={4}
+              >
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
