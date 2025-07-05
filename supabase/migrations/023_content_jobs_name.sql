@@ -1,0 +1,1 @@
+ALTER TABLE content_jobs ADD COLUMN name TEXT DEFAULT '';

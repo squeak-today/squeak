@@ -18,6 +18,7 @@ import (
 	"whisker/api"
 	"whisker/consumer"
 	"whisker/processor"
+	"whisker/storage"
 	"whisker/worker"
 )
 
@@ -41,13 +42,19 @@ func main() {
 	defer supabaseClient.Close()
 	log.Println("Supabase client initialized successfully")
 
+	s3Client, err := storage.NewS3Client(ctx)
+	if err != nil {
+		log.Fatalf("Failed to initialize S3 client: %v", err)
+	}
+	log.Println("S3 client initialized successfully")
+
 	maxWorkers := getEnvInt("MAX_WORKERS", 5)
 
-	contentProcessor := processor.NewContentProcessor(supabaseClient)
+	contentProcessor := processor.NewContentProcessor(supabaseClient, s3Client)
 	pool := worker.NewPool(ctx, maxWorkers, contentProcessor, supabaseClient)
 
 	var jobConsumer *consumer.Consumer
-	if workspace == "prod" || workspace == "dev_sqs" {
+	if workspace == "prod" || workspace == "dev_sqs" || workspace == "dev_sqs_s3" {
 		jobConsumer, err = consumer.NewConsumer(ctx, pool)
 		if err != nil {
 			log.Fatalf("Failed to initialize consumer: %v", err)

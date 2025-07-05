@@ -17,6 +17,7 @@ const (
 )
 
 type ContentJob struct {
+	Name       string `json:"name" required:"true"`
 	UserID     string `json:"user_id" required:"true"`
 	DatabaseID string `json:"database_id" required:"true"`
 }
@@ -24,6 +25,9 @@ type ContentJob struct {
 func ValidateContentJob(job *ContentJob) error {
 	if job == nil {
 		return fmt.Errorf("content job is nil")
+	}
+	if job.Name == "" {
+		return fmt.Errorf("name is required")
 	}
 	if job.UserID == "" {
 		return fmt.Errorf("user_id is required")
