@@ -53,7 +53,7 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 		Job:       jobRequest.Job,
 	}
 
-	if err := workspaces.UpdateContentJob(p.ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+	if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
 		p.mu.Unlock()
 		return fmt.Errorf("failed to update job status to pending: %w", err)
 	}
@@ -71,7 +71,7 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 		}()
 
 		job.Status = types.ContentJobStatusRunning
-		if err := workspaces.UpdateContentJob(p.ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
 			log.Printf("Failed to update job status to running: %v", err)
 			if onComplete != nil {
 				onComplete(false)
@@ -102,7 +102,7 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 			success = true
 		}
 
-		if err := workspaces.UpdateContentJob(p.ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
 			log.Printf("Failed to update final job status: %v", err)
 		}
 
@@ -134,7 +134,7 @@ func (p *Pool) Stop() {
 	p.mu.Lock()
 	activeCount := len(p.activeJobs)
 	p.mu.Unlock()
-	log.Printf("Worker pool stopped with %d unfinished jobs", activeCount)
+	log.Printf("Worker pool stopped with %d unfinished routines", activeCount)
 }
 
 func (p *Pool) ActiveJobs() int {

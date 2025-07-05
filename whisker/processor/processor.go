@@ -24,7 +24,7 @@ func NewContentProcessor(supabaseClient *supabase.Client, s3Client *storage.S3Cl
 }
 
 func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRecord) error {
-	if err := workspaces.UpdateContentJob(ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+	if err := workspaces.UpsertContentJob(ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
 		return err
 	}
 
@@ -40,17 +40,22 @@ func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRec
 		Markdown: "# Hello World\n\nThis is a placeholder content for testing.",
 	}
 
-	if err := p.s3Client.PutContent(ctx, job.Job.UserID, job.ID, content); err != nil {
-		log.Printf("Failed to store content: %v", err)
-		return err
-	}
-
 	select {
 	case <-time.After(5 * time.Second):
 	case <-ctx.Done():
 		return ctx.Err()
 	}
 
+	log.Printf("Storing content for user %s, database %s", job.Job.UserID, job.Job.DatabaseID)
+	if err := p.s3Client.PutContent(ctx, job.Job.UserID, job.ID, content); err != nil {
+		log.Printf("Failed to store content: %v", err)
+		return err
+	}
+	if _, err := workspaces.CreateContent(ctx, p.supabaseClient, job.Job.DatabaseID, job.Job.Name); err != nil {
+		log.Printf("Failed to create content: %v", err)
+		return err
+	}
+
 	log.Printf("Processed content job for user %s, database %s", job.Job.UserID, job.Job.DatabaseID)
-	return workspaces.UpdateContentJob(ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(types.ContentJobStatusComplete))
+	return workspaces.UpsertContentJob(ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(types.ContentJobStatusComplete))
 }

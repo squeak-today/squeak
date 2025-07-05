@@ -19,7 +19,7 @@ import (
 const (
 	MAX_NUMBER_OF_MESSAGES = int32(1)
 	LONG_POLL_TIMEOUT = int32(20)
-	VISIBILITY_TIMEOUT = int32(5 * 60)
+	VISIBILITY_TIMEOUT = int32(10) // int32(5 * 60)
 )
 
 type Consumer struct {
