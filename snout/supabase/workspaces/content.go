@@ -21,7 +21,6 @@ func CreateContent(ctx context.Context, client *supabase.Client, databaseId stri
 	return id, nil
 }
 
-
 func CreateContentJob(ctx context.Context, client *supabase.Client, userId string, databaseId string, name string) (string, error) {
 	var id string
 	err := client.Db.QueryRowContext(ctx, `
