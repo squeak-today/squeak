@@ -36,7 +36,7 @@ func ValidateContentJob(job *ContentJob) error {
 
 // SQS and /create request body
 type ContentJobRequest struct {
-	ID  string   `json:"id" required:"true"`
+	ID  string     `json:"id" required:"true"`
 	Job ContentJob `json:"job" required:"true"`
 }
 
