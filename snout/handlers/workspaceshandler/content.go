@@ -13,19 +13,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary		Create content
-// @Description	Create content
-// @Tags			workspace
-// @Accept			json
-// @Produce		json
-// @Param			workspace_id	path		string									true	"Workspace ID"
-// @Param			database_id		path		string									true	"Database ID"
-// @Param			content			body		workspaces_models.CreateContentRequest	true
-// @Success		200				{object}	workspaces_models.CreateContentResponse
-// @Failure		400				{object}	models.ErrorResponse
-// @Failure		404				{object}	models.ErrorResponse
-// @Failure		500				{object}	models.ErrorResponse
-// @Router			/workspaces/{workspace_id}/databases/{database_id}/content/create [post]
+//	@Summary		Create content
+//	@Description	Create content
+//	@Tags			workspace
+//	@Accept			json
+//	@Produce		json
+//	@Param			workspace_id	path		string									true	"Workspace ID"
+//	@Param			database_id		path		string									true	"Database ID"
+//	@Param			content			body		workspaces_models.CreateContentRequest	true	"Body"
+//	@Success		200				{object}	workspaces_models.CreateContentResponse
+//	@Failure		400				{object}	models.ErrorResponse
+//	@Failure		404				{object}	models.ErrorResponse
+//	@Failure		500				{object}	models.ErrorResponse
+//	@Router			/workspaces/{workspace_id}/databases/{database_id}/content/create [post]
 func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
 	databaseId := c.Param("database_id")

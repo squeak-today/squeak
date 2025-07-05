@@ -946,6 +946,113 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/workspaces/summary": {
+            "get": {
+                "description": "Get workspaces",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Get workspaces",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.WorkspacesSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace_id}/databases/{database_id}/content/create": {
+            "post": {
+                "description": "Create content",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Create content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Database ID",
+                        "name": "database_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Body",
+                        "name": "content",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.CreateContentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.CreateContentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1748,6 +1855,54 @@ const docTemplate = `{
                 }
             }
         },
+        "workspaces.CreateContentRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "workspaces.CreateContentResponse": {
+            "type": "object"
+        },
+        "workspaces.Database": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "xxxx-xxxx-xxxx-xxxx"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "My Database"
+                },
+                "type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/workspaces.DatabaseType"
+                        }
+                    ],
+                    "example": "content"
+                },
+                "workspace_id": {
+                    "type": "string",
+                    "example": "xxxx-xxxx-xxxx-xxxx"
+                }
+            }
+        },
+        "workspaces.DatabaseType": {
+            "type": "string",
+            "enum": [
+                "content"
+            ],
+            "x-enum-varnames": [
+                "DatabaseTypeContent"
+            ]
+        },
         "workspaces.GetWorkspacesResponse": {
             "type": "object",
             "properties": {
@@ -1769,6 +1924,23 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "My Workspace"
+                }
+            }
+        },
+        "workspaces.WorkspacesSummary": {
+            "type": "object",
+            "properties": {
+                "databases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspaces.Database"
+                    }
+                },
+                "workspaces": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspaces.Workspace"
+                    }
                 }
             }
         }

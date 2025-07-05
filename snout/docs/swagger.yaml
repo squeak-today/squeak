@@ -581,6 +581,37 @@ definitions:
       url:
         type: string
     type: object
+  workspaces.CreateContentRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  workspaces.CreateContentResponse:
+    type: object
+  workspaces.Database:
+    properties:
+      id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+      name:
+        example: My Database
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/workspaces.DatabaseType'
+        example: content
+      workspace_id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+    type: object
+  workspaces.DatabaseType:
+    enum:
+    - content
+    type: string
+    x-enum-varnames:
+    - DatabaseTypeContent
   workspaces.GetWorkspacesResponse:
     properties:
       workspaces:
@@ -596,6 +627,17 @@ definitions:
       name:
         example: My Workspace
         type: string
+    type: object
+  workspaces.WorkspacesSummary:
+    properties:
+      databases:
+        items:
+          $ref: '#/definitions/workspaces.Database'
+        type: array
+      workspaces:
+        items:
+          $ref: '#/definitions/workspaces.Workspace'
+        type: array
     type: object
 host: api.squeak.today
 info:
@@ -1203,6 +1245,77 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/workspaces.GetWorkspacesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get workspaces
+      tags:
+      - workspace
+  /workspaces/{workspace_id}/databases/{database_id}/content/create:
+    post:
+      consumes:
+      - application/json
+      description: Create content
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Database ID
+        in: path
+        name: database_id
+        required: true
+        type: string
+      - description: Body
+        in: body
+        name: content
+        required: true
+        schema:
+          $ref: '#/definitions/workspaces.CreateContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.CreateContentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create content
+      tags:
+      - workspace
+  /workspaces/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get workspaces
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.WorkspacesSummary'
         "400":
           description: Bad Request
           schema:

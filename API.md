@@ -546,6 +546,54 @@ Get workspaces
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
+### /workspaces/{workspace_id}/databases/{database_id}/content/create
+
+#### POST
+##### Summary
+
+Create content
+
+##### Description
+
+Create content
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+| database_id | path | Database ID | Yes | string |
+| content | body | Body | Yes | [workspaces.CreateContentRequest](#workspacescreatecontentrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.CreateContentResponse](#workspacescreatecontentresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
+### /workspaces/summary
+
+#### GET
+##### Summary
+
+Get workspaces
+
+##### Description
+
+Get workspaces
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.WorkspacesSummary](#workspacesworkspacessummary) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
 ---
 ### Models
 
@@ -831,6 +879,33 @@ Get workspaces
 | title | string |  | No |
 | url | string |  | No |
 
+#### workspaces.CreateContentRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string |  | Yes |
+
+#### workspaces.CreateContentResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| workspaces.CreateContentResponse | object |  |  |
+
+#### workspaces.Database
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
+| name | string | *Example:* `"My Database"` | No |
+| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | No |
+| workspace_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
+
+#### workspaces.DatabaseType
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| workspaces.DatabaseType | string |  |  |
+
 #### workspaces.GetWorkspacesResponse
 
 | Name | Type | Description | Required |
@@ -843,3 +918,10 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
 | name | string | *Example:* `"My Workspace"` | No |
+
+#### workspaces.WorkspacesSummary
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| databases | [ [workspaces.Database](#workspacesdatabase) ] |  | No |
+| workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | No |

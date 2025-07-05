@@ -1223,6 +1223,148 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workspaces/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get workspaces
+         * @description Get workspaces
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["workspaces.WorkspacesSummary"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workspaces/{workspace_id}/databases/{database_id}/content/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create content
+         * @description Create content
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Workspace ID */
+                    workspace_id: string;
+                    /** @description Database ID */
+                    database_id: string;
+                };
+                cookie?: never;
+            };
+            /** @description Body */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["workspaces.CreateContentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["workspaces.CreateContentResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1519,6 +1661,22 @@ export interface components {
             title?: string;
             url?: string;
         };
+        "workspaces.CreateContentRequest": {
+            name: string;
+        };
+        "workspaces.CreateContentResponse": Record<string, never>;
+        "workspaces.Database": {
+            /** @example xxxx-xxxx-xxxx-xxxx */
+            id?: string;
+            /** @example My Database */
+            name?: string;
+            /** @example content */
+            type?: components["schemas"]["workspaces.DatabaseType"];
+            /** @example xxxx-xxxx-xxxx-xxxx */
+            workspace_id?: string;
+        };
+        /** @enum {string} */
+        "workspaces.DatabaseType": "content";
         "workspaces.GetWorkspacesResponse": {
             workspaces?: components["schemas"]["workspaces.Workspace"][];
         };
@@ -1527,6 +1685,10 @@ export interface components {
             id?: string;
             /** @example My Workspace */
             name?: string;
+        };
+        "workspaces.WorkspacesSummary": {
+            databases?: components["schemas"]["workspaces.Database"][];
+            workspaces?: components["schemas"]["workspaces.Workspace"][];
         };
     };
     responses: never;

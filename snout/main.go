@@ -210,6 +210,7 @@ func main() {
 	workspacesGroup := router.Group("/workspaces")
 	{
 		workspacesGroup.GET("", workspacesHandler.GetWorkspaces)
+		workspacesGroup.GET("/summary", workspacesHandler.GetWorkspacesSummary)
 
 		// /workspaces/{}/databases/{}/content
 		contentGroup := workspacesGroup.Group("/:workspace_id/databases/:database_id/content")
