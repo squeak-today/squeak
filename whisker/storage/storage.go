@@ -27,6 +27,7 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	var cfg aws.Config
 	var err error
 
+	var bucket string
 	if workspace == "prod" || workspace == "dev_sqs_s3" {
 		cfg, err = config.LoadDefaultConfig(ctx,
 			config.WithRegion(os.Getenv("AWS_REGION")),
@@ -34,6 +35,7 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to load AWS config: %w", err)
 		}
+		bucket = os.Getenv("REMOTE_CONTENT_BUCKET_NAME")
 	} else {
 		cfg, err = config.LoadDefaultConfig(ctx,
 			config.WithRegion(os.Getenv("AWS_REGION")),
@@ -49,10 +51,10 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to load Minio config: %w", err)
 		}
+		bucket = os.Getenv("CONTENT_BUCKET_NAME")
 		log.Printf("Configured S3 client for local Minio")
 	}
 
-	bucket := os.Getenv("CONTENT_BUCKET_NAME")
 	if bucket == "" {
 		bucket = "squeak-storage"
 		log.Printf("Warning: CONTENT_BUCKET_NAME not set, using default: %s", bucket)

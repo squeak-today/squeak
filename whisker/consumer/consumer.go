@@ -16,6 +16,12 @@ import (
 	"whisker/worker"
 )
 
+const (
+	MAX_NUMBER_OF_MESSAGES = int32(1)
+	LONG_POLL_TIMEOUT = int32(20)
+	VISIBILITY_TIMEOUT = int32(5 * 60)
+)
+
 type Consumer struct {
 	client   *sqs.Client
 	queueURL string
@@ -98,12 +104,11 @@ func (c *Consumer) Start(ctx context.Context) {
 		case <-c.stopChan:
 			return
 		default:
-			visibilityTimeout := int32(25)
 			output, err := c.client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 				QueueUrl:            &c.queueURL,
-				MaxNumberOfMessages: 1,
-				WaitTimeSeconds:     20,
-				VisibilityTimeout:   visibilityTimeout,
+				MaxNumberOfMessages: MAX_NUMBER_OF_MESSAGES,
+				WaitTimeSeconds:     LONG_POLL_TIMEOUT,
+				VisibilityTimeout:   VISIBILITY_TIMEOUT,
 			})
 			if err != nil {
 				log.Printf("Error receiving message: %v", err)
