@@ -1,6 +1,10 @@
 <h1 align="center">Squeak 🐭</h1>
 
 # Running Locally:
+```
+cp .env.example whisker/.env
+cp .env.example snout/.env
+```
 - `supabase/`: `supabase start`
 - `web/`: `npm run dev`
 - `api/`: `go run main.go`

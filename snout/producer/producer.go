@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -29,7 +30,8 @@ func (p *Producer) Send(payload any) error {
 	}
 
 	workspace := os.Getenv("WORKSPACE")
-	if workspace != "prod" {
+	if workspace != "prod" && workspace != "dev_sqs" {
+		log.Println("Sending job request directly to Whisker")
 		whiskerURL := os.Getenv("WHISKER_URL")
 		if whiskerURL == "" {
 			return fmt.Errorf("WHISKER_URL environment variable not set")

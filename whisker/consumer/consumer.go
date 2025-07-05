@@ -3,12 +3,14 @@ package consumer
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	sqstypes "github.com/aws/aws-sdk-go-v2/service/sqs/types"
 
 	"whisker/types"
 	"whisker/worker"
@@ -47,6 +49,41 @@ func NewConsumer(ctx context.Context, pool *worker.Pool) (*Consumer, error) {
 	}, nil
 }
 
+func (c *Consumer) getQueueSize(ctx context.Context) (int32, error) {
+	attrs, err := c.client.GetQueueAttributes(ctx, &sqs.GetQueueAttributesInput{
+		QueueUrl: &c.queueURL,
+		AttributeNames: []sqstypes.QueueAttributeName{
+			sqstypes.QueueAttributeNameApproximateNumberOfMessages,
+			sqstypes.QueueAttributeNameApproximateNumberOfMessagesNotVisible,
+		},
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	visible := 0
+	if val, ok := attrs.Attributes["ApproximateNumberOfMessages"]; ok {
+		if n, err := parseInt32(val); err == nil {
+			visible = int(n)
+		}
+	}
+
+	inFlight := 0
+	if val, ok := attrs.Attributes["ApproximateNumberOfMessagesNotVisible"]; ok {
+		if n, err := parseInt32(val); err == nil {
+			inFlight = int(n)
+		}
+	}
+
+	return int32(visible + inFlight), nil
+}
+
+func parseInt32(s string) (int32, error) {
+	var n int32
+	_, err := fmt.Sscanf(s, "%d", &n)
+	return n, err
+}
+
 func (c *Consumer) Start(ctx context.Context) {
 	c.wg.Add(1)
 	defer c.wg.Done()
@@ -61,7 +98,7 @@ func (c *Consumer) Start(ctx context.Context) {
 		case <-c.stopChan:
 			return
 		default:
-			visibilityTimeout := int32(35 * 60) // 35 minutes - longer than job timeout (30 min)
+			visibilityTimeout := int32(25)
 			output, err := c.client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 				QueueUrl:            &c.queueURL,
 				MaxNumberOfMessages: 1,
@@ -80,6 +117,19 @@ func (c *Consumer) Start(ctx context.Context) {
 					c.deleteMessage(ctx, msg.ReceiptHandle)
 					continue
 				}
+
+				if err := types.ValidateContentJob(&jobRequest.Job); err != nil {
+					log.Printf("Invalid message format: %v", err)
+					c.deleteMessage(ctx, msg.ReceiptHandle)
+					continue
+				}
+
+				queueSize, err := c.getQueueSize(ctx)
+				if err != nil {
+					log.Printf("Warning: Could not get queue size: %v", err)
+				}
+
+				log.Printf("Processing job: %+v (Queue size: %d)", jobRequest, queueSize)
 
 				if err := c.pool.ProcessJob(&jobRequest, func(success bool) {
 					if success {
