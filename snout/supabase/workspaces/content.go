@@ -8,13 +8,13 @@ import (
 	"whisker/types"
 )
 
-func CreateContentJob(ctx context.Context, client *supabase.Client, userId string, databaseId string) (string, error) {
+func CreateContentJob(ctx context.Context, client *supabase.Client, userId string, databaseId string, name string) (string, error) {
 	var id string
 	err := client.Db.QueryRowContext(ctx, `
-		INSERT INTO content_jobs (user_id, database_id, status)
-		VALUES ($1, $2, $3)
+		INSERT INTO content_jobs (user_id, database_id, status, name)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
-	`, userId, databaseId, types.ContentJobStatusCreation).Scan(&id)
+	`, userId, databaseId, types.ContentJobStatusCreation, name).Scan(&id)
 	if err != nil {
 		return "", err
 	}

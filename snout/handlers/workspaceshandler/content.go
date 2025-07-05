@@ -2,7 +2,6 @@ package workspaceshandler
 
 import (
 	"context"
-	"log"
 	"net/http"
 
 	models "snout/models"
@@ -29,7 +28,6 @@ import (
 // @Router			/workspaces/{workspace_id}/databases/{database_id}/content/create [post]
 func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
-	workspaceId := c.Param("workspace_id")
 	databaseId := c.Param("database_id")
 
 	var req workspaces_models.CreateContentRequest
@@ -37,10 +35,8 @@ func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
-	log.Println(userId, workspaceId, databaseId)
-	log.Println(req)
 
-	id, err := workspaces.CreateContentJob(context.Background(), h.DBClient, userId, databaseId)
+	id, err := workspaces.CreateContentJob(context.Background(), h.DBClient, userId, databaseId, req.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
@@ -49,6 +45,7 @@ func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	h.Producer.Send(whisker.ContentJobRequest{
 		ID: id,
 		Job: whisker.ContentJob{
+			Name:       req.Name,
 			UserID:     userId,
 			DatabaseID: databaseId,
 		},
