@@ -46,3 +46,25 @@ func (h *WorkspacesHandler) GetWorkspaces(c *gin.Context) {
 
 	c.JSON(http.StatusOK, workspaces_models.GetWorkspacesResponse{Workspaces: workspaces})
 }
+
+// @Summary		Get workspaces
+// @Description	Get workspaces
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	workspaces_models.WorkspacesSummary
+// @Failure		400	{object}	models.ErrorResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Failure		500	{object}	models.ErrorResponse
+// @Router			/workspaces/summary [get]
+func (h *WorkspacesHandler) GetWorkspacesSummary(c *gin.Context) {
+	userId := h.GetUserIDFromToken(c)
+
+	summary, err := workspaces.GetWorkspacesSummary(h.DBClient, userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get workspaces summary"})
+		return
+	}
+
+	c.JSON(http.StatusOK, summary)
+}

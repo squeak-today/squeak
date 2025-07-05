@@ -20,7 +20,7 @@ import (
 // @Produce		json
 // @Param			workspace_id	path		string									true	"Workspace ID"
 // @Param			database_id		path		string									true	"Database ID"
-// @Param			content			body		workspaces_models.CreateContentRequest	true
+// @Param			content			body		workspaces_models.CreateContentRequest	true	"Body"
 // @Success		200				{object}	workspaces_models.CreateContentResponse
 // @Failure		400				{object}	models.ErrorResponse
 // @Failure		404				{object}	models.ErrorResponse

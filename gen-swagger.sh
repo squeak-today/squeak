@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd api
+cd snout
 swag fmt
 swag init
 npx swagger-markdown -i ./docs/swagger.yaml -o ../API.md

@@ -650,6 +650,88 @@ paths:
         - workspace
       description: Get workspaces
       summary: Get workspaces
+  /workspaces/summary:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.WorkspacesSummary'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Get workspaces
+      summary: Get workspaces
+  '/workspaces/{workspace_id}/databases/{database_id}/content/create':
+    post:
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Database ID
+          in: path
+          name: database_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.CreateContentResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Create content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workspaces.CreateContentRequest'
+        description: Body
+        required: true
+      summary: Create content
 components:
   schemas:
     models.AudioHealthResponse:
@@ -1233,6 +1315,42 @@ components:
         url:
           type: string
       type: object
+    workspaces.CreateContentRequest:
+      properties:
+        name:
+          type: string
+      required:
+        - name
+      type: object
+    workspaces.CreateContentResponse:
+      type: object
+    workspaces.Database:
+      properties:
+        id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+        name:
+          example: My Database
+          type: string
+        type:
+          allOf:
+            - $ref: '#/components/schemas/workspaces.DatabaseType'
+          example: content
+        workspace_id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+      required:
+        - id
+        - name
+        - type
+        - workspace_id
+      type: object
+    workspaces.DatabaseType:
+      enum:
+        - content
+      type: string
+      x-enum-varnames:
+        - DatabaseTypeContent
     workspaces.GetWorkspacesResponse:
       properties:
         workspaces:
@@ -1248,6 +1366,20 @@ components:
         name:
           example: My Workspace
           type: string
+      type: object
+    workspaces.WorkspacesSummary:
+      properties:
+        databases:
+          items:
+            $ref: '#/components/schemas/workspaces.Database'
+          type: array
+        workspaces:
+          items:
+            $ref: '#/components/schemas/workspaces.Workspace'
+          type: array
+      required:
+        - databases
+        - workspaces
       type: object
   securitySchemes:
     Bearer:
