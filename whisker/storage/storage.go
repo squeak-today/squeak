@@ -64,12 +64,12 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	if workspace == "prod" || workspace == "dev_sqs_s3" {
 		client = s3.NewFromConfig(cfg)
 	} else {
-		client = s3.NewFromConfig(cfg, func (o *s3.Options) {
+		client = s3.NewFromConfig(cfg, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(os.Getenv("S3_URL"))
 			o.UsePathStyle = true
 		})
 	}
-	
+
 	s3Client := &S3Client{
 		client: client,
 		bucket: bucket,
@@ -163,7 +163,7 @@ func (c *S3Client) EnsureBucketExists(ctx context.Context) error {
 	_, err := c.client.HeadBucket(ctx, &s3.HeadBucketInput{
 		Bucket: aws.String(c.bucket),
 	})
-	
+
 	if err == nil {
 		log.Printf("Bucket %s already exists", c.bucket)
 		return nil
@@ -173,7 +173,7 @@ func (c *S3Client) EnsureBucketExists(ctx context.Context) error {
 	_, err = c.client.CreateBucket(ctx, &s3.CreateBucketInput{
 		Bucket: aws.String(c.bucket),
 	})
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to create bucket %s: %w", c.bucket, err)
 	}
