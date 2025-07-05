@@ -27,7 +27,7 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	var cfg aws.Config
 	var err error
 
-	if workspace == "prod" {
+	if workspace == "prod" || workspace == "dev_sqs_s3" {
 		cfg, err = config.LoadDefaultConfig(ctx,
 			config.WithRegion(os.Getenv("AWS_REGION")),
 		)
@@ -59,7 +59,7 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	}
 
 	var client *s3.Client
-	if workspace == "prod" {
+	if workspace == "prod" || workspace == "dev_sqs_s3" {
 		client = s3.NewFromConfig(cfg)
 	} else {
 		client = s3.NewFromConfig(cfg, func (o *s3.Options) {
@@ -77,12 +77,9 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 		return nil, fmt.Errorf("failed to ensure bucket exists: %w", err)
 	}
 
-	log.Printf("S3 Configuration - Bucket: %s, Region: %s, Username: %s, Password: %s, URL: %s",
+	log.Printf("S3 Configuration - Bucket: %s, Region: %s",
 		os.Getenv("CONTENT_BUCKET_NAME"),
-		os.Getenv("AWS_REGION"),
-		os.Getenv("S3_USERNAME"),
-		os.Getenv("S3_PASSWORD"),
-		os.Getenv("S3_URL"))
+		os.Getenv("AWS_REGION"))
 
 	log.Printf("Successfully connected to S3 using bucket %s in %s environment", bucket, workspace)
 

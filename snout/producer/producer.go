@@ -30,7 +30,7 @@ func (p *Producer) Send(payload any) error {
 	}
 
 	workspace := os.Getenv("WORKSPACE")
-	if workspace != "prod" && workspace != "dev_sqs" {
+	if workspace != "prod" && workspace != "dev_sqs" && workspace != "dev_sqs_s3" {
 		log.Println("Sending job request directly to Whisker")
 		whiskerURL := os.Getenv("WHISKER_URL")
 		if whiskerURL == "" {

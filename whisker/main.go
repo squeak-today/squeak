@@ -54,7 +54,7 @@ func main() {
 	pool := worker.NewPool(ctx, maxWorkers, contentProcessor, supabaseClient)
 
 	var jobConsumer *consumer.Consumer
-	if workspace == "prod" || workspace == "dev_sqs" {
+	if workspace == "prod" || workspace == "dev_sqs" || workspace == "dev_sqs_s3" {
 		jobConsumer, err = consumer.NewConsumer(ctx, pool)
 		if err != nil {
 			log.Fatalf("Failed to initialize consumer: %v", err)
