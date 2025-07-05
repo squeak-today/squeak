@@ -43,7 +43,7 @@ type DailyProgress struct {
 func NewClient() (*Client, error) {
 	// Create a pgx connection config
 	sslMode := "require"
-	if os.Getenv("WORKSPACE") == "dev" {
+	if os.Getenv("WORKSPACE") != "prod" {
 		sslMode = "disable"
 	}
 

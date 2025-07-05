@@ -40,13 +40,14 @@ func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	log.Println(userId, workspaceId, databaseId)
 	log.Println(req)
 
-	err := workspaces.UpsertContentJob(context.Background(), h.DBClient, userId, databaseId, "creation")
+	id, err := workspaces.CreateContentJob(context.Background(), h.DBClient, userId, databaseId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	h.Producer.Send(whisker.ContentJobRequest{
+		ID: id,
 		Job: whisker.ContentJob{
 			UserID:     userId,
 			DatabaseID: databaseId,

@@ -4,14 +4,29 @@ import (
 	"context"
 	"fmt"
 	"snout/supabase"
+
+	"whisker/types"
 )
 
-func UpsertContentJob(ctx context.Context, client *supabase.Client, userId string, databaseId string, status string) error {
-	result, err := client.Db.ExecContext(ctx, `
+func CreateContentJob(ctx context.Context, client *supabase.Client, userId string, databaseId string) (string, error) {
+	var id string
+	err := client.Db.QueryRowContext(ctx, `
 		INSERT INTO content_jobs (user_id, database_id, status)
 		VALUES ($1, $2, $3)
-		ON CONFLICT (database_id) DO UPDATE SET status = $3
-	`, userId, databaseId, status)
+		RETURNING id
+	`, userId, databaseId, types.ContentJobStatusCreation).Scan(&id)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+func UpdateContentJob(ctx context.Context, client *supabase.Client, id string, userId string, databaseId string, status string) error {
+	result, err := client.Db.ExecContext(ctx, `
+		UPDATE content_jobs
+		SET user_id = $1, database_id = $2, status = $3
+		WHERE id = $4
+	`, userId, databaseId, status, id)
 	if err != nil {
 		return err
 	}
@@ -20,7 +35,7 @@ func UpsertContentJob(ctx context.Context, client *supabase.Client, userId strin
 		return err
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("no rows were inserted")
+		return fmt.Errorf("no rows were updated")
 	}
 	return nil
 }

@@ -7,8 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
-
 	"snout/supabase"
 	"snout/supabase/workspaces"
 	"whisker/processor"
@@ -49,13 +47,13 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 	}
 
 	job := &types.ContentJobRecord{
-		ID:        uuid.New().String(),
+		ID:        jobRequest.ID,
 		Status:    types.ContentJobStatusPending,
 		CreatedAt: time.Now(),
 		Job:       jobRequest.Job,
 	}
 
-	if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+	if err := workspaces.UpdateContentJob(p.ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
 		p.mu.Unlock()
 		return fmt.Errorf("failed to update job status to pending: %w", err)
 	}
@@ -73,7 +71,7 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 		}()
 
 		job.Status = types.ContentJobStatusRunning
-		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+		if err := workspaces.UpdateContentJob(p.ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
 			log.Printf("Failed to update job status to running: %v", err)
 			if onComplete != nil {
 				onComplete(false)
@@ -104,7 +102,7 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 			success = true
 		}
 
-		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+		if err := workspaces.UpdateContentJob(p.ctx, p.supabaseClient, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
 			log.Printf("Failed to update final job status: %v", err)
 		}
 
