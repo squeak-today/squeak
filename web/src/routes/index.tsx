@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/ui/button';
+import { AppLayout } from '@/components/AppLayout';
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const navigate = useNavigate();
-  const { jwtToken, isLoading, logout } = useAuth();
+  const { jwtToken, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && !jwtToken) {
@@ -36,10 +36,11 @@ function Index() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Button onClick={logout} variant="outline">
-        Logout
-      </Button>
-    </div>
-  )
+    <AppLayout>
+      <div className="p-4">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <p>Content goes here</p>
+      </div>
+    </AppLayout>
+  );
 }

@@ -605,6 +605,11 @@ definitions:
       workspace_id:
         example: xxxx-xxxx-xxxx-xxxx
         type: string
+    required:
+    - id
+    - name
+    - type
+    - workspace_id
     type: object
   workspaces.DatabaseType:
     enum:
@@ -638,6 +643,9 @@ definitions:
         items:
           $ref: '#/definitions/workspaces.Workspace'
         type: array
+    required:
+    - databases
+    - workspaces
     type: object
 host: api.squeak.today
 info:

@@ -1865,6 +1865,12 @@
         },
         "workspaces.Database": {
             "type": "object",
+            "required": [
+                "id",
+                "name",
+                "type",
+                "workspace_id"
+            ],
             "properties": {
                 "id": {
                     "type": "string",
@@ -1923,6 +1929,10 @@
         },
         "workspaces.WorkspacesSummary": {
             "type": "object",
+            "required": [
+                "databases",
+                "workspaces"
+            ],
             "properties": {
                 "databases": {
                     "type": "array",

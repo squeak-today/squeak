@@ -1339,6 +1339,11 @@ components:
         workspace_id:
           example: xxxx-xxxx-xxxx-xxxx
           type: string
+      required:
+        - id
+        - name
+        - type
+        - workspace_id
       type: object
     workspaces.DatabaseType:
       enum:
@@ -1372,6 +1377,9 @@ components:
           items:
             $ref: '#/components/schemas/workspaces.Workspace'
           type: array
+      required:
+        - databases
+        - workspaces
       type: object
   securitySchemes:
     Bearer:

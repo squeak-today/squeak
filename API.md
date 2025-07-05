@@ -895,10 +895,10 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
-| name | string | *Example:* `"My Database"` | No |
-| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | No |
-| workspace_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+| name | string | *Example:* `"My Database"` | Yes |
+| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
+| workspace_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
 
 #### workspaces.DatabaseType
 
@@ -923,5 +923,5 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| databases | [ [workspaces.Database](#workspacesdatabase) ] |  | No |
-| workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | No |
+| databases | [ [workspaces.Database](#workspacesdatabase) ] |  | Yes |
+| workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | Yes |

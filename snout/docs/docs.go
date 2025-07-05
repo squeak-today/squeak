@@ -1871,6 +1871,12 @@ const docTemplate = `{
         },
         "workspaces.Database": {
             "type": "object",
+            "required": [
+                "id",
+                "name",
+                "type",
+                "workspace_id"
+            ],
             "properties": {
                 "id": {
                     "type": "string",
@@ -1929,6 +1935,10 @@ const docTemplate = `{
         },
         "workspaces.WorkspacesSummary": {
             "type": "object",
+            "required": [
+                "databases",
+                "workspaces"
+            ],
             "properties": {
                 "databases": {
                     "type": "array",

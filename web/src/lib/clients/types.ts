@@ -1667,13 +1667,13 @@ export interface components {
         "workspaces.CreateContentResponse": Record<string, never>;
         "workspaces.Database": {
             /** @example xxxx-xxxx-xxxx-xxxx */
-            id?: string;
+            id: string;
             /** @example My Database */
-            name?: string;
+            name: string;
             /** @example content */
-            type?: components["schemas"]["workspaces.DatabaseType"];
+            type: components["schemas"]["workspaces.DatabaseType"];
             /** @example xxxx-xxxx-xxxx-xxxx */
-            workspace_id?: string;
+            workspace_id: string;
         };
         /** @enum {string} */
         "workspaces.DatabaseType": "content";
@@ -1687,8 +1687,8 @@ export interface components {
             name?: string;
         };
         "workspaces.WorkspacesSummary": {
-            databases?: components["schemas"]["workspaces.Database"][];
-            workspaces?: components["schemas"]["workspaces.Workspace"][];
+            databases: components["schemas"]["workspaces.Database"][];
+            workspaces: components["schemas"]["workspaces.Workspace"][];
         };
     };
     responses: never;
