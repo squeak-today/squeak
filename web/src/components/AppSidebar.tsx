@@ -21,14 +21,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
 import { useAuth } from '@/context/AuthContext';
-import { Folder, ChevronRight, LogOut, ChevronDown } from 'lucide-react';
+import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
 
 export function AppSidebar() {
-  const { workspacesSummary } = useSidebarMenu();
+  const { workspacesSummary, refetchWorkspaces } = useSidebarMenu();
   const { logout } = useAuth();
   const [openWorkspaces, setOpenWorkspaces] = useState<Set<string>>(new Set());
+  const [isAddingWorkspace, setIsAddingWorkspace] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
   console.log(workspacesSummary);
 
   const handleWorkspaceClick = (workspace: any) => {
@@ -57,6 +61,51 @@ export function AppSidebar() {
     } catch (error) {
       console.error('Error logging out:', error);
     }
+  };
+
+  const handleAddWorkspace = async (name: string) => {
+    if (name) {
+      console.log('Creating workspace:', name);
+      await refetchWorkspaces();
+    }
+    setIsAddingWorkspace(false);
+    setWorkspaceName('');
+  };
+
+  const handleStartAddWorkspace = () => {
+    setIsAddingWorkspace(true);
+    setWorkspaceName('');
+  };
+
+  const handleCancelAddWorkspace = () => {
+    setIsAddingWorkspace(false);
+    setWorkspaceName('');
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleAddWorkspace(workspaceName);
+    } else if (e.key === 'Escape') {
+      handleCancelAddWorkspace();
+    }
+  };
+
+  const handleInputBlur = () => {
+    if (workspaceName.trim()) {
+      handleAddWorkspace(workspaceName);
+    } else {
+      handleCancelAddWorkspace();
+    }
+  };
+
+  useEffect(() => {
+    if (isAddingWorkspace && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isAddingWorkspace]);
+
+  const handleWorkspaceAdd = (workspace: any) => {
+    console.log('Add button clicked for workspace:', workspace.id);
   };
 
   return (
@@ -113,21 +162,32 @@ export function AppSidebar() {
                     onOpenChange={() => toggleWorkspace(workspace.id || '')}
                   >
                     <SidebarMenuItem>
-                      <SidebarMenuButton 
-                        tooltip={workspace.name}
-                        onClick={() => handleWorkspaceClick(workspace)}
-                        className="group/workspace"
-                      >
-                        <div className="relative w-4 h-4">
-                          <Folder className="w-4 h-4 group-hover/workspace:opacity-0 transition-opacity duration-200" />
-                          <CollapsibleTrigger asChild>
-                            <button className="absolute inset-0 wi-4 h-4 flex items-center justify-center opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200">
-                              <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
-                            </button>
-                          </CollapsibleTrigger>
-                        </div>
-                        <span>{workspace.name}</span>
-                      </SidebarMenuButton>
+                      <div className="group/workspace relative flex items-center">
+                        <SidebarMenuButton 
+                          tooltip={workspace.name}
+                          onClick={() => handleWorkspaceClick(workspace)}
+                          className="flex-1"
+                        >
+                          <div className="relative w-4 h-4">
+                            <Folder className="w-4 h-4 group-hover/workspace:opacity-0 transition-opacity duration-200" />
+                            <CollapsibleTrigger asChild>
+                              <div className="absolute inset-0 wi-4 h-4 flex items-center justify-center opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200">
+                                <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
+                              </div>
+                            </CollapsibleTrigger>
+                          </div>
+                          <span>{workspace.name}</span>
+                        </SidebarMenuButton>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWorkspaceAdd(workspace);
+                          }}
+                          className="absolute right-2 opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200 hover:bg-sidebar-accent rounded p-1"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
                       <CollapsibleContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-left-1 data-[state=open]:slide-in-from-left-1 duration-200">
                         <SidebarMenuSub>
                           {workspacesSummary.databases
@@ -138,7 +198,10 @@ export function AppSidebar() {
                                   asChild
                                   onClick={() => handleDatabaseClick(database)}
                                 >
-                                  <span>{database.name}</span>
+                                  <div className="flex items-center gap-2">
+                                    <Database className="w-4 h-4" />
+                                    <span>{database.name}</span>
+                                  </div>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}
@@ -148,6 +211,29 @@ export function AppSidebar() {
                   </Collapsible>
                 );
               })}
+              <SidebarMenuItem>
+                {isAddingWorkspace ? (
+                  <div className="px-1">
+                    <Input
+                      ref={inputRef}
+                      value={workspaceName}
+                      onChange={(e) => setWorkspaceName(e.target.value)}
+                      onKeyDown={handleInputKeyDown}
+                      onBlur={handleInputBlur}
+                      placeholder="Workspace name..."
+                      className="h-8"
+                    />
+                  </div>
+                ) : (
+                  <SidebarMenuButton 
+                    onClick={handleStartAddWorkspace}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Workspace</span>
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

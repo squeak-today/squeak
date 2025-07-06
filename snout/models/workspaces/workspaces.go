@@ -26,6 +26,13 @@ type WorkspacesSummary struct {
 	Databases  []Database  `json:"databases" binding:"required"`
 }
 
+type CreateWorkspaceRequest struct {
+	Name string `json:"name" binding:"required" example:"My Workspace"`
+}
+type CreateWorkspaceResponse struct {
+	ID   string `json:"id" example:"xxxx-xxxx-xxxx-xxxx"`
+}
+
 type GetWorkspacesResponse struct {
 	Workspaces []Workspace `json:"workspaces"`
 }
