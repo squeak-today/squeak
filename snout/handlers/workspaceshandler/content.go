@@ -28,7 +28,12 @@ import (
 // @Router			/workspaces/{workspace_id}/databases/{database_id}/content/create [post]
 func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
+	workspaceId := c.Param("workspace_id")
 	databaseId := c.Param("database_id")
+
+	if !h.CheckWorkspaceUserOwnership(c, userId, workspaceId) {
+		return
+	}
 
 	var req workspaces_models.CreateContentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

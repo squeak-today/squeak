@@ -6,7 +6,6 @@ type Workspace struct {
 }
 
 type DatabaseType string
-
 const (
 	DatabaseTypeContent DatabaseType = "content"
 )
