@@ -217,6 +217,7 @@ func main() {
 		databasesGroup := workspacesGroup.Group("/:workspace_id/databases")
 		{
 			databasesGroup.POST("/create", workspacesHandler.CreateDatabase)
+			databasesGroup.POST("/:database_id/query", workspacesHandler.QueryDatabase)
 		}
 
 		// /workspaces/{}/databases/{}/content
