@@ -12,16 +12,16 @@ import (
 )
 
 
-// @Summary		Create database
-// @Description	Create database
-// @Tags			workspace
-// @Accept			json
-// @Produce		json
-// @Param			workspace_id	path		string	true	"Workspace ID"
-// @Success		200	{object}	workspaces_models.CreateDatabaseResponse
-// @Failure		400	{object}	models.ErrorResponse
-// @Failure		500	{object}	models.ErrorResponse
-// @Router			/workspaces/{workspace_id}/databases/create [post]
+//	@Summary		Create database
+//	@Description	Create database
+//	@Tags			workspace
+//	@Accept			json
+//	@Produce		json
+//	@Param			workspace_id	path		string	true	"Workspace ID"
+//	@Success		200				{object}	workspaces_models.CreateDatabaseResponse
+//	@Failure		400				{object}	models.ErrorResponse
+//	@Failure		500				{object}	models.ErrorResponse
+//	@Router			/workspaces/{workspace_id}/databases/create [post]
 func (h *WorkspacesHandler) CreateDatabase(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
 	workspaceId := c.Param("workspace_id")

@@ -650,6 +650,38 @@ paths:
         - workspace
       description: Get workspaces
       summary: Get workspaces
+  /workspaces/create:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.CreateWorkspaceResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Create workspace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workspaces.CreateWorkspaceRequest'
+        description: Body
+        required: true
+      summary: Create workspace
   /workspaces/summary:
     get:
       responses:
@@ -681,6 +713,38 @@ paths:
         - workspace
       description: Get workspaces
       summary: Get workspaces
+  '/workspaces/{workspace_id}/databases/create':
+    post:
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.CreateDatabaseResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Create database
+      summary: Create database
   '/workspaces/{workspace_id}/databases/{database_id}/content/create':
     post:
       parameters:
@@ -1323,6 +1387,28 @@ components:
         - name
       type: object
     workspaces.CreateContentResponse:
+      type: object
+    workspaces.CreateDatabaseResponse:
+      properties:
+        id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+      required:
+        - id
+      type: object
+    workspaces.CreateWorkspaceRequest:
+      properties:
+        name:
+          example: My Workspace
+          type: string
+      required:
+        - name
+      type: object
+    workspaces.CreateWorkspaceResponse:
+      properties:
+        id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
       type: object
     workspaces.Database:
       properties:

@@ -17,5 +17,14 @@ export function useWorkspacesAPI() {
         })
     }, [client, requireAuthWithErrors])
 
-    return { isAuthenticated, getWorkspacesSummary }
+    const createWorkspace = useCallback(async (body: components["schemas"]["workspaces.CreateWorkspaceRequest"]) => {
+        return requireAuthWithErrors(async () => {
+            const { data, error } = await client!.POST('/workspaces/create', { 
+                body: body
+            });
+            return { data: data as components["schemas"]["workspaces.CreateWorkspaceResponse"], error: error as components["schemas"]["models.ErrorResponse"] | null };
+        })
+    }, [client, requireAuthWithErrors])
+
+    return { isAuthenticated, getWorkspacesSummary, createWorkspace }
 }

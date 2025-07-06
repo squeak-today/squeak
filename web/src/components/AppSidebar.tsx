@@ -25,9 +25,11 @@ import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database } from 'lucid
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
+import { useWorkspacesAPI } from '@/hooks/useWorkspacesAPI';
 
 export function AppSidebar() {
   const { workspacesSummary, refetchWorkspaces } = useSidebarMenu();
+  const { createWorkspace } = useWorkspacesAPI();
   const { logout } = useAuth();
   const [openWorkspaces, setOpenWorkspaces] = useState<Set<string>>(new Set());
   const [isAddingWorkspace, setIsAddingWorkspace] = useState(false);
@@ -64,8 +66,12 @@ export function AppSidebar() {
   };
 
   const handleAddWorkspace = async (name: string) => {
-    if (name) {
+    if (name.trim()) {
       console.log('Creating workspace:', name);
+      const { error } = await createWorkspace({ name });
+      if (error) {
+        console.error('Error creating workspace:', error);
+      }
       await refetchWorkspaces();
     }
     setIsAddingWorkspace(false);

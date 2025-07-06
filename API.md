@@ -574,6 +574,56 @@ Create content
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
+### /workspaces/{workspace_id}/databases/create
+
+#### POST
+##### Summary
+
+Create database
+
+##### Description
+
+Create database
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.CreateDatabaseResponse](#workspacescreatedatabaseresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
+### /workspaces/create
+
+#### POST
+##### Summary
+
+Create workspace
+
+##### Description
+
+Create workspace
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| body | body | Body | Yes | [workspaces.CreateWorkspaceRequest](#workspacescreateworkspacerequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.CreateWorkspaceResponse](#workspacescreateworkspaceresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /workspaces/summary
 
 #### GET
@@ -890,6 +940,24 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | workspaces.CreateContentResponse | object |  |  |
+
+#### workspaces.CreateDatabaseResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+
+#### workspaces.CreateWorkspaceRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string | *Example:* `"My Workspace"` | Yes |
+
+#### workspaces.CreateWorkspaceResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
 
 #### workspaces.Database
 
