@@ -25,16 +25,16 @@ func New(dbClient *supabase.Client, producer *producer.Producer) *WorkspacesHand
 	}
 }
 
-//	@Summary		Get workspaces
-//	@Description	Get workspaces
-//	@Tags			workspace
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	workspaces_models.GetWorkspacesResponse
-//	@Failure		400	{object}	models.ErrorResponse
-//	@Failure		404	{object}	models.ErrorResponse
-//	@Failure		500	{object}	models.ErrorResponse
-//	@Router			/workspaces [get]
+// @Summary		Get workspaces
+// @Description	Get workspaces
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	workspaces_models.GetWorkspacesResponse
+// @Failure		400	{object}	models.ErrorResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Failure		500	{object}	models.ErrorResponse
+// @Router			/workspaces [get]
 func (h *WorkspacesHandler) GetWorkspaces(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
 
@@ -47,16 +47,16 @@ func (h *WorkspacesHandler) GetWorkspaces(c *gin.Context) {
 	c.JSON(http.StatusOK, workspaces_models.GetWorkspacesResponse{Workspaces: workspaces})
 }
 
-//	@Summary		Create workspace
-//	@Description	Create workspace
-//	@Tags			workspace
-//	@Accept			json
-//	@Produce		json
-//	@Param			body	body		workspaces_models.CreateWorkspaceRequest	true	"Body"
-//	@Success		200		{object}	workspaces_models.CreateWorkspaceResponse
-//	@Failure		400		{object}	models.ErrorResponse
-//	@Failure		500		{object}	models.ErrorResponse
-//	@Router			/workspaces/create [post]
+// @Summary		Create workspace
+// @Description	Create workspace
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Param			body	body		workspaces_models.CreateWorkspaceRequest	true	"Body"
+// @Success		200		{object}	workspaces_models.CreateWorkspaceResponse
+// @Failure		400		{object}	models.ErrorResponse
+// @Failure		500		{object}	models.ErrorResponse
+// @Router			/workspaces/create [post]
 func (h *WorkspacesHandler) CreateWorkspace(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
 	var request workspaces_models.CreateWorkspaceRequest
@@ -74,16 +74,16 @@ func (h *WorkspacesHandler) CreateWorkspace(c *gin.Context) {
 	c.JSON(http.StatusOK, workspaces_models.CreateWorkspaceResponse{ID: workspaceId})
 }
 
-//	@Summary		Get workspaces
-//	@Description	Get workspaces
-//	@Tags			workspace
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	workspaces_models.WorkspacesSummary
-//	@Failure		400	{object}	models.ErrorResponse
-//	@Failure		404	{object}	models.ErrorResponse
-//	@Failure		500	{object}	models.ErrorResponse
-//	@Router			/workspaces/summary [get]
+// @Summary		Get workspaces
+// @Description	Get workspaces
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	workspaces_models.WorkspacesSummary
+// @Failure		400	{object}	models.ErrorResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Failure		500	{object}	models.ErrorResponse
+// @Router			/workspaces/summary [get]
 func (h *WorkspacesHandler) GetWorkspacesSummary(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
 

@@ -3,9 +3,9 @@ package workspaceshandler
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	models "snout/models"
 	"snout/supabase/workspaces"
-	"github.com/gin-gonic/gin"
 )
 
 func (h *WorkspacesHandler) CheckWorkspaceUserOwnership(c *gin.Context, userId string, workspaceId string) bool {

@@ -1,8 +1,8 @@
 package workspaces
 
 type CreateDatabaseRequest struct {
-	Name        string `json:"name" binding:"required" example:"My Database"`
-	Type        DatabaseType `json:"type" binding:"required" example:"content"`
+	Name string       `json:"name" binding:"required" example:"My Database"`
+	Type DatabaseType `json:"type" binding:"required" example:"content"`
 }
 
 type CreateDatabaseResponse struct {
