@@ -31,6 +31,19 @@ func GetWorkspaces(client *supabase.Client, userId string) ([]models.Workspace, 
 	return workspaces, nil
 }
 
+func CreateWorkspace(client *supabase.Client, userId string, name string) (string, error) {
+	var id string
+	err := client.Db.QueryRow(`
+		INSERT INTO workspaces (user_id, name)
+		VALUES ($1, $2)
+		RETURNING id
+	`, userId, name).Scan(&id)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
 func GetWorkspacesSummary(client *supabase.Client, userId string) (models.WorkspacesSummary, error) {
 	workspaces := make([]models.Workspace, 0)
 	databases := make([]models.Database, 0)

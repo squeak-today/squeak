@@ -590,6 +590,43 @@ definitions:
     type: object
   workspaces.CreateContentResponse:
     type: object
+  workspaces.CreateDatabaseRequest:
+    properties:
+      name:
+        example: My Database
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/workspaces.DatabaseType'
+        example: content
+    required:
+    - name
+    - type
+    type: object
+  workspaces.CreateDatabaseResponse:
+    properties:
+      id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+    required:
+    - id
+    type: object
+  workspaces.CreateWorkspaceRequest:
+    properties:
+      name:
+        example: My Workspace
+        type: string
+    required:
+    - name
+    type: object
+  workspaces.CreateWorkspaceResponse:
+    properties:
+      id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+    required:
+    - id
+    type: object
   workspaces.Database:
     properties:
       id:
@@ -623,6 +660,8 @@ definitions:
         items:
           $ref: '#/definitions/workspaces.Workspace'
         type: array
+    required:
+    - workspaces
     type: object
   workspaces.Workspace:
     properties:
@@ -632,6 +671,9 @@ definitions:
       name:
         example: My Workspace
         type: string
+    required:
+    - id
+    - name
     type: object
   workspaces.WorkspacesSummary:
     properties:
@@ -1310,6 +1352,71 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create content
+      tags:
+      - workspace
+  /workspaces/{workspace_id}/databases/create:
+    post:
+      consumes:
+      - application/json
+      description: Create database
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/workspaces.CreateDatabaseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.CreateDatabaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create database
+      tags:
+      - workspace
+  /workspaces/create:
+    post:
+      consumes:
+      - application/json
+      description: Create workspace
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/workspaces.CreateWorkspaceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.CreateWorkspaceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create workspace
       tags:
       - workspace
   /workspaces/summary:

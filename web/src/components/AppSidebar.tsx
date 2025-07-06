@@ -21,15 +21,25 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
 import { useAuth } from '@/context/AuthContext';
-import { Folder, ChevronRight, LogOut, ChevronDown } from 'lucide-react';
+import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database as DatabaseIcon } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { type DatabaseType, type Workspace, type Database, useWorkspacesAPI } from '@/hooks/useWorkspacesAPI';
+import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 
 export function AppSidebar() {
-  const { workspacesSummary } = useSidebarMenu();
+  const { workspacesSummary, refetchWorkspaces } = useSidebarMenu();
+  const { createWorkspace } = useWorkspacesAPI();
+  const { createDatabase } = useDatabasesAPI();
   const { logout } = useAuth();
   const [openWorkspaces, setOpenWorkspaces] = useState<Set<string>>(new Set());
-  console.log(workspacesSummary);
+  const [isAddingWorkspace, setIsAddingWorkspace] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [addingDatabaseToWorkspace, setAddingDatabaseToWorkspace] = useState<string | null>(null);
+  const [databaseName, setDatabaseName] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const databaseInputRef = useRef<HTMLInputElement>(null);
 
   const handleWorkspaceClick = (workspace: any) => {
     console.log('Workspace clicked:', workspace.name);
@@ -56,6 +66,96 @@ export function AppSidebar() {
       await logout();
     } catch (error) {
       console.error('Error logging out:', error);
+    }
+  };
+
+  const handleAddWorkspace = async (name: string) => {
+    if (name.trim()) {
+      console.log('Creating workspace:', name);
+      const { error } = await createWorkspace({ name });
+      if (error) {
+        console.error('Error creating workspace:', error);
+      }
+      await refetchWorkspaces();
+    }
+    setIsAddingWorkspace(false);
+    setWorkspaceName('');
+  };
+
+  const handleStartAddWorkspace = () => {
+    setIsAddingWorkspace(true);
+    setWorkspaceName('');
+  };
+
+  const handleCancelAddWorkspace = () => {
+    setIsAddingWorkspace(false);
+    setWorkspaceName('');
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleAddWorkspace(workspaceName);
+    } else if (e.key === 'Escape') {
+      handleCancelAddWorkspace();
+    }
+  };
+
+  const handleInputBlur = () => {
+    if (workspaceName.trim()) {
+      handleAddWorkspace(workspaceName);
+    } else {
+      handleCancelAddWorkspace();
+    }
+  };
+
+  useEffect(() => {
+    if (isAddingWorkspace && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isAddingWorkspace]);
+
+  useEffect(() => {
+    if (addingDatabaseToWorkspace && databaseInputRef.current) {
+      databaseInputRef.current.focus();
+    }
+  }, [addingDatabaseToWorkspace]);
+
+  const handleDatabaseAdd = async (name: string, workspace: Workspace, type: DatabaseType) => {
+    const { error } = await createDatabase(workspace.id, { name: name, type: type });
+    if (error) {
+      console.error('Error creating database:', error);
+    }
+    await refetchWorkspaces();
+    setAddingDatabaseToWorkspace(null);
+    setDatabaseName('');
+  };
+
+  const handleStartAddDatabase = (workspace: Workspace) => {
+    if (!openWorkspaces.has(workspace.id)) {
+      setOpenWorkspaces(prev => new Set(prev).add(workspace.id));
+    }
+    setAddingDatabaseToWorkspace(workspace.id);
+    setDatabaseName('');
+  };
+
+  const handleCancelAddDatabase = () => {
+    setAddingDatabaseToWorkspace(null);
+    setDatabaseName('');
+  };
+
+  const handleDatabaseInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, workspace: Workspace) => {
+    if (e.key === 'Enter') {
+      handleDatabaseAdd(databaseName, workspace, "content" as DatabaseType);
+    } else if (e.key === 'Escape') {
+      handleCancelAddDatabase();
+    }
+  };
+
+  const handleDatabaseInputBlur = (workspace: Workspace) => {
+    if (databaseName.trim()) {
+      handleDatabaseAdd(databaseName, workspace, "content" as DatabaseType);
+    } else {
+      handleCancelAddDatabase();
     }
   };
 
@@ -103,7 +203,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {workspacesSummary?.workspaces?.map((workspace) => {
+              {workspacesSummary?.workspaces.map((workspace: Workspace) => {
                 const isOpen = openWorkspaces.has(workspace.id || '');
                 return (
                   <Collapsible 
@@ -113,41 +213,94 @@ export function AppSidebar() {
                     onOpenChange={() => toggleWorkspace(workspace.id || '')}
                   >
                     <SidebarMenuItem>
-                      <SidebarMenuButton 
-                        tooltip={workspace.name}
-                        onClick={() => handleWorkspaceClick(workspace)}
-                        className="group/workspace"
-                      >
-                        <div className="relative w-4 h-4">
-                          <Folder className="w-4 h-4 group-hover/workspace:opacity-0 transition-opacity duration-200" />
-                          <CollapsibleTrigger asChild>
-                            <button className="absolute inset-0 wi-4 h-4 flex items-center justify-center opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200">
-                              <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
-                            </button>
-                          </CollapsibleTrigger>
-                        </div>
-                        <span>{workspace.name}</span>
-                      </SidebarMenuButton>
+                      <div className="group/workspace relative flex items-center">
+                        <SidebarMenuButton 
+                          tooltip={workspace.name}
+                          onClick={() => handleWorkspaceClick(workspace)}
+                          className="flex-1"
+                        >
+                          <div className="relative w-4 h-4">
+                            <Folder className="w-4 h-4 group-hover/workspace:opacity-0 transition-opacity duration-200" />
+                            <CollapsibleTrigger asChild>
+                              <div className="absolute inset-0 wi-4 h-4 flex items-center justify-center opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200">
+                                <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
+                              </div>
+                            </CollapsibleTrigger>
+                          </div>
+                          <span>{workspace.name}</span>
+                        </SidebarMenuButton>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartAddDatabase(workspace as Workspace);
+                          }}
+                          className="absolute right-2 opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200 hover:bg-sidebar-accent rounded p-1"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
                       <CollapsibleContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-left-1 data-[state=open]:slide-in-from-left-1 duration-200">
                         <SidebarMenuSub>
                           {workspacesSummary.databases
-                            ?.filter((database) => database.workspace_id === workspace.id)
+                            .filter((database: Database) => database.workspace_id === workspace.id)
                             .map((database) => (
                               <SidebarMenuSubItem key={database.id}>
                                 <SidebarMenuSubButton 
                                   asChild
                                   onClick={() => handleDatabaseClick(database)}
                                 >
-                                  <span>{database.name}</span>
+                                  <div className="flex items-center gap-2">
+                                    <DatabaseIcon className="w-4 h-4" />
+                                    <span>{database.name}</span>
+                                  </div>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}
+                          {addingDatabaseToWorkspace === workspace.id && (
+                            <SidebarMenuSubItem>
+                              <div className="px-2 py-1.5 flex items-center gap-2">
+                                <DatabaseIcon className="w-4 h-4" />
+                                <Input
+                                  ref={databaseInputRef}
+                                  value={databaseName}
+                                  onChange={(e) => setDatabaseName(e.target.value)}
+                                  onKeyDown={(e) => handleDatabaseInputKeyDown(e, workspace)}
+                                  onBlur={() => handleDatabaseInputBlur(workspace)}
+                                  placeholder="Database name..."
+                                  className="h-6 text-sm"
+                                />
+                              </div>
+                            </SidebarMenuSubItem>
+                          )}
                         </SidebarMenuSub>
                       </CollapsibleContent>
                     </SidebarMenuItem>
                   </Collapsible>
                 );
               })}
+              <SidebarMenuItem>
+                {isAddingWorkspace ? (
+                  <div className="px-1">
+                    <Input
+                      ref={inputRef}
+                      value={workspaceName}
+                      onChange={(e) => setWorkspaceName(e.target.value)}
+                      onKeyDown={handleInputKeyDown}
+                      onBlur={handleInputBlur}
+                      placeholder="Workspace name..."
+                      className="h-8"
+                    />
+                  </div>
+                ) : (
+                  <SidebarMenuButton 
+                    onClick={handleStartAddWorkspace}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Workspace</span>
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
