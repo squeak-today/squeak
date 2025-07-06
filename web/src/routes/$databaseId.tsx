@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { AppLayout } from '@/components/AppLayout'
 import { useSidebarMenu } from '@/context/SidebarMenuContext'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
+import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 
 export const Route = createFileRoute('/$databaseId')({
   component: RouteComponent,
@@ -9,12 +11,62 @@ export const Route = createFileRoute('/$databaseId')({
 
 function RouteComponent() {
   const { databaseId } = Route.useParams();
-//   const { setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
-  
-//   useEffect(() => {
-//     setSelectedDatabase(databaseId);
-//     setSelectedWorkspace(workspaceId);
-//   }, [databaseId, workspaceId]);
+  const { workspacesSummary, setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
+  const { queryDatabase } = useDatabasesAPI();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDatabaseAndWorkspace = async () => {
+      if (!workspacesSummary) {
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const foundDatabase = workspacesSummary?.databases.find((db: Database) => db.id === databaseId);
+        if (!foundDatabase) {
+          console.error('Database not found:', databaseId);
+          return;
+        }
+
+        const foundWorkspace = workspacesSummary?.workspaces.find((ws: Workspace) => ws.id === foundDatabase.workspace_id);
+        if (!foundWorkspace) {
+          console.error('Workspace not found for database:', foundDatabase.workspace_id);
+          return;
+        }
+
+        setSelectedDatabase(foundDatabase);
+        setSelectedWorkspace(foundWorkspace);
+
+        const { data: queryResult, error: queryError } = await queryDatabase(
+          foundWorkspace.id, 
+          databaseId, 
+          foundDatabase.type
+        );
+        
+        if (queryError) {
+          console.error('Failed to query database:', queryError);
+        }
+      } catch (error) {
+        console.error('Error loading database:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDatabaseAndWorkspace();
+  }, [databaseId, workspacesSummary]);
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="p-6">
+          <p>Loading database...</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -25,7 +77,7 @@ function RouteComponent() {
         </p>
         <div className="mt-6 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground">
-            This is a placeholder for the database content. The database ID from the URL is: {databaseId}
+            Database content will be displayed here. Check the console for the query results.
           </p>
         </div>
       </div>

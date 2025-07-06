@@ -803,6 +803,51 @@ paths:
         description: Body
         required: true
       summary: Create content
+  '/workspaces/{workspace_id}/databases/{database_id}/query':
+    post:
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Database ID
+          in: path
+          name: database_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.QueryDatabaseResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Query database
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workspaces.QueryDatabaseRequest'
+        description: Body
+        required: true
+      summary: Query database
 components:
   schemas:
     models.AudioHealthResponse:
@@ -1386,6 +1431,22 @@ components:
         url:
           type: string
       type: object
+    workspaces.Content:
+      properties:
+        database_id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+        id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+        name:
+          example: My Content
+          type: string
+      required:
+        - database_id
+        - id
+        - name
+      type: object
     workspaces.CreateContentRequest:
       properties:
         name:
@@ -1467,6 +1528,40 @@ components:
           type: array
       required:
         - workspaces
+      type: object
+    workspaces.QueryDatabaseRequest:
+      properties:
+        type:
+          allOf:
+            - $ref: '#/components/schemas/workspaces.DatabaseType'
+          example: content
+      required:
+        - type
+      type: object
+    workspaces.QueryDatabaseResponse:
+      properties:
+        content:
+          items:
+            $ref: '#/components/schemas/workspaces.Content'
+          type: array
+        id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+        name:
+          example: My Database
+          type: string
+        type:
+          allOf:
+            - $ref: '#/components/schemas/workspaces.DatabaseType'
+          example: content
+        workspace_id:
+          example: xxxx-xxxx-xxxx-xxxx
+          type: string
+      required:
+        - id
+        - name
+        - type
+        - workspace_id
       type: object
     workspaces.Workspace:
       properties:
