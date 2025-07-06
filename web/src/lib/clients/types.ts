@@ -1374,7 +1374,12 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            requestBody?: never;
+            /** @description Body */
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["workspaces.CreateDatabaseRequest"];
+                };
+            };
             responses: {
                 /** @description OK */
                 200: {
@@ -1787,6 +1792,12 @@ export interface components {
             name: string;
         };
         "workspaces.CreateContentResponse": Record<string, never>;
+        "workspaces.CreateDatabaseRequest": {
+            /** @example My Database */
+            name: string;
+            /** @example content */
+            type: components["schemas"]["workspaces.DatabaseType"];
+        };
         "workspaces.CreateDatabaseResponse": {
             /** @example xxxx-xxxx-xxxx-xxxx */
             id: string;

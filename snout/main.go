@@ -213,6 +213,12 @@ func main() {
 		workspacesGroup.POST("/create", workspacesHandler.CreateWorkspace)
 		workspacesGroup.GET("/summary", workspacesHandler.GetWorkspacesSummary)
 
+		// /workspaces/{}/databases
+		databasesGroup := workspacesGroup.Group("/:workspace_id/databases")
+		{
+			databasesGroup.POST("/create", workspacesHandler.CreateDatabase)
+		}
+
 		// /workspaces/{}/databases/{}/content
 		contentGroup := workspacesGroup.Group("/:workspace_id/databases/:database_id/content")
 		{

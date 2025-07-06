@@ -1054,6 +1054,15 @@ const docTemplate = `{
                         "name": "workspace_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.CreateDatabaseRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -1958,6 +1967,27 @@ const docTemplate = `{
         },
         "workspaces.CreateContentResponse": {
             "type": "object"
+        },
+        "workspaces.CreateDatabaseRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "type"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "My Database"
+                },
+                "type": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/workspaces.DatabaseType"
+                        }
+                    ],
+                    "example": "content"
+                }
+            }
         },
         "workspaces.CreateDatabaseResponse": {
             "type": "object",

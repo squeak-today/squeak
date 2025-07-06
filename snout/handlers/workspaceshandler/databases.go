@@ -17,7 +17,8 @@ import (
 //	@Tags			workspace
 //	@Accept			json
 //	@Produce		json
-//	@Param			workspace_id	path		string	true	"Workspace ID"
+//	@Param			workspace_id	path		string									true	"Workspace ID"
+//	@Param			body			body		workspaces_models.CreateDatabaseRequest	true	"Body"
 //	@Success		200				{object}	workspaces_models.CreateDatabaseResponse
 //	@Failure		400				{object}	models.ErrorResponse
 //	@Failure		500				{object}	models.ErrorResponse
@@ -36,7 +37,7 @@ func (h *WorkspacesHandler) CreateDatabase(c *gin.Context) {
 		return
 	}
 
-	databaseId, err := workspaces.CreateDatabase(h.DBClient, request.Type, workspaceId, request.Name)
+	databaseId, err := workspaces.CreateDatabase(h.DBClient, request.Type, userId, workspaceId, request.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to create database"})
 		return

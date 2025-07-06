@@ -590,6 +590,19 @@ definitions:
     type: object
   workspaces.CreateContentResponse:
     type: object
+  workspaces.CreateDatabaseRequest:
+    properties:
+      name:
+        example: My Database
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/workspaces.DatabaseType'
+        example: content
+    required:
+    - name
+    - type
+    type: object
   workspaces.CreateDatabaseResponse:
     properties:
       id:
@@ -1352,6 +1365,12 @@ paths:
         name: workspace_id
         required: true
         type: string
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/workspaces.CreateDatabaseRequest'
       produces:
       - application/json
       responses:

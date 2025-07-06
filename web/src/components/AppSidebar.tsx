@@ -26,16 +26,20 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { type DatabaseType, type Workspace, type Database, useWorkspacesAPI } from '@/hooks/useWorkspacesAPI';
+import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 
 export function AppSidebar() {
   const { workspacesSummary, refetchWorkspaces } = useSidebarMenu();
   const { createWorkspace } = useWorkspacesAPI();
+  const { createDatabase } = useDatabasesAPI();
   const { logout } = useAuth();
   const [openWorkspaces, setOpenWorkspaces] = useState<Set<string>>(new Set());
   const [isAddingWorkspace, setIsAddingWorkspace] = useState(false);
   const [workspaceName, setWorkspaceName] = useState('');
+  const [addingDatabaseToWorkspace, setAddingDatabaseToWorkspace] = useState<string | null>(null);
+  const [databaseName, setDatabaseName] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  console.log(workspacesSummary);
+  const databaseInputRef = useRef<HTMLInputElement>(null);
 
   const handleWorkspaceClick = (workspace: any) => {
     console.log('Workspace clicked:', workspace.name);
@@ -110,8 +114,49 @@ export function AppSidebar() {
     }
   }, [isAddingWorkspace]);
 
-  const handleDatabaseAdd = (workspace: Workspace, type: DatabaseType) => {
-    console.log('Add button clicked for workspace:', workspace.id, type);
+  useEffect(() => {
+    if (addingDatabaseToWorkspace && databaseInputRef.current) {
+      databaseInputRef.current.focus();
+    }
+  }, [addingDatabaseToWorkspace]);
+
+  const handleDatabaseAdd = async (name: string, workspace: Workspace, type: DatabaseType) => {
+    const { error } = await createDatabase(workspace.id, { name: name, type: type });
+    if (error) {
+      console.error('Error creating database:', error);
+    }
+    await refetchWorkspaces();
+    setAddingDatabaseToWorkspace(null);
+    setDatabaseName('');
+  };
+
+  const handleStartAddDatabase = (workspace: Workspace) => {
+    if (!openWorkspaces.has(workspace.id)) {
+      setOpenWorkspaces(prev => new Set(prev).add(workspace.id));
+    }
+    setAddingDatabaseToWorkspace(workspace.id);
+    setDatabaseName('');
+  };
+
+  const handleCancelAddDatabase = () => {
+    setAddingDatabaseToWorkspace(null);
+    setDatabaseName('');
+  };
+
+  const handleDatabaseInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, workspace: Workspace) => {
+    if (e.key === 'Enter') {
+      handleDatabaseAdd(databaseName, workspace, "content" as DatabaseType);
+    } else if (e.key === 'Escape') {
+      handleCancelAddDatabase();
+    }
+  };
+
+  const handleDatabaseInputBlur = (workspace: Workspace) => {
+    if (databaseName.trim()) {
+      handleDatabaseAdd(databaseName, workspace, "content" as DatabaseType);
+    } else {
+      handleCancelAddDatabase();
+    }
   };
 
   return (
@@ -187,7 +232,7 @@ export function AppSidebar() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDatabaseAdd(workspace as Workspace, "content" as DatabaseType);
+                            handleStartAddDatabase(workspace as Workspace);
                           }}
                           className="absolute right-2 opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200 hover:bg-sidebar-accent rounded p-1"
                         >
@@ -211,6 +256,22 @@ export function AppSidebar() {
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}
+                          {addingDatabaseToWorkspace === workspace.id && (
+                            <SidebarMenuSubItem>
+                              <div className="px-2 py-1.5 flex items-center gap-2">
+                                <DatabaseIcon className="w-4 h-4" />
+                                <Input
+                                  ref={databaseInputRef}
+                                  value={databaseName}
+                                  onChange={(e) => setDatabaseName(e.target.value)}
+                                  onKeyDown={(e) => handleDatabaseInputKeyDown(e, workspace)}
+                                  onBlur={() => handleDatabaseInputBlur(workspace)}
+                                  placeholder="Database name..."
+                                  className="h-6 text-sm"
+                                />
+                              </div>
+                            </SidebarMenuSubItem>
+                          )}
                         </SidebarMenuSub>
                       </CollapsibleContent>
                     </SidebarMenuItem>

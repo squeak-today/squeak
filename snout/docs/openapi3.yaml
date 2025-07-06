@@ -744,6 +744,13 @@ paths:
       tags:
         - workspace
       description: Create database
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/workspaces.CreateDatabaseRequest'
+        description: Body
+        required: true
       summary: Create database
   '/workspaces/{workspace_id}/databases/{database_id}/content/create':
     post:
@@ -1387,6 +1394,19 @@ components:
         - name
       type: object
     workspaces.CreateContentResponse:
+      type: object
+    workspaces.CreateDatabaseRequest:
+      properties:
+        name:
+          example: My Database
+          type: string
+        type:
+          allOf:
+            - $ref: '#/components/schemas/workspaces.DatabaseType'
+          example: content
+      required:
+        - name
+        - type
       type: object
     workspaces.CreateDatabaseResponse:
       properties:

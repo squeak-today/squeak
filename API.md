@@ -590,6 +590,7 @@ Create database
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ------ |
 | workspace_id | path | Workspace ID | Yes | string |
+| body | body | Body | Yes | [workspaces.CreateDatabaseRequest](#workspacescreatedatabaserequest) |
 
 ##### Responses
 
@@ -940,6 +941,13 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | workspaces.CreateContentResponse | object |  |  |
+
+#### workspaces.CreateDatabaseRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| name | string | *Example:* `"My Database"` | Yes |
+| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
 
 #### workspaces.CreateDatabaseResponse
 
