@@ -64,4 +64,3 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 	}
 	return database, contents, nil
 }
-

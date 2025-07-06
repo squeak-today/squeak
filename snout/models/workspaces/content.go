@@ -1,8 +1,8 @@
 package workspaces
 
 type Content struct {
-	ID string `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
-	Name string `json:"name" binding:"required" example:"My Content"`
+	ID         string `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
+	Name       string `json:"name" binding:"required" example:"My Content"`
 	DatabaseID string `json:"database_id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
 }
 
