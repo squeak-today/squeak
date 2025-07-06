@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdatePasswordRouteImport } from './routes/update-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DatabaseIdRouteImport } from './routes/$databaseId'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
@@ -29,6 +30,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatabaseIdRoute = DatabaseIdRouteImport.update({
+  id: '/$databaseId',
+  path: '/$databaseId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$databaseId': typeof DatabaseIdRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$databaseId': typeof DatabaseIdRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$databaseId': typeof DatabaseIdRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup' | '/update-password'
+  fullPaths: '/' | '/$databaseId' | '/login' | '/signup' | '/update-password'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/update-password'
-  id: '__root__' | '/' | '/login' | '/signup' | '/update-password'
+  to: '/' | '/$databaseId' | '/login' | '/signup' | '/update-password'
+  id:
+    | '__root__'
+    | '/'
+    | '/$databaseId'
+    | '/login'
+    | '/signup'
+    | '/update-password'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DatabaseIdRoute: typeof DatabaseIdRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
@@ -92,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$databaseId': {
+      id: '/$databaseId'
+      path: '/$databaseId'
+      fullPath: '/$databaseId'
+      preLoaderRoute: typeof DatabaseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DatabaseIdRoute: DatabaseIdRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
