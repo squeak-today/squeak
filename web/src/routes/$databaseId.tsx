@@ -66,6 +66,7 @@ function RouteComponent() {
       }
     };
 
+    setDatabaseRows([]);
     setSelectedDatabase(null);
     setSelectedWorkspace(null);
     loadDatabaseAndWorkspace();
