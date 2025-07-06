@@ -4,6 +4,9 @@ import { useSidebarMenu } from '@/context/SidebarMenuContext'
 import { useEffect, useState } from 'react';
 import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
 import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
+import { Skeleton } from '@/components/ui/skeleton';
+import { DatabaseTable } from '@/components/database/DatabaseTable';
+import { type DatabaseRow } from '@/components/database/columns';
 
 export const Route = createFileRoute('/$databaseId')({
   component: RouteComponent,
@@ -13,7 +16,10 @@ function RouteComponent() {
   const { databaseId } = Route.useParams();
   const { workspacesSummary, setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
   const { queryDatabase } = useDatabasesAPI();
+  
+  const [database, setDatabase] = useState<Database | null>(null);
   const [loading, setLoading] = useState(true);
+  const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
 
   useEffect(() => {
     const loadDatabaseAndWorkspace = async () => {
@@ -35,7 +41,8 @@ function RouteComponent() {
           console.error('Workspace not found for database:', foundDatabase.workspace_id);
           return;
         }
-
+        
+        setDatabase(foundDatabase);
         setSelectedDatabase(foundDatabase);
         setSelectedWorkspace(foundWorkspace);
 
@@ -47,6 +54,10 @@ function RouteComponent() {
         
         if (queryError) {
           console.error('Failed to query database:', queryError);
+        } else {
+          if (queryResult?.content) {
+            setDatabaseRows(queryResult.content);
+          }
         }
       } catch (error) {
         console.error('Error loading database:', error);
@@ -55,31 +66,32 @@ function RouteComponent() {
       }
     };
 
+    setSelectedDatabase(null);
+    setSelectedWorkspace(null);
     loadDatabaseAndWorkspace();
   }, [databaseId, workspacesSummary]);
-
-  if (loading) {
-    return (
-      <AppLayout>
-        <div className="p-6">
-          <p>Loading database...</p>
-        </div>
-      </AppLayout>
-    );
-  }
 
   return (
     <AppLayout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Database View</h1>
-        <p className="text-muted-foreground">
-          Viewing database: <span className="font-mono font-medium">{databaseId}</span>
-        </p>
-        <div className="mt-6 p-4 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            Database content will be displayed here. Check the console for the query results.
-          </p>
-        </div>
+        {loading || !database ? (
+          <Skeleton className="h-8 w-64 mb-6" />
+        ) : (
+          <h1 className="text-2xl font-bold mb-6">{database.name}</h1>
+        )}
+        
+        {loading ? (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+            </div>
+          </div>
+        ) : database ? (
+          <DatabaseTable type={database.type} data={databaseRows} />
+        ) : null}
       </div>
     </AppLayout>
   )

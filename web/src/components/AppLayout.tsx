@@ -7,15 +7,22 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { Skeleton } from '@/components/ui/skeleton';
 import { AppSidebar } from './AppSidebar';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
+import { useLocation } from '@tanstack/react-router';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const { selectedWorkspace, selectedDatabase } = useSidebarMenu();
+  const { selectedWorkspace, selectedDatabase, isLoading } = useSidebarMenu();
+  const location = useLocation();
+  
+  const isNotRootPage = location.pathname !== '/';
+  const showWorkspaceSkeleton = isLoading || (isNotRootPage && !selectedWorkspace);
+  const showDatabaseSkeleton = isLoading || (isNotRootPage && !selectedDatabase);
 
   return (
     <SidebarProvider>
@@ -27,22 +34,38 @@ export function AppLayout({ children }: AppLayoutProps) {
               <BreadcrumbItem>
                 <SidebarTrigger />
               </BreadcrumbItem>
-              {selectedWorkspace && (
+              
+              {showWorkspaceSkeleton ? (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <Skeleton className="h-4 w-24" />
+                  </BreadcrumbItem>
+                </>
+              ) : selectedWorkspace ? (
                 <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbPage>{selectedWorkspace.name}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </>
-              )}
-              {selectedDatabase && (
+              ) : null}
+              
+              {showDatabaseSkeleton ? (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <Skeleton className="h-4 w-32" />
+                  </BreadcrumbItem>
+                </>
+              ) : selectedDatabase ? (
                 <>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbPage>{selectedDatabase.name}</BreadcrumbPage>
                   </BreadcrumbItem>
                 </>
-              )}
+              ) : null}
             </BreadcrumbList>
           </Breadcrumb>
         </div>

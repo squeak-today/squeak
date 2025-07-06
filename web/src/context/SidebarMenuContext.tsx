@@ -11,8 +11,8 @@ interface SidebarMenuContextType {
   
   selectedWorkspace: Workspace | null;
   selectedDatabase: Database | null;
-  setSelectedWorkspace: (workspace: Workspace) => void;
-  setSelectedDatabase: (database: Database) => void;
+  setSelectedWorkspace: (workspace: Workspace | null) => void;
+  setSelectedDatabase: (database: Database | null) => void;
 }
 
 const SidebarMenuContext = createContext<SidebarMenuContextType | undefined>(undefined);
