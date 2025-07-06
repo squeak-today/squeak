@@ -6,12 +6,13 @@ terraform {
     }
   }
 
-  cloud {
-    organization = "squeak_team"
-    workspaces {
-      tags = ["shared"]
-    }
-  }
+  # Comment out cloud block for local development
+  # cloud {
+  #   organization = "squeak_team"
+  #   workspaces {
+  #     tags = ["shared"]
+  #   }
+  # }
 
   required_version = ">= 1.2.0"
 }
