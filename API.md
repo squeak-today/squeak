@@ -574,6 +574,33 @@ Create content
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
+### /workspaces/{workspace_id}/databases/{database_id}/query
+
+#### POST
+##### Summary
+
+Query database
+
+##### Description
+
+Query database
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+| database_id | path | Database ID | Yes | string |
+| body | body | Body | Yes | [workspaces.QueryDatabaseRequest](#workspacesquerydatabaserequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.QueryDatabaseResponse](#workspacesquerydatabaseresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /workspaces/{workspace_id}/databases/create
 
 #### POST
@@ -930,6 +957,14 @@ Get workspaces
 | title | string |  | No |
 | url | string |  | No |
 
+#### workspaces.Content
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| database_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+| name | string | *Example:* `"My Content"` | Yes |
+
 #### workspaces.CreateContentRequest
 
 | Name | Type | Description | Required |
@@ -987,6 +1022,22 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | Yes |
+
+#### workspaces.QueryDatabaseRequest
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
+
+#### workspaces.QueryDatabaseResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| content | [ [workspaces.Content](#workspacescontent) ] |  | No |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+| name | string | *Example:* `"My Database"` | Yes |
+| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
+| workspace_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
 
 #### workspaces.Workspace
 

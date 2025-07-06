@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useWorkspacesAPI, type WorkspacesSummary } from '@/hooks/useWorkspacesAPI';
+import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
 import { useAuth } from './AuthContext';
 
 interface SidebarMenuContextType {
@@ -7,6 +8,11 @@ interface SidebarMenuContextType {
   isLoading: boolean;
   error: string | null;
   refetchWorkspaces: () => Promise<void>;
+  
+  selectedWorkspace: Workspace | null;
+  selectedDatabase: Database | null;
+  setSelectedWorkspace: (workspace: Workspace | null) => void;
+  setSelectedDatabase: (database: Database | null) => void;
 }
 
 const SidebarMenuContext = createContext<SidebarMenuContextType | undefined>(undefined);
@@ -30,6 +36,9 @@ export function SidebarMenuProvider({ children }: SidebarMenuProviderProps) {
   const [workspacesSummary, setWorkspacesSummary] = useState<WorkspacesSummary | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [selectedDatabase, setSelectedDatabase] = useState<Database | null>(null);
 
   const fetchWorkspaces = async () => {
     if (!isAuthenticated) return;
@@ -73,6 +82,10 @@ export function SidebarMenuProvider({ children }: SidebarMenuProviderProps) {
     isLoading,
     error,
     refetchWorkspaces,
+    selectedWorkspace,
+    selectedDatabase,
+    setSelectedWorkspace,
+    setSelectedDatabase,
   };
 
   return (

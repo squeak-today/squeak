@@ -30,3 +30,37 @@ func CreateDatabase(client *supabase.Client, dbType workspaces.DatabaseType, use
 		return "", fmt.Errorf("unsupported database type for creation: %s", dbType)
 	}
 }
+
+func QueryContentDatabase(client *supabase.Client, databaseId string) (workspaces.Database, []workspaces.Content, error) {
+	log.Println("Querying content database:", databaseId)
+	var database workspaces.Database
+	err := client.Db.QueryRow(`
+		SELECT id, name, workspace_id FROM content_databases
+		WHERE id = $1
+	`, databaseId).Scan(&database.ID, &database.Name, &database.WorkspaceID)
+	if err != nil {
+		return workspaces.Database{}, nil, err
+	}
+	database.Type = workspaces.DatabaseTypeContent
+	database.ContentDatabase = &workspaces.ContentDatabase{}
+
+	rows, err := client.Db.Query(`
+		SELECT id, name, database_id FROM content
+		WHERE database_id = $1
+	`, databaseId)
+	if err != nil {
+		return workspaces.Database{}, nil, err
+	}
+	defer rows.Close()
+
+	var contents []workspaces.Content
+	for rows.Next() {
+		var content workspaces.Content
+		err = rows.Scan(&content.ID, &content.Name, &content.DatabaseID)
+		if err != nil {
+			return workspaces.Database{}, nil, err
+		}
+		contents = append(contents, content)
+	}
+	return database, contents, nil
+}

@@ -27,12 +27,14 @@ import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { type DatabaseType, type Workspace, type Database, useWorkspacesAPI } from '@/hooks/useWorkspacesAPI';
 import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
+import { useNavigate } from '@tanstack/react-router';
 
 export function AppSidebar() {
   const { workspacesSummary, refetchWorkspaces } = useSidebarMenu();
   const { createWorkspace } = useWorkspacesAPI();
   const { createDatabase } = useDatabasesAPI();
   const { logout } = useAuth();
+  const navigate = useNavigate();
   const [openWorkspaces, setOpenWorkspaces] = useState<Set<string>>(new Set());
   const [isAddingWorkspace, setIsAddingWorkspace] = useState(false);
   const [workspaceName, setWorkspaceName] = useState('');
@@ -45,8 +47,9 @@ export function AppSidebar() {
     console.log('Workspace clicked:', workspace.name);
   };
 
-  const handleDatabaseClick = (database: any) => {
+  const handleDatabaseClick = (database: Database) => {
     console.log('Database clicked:', database.name);
+    navigate({ to: '/$databaseId', params: { databaseId: database.id } });
   };
 
   const toggleWorkspace = (workspaceId: string) => {
@@ -246,13 +249,11 @@ export function AppSidebar() {
                             .map((database) => (
                               <SidebarMenuSubItem key={database.id}>
                                 <SidebarMenuSubButton 
-                                  asChild
                                   onClick={() => handleDatabaseClick(database)}
+                                  className="cursor-pointer"
                                 >
-                                  <div className="flex items-center gap-2">
-                                    <DatabaseIcon className="w-4 h-4" />
-                                    <span>{database.name}</span>
-                                  </div>
+                                  <DatabaseIcon className="w-4 h-4" />
+                                  <span>{database.name}</span>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}

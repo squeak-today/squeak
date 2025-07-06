@@ -581,6 +581,22 @@ definitions:
       url:
         type: string
     type: object
+  workspaces.Content:
+    properties:
+      database_id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+      id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+      name:
+        example: My Content
+        type: string
+    required:
+    - database_id
+    - id
+    - name
+    type: object
   workspaces.CreateContentRequest:
     properties:
       name:
@@ -662,6 +678,40 @@ definitions:
         type: array
     required:
     - workspaces
+    type: object
+  workspaces.QueryDatabaseRequest:
+    properties:
+      type:
+        allOf:
+        - $ref: '#/definitions/workspaces.DatabaseType'
+        example: content
+    required:
+    - type
+    type: object
+  workspaces.QueryDatabaseResponse:
+    properties:
+      content:
+        items:
+          $ref: '#/definitions/workspaces.Content'
+        type: array
+      id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+      name:
+        example: My Database
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/workspaces.DatabaseType'
+        example: content
+      workspace_id:
+        example: xxxx-xxxx-xxxx-xxxx
+        type: string
+    required:
+    - id
+    - name
+    - type
+    - workspace_id
     type: object
   workspaces.Workspace:
     properties:
@@ -1352,6 +1402,46 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create content
+      tags:
+      - workspace
+  /workspaces/{workspace_id}/databases/{database_id}/query:
+    post:
+      consumes:
+      - application/json
+      description: Query database
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Database ID
+        in: path
+        name: database_id
+        required: true
+        type: string
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/workspaces.QueryDatabaseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.QueryDatabaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Query database
       tags:
       - workspace
   /workspaces/{workspace_id}/databases/create:
