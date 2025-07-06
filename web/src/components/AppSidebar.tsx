@@ -21,11 +21,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
 import { useAuth } from '@/context/AuthContext';
-import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database } from 'lucide-react';
+import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database as DatabaseIcon } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { useWorkspacesAPI } from '@/hooks/useWorkspacesAPI';
+import { type DatabaseType, type Workspace, type Database, useWorkspacesAPI } from '@/hooks/useWorkspacesAPI';
 
 export function AppSidebar() {
   const { workspacesSummary, refetchWorkspaces } = useSidebarMenu();
@@ -110,8 +110,8 @@ export function AppSidebar() {
     }
   }, [isAddingWorkspace]);
 
-  const handleWorkspaceAdd = (workspace: any) => {
-    console.log('Add button clicked for workspace:', workspace.id);
+  const handleDatabaseAdd = (workspace: Workspace, type: DatabaseType) => {
+    console.log('Add button clicked for workspace:', workspace.id, type);
   };
 
   return (
@@ -158,7 +158,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {workspacesSummary?.workspaces?.map((workspace) => {
+              {workspacesSummary?.workspaces.map((workspace: Workspace) => {
                 const isOpen = openWorkspaces.has(workspace.id || '');
                 return (
                   <Collapsible 
@@ -187,7 +187,7 @@ export function AppSidebar() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleWorkspaceAdd(workspace);
+                            handleDatabaseAdd(workspace as Workspace, "content" as DatabaseType);
                           }}
                           className="absolute right-2 opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200 hover:bg-sidebar-accent rounded p-1"
                         >
@@ -197,7 +197,7 @@ export function AppSidebar() {
                       <CollapsibleContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-left-1 data-[state=open]:slide-in-from-left-1 duration-200">
                         <SidebarMenuSub>
                           {workspacesSummary.databases
-                            ?.filter((database) => database.workspace_id === workspace.id)
+                            .filter((database: Database) => database.workspace_id === workspace.id)
                             .map((database) => (
                               <SidebarMenuSubItem key={database.id}>
                                 <SidebarMenuSubButton 
@@ -205,7 +205,7 @@ export function AppSidebar() {
                                   onClick={() => handleDatabaseClick(database)}
                                 >
                                   <div className="flex items-center gap-2">
-                                    <Database className="w-4 h-4" />
+                                    <DatabaseIcon className="w-4 h-4" />
                                     <span>{database.name}</span>
                                   </div>
                                 </SidebarMenuSubButton>

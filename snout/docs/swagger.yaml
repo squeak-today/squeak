@@ -611,6 +611,8 @@ definitions:
       id:
         example: xxxx-xxxx-xxxx-xxxx
         type: string
+    required:
+    - id
     type: object
   workspaces.Database:
     properties:
@@ -645,6 +647,8 @@ definitions:
         items:
           $ref: '#/definitions/workspaces.Workspace'
         type: array
+    required:
+    - workspaces
     type: object
   workspaces.Workspace:
     properties:
@@ -654,6 +658,9 @@ definitions:
       name:
         example: My Workspace
         type: string
+    required:
+    - id
+    - name
     type: object
   workspaces.WorkspacesSummary:
     properties:

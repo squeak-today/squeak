@@ -957,7 +957,7 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
 
 #### workspaces.Database
 
@@ -978,14 +978,14 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | No |
+| workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | Yes |
 
 #### workspaces.Workspace
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
-| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | No |
-| name | string | *Example:* `"My Workspace"` | No |
+| id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+| name | string | *Example:* `"My Workspace"` | Yes |
 
 #### workspaces.WorkspacesSummary
 

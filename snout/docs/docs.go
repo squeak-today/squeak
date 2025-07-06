@@ -1985,6 +1985,9 @@ const docTemplate = `{
         },
         "workspaces.CreateWorkspaceResponse": {
             "type": "object",
+            "required": [
+                "id"
+            ],
             "properties": {
                 "id": {
                     "type": "string",
@@ -2034,6 +2037,9 @@ const docTemplate = `{
         },
         "workspaces.GetWorkspacesResponse": {
             "type": "object",
+            "required": [
+                "workspaces"
+            ],
             "properties": {
                 "workspaces": {
                     "type": "array",
@@ -2045,6 +2051,10 @@ const docTemplate = `{
         },
         "workspaces.Workspace": {
             "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
             "properties": {
                 "id": {
                     "type": "string",

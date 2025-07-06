@@ -1797,7 +1797,7 @@ export interface components {
         };
         "workspaces.CreateWorkspaceResponse": {
             /** @example xxxx-xxxx-xxxx-xxxx */
-            id?: string;
+            id: string;
         };
         "workspaces.Database": {
             /** @example xxxx-xxxx-xxxx-xxxx */
@@ -1812,13 +1812,13 @@ export interface components {
         /** @enum {string} */
         "workspaces.DatabaseType": "content";
         "workspaces.GetWorkspacesResponse": {
-            workspaces?: components["schemas"]["workspaces.Workspace"][];
+            workspaces: components["schemas"]["workspaces.Workspace"][];
         };
         "workspaces.Workspace": {
             /** @example xxxx-xxxx-xxxx-xxxx */
-            id?: string;
+            id: string;
             /** @example My Workspace */
-            name?: string;
+            name: string;
         };
         "workspaces.WorkspacesSummary": {
             databases: components["schemas"]["workspaces.Database"][];

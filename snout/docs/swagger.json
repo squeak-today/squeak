@@ -1979,6 +1979,9 @@
         },
         "workspaces.CreateWorkspaceResponse": {
             "type": "object",
+            "required": [
+                "id"
+            ],
             "properties": {
                 "id": {
                     "type": "string",
@@ -2028,6 +2031,9 @@
         },
         "workspaces.GetWorkspacesResponse": {
             "type": "object",
+            "required": [
+                "workspaces"
+            ],
             "properties": {
                 "workspaces": {
                     "type": "array",
@@ -2039,6 +2045,10 @@
         },
         "workspaces.Workspace": {
             "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
             "properties": {
                 "id": {
                     "type": "string",

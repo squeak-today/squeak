@@ -2,7 +2,10 @@ import { useCallback } from 'react';
 import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import type { components } from '@/lib/clients/types';
 
+export type Workspace = components["schemas"]["workspaces.Workspace"];
+export type Database = components["schemas"]["workspaces.Database"];
 export type WorkspacesSummary = components["schemas"]["workspaces.WorkspacesSummary"];
+export type DatabaseType = components["schemas"]["workspaces.DatabaseType"];
 
 export function useWorkspacesAPI() {
     const { client, isAuthenticated, requireAuthWithErrors } = useAuthenticatedAPI();

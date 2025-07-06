@@ -1,8 +1,8 @@
 package workspaces
 
 type Workspace struct {
-	ID   string `json:"id" example:"xxxx-xxxx-xxxx-xxxx"`
-	Name string `json:"name" example:"My Workspace"`
+	ID   string `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
+	Name string `json:"name" binding:"required" example:"My Workspace"`
 }
 
 type DatabaseType string
@@ -29,9 +29,9 @@ type CreateWorkspaceRequest struct {
 	Name string `json:"name" binding:"required" example:"My Workspace"`
 }
 type CreateWorkspaceResponse struct {
-	ID   string `json:"id" example:"xxxx-xxxx-xxxx-xxxx"`
+	ID string `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
 }
 
 type GetWorkspacesResponse struct {
-	Workspaces []Workspace `json:"workspaces"`
+	Workspaces []Workspace `json:"workspaces" binding:"required"`
 }
