@@ -56,3 +56,26 @@ func UpsertContentJob(ctx context.Context, client *supabase.Client, name string,
 	}
 	return nil
 }
+
+func GetIncompleteJobs(client *supabase.Client, userId string, databaseId string) ([]types.ContentJob, error) {
+	rows, err := client.Db.Query(`
+		SELECT id, user_id, database_id, status, name, created_at
+		FROM content_jobs
+		WHERE user_id = $1 AND database_id = $2 AND status != $3
+	`, userId, databaseId, types.ContentJobStatusComplete)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	jobs := []types.ContentJob{}
+	for rows.Next() {
+		var job types.ContentJob
+		err := rows.Scan(&job.ID, &job.UserID, &job.DatabaseID, &job.Status, &job.Name, &job.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		jobs = append(jobs, job)
+	}
+	return jobs, nil
+}

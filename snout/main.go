@@ -224,6 +224,7 @@ func main() {
 		contentGroup := workspacesGroup.Group("/:workspace_id/databases/:database_id/content")
 		{
 			contentGroup.POST("/create", workspacesHandler.CreateContent)
+			contentGroup.GET("/jobs", workspacesHandler.GetIncompleteJobs)
 		}
 	}
 

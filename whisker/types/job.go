@@ -17,9 +17,12 @@ const (
 )
 
 type ContentJob struct {
+	ID         string `json:"id" required:"true"`
 	Name       string `json:"name" required:"true"`
 	UserID     string `json:"user_id" required:"true"`
 	DatabaseID string `json:"database_id" required:"true"`
+	Status     ContentJobStatus `json:"status" required:"true"`
+	CreatedAt  time.Time        `json:"created_at" required:"true"`
 }
 
 func ValidateContentJob(job *ContentJob) error {
@@ -47,7 +50,6 @@ type ContentJobRequest struct {
 // Stored in worker pool as records
 type ContentJobRecord struct {
 	ID        string           `json:"id" required:"true"`
-	Status    ContentJobStatus `json:"status" required:"true"`
 	CreatedAt time.Time        `json:"created_at" required:"true"`
 	Error     error            `json:"error,omitempty"`
 	Job       ContentJob       `json:"job" required:"true"`
@@ -60,7 +62,7 @@ func ValidateContentJobRecord(record *ContentJobRecord) error {
 	if record.ID == "" {
 		return fmt.Errorf("id is required")
 	}
-	if record.Status == "" {
+	if record.Job.Status == "" {
 		return fmt.Errorf("status is required")
 	}
 	if record.CreatedAt.IsZero() {
