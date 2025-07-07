@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -124,6 +125,15 @@ func main() {
 		}
 
 		c.Next()
+	})
+
+	// Health endpoint
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":    "healthy",
+			"service":   "snout-api",
+			"timestamp": time.Now().UTC().Format(time.RFC3339),
+		})
 	})
 
 	router.Use(func(c *gin.Context) {
