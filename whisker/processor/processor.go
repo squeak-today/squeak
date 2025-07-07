@@ -7,8 +7,8 @@ import (
 
 	"snout/supabase"
 	"snout/supabase/workspaces"
+	types "snout/whisker_types"
 	"whisker/storage"
-	"whisker/types"
 )
 
 type ContentProcessor struct {
@@ -24,10 +24,6 @@ func NewContentProcessor(supabaseClient *supabase.Client, s3Client *storage.S3Cl
 }
 
 func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRecord) error {
-	if err := workspaces.UpsertContentJob(ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
-		return err
-	}
-
 	select {
 	case <-time.After(5 * time.Second):
 	case <-ctx.Done():
@@ -57,5 +53,5 @@ func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRec
 	}
 
 	log.Printf("Processed content job for user %s, database %s", job.Job.UserID, job.Job.DatabaseID)
-	return workspaces.UpsertContentJob(ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(types.ContentJobStatusComplete))
+	return nil
 }

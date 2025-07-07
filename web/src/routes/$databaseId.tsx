@@ -1,9 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { AppLayout } from '@/components/AppLayout'
 import { useSidebarMenu } from '@/context/SidebarMenuContext'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
 import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
+import { useContentAPI, type ContentJob } from '@/hooks/useContentAPI';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DatabaseTable } from '@/components/database/DatabaseTable';
 import { type DatabaseRow } from '@/components/database/columns';
@@ -18,10 +19,75 @@ function RouteComponent() {
   const { databaseId } = Route.useParams();
   const { workspacesSummary, setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
   const { queryDatabase } = useDatabasesAPI();
+  const { getIncompleteJobs } = useContentAPI();
   
   const [database, setDatabase] = useState<Database | null>(null);
+  const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [loading, setLoading] = useState(true);
   const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
+  const [incompleteJobs, setIncompleteJobs] = useState<ContentJob[]>([]);
+  const [incompleteJobsLoading, setIncompleteJobsLoading] = useState(false);
+  
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const fetchIncompleteJobs = async () => {
+    if (!workspace || !database || database.type !== 'content') {
+      return;
+    }
+
+    try {
+      setIncompleteJobsLoading(true);
+      const { data, error } = await getIncompleteJobs(workspace.id, database.id);
+
+      console.log('data', data);
+      
+      if (error) {
+        console.error('Failed to fetch incomplete jobs:', error);
+      } else if (data?.jobs) {
+        setIncompleteJobs(data.jobs);
+      }
+    } catch (error) {
+      console.error('Error fetching incomplete jobs:', error);
+    } finally {
+      setIncompleteJobsLoading(false);
+    }
+  };
+
+  const fetchDatabaseRows = async (workspace: Workspace, database: Database) => {
+    if (!workspace || !database) {
+      return;
+    }
+
+    try {
+      const { data: queryResult, error: queryError } = await queryDatabase(
+        workspace.id, 
+        database.id, 
+        database.type
+      );
+      
+      if (queryError) {
+        console.error('Failed to query database:', queryError);
+      } else {
+        if (queryResult?.content) {
+          setDatabaseRows(queryResult.content);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching database rows:', error);
+    }
+  };
+
+  const refreshData = async (workspace: Workspace, database: Database) => {
+    if (!workspace || !database) {
+      return;
+    }
+
+    await fetchDatabaseRows(workspace, database);
+    
+    if (database.type === 'content') {
+      await fetchIncompleteJobs();
+    }
+  };
 
   useEffect(() => {
     const loadDatabaseAndWorkspace = async () => {
@@ -45,22 +111,11 @@ function RouteComponent() {
         }
         
         setDatabase(foundDatabase);
+        setWorkspace(foundWorkspace);
         setSelectedDatabase(foundDatabase);
         setSelectedWorkspace(foundWorkspace);
 
-        const { data: queryResult, error: queryError } = await queryDatabase(
-          foundWorkspace.id, 
-          databaseId, 
-          foundDatabase.type
-        );
-        
-        if (queryError) {
-          console.error('Failed to query database:', queryError);
-        } else {
-          if (queryResult?.content) {
-            setDatabaseRows(queryResult.content);
-          }
-        }
+        await refreshData(foundWorkspace, foundDatabase);
       } catch (error) {
         console.error('Error loading database:', error);
       } finally {
@@ -69,10 +124,35 @@ function RouteComponent() {
     };
 
     setDatabaseRows([]);
+    setIncompleteJobs([]);
     setSelectedDatabase(null);
     setSelectedWorkspace(null);
+    setWorkspace(null);
     loadDatabaseAndWorkspace();
   }, [databaseId, workspacesSummary]);
+
+  useEffect(() => {
+    if (!database || !workspace || loading) {
+      return;
+    }
+
+    intervalRef.current = setInterval(() => refreshData(workspace, database), 5000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [database, workspace, loading]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   return (
     <ProtectedRoute>
@@ -95,7 +175,13 @@ function RouteComponent() {
             </div>
           ) : database ? (
             <>
-              <DatabaseTable type={database.type} data={databaseRows} />
+              <DatabaseTable 
+                type={database.type} 
+                data={databaseRows}
+                onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
+                incompleteJobs={incompleteJobs}
+                incompleteJobsLoading={incompleteJobsLoading}
+              />
               <CreationButton database={database} />
             </>
           ) : null}

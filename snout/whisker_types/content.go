@@ -1,4 +1,4 @@
-package types
+package whisker_types
 
 // early type for testing
 // change once the llm + scraping step is done

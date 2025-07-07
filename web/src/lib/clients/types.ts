@@ -1492,6 +1492,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workspaces/{workspace_id}/databases/{database_id}/content/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get incomplete jobs
+         * @description Get incomplete jobs
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Workspace ID */
+                    workspace_id: string;
+                    /** @description Database ID */
+                    database_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["workspaces.GetIncompleteJobsResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/workspaces/{workspace_id}/databases/{database_id}/query": {
         parameters: {
             query?: never;
@@ -1855,6 +1926,16 @@ export interface components {
             title?: string;
             url?: string;
         };
+        "whisker_types.ContentJob": {
+            created_at?: string;
+            database_id?: string;
+            id?: string;
+            name?: string;
+            status?: components["schemas"]["whisker_types.ContentJobStatus"];
+            user_id?: string;
+        };
+        /** @enum {string} */
+        "whisker_types.ContentJobStatus": "creation" | "pending" | "running" | "complete" | "failed" | "cancelled";
         "workspaces.Content": {
             /** @example xxxx-xxxx-xxxx-xxxx */
             database_id: string;
@@ -1900,6 +1981,9 @@ export interface components {
         };
         /** @enum {string} */
         "workspaces.DatabaseType": "content";
+        "workspaces.GetIncompleteJobsResponse": {
+            jobs?: components["schemas"]["whisker_types.ContentJob"][];
+        };
         "workspaces.GetWorkspacesResponse": {
             workspaces: components["schemas"]["workspaces.Workspace"][];
         };

@@ -1153,6 +1153,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/workspaces/{workspace_id}/databases/{database_id}/content/jobs": {
+            "get": {
+                "description": "Get incomplete jobs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Get incomplete jobs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Database ID",
+                        "name": "database_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.GetIncompleteJobsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/workspaces/{workspace_id}/databases/{database_id}/query": {
             "post": {
                 "description": "Query database",
@@ -2014,6 +2071,48 @@ const docTemplate = `{
                 }
             }
         },
+        "whisker_types.ContentJob": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "database_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/whisker_types.ContentJobStatus"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "whisker_types.ContentJobStatus": {
+            "type": "string",
+            "enum": [
+                "creation",
+                "pending",
+                "running",
+                "complete",
+                "failed",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "ContentJobStatusCreation",
+                "ContentJobStatusPending",
+                "ContentJobStatusRunning",
+                "ContentJobStatusComplete",
+                "ContentJobStatusFailed",
+                "ContentJobStatusCancelled"
+            ]
+        },
         "workspaces.Content": {
             "type": "object",
             "required": [
@@ -2151,6 +2250,17 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "DatabaseTypeContent"
             ]
+        },
+        "workspaces.GetIncompleteJobsResponse": {
+            "type": "object",
+            "properties": {
+                "jobs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/whisker_types.ContentJob"
+                    }
+                }
+            }
         },
         "workspaces.GetWorkspacesResponse": {
             "type": "object",

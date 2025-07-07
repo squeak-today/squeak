@@ -1,5 +1,9 @@
 package workspaces
 
+import (
+	types "snout/whisker_types"
+)
+
 type Content struct {
 	ID         string `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
 	Name       string `json:"name" binding:"required" example:"My Content"`
@@ -14,3 +18,7 @@ type CreateContentRequest struct {
 	Link string `json:"link" binding:"required"`
 }
 type CreateContentResponse struct{}
+
+type GetIncompleteJobsResponse struct {
+	Jobs []types.ContentJob `json:"jobs"`
+}

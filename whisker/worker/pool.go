@@ -9,8 +9,8 @@ import (
 
 	"snout/supabase"
 	"snout/supabase/workspaces"
+	types "snout/whisker_types"
 	"whisker/processor"
-	"whisker/types"
 )
 
 type Pool struct {
@@ -46,14 +46,14 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 		return fmt.Errorf("max concurrent jobs reached (%d)", p.maxWorkers)
 	}
 
+	jobRequest.Job.Status = types.ContentJobStatusPending
 	job := &types.ContentJobRecord{
 		ID:        jobRequest.ID,
-		Status:    types.ContentJobStatusPending,
 		CreatedAt: time.Now(),
 		Job:       jobRequest.Job,
 	}
 
-	if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+	if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Job.Status)); err != nil {
 		p.mu.Unlock()
 		return fmt.Errorf("failed to update job status to pending: %w", err)
 	}
@@ -70,8 +70,8 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 			p.wg.Done()
 		}()
 
-		job.Status = types.ContentJobStatusRunning
-		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+		job.Job.Status = types.ContentJobStatusRunning
+		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Job.Status)); err != nil {
 			log.Printf("Failed to update job status to running: %v", err)
 			if onComplete != nil {
 				onComplete(false)
@@ -86,23 +86,23 @@ func (p *Pool) ProcessJob(jobRequest *types.ContentJobRequest, onComplete func(s
 		if err := p.processor.Process(jobCtx, job); err != nil {
 			if err == context.Canceled {
 				log.Printf("Job %s was cancelled", job.ID)
-				job.Status = types.ContentJobStatusCancelled
+				job.Job.Status = types.ContentJobStatusCancelled
 			} else if err == context.DeadlineExceeded {
 				log.Printf("Job %s timed out", job.ID)
-				job.Status = types.ContentJobStatusFailed
+				job.Job.Status = types.ContentJobStatusFailed
 			} else {
 				log.Printf("Job %s failed: %v", job.ID, err)
-				job.Status = types.ContentJobStatusFailed
+				job.Job.Status = types.ContentJobStatusFailed
 			}
 			job.Error = err
 			success = false
 		} else {
 			log.Printf("Job %s completed successfully", job.ID)
-			job.Status = types.ContentJobStatusComplete
+			job.Job.Status = types.ContentJobStatusComplete
 			success = true
 		}
 
-		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Status)); err != nil {
+		if err := workspaces.UpsertContentJob(p.ctx, p.supabaseClient, job.Job.Name, job.ID, job.Job.UserID, job.Job.DatabaseID, string(job.Job.Status)); err != nil {
 			log.Printf("Failed to update final job status: %v", err)
 		}
 

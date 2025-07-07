@@ -3,15 +3,46 @@ package workspaceshandler
 import (
 	"context"
 	"net/http"
+	"time"
 
 	models "snout/models"
 	workspaces_models "snout/models/workspaces"
 	workspaces "snout/supabase/workspaces"
 
-	whisker "whisker/types"
+	whisker "snout/whisker_types"
 
 	"github.com/gin-gonic/gin"
 )
+
+// @Summary		Get incomplete jobs
+// @Description	Get incomplete jobs
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Param			workspace_id	path		string	true	"Workspace ID"
+// @Param			database_id		path		string	true	"Database ID"
+// @Success		200				{object}	workspaces_models.GetIncompleteJobsResponse
+// @Failure		400				{object}	models.ErrorResponse
+// @Failure		404				{object}	models.ErrorResponse
+// @Failure		500				{object}	models.ErrorResponse
+// @Router			/workspaces/{workspace_id}/databases/{database_id}/content/jobs [get]
+func (h *WorkspacesHandler) GetIncompleteJobs(c *gin.Context) {
+	userId := h.GetUserIDFromToken(c)
+	workspaceId := c.Param("workspace_id")
+	databaseId := c.Param("database_id")
+
+	if !h.CheckWorkspaceUserOwnership(c, userId, workspaceId) {
+		return
+	}
+
+	jobs, err := workspaces.GetIncompleteJobs(h.DBClient, userId, databaseId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, workspaces_models.GetIncompleteJobsResponse{Jobs: jobs})
+}
 
 // @Summary		Create content
 // @Description	Create content
@@ -51,9 +82,12 @@ func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	h.Producer.Send(whisker.ContentJobRequest{
 		ID: id,
 		Job: whisker.ContentJob{
+			ID:         id,
 			Name:       req.Name,
 			UserID:     userId,
 			DatabaseID: databaseId,
+			Status:     whisker.ContentJobStatusCreation,
+			CreatedAt:  time.Now(),
 		},
 	})
 
