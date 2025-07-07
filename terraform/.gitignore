@@ -1,4 +1,18 @@
+
+
+# Terraform
 .terraform/
 terraform/.terraform/
-terraform/.terraform.lock.hcl
-terraform/terraform.tfstate*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+
+# AWS
+.aws/
+
+# Environment files
+.env
+.env.local
+.env.*.local
