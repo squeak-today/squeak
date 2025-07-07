@@ -27,7 +27,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
+      <main className="flex-1 w-full">
         <div className="px-4 pt-4">
           <Breadcrumb>
             <BreadcrumbList>
