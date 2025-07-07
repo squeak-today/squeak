@@ -7,6 +7,7 @@ import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DatabaseTable } from '@/components/database/DatabaseTable';
 import { type DatabaseRow } from '@/components/database/columns';
+import { Button } from '@/components/ui/button';
 
 export const Route = createFileRoute('/$databaseId')({
   component: RouteComponent,
@@ -72,6 +73,10 @@ function RouteComponent() {
     loadDatabaseAndWorkspace();
   }, [databaseId, workspacesSummary]);
 
+  const onAddRow = () => {
+    console.log('add row');
+  }
+
   return (
     <AppLayout>
       <div className="p-6">
@@ -91,7 +96,26 @@ function RouteComponent() {
             </div>
           </div>
         ) : database ? (
-          <DatabaseTable type={database.type} data={databaseRows} />
+          <>
+            <DatabaseTable type={database.type} data={databaseRows} />
+            {(() => {
+              let buttonText: string | null = null;
+              switch (database.type) {
+                case "content":
+                  buttonText = "+ Create Content";
+                  break;
+                default:
+                  buttonText = null;
+              }
+              return buttonText ? (
+                <div className="mt-2">
+                  <Button variant="ghost" size="sm" onClick={onAddRow}>
+                    {buttonText}
+                  </Button>
+                </div>
+              ) : null;
+            })()}
+          </>
         ) : null}
       </div>
     </AppLayout>
