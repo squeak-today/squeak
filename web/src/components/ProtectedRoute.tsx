@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-function ProtectedRoute({ children }: ProtectedRouteProps) {
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate();
   const { jwtToken, isLoading } = useAuth();
 
@@ -16,15 +16,9 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
   }, [jwtToken, isLoading, navigate]);
 
-  if (isLoading) {
-    return null;
-  }
-
   if (!jwtToken) {
     return null;
   }
 
   return <>{children}</>;
 }
-
-export default ProtectedRoute;

@@ -8,5 +8,9 @@ type Content struct {
 
 type CreateContentRequest struct {
 	Name string `json:"name" binding:"required"`
+
+	// Eventually need to build a more robust request body for other
+	// kinds of content uploads
+	Link string `json:"link" binding:"required"`
 }
 type CreateContentResponse struct{}

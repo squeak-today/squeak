@@ -2039,9 +2039,14 @@ const docTemplate = `{
         "workspaces.CreateContentRequest": {
             "type": "object",
             "required": [
+                "link",
                 "name"
             ],
             "properties": {
+                "link": {
+                    "description": "Eventually need to build a more robust request body for other\nkinds of content uploads",
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 }

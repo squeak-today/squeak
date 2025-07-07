@@ -1864,6 +1864,9 @@ export interface components {
             name: string;
         };
         "workspaces.CreateContentRequest": {
+            /** @description Eventually need to build a more robust request body for other
+             *     kinds of content uploads */
+            link: string;
             name: string;
         };
         "workspaces.CreateContentResponse": Record<string, never>;

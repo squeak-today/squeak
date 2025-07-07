@@ -969,6 +969,7 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| link | string | Eventually need to build a more robust request body for other kinds of content uploads | Yes |
 | name | string |  | Yes |
 
 #### workspaces.CreateContentResponse

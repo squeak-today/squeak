@@ -7,6 +7,8 @@ import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DatabaseTable } from '@/components/database/DatabaseTable';
 import { type DatabaseRow } from '@/components/database/columns';
+import { CreationButton } from '@/components/database/CreationButton';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 export const Route = createFileRoute('/$databaseId')({
   component: RouteComponent,
@@ -73,27 +75,32 @@ function RouteComponent() {
   }, [databaseId, workspacesSummary]);
 
   return (
-    <AppLayout>
-      <div className="p-6">
-        {loading || !database ? (
-          <Skeleton className="h-8 w-64 mb-6" />
-        ) : (
-          <h1 className="text-2xl font-bold mb-6">{database.name}</h1>
-        )}
-        
-        {loading ? (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-8 w-full" />
-              <Skeleton className="h-8 w-full" />
+    <ProtectedRoute>
+      <AppLayout>
+        <div className="p-6">
+          {loading || !database ? (
+            <Skeleton className="h-8 w-64 mb-6" />
+          ) : (
+            <h1 className="text-2xl font-bold mb-6">{database.name}</h1>
+          )}
+          
+          {loading ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+              </div>
             </div>
-          </div>
-        ) : database ? (
-          <DatabaseTable type={database.type} data={databaseRows} />
-        ) : null}
-      </div>
-    </AppLayout>
+          ) : database ? (
+            <>
+              <DatabaseTable type={database.type} data={databaseRows} />
+              <CreationButton database={database} />
+            </>
+          ) : null}
+        </div>
+      </AppLayout>
+    </ProtectedRoute>
   )
 }
