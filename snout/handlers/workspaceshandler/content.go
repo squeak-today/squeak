@@ -47,6 +47,7 @@ func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 		return
 	}
 
+	// TODO: send req.Link to the worker (requires whisker update too)
 	h.Producer.Send(whisker.ContentJobRequest{
 		ID: id,
 		Job: whisker.ContentJob{
