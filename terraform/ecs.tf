@@ -1,36 +1,36 @@
 # terraform/ecs.tf
 # ECS cluster, task definition, and service
 
-# ECS Cluster
-resource "aws_ecs_cluster" "ecs" {
-    name = "app_cluster"
+# ECS Cluster (shared by snout and future whisker)
+resource "aws_ecs_cluster" "squeak_cluster" {
+    name = "squeak-cluster"
     
     tags = {
-        Name = "app-cluster"
+        Name = "squeak-cluster"
     }
 }
 
-# CloudWatch Log Group
-resource "aws_cloudwatch_log_group" "app_logs" {
-    name              = "/ecs/app"
+# CloudWatch Log Group for snout
+resource "aws_cloudwatch_log_group" "snout_logs" {
+    name              = "/ecs/snout"
     retention_in_days = 7
     
     tags = {
-        Name = "app-logs"
+        Name = "snout-logs"
     }
 }
 
-# ECS Task Definition
-resource "aws_ecs_task_definition" "app" {
-    family                = "app-task"
+# ECS Task Definition for snout
+resource "aws_ecs_task_definition" "snout_task" {
+    family                = "snout-api-task"
     network_mode          = "bridge"
     requires_compatibilities = ["EC2"]
     execution_role_arn    = aws_iam_role.ecs_execution_role.arn
     
     container_definitions = jsonencode([
         {
-            name  = "app-container"
-            image = "${aws_ecr_repository.repo.repository_url}:latest"
+            name  = "snout-api-container"
+            image = "${aws_ecr_repository.snout_repo.repository_url}:latest"
             memory = 512
             
             portMappings = [
@@ -40,10 +40,28 @@ resource "aws_ecs_task_definition" "app" {
                 }
             ]
             
+            environment = [
+                {
+                    name  = "WORKSPACE"
+                    value = "prod"
+                },
+                {
+                    name  = "GIN_MODE"
+                    value = "release"
+                },
+                {
+                    name  = "AWS_REGION"
+                    value = "us-east-1"
+                }
+            ]
+            
+            # Add your Supabase environment variables here
+            # You can add them directly or use AWS Parameter Store
+            
             logConfiguration = {
                 logDriver = "awslogs"
                 options = {
-                    "awslogs-group"         = aws_cloudwatch_log_group.app_logs.name
+                    "awslogs-group"         = aws_cloudwatch_log_group.snout_logs.name
                     "awslogs-region"        = "us-east-1"
                     "awslogs-stream-prefix" = "ecs"
                 }
@@ -54,19 +72,27 @@ resource "aws_ecs_task_definition" "app" {
     ])
     
     tags = {
-        Name = "app-task-definition"
+        Name = "snout-api-task-definition"
     }
 }
 
-# ECS Service
-resource "aws_ecs_service" "service" {
-    name            = "app_service"
-    cluster         = aws_ecs_cluster.ecs.id
-    task_definition = aws_ecs_task_definition.app.arn
+# ECS Service for snout
+resource "aws_ecs_service" "snout_service" {
+    name            = "snout-api-service"
+    cluster         = aws_ecs_cluster.squeak_cluster.id
+    task_definition = aws_ecs_task_definition.snout_task.arn
     desired_count   = 1
     launch_type     = "EC2"
     
+    load_balancer {
+        target_group_arn = aws_lb_target_group.snout_tg.arn
+        container_name   = "snout-api-container"
+        container_port   = 8080
+    }
+    
+    depends_on = [aws_lb_listener.snout_listener]
+    
     tags = {
-        Name = "app-service"
+        Name = "snout-api-service"
     }
 }
