@@ -9,7 +9,7 @@ import (
 	workspaces_models "snout/models/workspaces"
 	workspaces "snout/supabase/workspaces"
 
-	whisker "whisker/types"
+	whisker "snout/whisker_types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,8 +19,8 @@ import (
 // @Tags			workspace
 // @Accept			json
 // @Produce		json
-// @Param			workspace_id	path		string									true	"Workspace ID"
-// @Param			database_id		path		string									true	"Database ID"
+// @Param			workspace_id	path		string	true	"Workspace ID"
+// @Param			database_id		path		string	true	"Database ID"
 // @Success		200				{object}	workspaces_models.GetIncompleteJobsResponse
 // @Failure		400				{object}	models.ErrorResponse
 // @Failure		404				{object}	models.ErrorResponse

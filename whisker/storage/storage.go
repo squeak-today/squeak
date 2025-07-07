@@ -14,7 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 
-	whisker "whisker/types"
+	whisker "snout/whisker_types"
 )
 
 type S3Client struct {

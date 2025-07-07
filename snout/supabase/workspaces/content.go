@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"snout/supabase"
-
-	"whisker/types"
+	types "snout/whisker_types"
 )
 
 func CreateContent(ctx context.Context, client *supabase.Client, databaseId string, name string) (string, error) {

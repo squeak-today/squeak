@@ -581,6 +581,37 @@ definitions:
       url:
         type: string
     type: object
+  whisker_types.ContentJob:
+    properties:
+      created_at:
+        type: string
+      database_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/whisker_types.ContentJobStatus'
+      user_id:
+        type: string
+    type: object
+  whisker_types.ContentJobStatus:
+    enum:
+    - creation
+    - pending
+    - running
+    - complete
+    - failed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - ContentJobStatusCreation
+    - ContentJobStatusPending
+    - ContentJobStatusRunning
+    - ContentJobStatusComplete
+    - ContentJobStatusFailed
+    - ContentJobStatusCancelled
   workspaces.Content:
     properties:
       database_id:
@@ -676,6 +707,13 @@ definitions:
     type: string
     x-enum-varnames:
     - DatabaseTypeContent
+  workspaces.GetIncompleteJobsResponse:
+    properties:
+      jobs:
+        items:
+          $ref: '#/definitions/whisker_types.ContentJob'
+        type: array
+    type: object
   workspaces.GetWorkspacesResponse:
     properties:
       workspaces:
@@ -1408,6 +1446,44 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create content
+      tags:
+      - workspace
+  /workspaces/{workspace_id}/databases/{database_id}/content/jobs:
+    get:
+      consumes:
+      - application/json
+      description: Get incomplete jobs
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Database ID
+        in: path
+        name: database_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.GetIncompleteJobsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get incomplete jobs
       tags:
       - workspace
   /workspaces/{workspace_id}/databases/{database_id}/query:

@@ -7,8 +7,8 @@ import (
 
 	"snout/supabase"
 	"snout/supabase/workspaces"
+	types "snout/whisker_types"
 	"whisker/storage"
-	"whisker/types"
 )
 
 type ContentProcessor struct {

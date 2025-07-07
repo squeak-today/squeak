@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"whisker/types"
+	types "snout/whisker_types"
 	"whisker/worker"
 )
 

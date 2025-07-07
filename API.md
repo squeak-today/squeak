@@ -574,6 +574,33 @@ Create content
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
+### /workspaces/{workspace_id}/databases/{database_id}/content/jobs
+
+#### GET
+##### Summary
+
+Get incomplete jobs
+
+##### Description
+
+Get incomplete jobs
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+| database_id | path | Database ID | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.GetIncompleteJobsResponse](#workspacesgetincompletejobsresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /workspaces/{workspace_id}/databases/{database_id}/query
 
 #### POST
@@ -957,6 +984,23 @@ Get workspaces
 | title | string |  | No |
 | url | string |  | No |
 
+#### whisker_types.ContentJob
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| created_at | string |  | No |
+| database_id | string |  | No |
+| id | string |  | No |
+| name | string |  | No |
+| status | [whisker_types.ContentJobStatus](#whisker_typescontentjobstatus) |  | No |
+| user_id | string |  | No |
+
+#### whisker_types.ContentJobStatus
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| whisker_types.ContentJobStatus | string |  |  |
+
 #### workspaces.Content
 
 | Name | Type | Description | Required |
@@ -1017,6 +1061,12 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | workspaces.DatabaseType | string |  |  |
+
+#### workspaces.GetIncompleteJobsResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| jobs | [ [whisker_types.ContentJob](#whisker_typescontentjob) ] |  | No |
 
 #### workspaces.GetWorkspacesResponse
 

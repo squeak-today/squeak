@@ -1,7 +1,7 @@
 package workspaces
 
 import (
-	whisker "whisker/types"
+	types "snout/whisker_types"
 )
 
 type Content struct {
@@ -20,5 +20,5 @@ type CreateContentRequest struct {
 type CreateContentResponse struct{}
 
 type GetIncompleteJobsResponse struct {
-	Jobs []whisker.ContentJob `json:"jobs"`
+	Jobs []types.ContentJob `json:"jobs"`
 }
