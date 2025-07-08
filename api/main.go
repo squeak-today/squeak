@@ -36,6 +36,7 @@ import (
 	"story-api/handlers/profilehandler"
 	"story-api/handlers/progresshandler"
 	"story-api/handlers/qnahandler"
+	"story-api/handlers/scraperhandler"
 	"story-api/handlers/storyhandler"
 	"story-api/handlers/stripehandler"
 	"story-api/handlers/student"
@@ -238,6 +239,14 @@ func init() {
 	{
 		qnaGroup.POST("", qnaHandler.GetQuestion)
 		qnaGroup.POST("/evaluate", qnaHandler.EvaluateAnswer)
+	}
+
+	scraperHandler := scraperhandler.New(dbClient)
+	scraperGroup := router.Group("/scraper")
+	{
+		scraperGroup.GET("/health", scraperHandler.HealthCheck)
+		scraperGroup.POST("/scrape", scraperHandler.ScrapeURL)
+		scraperGroup.POST("/scrape-multiple", scraperHandler.ScrapeMultipleURLs)
 	}
 
 	ginLambda = ginadapter.New(router)
