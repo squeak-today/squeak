@@ -31,12 +31,12 @@ resource "aws_ecs_task_definition" "snout_task" {
         {
             name  = "snout-api-container"
             image = "${aws_ecr_repository.snout_repo.repository_url}:latest"
-            memory = 512
+            memory = 512  # Increased from 256
             
             portMappings = [
                 {
-                    containerPort = 8080  # Your Go app port
-                    hostPort      = 0     # Dynamic port mapping
+                    containerPort = 8080
+                    hostPort      = 0
                 }
             ]
             
@@ -52,11 +52,60 @@ resource "aws_ecs_task_definition" "snout_task" {
                 {
                     name  = "AWS_REGION"
                     value = "us-east-1"
+                },
+                {
+                    name  = "SUPABASE_HOST"
+                    value = var.supabase_host
+                },
+                {
+                    name  = "SUPABASE_PORT"
+                    value = var.supabase_port
+                },
+                {
+                    name  = "SUPABASE_USER"
+                    value = var.supabase_user
+                },
+                {
+                    name  = "SUPABASE_PASSWORD"
+                    value = var.supabase_password
+                },
+                {
+                    name  = "SUPABASE_DATABASE"
+                    value = var.supabase_database
+                },
+                {
+                    name  = "JWT_SECRET"
+                    value = var.supabase_jwt_secret
+                },
+                {
+                    name  = "GOOGLE_API_KEY"
+                    value = var.google_api_key
+                },
+                {
+                    name  = "ELEVENLABS_API_KEY"
+                    value = var.elevenlabs_api_key
+                },
+                {
+                    name  = "GEMINI_API_KEY"
+                    value = var.gemini_api_key
+                },
+                {
+                    name  = "COHERE_API_KEY"
+                    value = var.cohere_api_key
+                },
+                {
+                    name  = "TAVILY_API_KEY"
+                    value = var.tavily_api_key
+                },
+                {
+                    name  = "STRIPE_KEY"
+                    value = var.stripe_key
+                },
+                {
+                    name  = "STRIPE_WEBHOOK_SECRET"
+                    value = var.stripe_webhook_secret
                 }
             ]
-            
-            # Add your Supabase environment variables here
-            # You can add them directly or use AWS Parameter Store
             
             logConfiguration = {
                 logDriver = "awslogs"

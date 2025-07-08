@@ -100,14 +100,16 @@ resource "aws_lb_target_group" "snout_tg" {
     health_check {
         enabled             = true
         healthy_threshold   = 2
-        interval            = 30
+        interval            = 60
         matcher             = "200"
         path                = "/health"
         port                = "traffic-port"
         protocol            = "HTTP"
-        timeout             = 5
-        unhealthy_threshold = 3
+        timeout             = 10
+        unhealthy_threshold = 5
     }
+
+    deregistration_delay = 30
     
     tags = {
         Name = "snout-target-group"
