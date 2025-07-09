@@ -1926,16 +1926,22 @@ export interface components {
             title?: string;
             url?: string;
         };
+        /** @enum {string} */
+        "whisker_types.CEFRLevel": "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
         "whisker_types.ContentJob": {
+            cefr_level?: components["schemas"]["whisker_types.CEFRLevel"];
             created_at?: string;
             database_id?: string;
             id?: string;
+            language_code?: components["schemas"]["whisker_types.LanguageCode"];
             name?: string;
             status?: components["schemas"]["whisker_types.ContentJobStatus"];
             user_id?: string;
         };
         /** @enum {string} */
         "whisker_types.ContentJobStatus": "creation" | "pending" | "running" | "complete" | "failed" | "cancelled";
+        /** @enum {string} */
+        "whisker_types.LanguageCode": "en" | "es" | "fr";
         "workspaces.Content": {
             /** @example xxxx-xxxx-xxxx-xxxx */
             database_id: string;
@@ -1945,6 +1951,9 @@ export interface components {
             name: string;
         };
         "workspaces.CreateContentRequest": {
+            cefr_level: components["schemas"]["whisker_types.CEFRLevel"];
+            /** @description Content creation parameters */
+            language_code: components["schemas"]["whisker_types.LanguageCode"];
             /** @description Eventually need to build a more robust request body for other
              *     kinds of content uploads */
             link: string;

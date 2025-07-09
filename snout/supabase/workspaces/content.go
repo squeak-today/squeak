@@ -7,13 +7,20 @@ import (
 	types "snout/whisker_types"
 )
 
-func CreateContent(ctx context.Context, client *supabase.Client, databaseId string, name string) (string, error) {
+func CreateContent(
+	ctx context.Context,
+	client *supabase.Client,
+	databaseId string,
+	name string,
+	languageCode types.LanguageCode,
+	cefrLevel types.CEFRLevel,
+) (string, error) {
 	var id string
 	err := client.Db.QueryRowContext(ctx, `
-		INSERT INTO content (database_id, name)
-		VALUES ($1, $2)
+		INSERT INTO content (database_id, name, language_code, cefr_level)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
-	`, databaseId, name).Scan(&id)
+	`, databaseId, name, languageCode, cefrLevel).Scan(&id)
 	if err != nil {
 		return "", err
 	}

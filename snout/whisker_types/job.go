@@ -17,12 +17,14 @@ const (
 )
 
 type ContentJob struct {
-	ID         string `json:"id" required:"true"`
-	Name       string `json:"name" required:"true"`
-	UserID     string `json:"user_id" required:"true"`
-	DatabaseID string `json:"database_id" required:"true"`
-	Status     ContentJobStatus `json:"status" required:"true"`
-	CreatedAt  time.Time        `json:"created_at" required:"true"`
+	ID           string           `json:"id" required:"true"`
+	Name         string           `json:"name" required:"true"`
+	UserID       string           `json:"user_id" required:"true"`
+	DatabaseID   string           `json:"database_id" required:"true"`
+	LanguageCode LanguageCode     `json:"language_code" required:"true"`
+	CEFRLevel    CEFRLevel        `json:"cefr_level" required:"true"`
+	Status       ContentJobStatus `json:"status" required:"true"`
+	CreatedAt    time.Time        `json:"created_at" required:"true"`
 }
 
 func ValidateContentJob(job *ContentJob) error {
@@ -49,10 +51,10 @@ type ContentJobRequest struct {
 
 // Stored in worker pool as records
 type ContentJobRecord struct {
-	ID        string           `json:"id" required:"true"`
-	CreatedAt time.Time        `json:"created_at" required:"true"`
-	Error     error            `json:"error,omitempty"`
-	Job       ContentJob       `json:"job" required:"true"`
+	ID        string     `json:"id" required:"true"`
+	CreatedAt time.Time  `json:"created_at" required:"true"`
+	Error     error      `json:"error,omitempty"`
+	Job       ContentJob `json:"job" required:"true"`
 }
 
 func ValidateContentJobRecord(record *ContentJobRecord) error {

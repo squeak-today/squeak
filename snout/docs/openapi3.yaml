@@ -1475,14 +1475,34 @@ components:
         url:
           type: string
       type: object
+    whisker_types.CEFRLevel:
+      enum:
+        - A1
+        - A2
+        - B1
+        - B2
+        - C1
+        - C2
+      type: string
+      x-enum-varnames:
+        - A1
+        - A2
+        - B1
+        - B2
+        - C1
+        - C2
     whisker_types.ContentJob:
       properties:
+        cefr_level:
+          $ref: '#/components/schemas/whisker_types.CEFRLevel'
         created_at:
           type: string
         database_id:
           type: string
         id:
           type: string
+        language_code:
+          $ref: '#/components/schemas/whisker_types.LanguageCode'
         name:
           type: string
         status:
@@ -1506,6 +1526,16 @@ components:
         - ContentJobStatusComplete
         - ContentJobStatusFailed
         - ContentJobStatusCancelled
+    whisker_types.LanguageCode:
+      enum:
+        - en
+        - es
+        - fr
+      type: string
+      x-enum-varnames:
+        - EnglishCode
+        - SpanishCode
+        - FrenchCode
     workspaces.Content:
       properties:
         database_id:
@@ -1524,6 +1554,12 @@ components:
       type: object
     workspaces.CreateContentRequest:
       properties:
+        cefr_level:
+          $ref: '#/components/schemas/whisker_types.CEFRLevel'
+        language_code:
+          allOf:
+            - $ref: '#/components/schemas/whisker_types.LanguageCode'
+          description: Content creation parameters
         link:
           description: |-
             Eventually need to build a more robust request body for other
@@ -1532,6 +1568,8 @@ components:
         name:
           type: string
       required:
+        - cefr_level
+        - language_code
         - link
         - name
       type: object

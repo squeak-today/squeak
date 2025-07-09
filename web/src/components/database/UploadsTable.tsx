@@ -13,17 +13,15 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Loader2 } from "lucide-react"
 
 import { type ContentJob } from '@/hooks/useContentAPI';
 
 interface UploadsTableProps {
   incompleteJobs: ContentJob[];
-  incompleteJobsLoading: boolean;
 }
 
-export function UploadsTable({ incompleteJobs, incompleteJobsLoading }: UploadsTableProps) {
+export function UploadsTable({ incompleteJobs }: UploadsTableProps) {
   const jobsColumns = [
     {
       accessorKey: "id",
@@ -75,13 +73,7 @@ export function UploadsTable({ incompleteJobs, incompleteJobsLoading }: UploadsT
         </p>
       </div>
       <ScrollArea className="h-64">
-        {incompleteJobsLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-            <Skeleton className="h-8 w-full" />
-          </div>
-        ) : incompleteJobs.length === 0 ? (
+        {incompleteJobs.length === 0 ? (
           <div className="text-center py-8 text-sm text-muted-foreground">
             No incomplete jobs
           </div>

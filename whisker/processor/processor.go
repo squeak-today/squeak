@@ -47,7 +47,14 @@ func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRec
 		log.Printf("Failed to store content: %v", err)
 		return err
 	}
-	if _, err := workspaces.CreateContent(ctx, p.supabaseClient, job.Job.DatabaseID, job.Job.Name); err != nil {
+	if _, err := workspaces.CreateContent(
+		ctx,
+		p.supabaseClient,
+		job.Job.DatabaseID,
+		job.Job.Name,
+		job.Job.LanguageCode,
+		job.Job.CEFRLevel,
+	); err != nil {
 		log.Printf("Failed to create content: %v", err)
 		return err
 	}

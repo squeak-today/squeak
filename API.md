@@ -984,13 +984,21 @@ Get workspaces
 | title | string |  | No |
 | url | string |  | No |
 
+#### whisker_types.CEFRLevel
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| whisker_types.CEFRLevel | string |  |  |
+
 #### whisker_types.ContentJob
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| cefr_level | [whisker_types.CEFRLevel](#whisker_typescefrlevel) |  | No |
 | created_at | string |  | No |
 | database_id | string |  | No |
 | id | string |  | No |
+| language_code | [whisker_types.LanguageCode](#whisker_typeslanguagecode) |  | No |
 | name | string |  | No |
 | status | [whisker_types.ContentJobStatus](#whisker_typescontentjobstatus) |  | No |
 | user_id | string |  | No |
@@ -1000,6 +1008,12 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | whisker_types.ContentJobStatus | string |  |  |
+
+#### whisker_types.LanguageCode
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| whisker_types.LanguageCode | string |  |  |
 
 #### workspaces.Content
 
@@ -1013,6 +1027,8 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| cefr_level | [whisker_types.CEFRLevel](#whisker_typescefrlevel) |  | Yes |
+| language_code | [whisker_types.LanguageCode](#whisker_typeslanguagecode) | Content creation parameters | Yes |
 | link | string | Eventually need to build a more robust request body for other kinds of content uploads | Yes |
 | name | string |  | Yes |
 
