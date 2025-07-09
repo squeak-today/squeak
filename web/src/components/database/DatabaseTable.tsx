@@ -41,7 +41,6 @@ export function DatabaseTable({
   data, 
   onFetchIncompleteJobs, 
   incompleteJobs = [], 
-  incompleteJobsLoading = false 
 }: DatabaseTableProps) {
   const columns = getColumnsForDatabaseType(type);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -88,7 +87,6 @@ export function DatabaseTable({
             <PopoverContent className="w-auto max-w-2xl min-w-96">
               <UploadsTable 
                 incompleteJobs={incompleteJobs} 
-                incompleteJobsLoading={incompleteJobsLoading} 
               />
             </PopoverContent>
           </Popover>

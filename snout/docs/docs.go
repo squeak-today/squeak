@@ -2071,9 +2071,31 @@ const docTemplate = `{
                 }
             }
         },
+        "whisker_types.CEFRLevel": {
+            "type": "string",
+            "enum": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1",
+                "C2"
+            ],
+            "x-enum-varnames": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1",
+                "C2"
+            ]
+        },
         "whisker_types.ContentJob": {
             "type": "object",
             "properties": {
+                "cefr_level": {
+                    "$ref": "#/definitions/whisker_types.CEFRLevel"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -2082,6 +2104,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "language_code": {
+                    "$ref": "#/definitions/whisker_types.LanguageCode"
                 },
                 "name": {
                     "type": "string"
@@ -2113,6 +2138,19 @@ const docTemplate = `{
                 "ContentJobStatusCancelled"
             ]
         },
+        "whisker_types.LanguageCode": {
+            "type": "string",
+            "enum": [
+                "en",
+                "es",
+                "fr"
+            ],
+            "x-enum-varnames": [
+                "EnglishCode",
+                "SpanishCode",
+                "FrenchCode"
+            ]
+        },
         "workspaces.Content": {
             "type": "object",
             "required": [
@@ -2138,10 +2176,23 @@ const docTemplate = `{
         "workspaces.CreateContentRequest": {
             "type": "object",
             "required": [
+                "cefr_level",
+                "language_code",
                 "link",
                 "name"
             ],
             "properties": {
+                "cefr_level": {
+                    "$ref": "#/definitions/whisker_types.CEFRLevel"
+                },
+                "language_code": {
+                    "description": "Content creation parameters",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/whisker_types.LanguageCode"
+                        }
+                    ]
+                },
                 "link": {
                     "description": "Eventually need to build a more robust request body for other\nkinds of content uploads",
                     "type": "string"

@@ -2,6 +2,9 @@ import { useCallback } from 'react';
 import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import type { components } from '@/lib/clients/types';
 
+export type LanguageCode = components["schemas"]["whisker_types.LanguageCode"];
+export type CEFRLevel = components["schemas"]["whisker_types.CEFRLevel"];
+
 export type CreateContentRequest = components["schemas"]["workspaces.CreateContentRequest"];
 export type CreateContentResponse = components["schemas"]["workspaces.CreateContentResponse"];
 export type GetIncompleteJobsResponse = components["schemas"]["workspaces.GetIncompleteJobsResponse"];

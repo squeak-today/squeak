@@ -12,8 +12,17 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useContentAPI } from '@/hooks/useContentAPI';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { type LanguageCode, type CEFRLevel, useContentAPI } from '@/hooks/useContentAPI';
 import { type Database } from '@/hooks/useWorkspacesAPI';
+import { LANGUAGES } from '@/lib/lang';
+import { CEFR_LEVELS } from '@/lib/cefr';
 
 interface CreationButtonProps {
   database: Database;
@@ -21,23 +30,30 @@ interface CreationButtonProps {
 
 export function CreationButton({ database }: CreationButtonProps) {
   const { createContent } = useContentAPI();
-  const [formData, setFormData] = useState({ name: '', link: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    link: '', 
+    language_code: '' as LanguageCode,
+    cefr_level: '' as CEFRLevel
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!database) return;
 
-    const name = formData.name.trim();
-    const link = formData.link.trim();
-    if (!name || !link) {
+    const { name, link, language_code, cefr_level } = formData;
+    const trimmedName = name.trim();
+    const trimmedLink = link.trim();
+    
+    if (!trimmedName || !trimmedLink || !language_code || !cefr_level) {
       return;
     }
 
     try {
-      new URL(link);
+      new URL(trimmedLink);
     } catch (e) {
-      console.error('Invalid URL:', link);
+      console.error('Invalid URL:', trimmedLink);
       return;
     }
 
@@ -46,12 +62,14 @@ export function CreationButton({ database }: CreationButtonProps) {
         database.workspace_id,
         database.id,
         {
-          name,
-          link,
+          name: trimmedName,
+          link: trimmedLink,
+          language_code,
+          cefr_level,
         }
       );
       
-      setFormData({ name: '', link: '' });
+      setFormData({ name: '', link: '', language_code: '' as LanguageCode, cefr_level: '' as CEFRLevel });
       setDialogOpen(false);
     } catch (error) {
       console.error('Failed to create content:', error);
@@ -106,6 +124,46 @@ export function CreationButton({ database }: CreationButtonProps) {
                 placeholder="Enter content link"
                 required
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="language">Language</Label>
+                <Select
+                  value={formData.language_code}
+                  onValueChange={(value: LanguageCode) => setFormData(prev => ({ ...prev, language_code: value }))}
+                  required
+                >
+                  <SelectTrigger id="language" className="w-full">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((language) => (
+                      <SelectItem key={language.value} value={language.value}>
+                        {language.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="cefr">CEFR Level</Label>
+                <Select
+                  value={formData.cefr_level}
+                  onValueChange={(value: CEFRLevel) => setFormData(prev => ({ ...prev, cefr_level: value }))}
+                  required
+                >
+                  <SelectTrigger id="cefr" className="w-full">
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CEFR_LEVELS.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <DialogFooter>

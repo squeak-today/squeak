@@ -26,7 +26,6 @@ function RouteComponent() {
   const [loading, setLoading] = useState(true);
   const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
   const [incompleteJobs, setIncompleteJobs] = useState<ContentJob[]>([]);
-  const [incompleteJobsLoading, setIncompleteJobsLoading] = useState(false);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -36,7 +35,6 @@ function RouteComponent() {
     }
 
     try {
-      setIncompleteJobsLoading(true);
       const { data, error } = await getIncompleteJobs(workspace.id, database.id);
 
       console.log('data', data);
@@ -48,8 +46,6 @@ function RouteComponent() {
       }
     } catch (error) {
       console.error('Error fetching incomplete jobs:', error);
-    } finally {
-      setIncompleteJobsLoading(false);
     }
   };
 
@@ -180,7 +176,6 @@ function RouteComponent() {
                 data={databaseRows}
                 onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
                 incompleteJobs={incompleteJobs}
-                incompleteJobsLoading={incompleteJobsLoading}
               />
               <CreationButton database={database} />
             </>
