@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "snout_task" {
         {
             name  = "snout-api-container"
             image = "${aws_ecr_repository.snout_repo.repository_url}:latest"
-            memory = 512  # Increased from 256
+            memory = 256 
             
             portMappings = [
                 {

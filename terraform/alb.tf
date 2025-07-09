@@ -44,9 +44,9 @@ resource "aws_security_group" "snout_ecs_sg" {
     
     # Only allow traffic from ALB
     ingress {
-        description     = "App Port from ALB"
-        from_port       = 8080
-        to_port         = 8080
+        description     = "Dynamic ports from ALB"
+        from_port       = 32768
+        to_port         = 65535
         protocol        = "tcp"
         security_groups = [aws_security_group.snout_alb_sg.id]
     }

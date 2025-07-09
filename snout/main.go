@@ -104,7 +104,7 @@ func main() {
 	var err error
 	dbClient, err = supabase.NewClient()
 	if err != nil {
-		log.Fatalf("Failed to initialize database connection: %v", err)
+		log.Fatalf("❌ Failed to initialize database connection: %v", err)
 	}
 
 	audioClient := audio.NewClient(os.Getenv("GOOGLE_API_KEY"), os.Getenv("ELEVENLABS_API_KEY"))
@@ -137,7 +137,9 @@ func main() {
 	})
 
 	router.Use(func(c *gin.Context) {
-		if c.Request.Method != http.MethodOptions && !strings.HasSuffix(c.Request.URL.Path, "/webhook") {
+		if c.Request.Method != http.MethodOptions &&
+			c.Request.URL.Path != "/health" &&
+			!strings.HasSuffix(c.Request.URL.Path, "/webhook") {
 			authMiddleware()(c)
 		}
 	})
