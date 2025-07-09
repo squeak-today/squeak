@@ -82,12 +82,14 @@ func (h *WorkspacesHandler) CreateContent(c *gin.Context) {
 	h.Producer.Send(whisker.ContentJobRequest{
 		ID: id,
 		Job: whisker.ContentJob{
-			ID:         id,
-			Name:       req.Name,
-			UserID:     userId,
-			DatabaseID: databaseId,
-			Status:     whisker.ContentJobStatusCreation,
-			CreatedAt:  time.Now(),
+			ID:           id,
+			Name:         req.Name,
+			UserID:       userId,
+			DatabaseID:   databaseId,
+			Status:       whisker.ContentJobStatusCreation,
+			LanguageCode: req.LanguageCode,
+			CEFRLevel:    req.CEFRLevel,
+			CreatedAt:    time.Now(),
 		},
 	})
 

@@ -16,6 +16,10 @@ type CreateContentRequest struct {
 	// Eventually need to build a more robust request body for other
 	// kinds of content uploads
 	Link string `json:"link" binding:"required"`
+
+	// Content creation parameters
+	LanguageCode types.LanguageCode `json:"language_code" binding:"required"`
+	CEFRLevel    types.CEFRLevel    `json:"cefr_level" binding:"required"`
 }
 type CreateContentResponse struct{}
 
