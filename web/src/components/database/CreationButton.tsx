@@ -23,12 +23,14 @@ import { type LanguageCode, type CEFRLevel, useContentAPI } from '@/hooks/useCon
 import { type Database } from '@/hooks/useWorkspacesAPI';
 import { LANGUAGES } from '@/lib/lang';
 import { CEFR_LEVELS } from '@/lib/cefr';
+import { useNotification } from '@/context/NotificationContext';
 
 interface CreationButtonProps {
   database: Database;
 }
 
 export function CreationButton({ database }: CreationButtonProps) {
+  const { showNotification } = useNotification();
   const { createContent } = useContentAPI();
   const [formData, setFormData] = useState({ 
     name: '', 
@@ -47,13 +49,14 @@ export function CreationButton({ database }: CreationButtonProps) {
     const trimmedLink = link.trim();
     
     if (!trimmedName || !trimmedLink || !language_code || !cefr_level) {
+      showNotification('Please fill in all fields', 'error');
       return;
     }
 
     try {
       new URL(trimmedLink);
     } catch (e) {
-      console.error('Invalid URL:', trimmedLink);
+      showNotification('Invalid URL', 'error');
       return;
     }
 
