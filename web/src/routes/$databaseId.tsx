@@ -10,6 +10,14 @@ import { DatabaseTable } from '@/components/database/DatabaseTable';
 import { type DatabaseRow } from '@/components/database/columns';
 import { CreationButton } from '@/components/database/CreationButton';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from '@/components/ui/resizable'
+
 
 export const Route = createFileRoute('/$databaseId')({
   component: RouteComponent,
@@ -26,6 +34,7 @@ function RouteComponent() {
   const [loading, setLoading] = useState(true);
   const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
   const [incompleteJobs, setIncompleteJobs] = useState<ContentJob[]>([]);
+  const [showRightPanel, setShowRightPanel] = useState(false);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -153,34 +162,66 @@ function RouteComponent() {
   return (
     <ProtectedRoute>
       <AppLayout>
-        <div className="p-6">
-          {loading || !database ? (
-            <Skeleton className="h-8 w-64 mb-6" />
-          ) : (
-            <h1 className="text-2xl font-bold mb-6">{database.name}</h1>
-          )}
-          
-          {loading ? (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-8 w-full" />
-              </div>
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel className="border-t mt-2">
+            <div className="p-6 pr-0 min-w-full">
+              {loading || !database ? (
+                <Skeleton className="h-8 w-64 mb-6" />
+              ) : (
+                <h1 className="text-2xl font-bold mb-6 whitespace-nowrap">{database.name}</h1>
+              )}
+              
+              {loading ? (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                  </div>
+                </div>
+              ) : database ? (
+                <>
+                  <DatabaseTable 
+                    type={database.type} 
+                    data={databaseRows}
+                    onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
+                    incompleteJobs={incompleteJobs}
+                    onRowClick={(row) => {
+                      console.log('row', row);
+                      setShowRightPanel(true);
+                    }}
+                  />
+                  <CreationButton database={database} />
+                </>
+              ) : null}
             </div>
-          ) : database ? (
-            <>
-              <DatabaseTable 
-                type={database.type} 
-                data={databaseRows}
-                onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
-                incompleteJobs={incompleteJobs}
-              />
-              <CreationButton database={database} />
-            </>
-          ) : null}
-        </div>
+          </ResizablePanel>
+          <ResizableHandle className="mt-2" />
+          {showRightPanel && (
+            <ResizablePanel 
+              minSize={0} 
+              defaultSize={50}
+              className="border-t mt-2"
+            >
+              <div className="p-4">
+                <div className="flex justify-start mb-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowRightPanel(false)}
+                    className=""
+                  >
+                    <ChevronRight size={12} />
+                  </Button>
+                </div>
+                <div className="pl-2">
+                  bruh
+                </div>
+              </div>
+            </ResizablePanel>
+          )}
+        </ResizablePanelGroup>
       </AppLayout>
     </ProtectedRoute>
   )
