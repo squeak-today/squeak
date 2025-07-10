@@ -24,10 +24,10 @@ interface UploadsTableProps {
 export function UploadsTable({ incompleteJobs }: UploadsTableProps) {
   const jobsColumns = [
     {
-      accessorKey: "id",
-      header: "Job ID",
+      accessorKey: "name",
+      header: "Name",
       cell: ({ row }: { row: any }) => (
-        <div className="font-mono text-xs">{row.getValue("id")}</div>
+        <div className="truncate">{row.getValue("name")}</div>
       ),
     },
     {
