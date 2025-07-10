@@ -14,7 +14,7 @@ resource "aws_vpc" "squeak_vpc" {
 resource "aws_subnet" "squeak_sn1" {
     cidr_block              = "10.0.1.0/24"
     vpc_id                  = aws_vpc.squeak_vpc.id
-    availability_zone       = "us-east-1a"
+    availability_zone       = "us-east-2a"
     map_public_ip_on_launch = true
     
     tags = {
@@ -25,7 +25,7 @@ resource "aws_subnet" "squeak_sn1" {
 resource "aws_subnet" "squeak_sn2" {
     cidr_block              = "10.0.2.0/24"
     vpc_id                  = aws_vpc.squeak_vpc.id
-    availability_zone       = "us-east-1b"
+    availability_zone       = "us-east-2b"
     map_public_ip_on_launch = true
     
     tags = {
@@ -36,7 +36,7 @@ resource "aws_subnet" "squeak_sn2" {
 resource "aws_subnet" "squeak_sn3" {
     cidr_block              = "10.0.3.0/24"
     vpc_id                  = aws_vpc.squeak_vpc.id
-    availability_zone       = "us-east-1c"
+    availability_zone       = "us-east-2c"
     map_public_ip_on_launch = true
     
     tags = {

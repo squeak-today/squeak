@@ -4,7 +4,7 @@
 # Launch Template for ECS instances
 resource "aws_launch_template" "squeak_ecs_template" {
     name_prefix   = "squeak-ecs-template"
-    image_id      = "ami-0b42a7f312a9ed8a5"  # ECS-optimized AMI for us-east-1
+    image_id      = "ami-0e0b5ac85356156fa"  # ECS-optimized AMI for us-east-2
     instance_type = "t3.micro"               
     
     vpc_security_group_ids = [aws_security_group.snout_ecs_sg.id]

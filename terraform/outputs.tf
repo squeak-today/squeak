@@ -35,14 +35,14 @@ output "deployment_commands" {
     description = "Commands to build and deploy your snout API"
     value = <<-EOT
         # Build and push Docker image:
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${aws_ecr_repository.snout_repo.repository_url}
+        aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin ${aws_ecr_repository.snout_repo.repository_url}
         cd snout
         docker build -t snout-api .
         docker tag snout-api:latest ${aws_ecr_repository.snout_repo.repository_url}:latest
         docker push ${aws_ecr_repository.snout_repo.repository_url}:latest
         
         # Force new deployment:
-        aws ecs update-service --cluster ${aws_ecs_cluster.squeak_cluster.name} --service ${aws_ecs_service.snout_service.name} --force-new-deployment --region us-east-1
+        aws ecs update-service --cluster ${aws_ecs_cluster.squeak_cluster.name} --service ${aws_ecs_service.snout_service.name} --force-new-deployment --region us-east-2
         
         # Your API will be available at:
         # http://${aws_lb.snout_alb.dns_name}

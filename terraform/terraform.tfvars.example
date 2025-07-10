@@ -2,7 +2,7 @@
 # Copy this file to terraform.tfvars and fill in your actual values
 
 # AWS Configuration
-aws_region = "us-east-1"  # Change to your preferred region
+aws_region = "us-east-2"  # Change to your preferred region
 environment = "prod"
 project_name = "squeak"
 
