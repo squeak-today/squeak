@@ -202,6 +202,7 @@ function RouteComponent() {
             <ResizablePanel 
               minSize={0} 
               defaultSize={50}
+              maxSize={80}
               className="border-t mt-2"
             >
               <div className="p-4">
