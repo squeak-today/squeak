@@ -3,29 +3,30 @@ package storage
 import (
 	"context"
 	"encoding/json"
-
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"strings"
+	"time"
+
+	whisker "snout/whisker_types"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-
-	whisker "snout/whisker_types"
 )
 
 type S3Client struct {
-	client *s3.Client
 	bucket string
+	client *s3.Client
+	presignClient *s3.PresignClient
 }
 
 func NewS3Client(ctx context.Context) (*S3Client, error) {
 	workspace := os.Getenv("WORKSPACE")
 	var cfg aws.Config
 	var err error
+
 
 	var bucket string
 	if workspace == "prod" || workspace == "dev_sqs_s3" {
@@ -71,8 +72,9 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	}
 
 	s3Client := &S3Client{
-		client: client,
 		bucket: bucket,
+		client: client,
+		presignClient: s3.NewPresignClient(client),
 	}
 
 	if err := s3Client.EnsureBucketExists(ctx); err != nil {
@@ -88,24 +90,18 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	return s3Client, nil
 }
 
-func (c *S3Client) GetObject(ctx context.Context, key string) (string, error) {
-	log.Printf("Getting object with key: %s", key)
-	resp, err := c.client.GetObject(ctx, &s3.GetObjectInput{
-		Bucket: aws.String(c.bucket),
-		Key:    aws.String(key),
-	})
+func (c *S3Client) GetPresignedURL(bucket string, key string, expirationMinutes int32) (string, error) {
+	presignedURL, err := c.presignClient.PresignGetObject(context.TODO(),
+		&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(key),
+		},
+		s3.WithPresignExpires(time.Duration(expirationMinutes)*time.Minute),
+	)
 	if err != nil {
-		return "", fmt.Errorf("failed to get object: %w", err)
+		return "", err
 	}
-	defer resp.Body.Close()
-
-	var builder strings.Builder
-	_, err = io.Copy(&builder, resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("failed to read object body: %w", err)
-	}
-
-	return builder.String(), nil
+	return presignedURL.URL, nil
 }
 
 func (c *S3Client) PutObject(ctx context.Context, key string, content string) error {
@@ -140,23 +136,6 @@ func (c *S3Client) PutContent(ctx context.Context, user_id string, content_id st
 
 func (c *S3Client) ContentKey(user_id string, content_id string) string {
 	return fmt.Sprintf("users/%s/%s.json", user_id, content_id)
-}
-
-func (c *S3Client) GetContent(ctx context.Context, user_id string, content_id string) (whisker.StoredContent, error) {
-	key := c.ContentKey(user_id, content_id)
-
-	rawContent, err := c.GetObject(ctx, key)
-	if err != nil {
-		return whisker.StoredContent{}, fmt.Errorf("failed to get content: %w", err)
-	}
-
-	var content whisker.StoredContent
-	err = json.Unmarshal([]byte(rawContent), &content)
-	if err != nil {
-		return whisker.StoredContent{}, fmt.Errorf("failed to unmarshal content: %w", err)
-	}
-
-	return content, nil
 }
 
 func (c *S3Client) EnsureBucketExists(ctx context.Context) error {

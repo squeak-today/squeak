@@ -13,6 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
+// THIS CODE NEEDS TO BE CLEANED
+
 type AlignmentInfo struct {
 	Characters []string  `json:"characters"`
 	StartTimes []float64 `json:"character_start_times_seconds"`
