@@ -29,6 +29,7 @@ import (
 	"snout/audio"
 	"snout/producer"
 	"snout/supabase"
+	"snout/storage"
 
 	"snout/handlers/audiohandler"
 	billing "snout/handlers/billinghandler"
@@ -111,6 +112,10 @@ func main() {
 	sqsClient := sqs.NewFromConfig(cfg)
 
 	producer := producer.New(sqsClient)
+	s3Client, err := storage.NewS3Client(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to initialize S3 client: %v", err)
+	}
 
 	dbClient, err = supabase.NewClient()
 	if err != nil {
@@ -206,7 +211,7 @@ func main() {
 		qnaGroup.POST("/evaluate", qnaHandler.EvaluateAnswer)
 	}
 
-	workspacesHandler := workspaceshandler.New(dbClient, producer)
+	workspacesHandler := workspaceshandler.New(dbClient, producer, s3Client)
 	workspacesGroup := router.Group("/workspaces")
 	{
 		workspacesGroup.GET("", workspacesHandler.GetWorkspaces)
@@ -225,6 +230,7 @@ func main() {
 		{
 			contentGroup.POST("/create", workspacesHandler.CreateContent)
 			contentGroup.GET("/jobs", workspacesHandler.GetIncompleteJobs)
+			contentGroup.GET("/:content_id", workspacesHandler.GetContentBody)
 		}
 	}
 

@@ -9,6 +9,7 @@ import (
 	"snout/producer"
 	"snout/supabase"
 	workspaces "snout/supabase/workspaces"
+	"snout/storage"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,12 +17,14 @@ import (
 type WorkspacesHandler struct {
 	*handlers.Handler
 	Producer *producer.Producer
+	S3Client *storage.S3Client
 }
 
-func New(dbClient *supabase.Client, producer *producer.Producer) *WorkspacesHandler {
+func New(dbClient *supabase.Client, producer *producer.Producer, s3Client *storage.S3Client) *WorkspacesHandler {
 	return &WorkspacesHandler{
 		Handler:  handlers.New(dbClient),
 		Producer: producer,
+		S3Client: s3Client,
 	}
 }
 

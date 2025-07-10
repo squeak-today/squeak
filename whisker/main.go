@@ -18,7 +18,7 @@ import (
 	"whisker/api"
 	"whisker/consumer"
 	"whisker/processor"
-	"whisker/storage"
+	"snout/storage"
 	"whisker/worker"
 )
 
