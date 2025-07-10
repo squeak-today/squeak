@@ -30,3 +30,7 @@ type CreateContentResponse struct{}
 type GetIncompleteJobsResponse struct {
 	Jobs []types.ContentJob `json:"jobs"`
 }
+
+type GetContentBodyResponse struct {
+	PresignedURL string `json:"presigned_url" binding:"required"`
+}

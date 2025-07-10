@@ -847,6 +847,56 @@ paths:
         - workspace
       description: Get incomplete jobs
       summary: Get incomplete jobs
+  '/workspaces/{workspace_id}/databases/{database_id}/content/{content_id}':
+    get:
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Database ID
+          in: path
+          name: database_id
+          required: true
+          schema:
+            type: string
+        - description: Content ID
+          in: path
+          name: content_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.GetContentBodyResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Get content body
+      summary: Get content body
   '/workspaces/{workspace_id}/databases/{database_id}/query':
     post:
       parameters:
@@ -1653,6 +1703,13 @@ components:
       type: string
       x-enum-varnames:
         - DatabaseTypeContent
+    workspaces.GetContentBodyResponse:
+      properties:
+        presigned_url:
+          type: string
+      required:
+        - presigned_url
+      type: object
     workspaces.GetIncompleteJobsResponse:
       properties:
         jobs:

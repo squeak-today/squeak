@@ -759,6 +759,13 @@ definitions:
     type: string
     x-enum-varnames:
     - DatabaseTypeContent
+  workspaces.GetContentBodyResponse:
+    properties:
+      presigned_url:
+        type: string
+    required:
+    - presigned_url
+    type: object
   workspaces.GetIncompleteJobsResponse:
     properties:
       jobs:
@@ -1454,6 +1461,49 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Get workspaces
+      tags:
+      - workspace
+  /workspaces/{workspace_id}/databases/{database_id}/content/{content_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get content body
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Database ID
+        in: path
+        name: database_id
+        required: true
+        type: string
+      - description: Content ID
+        in: path
+        name: content_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.GetContentBodyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get content body
       tags:
       - workspace
   /workspaces/{workspace_id}/databases/{database_id}/content/create:

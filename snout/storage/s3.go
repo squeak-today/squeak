@@ -17,7 +17,7 @@ import (
 )
 
 type S3Client struct {
-	bucket string
+	Bucket string
 	client *s3.Client
 	presignClient *s3.PresignClient
 }
@@ -72,7 +72,7 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	}
 
 	s3Client := &S3Client{
-		bucket: bucket,
+		Bucket: bucket,
 		client: client,
 		presignClient: s3.NewPresignClient(client),
 	}
@@ -105,9 +105,9 @@ func (c *S3Client) GetPresignedURL(bucket string, key string, expirationMinutes 
 }
 
 func (c *S3Client) PutObject(ctx context.Context, key string, content string) error {
-	log.Printf("Putting object with key: %s, bucket: %s", key, c.bucket)
+	log.Printf("Putting object with key: %s, bucket: %s", key, c.Bucket)
 	_, err := c.client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(c.bucket),
+		Bucket: aws.String(c.Bucket),
 		Key:    aws.String(key),
 		Body:   strings.NewReader(content),
 	})
@@ -140,23 +140,23 @@ func (c *S3Client) ContentKey(user_id string, content_id string) string {
 
 func (c *S3Client) EnsureBucketExists(ctx context.Context) error {
 	_, err := c.client.HeadBucket(ctx, &s3.HeadBucketInput{
-		Bucket: aws.String(c.bucket),
+		Bucket: aws.String(c.Bucket),
 	})
 
 	if err == nil {
-		log.Printf("Bucket %s already exists", c.bucket)
+		log.Printf("Bucket %s already exists", c.Bucket)
 		return nil
 	}
 
-	log.Printf("Bucket %s does not exist, creating it", c.bucket)
+	log.Printf("Bucket %s does not exist, creating it", c.Bucket)
 	_, err = c.client.CreateBucket(ctx, &s3.CreateBucketInput{
-		Bucket: aws.String(c.bucket),
+		Bucket: aws.String(c.Bucket),
 	})
 
 	if err != nil {
-		return fmt.Errorf("failed to create bucket %s: %w", c.bucket, err)
+		return fmt.Errorf("failed to create bucket %s: %w", c.Bucket, err)
 	}
 
-	log.Printf("Successfully created bucket %s", c.bucket)
+	log.Printf("Successfully created bucket %s", c.Bucket)
 	return nil
 }

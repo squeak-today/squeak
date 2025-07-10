@@ -1204,6 +1204,70 @@
                 }
             }
         },
+        "/workspaces/{workspace_id}/databases/{database_id}/content/{content_id}": {
+            "get": {
+                "description": "Get content body",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Get content body",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Database ID",
+                        "name": "database_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content ID",
+                        "name": "content_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.GetContentBodyResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/workspaces/{workspace_id}/databases/{database_id}/query": {
             "post": {
                 "description": "Query database",
@@ -2318,6 +2382,17 @@
             "x-enum-varnames": [
                 "DatabaseTypeContent"
             ]
+        },
+        "workspaces.GetContentBodyResponse": {
+            "type": "object",
+            "required": [
+                "presigned_url"
+            ],
+            "properties": {
+                "presigned_url": {
+                    "type": "string"
+                }
+            }
         },
         "workspaces.GetIncompleteJobsResponse": {
             "type": "object",

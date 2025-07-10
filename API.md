@@ -546,6 +546,34 @@ Get workspaces
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
+### /workspaces/{workspace_id}/databases/{database_id}/content/{content_id}
+
+#### GET
+##### Summary
+
+Get content body
+
+##### Description
+
+Get content body
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+| database_id | path | Database ID | Yes | string |
+| content_id | path | Content ID | Yes | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.GetContentBodyResponse](#workspacesgetcontentbodyresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /workspaces/{workspace_id}/databases/{database_id}/content/create
 
 #### POST
@@ -1080,6 +1108,12 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | workspaces.DatabaseType | string |  |  |
+
+#### workspaces.GetContentBodyResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| presigned_url | string |  | Yes |
 
 #### workspaces.GetIncompleteJobsResponse
 
