@@ -32,6 +32,8 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
   const [loading, setLoading] = useState(true);
   const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
   const [incompleteJobs, setIncompleteJobs] = useState<ContentJob[]>([]);
+  
+  const [selectedRow, setSelectedRow] = useState<DatabaseRow | null>(null);
   const [showRightPanel, setShowRightPanel] = useState(false);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -185,8 +187,9 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
                     data={databaseRows}
                     onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
                     incompleteJobs={incompleteJobs}
-                    onRowClick={() => {
+                    onRowClick={(row) => {
                       setShowRightPanel(true);
+                      setSelectedRow(row);
                     }}
                   />
                   <CreationButton database={database} />
@@ -195,24 +198,30 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
             </div>
           </ResizablePanel>
           <ResizableHandle className="mt-2" />
-          {showRightPanel && (
+          {showRightPanel && selectedRow && (
             <ResizablePanel 
-            minSize={0} 
-            defaultSize={50} 
-            className="border-t mt-2"
-          >
-            <div className="p-4">
-              <div className="flex justify-start mb-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowRightPanel(false)}
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-                <ContentPage />
+              minSize={0} 
+              defaultSize={50} 
+              className="border-t mt-2"
+            >
+              <div className="p-4">
+                <div className="flex justify-start mb-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowRightPanel(false)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                {database?.type === 'content' ? (
+                  <ContentPage 
+                    workspaceId={database.workspace_id}
+                    databaseId={database.id}
+                    row={selectedRow}
+                  />
+                ) : null}
               </div>
             </ResizablePanel>
           )}

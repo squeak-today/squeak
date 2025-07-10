@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 
+	"snout/storage"
 	"snout/supabase"
 	"snout/supabase/workspaces"
 	types "snout/whisker_types"
-	"snout/storage"
 )
 
 type ContentProcessor struct {
@@ -42,20 +42,21 @@ func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRec
 		return ctx.Err()
 	}
 
-	log.Printf("Storing content for user %s, database %s", job.Job.UserID, job.Job.DatabaseID)
-	if err := p.s3Client.PutContent(ctx, job.Job.UserID, job.ID, content); err != nil {
-		log.Printf("Failed to store content: %v", err)
-		return err
-	}
-	if _, err := workspaces.CreateContent(
+	contentId, err := workspaces.CreateContent(
 		ctx,
 		p.supabaseClient,
 		job.Job.DatabaseID,
 		job.Job.Name,
 		job.Job.LanguageCode,
 		job.Job.CEFRLevel,
-	); err != nil {
+	)
+	if err != nil {
 		log.Printf("Failed to create content: %v", err)
+		return err
+	}
+	log.Printf("Storing content for user %s, database %s", job.Job.UserID, job.Job.DatabaseID)
+	if err := p.s3Client.PutContent(ctx, job.Job.UserID, contentId, content); err != nil {
+		log.Printf("Failed to store content: %v", err)
 		return err
 	}
 
