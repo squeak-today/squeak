@@ -2154,11 +2154,26 @@ const docTemplate = `{
         "workspaces.Content": {
             "type": "object",
             "required": [
+                "cefr_level",
+                "created_at",
                 "database_id",
                 "id",
+                "language_code",
                 "name"
             ],
             "properties": {
+                "cefr_level": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/whisker_types.CEFRLevel"
+                        }
+                    ],
+                    "example": "A1"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
+                },
                 "database_id": {
                     "type": "string",
                     "example": "xxxx-xxxx-xxxx-xxxx"
@@ -2166,6 +2181,14 @@ const docTemplate = `{
                 "id": {
                     "type": "string",
                     "example": "xxxx-xxxx-xxxx-xxxx"
+                },
+                "language_code": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/whisker_types.LanguageCode"
+                        }
+                    ],
+                    "example": "en"
                 },
                 "name": {
                     "type": "string",

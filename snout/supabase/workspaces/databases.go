@@ -45,7 +45,7 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 	database.ContentDatabase = &workspaces.ContentDatabase{}
 
 	rows, err := client.Db.Query(`
-		SELECT id, name, database_id FROM content
+		SELECT id, name, database_id, cefr_level, language_code, created_at FROM content
 		WHERE database_id = $1
 	`, databaseId)
 	if err != nil {
@@ -56,7 +56,14 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 	var contents []workspaces.Content
 	for rows.Next() {
 		var content workspaces.Content
-		err = rows.Scan(&content.ID, &content.Name, &content.DatabaseID)
+		err = rows.Scan(
+			&content.ID,
+			&content.Name,
+			&content.DatabaseID,
+			&content.CEFRLevel,
+			&content.LanguageCode,
+			&content.CreatedAt,
+		)
 		if err != nil {
 			return workspaces.Database{}, nil, err
 		}

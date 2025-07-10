@@ -2,8 +2,10 @@ import React, { useState } from "react"
 import {
   flexRender,
   type ColumnFiltersState,
+  type SortingState,
   getCoreRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -43,9 +45,10 @@ export function DatabaseTable({
   incompleteJobs = [], 
 }: DatabaseTableProps) {
   const columns = getColumnsForDatabaseType(type);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "created_at", desc: true }
+  ])
   const [popoverOpen, setPopoverOpen] = useState(false);
   
   const table = useReactTable({
@@ -54,8 +57,11 @@ export function DatabaseTable({
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
       columnFilters,
+      sorting,
     }
   })
 

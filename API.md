@@ -1019,8 +1019,11 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| cefr_level | [whisker_types.CEFRLevel](#whisker_typescefrlevel) | *Example:* `"A1"` | Yes |
+| created_at | string | *Example:* `"2021-01-01T00:00:00Z"` | Yes |
 | database_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
 | id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+| language_code | [whisker_types.LanguageCode](#whisker_typeslanguagecode) | *Example:* `"en"` | Yes |
 | name | string | *Example:* `"My Content"` | Yes |
 
 #### workspaces.CreateContentRequest

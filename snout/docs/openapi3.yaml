@@ -1538,18 +1538,32 @@ components:
         - FrenchCode
     workspaces.Content:
       properties:
+        cefr_level:
+          allOf:
+            - $ref: '#/components/schemas/whisker_types.CEFRLevel'
+          example: A1
+        created_at:
+          example: '2021-01-01T00:00:00Z'
+          type: string
         database_id:
           example: xxxx-xxxx-xxxx-xxxx
           type: string
         id:
           example: xxxx-xxxx-xxxx-xxxx
           type: string
+        language_code:
+          allOf:
+            - $ref: '#/components/schemas/whisker_types.LanguageCode'
+          example: en
         name:
           example: My Content
           type: string
       required:
+        - cefr_level
+        - created_at
         - database_id
         - id
+        - language_code
         - name
       type: object
     workspaces.CreateContentRequest:

@@ -1943,10 +1943,16 @@ export interface components {
         /** @enum {string} */
         "whisker_types.LanguageCode": "en" | "es" | "fr";
         "workspaces.Content": {
+            /** @example A1 */
+            cefr_level: components["schemas"]["whisker_types.CEFRLevel"];
+            /** @example 2021-01-01T00:00:00Z */
+            created_at: string;
             /** @example xxxx-xxxx-xxxx-xxxx */
             database_id: string;
             /** @example xxxx-xxxx-xxxx-xxxx */
             id: string;
+            /** @example en */
+            language_code: components["schemas"]["whisker_types.LanguageCode"];
             /** @example My Content */
             name: string;
         };

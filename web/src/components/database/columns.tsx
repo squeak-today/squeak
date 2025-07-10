@@ -1,17 +1,11 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { type DatabaseType } from '@/hooks/useWorkspacesAPI';
 import { type Content } from '@/hooks/useDatabasesAPI';
+import { LanguagePill, CEFRPill } from '@/components/ui/pills';
 
 export type DatabaseRow = Content;
 
 export const contentColumns: ColumnDef<Content>[] = [
-  {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => (
-      <span className="font-mono text-sm">{row.getValue("id")}</span>
-    ),
-  },
   {
     accessorKey: "name",
     header: "Name",
@@ -20,14 +14,31 @@ export const contentColumns: ColumnDef<Content>[] = [
     ),
   },
   {
-    accessorKey: "database_id",
-    header: "Database ID",
+    accessorKey: "cefr_level",
+    header: "CEFR Level",
     cell: ({ row }) => (
-      <span className="font-mono text-sm text-muted-foreground">
-        {row.getValue("database_id")}
-      </span>
+      <CEFRPill cefrLevel={row.getValue("cefr_level")} />
     ),
   },
+  {
+    accessorKey: "language_code",
+    header: "Language",
+    cell: ({ row }) => (
+      <LanguagePill languageCode={row.getValue("language_code")} />
+    ),
+  },
+  {
+    accessorKey: "created_at",
+    header: "Created At",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("created_at"));
+      return (
+        <span className="text-sm text-muted-foreground">
+          {date.toLocaleDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span>
+      );
+    },
+  }
 ]
 
 export const databaseTypeToColumns: Record<DatabaseType, ColumnDef<any>[]> = {
