@@ -1,4 +1,3 @@
-import { AppLayout } from '@/components/AppLayout'
 import { useSidebarMenu } from '@/context/SidebarMenuContext'
 import { useEffect, useState, useRef } from 'react';
 import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
@@ -17,15 +16,26 @@ import {
   ResizableHandle,
 } from '@/components/ui/resizable'
 import { ContentPage } from './ContentPage';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { AppSidebar } from '@/components/AppSidebar';
+import { useLocation } from '@tanstack/react-router';
 
 interface DatabasePageProps {
   databaseId: string;
 }
 
 export function DatabasePage({ databaseId }: DatabasePageProps) {
-  const { workspacesSummary, setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
+  const { workspacesSummary, setSelectedDatabase, setSelectedWorkspace, selectedWorkspace, selectedDatabase, isLoading } = useSidebarMenu();
   const { queryDatabase } = useDatabasesAPI();
   const { getIncompleteJobs } = useContentAPI();
+  const location = useLocation();
   
   const [database, setDatabase] = useState<Database | null>(null);
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
@@ -37,6 +47,10 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
   const [showRightPanel, setShowRightPanel] = useState(false);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isNotRootPage = location.pathname !== '/';
+  const showWorkspaceSkeleton = isLoading || (isNotRootPage && !selectedWorkspace);
+  const showDatabaseSkeleton = isLoading || (isNotRootPage && !selectedDatabase);
 
   const fetchIncompleteJobs = async () => {
     if (!workspace || !database || database.type !== 'content') {
@@ -161,72 +175,123 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
 
   return (
     <ProtectedRoute>
-      <AppLayout>
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel className="border-t mt-2">
-            <div className="p-6 pr-0 min-w-full">
-              {loading || !database ? (
-                <Skeleton className="h-8 w-64 mb-6" />
-              ) : (
-                <h1 className="text-2xl font-bold mb-6 whitespace-nowrap">{database.name}</h1>
-              )}
-              
-              {loading ? (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-full" />
+      <div className="h-screen">
+        <SidebarProvider>
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel defaultSize={showRightPanel ? 50 : 100}>
+              <div className="flex h-full">
+                <AppSidebar />
+                <main className="flex-1 w-full flex flex-col">
+                  <div className="px-4 pt-4">
+                    <Breadcrumb>
+                      <BreadcrumbList>
+                        <BreadcrumbItem>
+                          <SidebarTrigger />
+                        </BreadcrumbItem>
+                        
+                        {showWorkspaceSkeleton ? (
+                          <>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                              <Skeleton className="h-4 w-24" />
+                            </BreadcrumbItem>
+                          </>
+                        ) : selectedWorkspace ? (
+                          <>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                              <BreadcrumbPage>{selectedWorkspace.name}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                          </>
+                        ) : null}
+                        
+                        {showDatabaseSkeleton ? (
+                          <>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                              <Skeleton className="h-4 w-32" />
+                            </BreadcrumbItem>
+                          </>
+                        ) : selectedDatabase ? (
+                          <>
+                            <BreadcrumbSeparator />
+                            <BreadcrumbItem>
+                              <BreadcrumbPage>{selectedDatabase.name}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                          </>
+                        ) : null}
+                      </BreadcrumbList>
+                    </Breadcrumb>
                   </div>
-                </div>
-              ) : database ? (
-                <>
-                  <DatabaseTable 
-                    type={database.type} 
-                    data={databaseRows}
-                    onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
-                    incompleteJobs={incompleteJobs}
-                    onRowClick={(row) => {
-                      setShowRightPanel(true);
-                      setSelectedRow(row);
-                    }}
-                  />
-                  <CreationButton database={database} />
-                </>
-              ) : null}
-            </div>
-          </ResizablePanel>
-          <ResizableHandle className="mt-2" />
-          {showRightPanel && selectedRow && (
-            <ResizablePanel 
-              minSize={0} 
-              defaultSize={50} 
-              className="border-t mt-2"
-            >
-              <div className="p-4">
-                <div className="flex justify-start mb-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowRightPanel(false)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                {database?.type === 'content' ? (
-                  <ContentPage 
-                    workspaceId={database.workspace_id}
-                    databaseId={database.id}
-                    row={selectedRow}
-                  />
-                ) : null}
+
+                  <div className="p-6 flex-1">
+                    {loading || !database ? (
+                      <Skeleton className="h-8 w-64 mb-6" />
+                    ) : (
+                      <h1 className="text-2xl font-bold mb-6 whitespace-nowrap">{database.name}</h1>
+                    )}
+                    
+                    {loading ? (
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Skeleton className="h-10 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                          <Skeleton className="h-8 w-full" />
+                        </div>
+                      </div>
+                    ) : database ? (
+                      <>
+                        <DatabaseTable 
+                          type={database.type} 
+                          data={databaseRows}
+                          onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
+                          incompleteJobs={incompleteJobs}
+                          onRowClick={(row) => {
+                            setShowRightPanel(true);
+                            setSelectedRow(row);
+                          }}
+                        />
+                        <CreationButton database={database} />
+                      </>
+                    ) : null}
+                  </div>
+                </main>
               </div>
             </ResizablePanel>
-          )}
-        </ResizablePanelGroup>
-      </AppLayout>
+
+            {showRightPanel && selectedRow && <ResizableHandle />}
+
+            {showRightPanel && selectedRow && (
+              <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
+                <div className="border-l bg-background h-full flex flex-col max-h-[100vh]">
+                  <div className="p-4 flex flex-col h-full">
+                    <div className="flex justify-start mb-4 flex-shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowRightPanel(false)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {database?.type === 'content' ? (
+                      <div className="flex-1 overflow-y-auto">
+                        <ContentPage 
+                          workspaceId={database.workspace_id}
+                          databaseId={database.id}
+                          row={selectedRow}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </ResizablePanel>
+            )}
+          </ResizablePanelGroup>
+        </SidebarProvider>
+      </div>
     </ProtectedRoute>
   )
 } 
