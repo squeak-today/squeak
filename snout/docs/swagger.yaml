@@ -510,6 +510,11 @@ definitions:
         example: Bonjour, comment allez-vous?
         type: string
     type: object
+  models.TypesResponse:
+    properties:
+      stored_content:
+        $ref: '#/definitions/whisker_types.StoredContent'
+    type: object
   models.UpsertProfileRequest:
     properties:
       daily_questions_goal:
@@ -642,6 +647,13 @@ definitions:
     - EnglishCode
     - SpanishCode
     - FrenchCode
+  whisker_types.StoredContent:
+    properties:
+      markdown:
+        type: string
+      name:
+        type: string
+    type: object
   workspaces.Content:
     properties:
       cefr_level:
@@ -1417,6 +1429,21 @@ paths:
       summary: Get story query
       tags:
       - story
+  /types:
+    get:
+      consumes:
+      - application/json
+      description: Returns type definitions for API documentation (not a real endpoint)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TypesResponse'
+      summary: Get type definitions
+      tags:
+      - types
   /webhook:
     post:
       consumes:

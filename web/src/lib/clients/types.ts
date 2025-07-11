@@ -1109,6 +1109,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get type definitions
+         * @description Returns type definitions for API documentation (not a real endpoint)
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.TypesResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/webhook": {
         parameters: {
             query?: never;
@@ -1959,6 +1998,9 @@ export interface components {
             /** @example Bonjour, comment allez-vous? */
             sentence?: string;
         };
+        "models.TypesResponse": {
+            stored_content?: components["schemas"]["whisker_types.StoredContent"];
+        };
         "models.UpsertProfileRequest": {
             /** @example 3 */
             daily_questions_goal?: number;
@@ -2015,6 +2057,10 @@ export interface components {
         "whisker_types.ContentJobStatus": "creation" | "pending" | "running" | "complete" | "failed" | "cancelled";
         /** @enum {string} */
         "whisker_types.LanguageCode": "en" | "es" | "fr";
+        "whisker_types.StoredContent": {
+            markdown?: string;
+            name?: string;
+        };
         "workspaces.Content": {
             /** @example A1 */
             cefr_level: components["schemas"]["whisker_types.CEFRLevel"];

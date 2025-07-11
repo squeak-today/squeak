@@ -877,6 +877,29 @@ const docTemplate = `{
                 }
             }
         },
+        "/types": {
+            "get": {
+                "description": "Returns type definitions for API documentation (not a real endpoint)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "types"
+                ],
+                "summary": "Get type definitions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TypesResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/webhook": {
             "post": {
                 "description": "Validates and processes incoming webhook events from Stripe",
@@ -2031,6 +2054,14 @@ const docTemplate = `{
                 }
             }
         },
+        "models.TypesResponse": {
+            "type": "object",
+            "properties": {
+                "stored_content": {
+                    "$ref": "#/definitions/whisker_types.StoredContent"
+                }
+            }
+        },
         "models.UpsertProfileRequest": {
             "type": "object",
             "required": [
@@ -2214,6 +2245,17 @@ const docTemplate = `{
                 "SpanishCode",
                 "FrenchCode"
             ]
+        },
+        "whisker_types.StoredContent": {
+            "type": "object",
+            "properties": {
+                "markdown": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
         },
         "workspaces.Content": {
             "type": "object",

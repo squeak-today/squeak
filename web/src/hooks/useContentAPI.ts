@@ -5,6 +5,7 @@ import type { components } from '@/lib/clients/types';
 export type LanguageCode = components["schemas"]["whisker_types.LanguageCode"];
 export type CEFRLevel = components["schemas"]["whisker_types.CEFRLevel"];
 
+export type StoredContent = components["schemas"]["whisker_types.StoredContent"];
 export type GetContentBodyResponse = components["schemas"]["workspaces.GetContentBodyResponse"];
 export type CreateContentRequest = components["schemas"]["workspaces.CreateContentRequest"];
 export type CreateContentResponse = components["schemas"]["workspaces.CreateContentResponse"];

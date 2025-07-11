@@ -28,8 +28,9 @@ import (
 
 	"snout/audio"
 	"snout/producer"
-	"snout/supabase"
 	"snout/storage"
+	"snout/supabase"
+	models "snout/models"
 
 	"snout/handlers/audiohandler"
 	billing "snout/handlers/billinghandler"
@@ -96,6 +97,17 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
+//	@Summary		Get type definitions
+//	@Description	Returns type definitions for API documentation (not a real endpoint)
+//	@Tags			types
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.TypesResponse
+//	@Router			/types [get]
+func typesHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, models.TypesResponse{})
+}
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found or error loading .env file - using environment variables")
@@ -155,6 +167,7 @@ func main() {
 		webhookGroup.POST("", stripeHandler.HandleWebhook)
 	}
 
+	router.GET("/types", typesHandler)
 	billingHandler := billing.New(dbClient)
 	billingGroup := router.Group("/billing")
 	{

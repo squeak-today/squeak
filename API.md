@@ -507,6 +507,24 @@ Get story query by ID
 | 200 | OK | [ [models.StoryItem](#modelsstoryitem) ] |
 
 ---
+### /types
+
+#### GET
+##### Summary
+
+Get type definitions
+
+##### Description
+
+Returns type definitions for API documentation (not a real endpoint)
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.TypesResponse](#modelstypesresponse) |
+
+---
 ### /webhook
 
 #### POST
@@ -973,6 +991,12 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | sentence | string | *Example:* `"Bonjour, comment allez-vous?"` | No |
 
+#### models.TypesResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| stored_content | [whisker_types.StoredContent](#whisker_typesstoredcontent) |  | No |
+
 #### models.UpsertProfileRequest
 
 | Name | Type | Description | Required |
@@ -1042,6 +1066,13 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | whisker_types.LanguageCode | string |  |  |
+
+#### whisker_types.StoredContent
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| markdown | string |  | No |
+| name | string |  | No |
 
 #### workspaces.Content
 
