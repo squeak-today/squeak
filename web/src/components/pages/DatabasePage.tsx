@@ -177,10 +177,10 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
     <ProtectedRoute>
       <div className="h-screen">
         <SidebarProvider>
+          <AppSidebar />
           <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel defaultSize={showRightPanel ? 50 : 100}>
+            <ResizablePanel>
               <div className="flex h-full">
-                <AppSidebar />
                 <main className="flex-1 w-full flex flex-col">
                   <div className="px-4 pt-4">
                     <Breadcrumb>
@@ -224,7 +224,7 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
                     </Breadcrumb>
                   </div>
 
-                  <div className="p-6 flex-1">
+                  <div className="p-6 pr-0 flex-1">
                     {loading || !database ? (
                       <Skeleton className="h-8 w-64 mb-6" />
                     ) : (

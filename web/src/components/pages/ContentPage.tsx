@@ -39,7 +39,7 @@ export function ContentPage({ workspaceId, databaseId, row }: ContentPageProps) 
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">{row.name}</h1>
+      <h1 className="text-5xl font-bold">{row.name}</h1>
       <div className="flex gap-2">
         <LanguagePill languageCode={row.language_code} />
         <CEFRPill cefrLevel={row.cefr_level} />
