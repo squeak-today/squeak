@@ -264,7 +264,7 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
 
             {showRightPanel && selectedRow && (
               <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-                <div className="border-l bg-background h-full flex flex-col max-h-[100vh]">
+                <div className="border-l bg-background h-full flex flex-col min-h-[100vh] max-h-[100vh]">
                   <div className="p-4 flex flex-col h-full">
                     <div className="flex justify-start mb-4 flex-shrink-0">
                       <Button

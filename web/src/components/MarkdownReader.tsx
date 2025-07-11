@@ -62,14 +62,16 @@ const InteractiveText = ({
 
   const processNode = (node: React.ReactNode): React.ReactNode => {
     if (typeof node === 'string') {
-      const parts = node.split(/(\s+|\b)/);
+      // split on whitespace and punctuation, but preserve accented characters
+      const parts = node.split(/(\s+|[^\w\u00C0-\u017F\u0100-\u024F]+)/);
       
       return parts.map((part, index) => {
         if (/^\s*$/.test(part)) {
           return part;
         }
         
-        if (/\w/.test(part)) {
+        // check for word characters including accented characters
+        if (/[\w\u00C0-\u017F\u0100-\u024F]/.test(part)) {
           const sentence = findSentenceForText(part);
           return (
             <span
