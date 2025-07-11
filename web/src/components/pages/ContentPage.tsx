@@ -3,7 +3,7 @@ import { LanguagePill, CEFRPill } from '@/components/ui/pills';
 import { useContentAPI } from '@/hooks/useContentAPI';
 import { useEffect, useState } from 'react';
 import type { StoredContent } from '@/hooks/useContentAPI';
-import MarkdownReader from '../MarkdownReader';
+import { MarkdownReader } from '../MarkdownReader';
 
 interface ContentPageProps {
   workspaceId: string;
