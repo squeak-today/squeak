@@ -37,6 +37,7 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 	err := client.Db.QueryRow(`
 		SELECT id, name, workspace_id FROM content_databases
 		WHERE id = $1
+		AND soft_delete = 'no'
 	`, databaseId).Scan(&database.ID, &database.Name, &database.WorkspaceID)
 	if err != nil {
 		return workspaces.Database{}, nil, err
@@ -47,6 +48,7 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 	rows, err := client.Db.Query(`
 		SELECT id, name, database_id, cefr_level, language_code, created_at FROM content
 		WHERE database_id = $1
+		AND soft_delete = 'no'
 	`, databaseId)
 	if err != nil {
 		return workspaces.Database{}, nil, err

@@ -13,6 +13,7 @@ func GetWorkspaces(client *supabase.Client, userId string) ([]models.Workspace, 
         id, name
 		FROM workspaces
 		WHERE user_id = $1
+		AND soft_delete = 'no'
 	`, userId)
 	if err != nil {
 		return workspaces, err
@@ -52,6 +53,7 @@ func GetWorkspacesSummary(client *supabase.Client, userId string) (models.Worksp
 		SELECT id, name
 		FROM workspaces
 		WHERE user_id = $1
+		AND soft_delete = 'no'
 		ORDER BY name
 	`, userId)
 	if err != nil {
@@ -72,6 +74,7 @@ func GetWorkspacesSummary(client *supabase.Client, userId string) (models.Worksp
 		SELECT id, workspace_id, name
 		FROM content_databases
 		WHERE user_id = $1
+		AND soft_delete = 'no'
 		ORDER BY name
 	`, userId)
 	if err != nil {

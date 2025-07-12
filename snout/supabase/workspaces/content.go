@@ -34,6 +34,7 @@ func GetContent(ctx context.Context, client *supabase.Client, id string) (worksp
 		SELECT id, database_id, name, language_code, cefr_level, created_at
 		FROM content
 		WHERE id = $1
+		AND soft_delete = 'no'
 	`, id).Scan(&content.ID, &content.DatabaseID, &content.Name, &content.LanguageCode, &content.CEFRLevel, &content.CreatedAt)
 	if err != nil {
 		return workspaces.Content{}, err
