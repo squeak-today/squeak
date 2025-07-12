@@ -22,12 +22,12 @@ import (
 // @Param			workspace_id	path		string	true	"Workspace ID"
 // @Param			database_id		path		string	true	"Database ID"
 // @Param			content_id		path		string	true	"Content ID"
-// @Success		200				{object}	workspaces_models.GetContentBodyResponse
+// @Success		200				{object}	workspaces_models.GetContentResponse
 // @Failure		400				{object}	models.ErrorResponse
 // @Failure		404				{object}	models.ErrorResponse
 // @Failure		500				{object}	models.ErrorResponse
 // @Router			/workspaces/{workspace_id}/databases/{database_id}/content/{content_id} [get]
-func (h *WorkspacesHandler) GetContentBody(c *gin.Context) {
+func (h *WorkspacesHandler) GetContent(c *gin.Context) {
 	userId := h.GetUserIDFromToken(c)
 	workspaceId := c.Param("workspace_id")
 	databaseId := c.Param("database_id")
@@ -41,6 +41,12 @@ func (h *WorkspacesHandler) GetContentBody(c *gin.Context) {
 		return
 	}
 
+	content, err := workspaces.GetContent(context.Background(), h.DBClient, contentId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get content"})
+		return
+	}
+
 	key := h.S3Client.ContentKey(userId, contentId)
 	presignedURL, err := h.S3Client.GetPresignedURL(h.S3Client.Bucket, key, 60)
 	if err != nil {
@@ -48,7 +54,10 @@ func (h *WorkspacesHandler) GetContentBody(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, workspaces_models.GetContentBodyResponse{PresignedURL: presignedURL})
+	c.JSON(http.StatusOK, workspaces_models.GetContentResponse{
+		Content:      content,
+		PresignedURL: presignedURL,
+	})
 }
 
 // @Summary		Get incomplete jobs

@@ -7,6 +7,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  type ColumnSizingState,
 } from "@tanstack/react-table"
 
 import {
@@ -36,6 +37,7 @@ interface DatabaseTableProps {
   onFetchIncompleteJobs?: () => Promise<void>;
   incompleteJobs?: ContentJob[];
   incompleteJobsLoading?: boolean;
+  onRowClick: (row: DatabaseRow) => void;
 }
 
 export function DatabaseTable({ 
@@ -43,12 +45,14 @@ export function DatabaseTable({
   data, 
   onFetchIncompleteJobs, 
   incompleteJobs = [], 
+  onRowClick,
 }: DatabaseTableProps) {
   const columns = getColumnsForDatabaseType(type);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "created_at", desc: true }
   ])
+  const [columnSizing, setColumnSizing] = React.useState<ColumnSizingState>({})
   const [popoverOpen, setPopoverOpen] = useState(false);
   
   const table = useReactTable({
@@ -59,9 +63,12 @@ export function DatabaseTable({
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onColumnSizingChange: setColumnSizing,
+    columnResizeMode: 'onChange',
     state: {
       columnFilters,
       sorting,
+      columnSizing,
     }
   })
 
@@ -81,7 +88,7 @@ export function DatabaseTable({
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm min-w-sm"
         />
         {type === "content" && onFetchIncompleteJobs && (
           <Popover open={popoverOpen} onOpenChange={handlePopoverOpen}>
@@ -98,14 +105,17 @@ export function DatabaseTable({
           </Popover>
         )}
       </div>
-      <div className="rounded-md border">   
-        <Table>
+      <div>   
+        <Table style={{ width: table.getCenterTotalSize() }}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead 
+                      key={header.id}
+                      style={{ width: header.getSize() }}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -123,9 +133,13 @@ export function DatabaseTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onClick={() => onRowClick(row.original as DatabaseRow)}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell 
+                    key={cell.id}
+                    style={{ width: cell.column.getSize() }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

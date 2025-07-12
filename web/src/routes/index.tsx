@@ -17,7 +17,7 @@ function Index() {
   useEffect(() => {
     if (workspacesSummary && workspacesSummary.databases && workspacesSummary.databases.length > 0) {
       const firstDatabase = workspacesSummary.databases[0];
-      navigate({ to: `/${firstDatabase.id}` });
+      navigate({ to: `/databases/${firstDatabase.id}` });
     }
   }, [workspacesSummary, navigate]);
 

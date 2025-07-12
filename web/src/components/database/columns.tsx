@@ -12,6 +12,7 @@ export const contentColumns: ColumnDef<Content>[] = [
     cell: ({ row }) => (
       <span className="font-medium">{row.getValue("name")}</span>
     ),
+    size: 300,
   },
   {
     accessorKey: "cefr_level",
@@ -19,6 +20,7 @@ export const contentColumns: ColumnDef<Content>[] = [
     cell: ({ row }) => (
       <CEFRPill cefrLevel={row.getValue("cefr_level")} />
     ),
+    size: 120,
   },
   {
     accessorKey: "language_code",
@@ -26,6 +28,7 @@ export const contentColumns: ColumnDef<Content>[] = [
     cell: ({ row }) => (
       <LanguagePill languageCode={row.getValue("language_code")} />
     ),
+    size: 120,
   },
   {
     accessorKey: "created_at",
@@ -38,6 +41,7 @@ export const contentColumns: ColumnDef<Content>[] = [
         </span>
       );
     },
+    size: 150,
   }
 ]
 

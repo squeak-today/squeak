@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"snout/supabase"
+	"snout/models/workspaces"
 	types "snout/whisker_types"
 )
 
@@ -25,6 +26,19 @@ func CreateContent(
 		return "", err
 	}
 	return id, nil
+}
+
+func GetContent(ctx context.Context, client *supabase.Client, id string) (workspaces.Content, error) {
+	var content workspaces.Content
+	err := client.Db.QueryRowContext(ctx, `
+		SELECT id, database_id, name, language_code, cefr_level, created_at
+		FROM content
+		WHERE id = $1
+	`, id).Scan(&content.ID, &content.DatabaseID, &content.Name, &content.LanguageCode, &content.CEFRLevel, &content.CreatedAt)
+	if err != nil {
+		return workspaces.Content{}, err
+	}
+	return content, nil
 }
 
 func CreateContentJob(ctx context.Context, client *supabase.Client, userId string, databaseId string, name string) (string, error) {

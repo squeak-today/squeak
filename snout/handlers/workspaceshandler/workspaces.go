@@ -7,9 +7,9 @@ import (
 	models "snout/models"
 	workspaces_models "snout/models/workspaces"
 	"snout/producer"
+	"snout/storage"
 	"snout/supabase"
 	workspaces "snout/supabase/workspaces"
-	"snout/storage"
 
 	"github.com/gin-gonic/gin"
 )

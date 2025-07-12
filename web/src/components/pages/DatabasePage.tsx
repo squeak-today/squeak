@@ -1,5 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { AppLayout } from '@/components/AppLayout'
 import { useSidebarMenu } from '@/context/SidebarMenuContext'
 import { useEffect, useState, useRef } from 'react';
 import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
@@ -10,32 +8,38 @@ import { DatabaseTable } from '@/components/database/DatabaseTable';
 import { type DatabaseRow } from '@/components/database/columns';
 import { CreationButton } from '@/components/database/CreationButton';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Button } from '@/components/ui/button';
+import { ChevronRight, Expand } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
+import { ContentInterface } from '@/components/content/ContentInterface';
+import { AppLayout } from '@/components/AppLayout';
 
-export const Route = createFileRoute('/$databaseId')({
-  component: RouteComponent,
-})
+interface DatabasePageProps {
+  databaseId: string;
+}
 
-function RouteComponent() {
-  const { databaseId } = Route.useParams();
-  const { workspacesSummary, setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
+export function DatabasePage({ databaseId }: DatabasePageProps) {
+  const { selectedWorkspace, selectedDatabase } = useSidebarMenu();
   const { queryDatabase } = useDatabasesAPI();
   const { getIncompleteJobs } = useContentAPI();
+  const navigate = useNavigate();
   
-  const [database, setDatabase] = useState<Database | null>(null);
-  const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [loading, setLoading] = useState(true);
   const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
   const [incompleteJobs, setIncompleteJobs] = useState<ContentJob[]>([]);
   
+  const [selectedRow, setSelectedRow] = useState<DatabaseRow | null>(null);
+  const [showRightPanel, setShowRightPanel] = useState(false);
+  
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchIncompleteJobs = async () => {
-    if (!workspace || !database || database.type !== 'content') {
+    if (!selectedWorkspace || !selectedDatabase || selectedDatabase.type !== 'content') {
       return;
     }
 
     try {
-      const { data, error } = await getIncompleteJobs(workspace.id, database.id);
+      const { data, error } = await getIncompleteJobs(selectedWorkspace.id, selectedDatabase.id);
 
       console.log('data', data);
       
@@ -86,32 +90,14 @@ function RouteComponent() {
   };
 
   useEffect(() => {
-    const loadDatabaseAndWorkspace = async () => {
-      if (!workspacesSummary) {
+    const loadData = async () => {
+      if (!selectedWorkspace || !selectedDatabase) {
         return;
       }
 
       try {
         setLoading(true);
-
-        const foundDatabase = workspacesSummary?.databases.find((db: Database) => db.id === databaseId);
-        if (!foundDatabase) {
-          console.error('Database not found:', databaseId);
-          return;
-        }
-
-        const foundWorkspace = workspacesSummary?.workspaces.find((ws: Workspace) => ws.id === foundDatabase.workspace_id);
-        if (!foundWorkspace) {
-          console.error('Workspace not found for database:', foundDatabase.workspace_id);
-          return;
-        }
-        
-        setDatabase(foundDatabase);
-        setWorkspace(foundWorkspace);
-        setSelectedDatabase(foundDatabase);
-        setSelectedWorkspace(foundWorkspace);
-
-        await refreshData(foundWorkspace, foundDatabase);
+        await refreshData(selectedWorkspace, selectedDatabase);
       } catch (error) {
         console.error('Error loading database:', error);
       } finally {
@@ -121,18 +107,15 @@ function RouteComponent() {
 
     setDatabaseRows([]);
     setIncompleteJobs([]);
-    setSelectedDatabase(null);
-    setSelectedWorkspace(null);
-    setWorkspace(null);
-    loadDatabaseAndWorkspace();
-  }, [databaseId, workspacesSummary]);
+    loadData();
+  }, [selectedWorkspace, selectedDatabase]);
 
   useEffect(() => {
-    if (!database || !workspace || loading) {
+    if (!selectedDatabase || !selectedWorkspace || loading) {
       return;
     }
 
-    intervalRef.current = setInterval(() => refreshData(workspace, database), 5000);
+    intervalRef.current = setInterval(() => refreshData(selectedWorkspace, selectedDatabase), 5000);
 
     return () => {
       if (intervalRef.current) {
@@ -140,7 +123,7 @@ function RouteComponent() {
         intervalRef.current = null;
       }
     };
-  }, [database, workspace, loading]);
+  }, [selectedDatabase, selectedWorkspace, loading]);
 
   useEffect(() => {
     return () => {
@@ -150,14 +133,61 @@ function RouteComponent() {
     };
   }, []);
 
+  const rightPanel = showRightPanel && selectedRow && selectedDatabase ? (
+    <div className="border-l bg-background h-full flex flex-col min-h-[100vh] max-h-[100vh]">
+      <div className="p-4 flex flex-col h-full">
+        <div className="flex justify-start mb-4 flex-shrink-0 gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowRightPanel(false)}
+            className="h-8 w-8 p-0"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate({ 
+              to: '/databases/$databaseId/content/$contentId', 
+              params: { 
+                databaseId: selectedDatabase.id, 
+                contentId: selectedRow.id 
+              } 
+            })}
+            className="h-8 w-8 p-0"
+          >
+            <Expand className="h-4 w-4" />
+          </Button>
+        </div>
+        {selectedDatabase.type === 'content' ? (
+          <div className="flex-1 overflow-y-auto">
+            <ContentInterface 
+              workspaceId={selectedDatabase.workspace_id}
+              databaseId={selectedDatabase.id}
+              contentId={selectedRow.id}
+            />
+          </div>
+        ) : null}
+      </div>
+    </div>
+  ) : null;
+
   return (
     <ProtectedRoute>
-      <AppLayout>
-        <div className="p-6">
-          {loading || !database ? (
+      <AppLayout
+        databaseId={databaseId}
+        showRightPanel={showRightPanel}
+        rightPanel={rightPanel}
+        rightPanelDefaultSize={50}
+        rightPanelMinSize={30}
+        rightPanelMaxSize={70}
+      >
+        <div className="p-6 pr-0 flex-1">
+          {loading || !selectedDatabase ? (
             <Skeleton className="h-8 w-64 mb-6" />
           ) : (
-            <h1 className="text-2xl font-bold mb-6">{database.name}</h1>
+            <h1 className="text-2xl font-bold mb-6 whitespace-nowrap">{selectedDatabase.name}</h1>
           )}
           
           {loading ? (
@@ -169,19 +199,23 @@ function RouteComponent() {
                 <Skeleton className="h-8 w-full" />
               </div>
             </div>
-          ) : database ? (
+          ) : selectedDatabase ? (
             <>
               <DatabaseTable 
-                type={database.type} 
+                type={selectedDatabase.type} 
                 data={databaseRows}
-                onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
+                onFetchIncompleteJobs={selectedDatabase.type === 'content' ? fetchIncompleteJobs : undefined}
                 incompleteJobs={incompleteJobs}
+                onRowClick={(row) => {
+                  setShowRightPanel(true);
+                  setSelectedRow(row);
+                }}
               />
-              <CreationButton database={database} />
+              <CreationButton database={selectedDatabase} />
             </>
           ) : null}
         </div>
       </AppLayout>
     </ProtectedRoute>
   )
-}
+} 

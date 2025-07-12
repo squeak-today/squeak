@@ -600,6 +600,19 @@ paths:
         - story
       description: Get story query by ID
       summary: Get story query
+  /types:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.TypesResponse'
+          description: OK
+      tags:
+        - types
+      description: Returns type definitions for API documentation (not a real endpoint)
+      summary: Get type definitions
   /webhook:
     post:
       responses:
@@ -873,7 +886,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/workspaces.GetContentBodyResponse'
+                $ref: '#/components/schemas/workspaces.GetContentResponse'
           description: OK
         '400':
           content:
@@ -1454,6 +1467,11 @@ components:
           example: 'Bonjour, comment allez-vous?'
           type: string
       type: object
+    models.TypesResponse:
+      properties:
+        stored_content:
+          $ref: '#/components/schemas/whisker_types.StoredContent'
+      type: object
     models.UpsertProfileRequest:
       properties:
         daily_questions_goal:
@@ -1586,6 +1604,13 @@ components:
         - EnglishCode
         - SpanishCode
         - FrenchCode
+    whisker_types.StoredContent:
+      properties:
+        markdown:
+          type: string
+        name:
+          type: string
+      type: object
     workspaces.Content:
       properties:
         cefr_level:
@@ -1703,11 +1728,14 @@ components:
       type: string
       x-enum-varnames:
         - DatabaseTypeContent
-    workspaces.GetContentBodyResponse:
+    workspaces.GetContentResponse:
       properties:
+        content:
+          $ref: '#/components/schemas/workspaces.Content'
         presigned_url:
           type: string
       required:
+        - content
         - presigned_url
       type: object
     workspaces.GetIncompleteJobsResponse:

@@ -12,8 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdatePasswordRouteImport } from './routes/update-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DatabaseIdRouteImport } from './routes/$databaseId'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DatabasesDatabaseIdRouteImport } from './routes/databases/$databaseId'
+import { Route as DatabasesDatabaseIdContentContentIdRouteImport } from './routes/databases_/$databaseId/content.$contentId'
 
 const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
   id: '/update-password',
@@ -30,59 +31,82 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DatabaseIdRoute = DatabaseIdRouteImport.update({
-  id: '/$databaseId',
-  path: '/$databaseId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatabasesDatabaseIdRoute = DatabasesDatabaseIdRouteImport.update({
+  id: '/databases/$databaseId',
+  path: '/databases/$databaseId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatabasesDatabaseIdContentContentIdRoute =
+  DatabasesDatabaseIdContentContentIdRouteImport.update({
+    id: '/databases_/$databaseId/content/$contentId',
+    path: '/databases/$databaseId/content/$contentId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$databaseId': typeof DatabaseIdRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
+  '/databases/$databaseId': typeof DatabasesDatabaseIdRoute
+  '/databases/$databaseId/content/$contentId': typeof DatabasesDatabaseIdContentContentIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$databaseId': typeof DatabaseIdRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
+  '/databases/$databaseId': typeof DatabasesDatabaseIdRoute
+  '/databases/$databaseId/content/$contentId': typeof DatabasesDatabaseIdContentContentIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$databaseId': typeof DatabaseIdRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/update-password': typeof UpdatePasswordRoute
+  '/databases/$databaseId': typeof DatabasesDatabaseIdRoute
+  '/databases_/$databaseId/content/$contentId': typeof DatabasesDatabaseIdContentContentIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$databaseId' | '/login' | '/signup' | '/update-password'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$databaseId' | '/login' | '/signup' | '/update-password'
-  id:
-    | '__root__'
+  fullPaths:
     | '/'
-    | '/$databaseId'
     | '/login'
     | '/signup'
     | '/update-password'
+    | '/databases/$databaseId'
+    | '/databases/$databaseId/content/$contentId'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/update-password'
+    | '/databases/$databaseId'
+    | '/databases/$databaseId/content/$contentId'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/update-password'
+    | '/databases/$databaseId'
+    | '/databases_/$databaseId/content/$contentId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DatabaseIdRoute: typeof DatabaseIdRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
+  DatabasesDatabaseIdRoute: typeof DatabasesDatabaseIdRoute
+  DatabasesDatabaseIdContentContentIdRoute: typeof DatabasesDatabaseIdContentContentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -108,13 +132,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$databaseId': {
-      id: '/$databaseId'
-      path: '/$databaseId'
-      fullPath: '/$databaseId'
-      preLoaderRoute: typeof DatabaseIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -122,15 +139,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/databases/$databaseId': {
+      id: '/databases/$databaseId'
+      path: '/databases/$databaseId'
+      fullPath: '/databases/$databaseId'
+      preLoaderRoute: typeof DatabasesDatabaseIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/databases_/$databaseId/content/$contentId': {
+      id: '/databases_/$databaseId/content/$contentId'
+      path: '/databases/$databaseId/content/$contentId'
+      fullPath: '/databases/$databaseId/content/$contentId'
+      preLoaderRoute: typeof DatabasesDatabaseIdContentContentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DatabaseIdRoute: DatabaseIdRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
+  DatabasesDatabaseIdRoute: DatabasesDatabaseIdRoute,
+  DatabasesDatabaseIdContentContentIdRoute:
+    DatabasesDatabaseIdContentContentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

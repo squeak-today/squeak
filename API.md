@@ -507,6 +507,24 @@ Get story query by ID
 | 200 | OK | [ [models.StoryItem](#modelsstoryitem) ] |
 
 ---
+### /types
+
+#### GET
+##### Summary
+
+Get type definitions
+
+##### Description
+
+Returns type definitions for API documentation (not a real endpoint)
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.TypesResponse](#modelstypesresponse) |
+
+---
 ### /webhook
 
 #### POST
@@ -569,7 +587,7 @@ Get content body
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [workspaces.GetContentBodyResponse](#workspacesgetcontentbodyresponse) |
+| 200 | OK | [workspaces.GetContentResponse](#workspacesgetcontentresponse) |
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
@@ -973,6 +991,12 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | sentence | string | *Example:* `"Bonjour, comment allez-vous?"` | No |
 
+#### models.TypesResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| stored_content | [whisker_types.StoredContent](#whisker_typesstoredcontent) |  | No |
+
 #### models.UpsertProfileRequest
 
 | Name | Type | Description | Required |
@@ -1043,6 +1067,13 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | whisker_types.LanguageCode | string |  |  |
 
+#### whisker_types.StoredContent
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| markdown | string |  | No |
+| name | string |  | No |
+
 #### workspaces.Content
 
 | Name | Type | Description | Required |
@@ -1109,10 +1140,11 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | workspaces.DatabaseType | string |  |  |
 
-#### workspaces.GetContentBodyResponse
+#### workspaces.GetContentResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| content | [workspaces.Content](#workspacescontent) |  | Yes |
 | presigned_url | string |  | Yes |
 
 #### workspaces.GetIncompleteJobsResponse

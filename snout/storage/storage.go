@@ -16,7 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 // THIS CODE NEEDS TO BE CLEANED
 
 type Content interface {

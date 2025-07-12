@@ -17,8 +17,8 @@ import (
 )
 
 type S3Client struct {
-	Bucket string
-	client *s3.Client
+	Bucket        string
+	client        *s3.Client
 	presignClient *s3.PresignClient
 }
 
@@ -26,7 +26,6 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	workspace := os.Getenv("WORKSPACE")
 	var cfg aws.Config
 	var err error
-
 
 	var bucket string
 	if workspace == "prod" || workspace == "dev_sqs_s3" {
@@ -72,8 +71,8 @@ func NewS3Client(ctx context.Context) (*S3Client, error) {
 	}
 
 	s3Client := &S3Client{
-		Bucket: bucket,
-		client: client,
+		Bucket:        bucket,
+		client:        client,
 		presignClient: s3.NewPresignClient(client),
 	}
 

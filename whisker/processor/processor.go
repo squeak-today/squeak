@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 
+	"snout/storage"
 	"snout/supabase"
 	"snout/supabase/workspaces"
 	types "snout/whisker_types"
-	"snout/storage"
 )
 
 type ContentProcessor struct {
@@ -33,7 +33,55 @@ func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRec
 
 	content := types.StoredContent{
 		Name:     job.Job.Name,
-		Markdown: "# Hello World\n\nThis is a placeholder content for testing.",
+		Markdown: `# Welcome to the Language Learning Demo
+
+## English Section
+This is a demonstration of *various* **markdown** features.
+
+### Lists and Code
+Here's an unordered list:
+- First item with some *italics*
+- Second item with some **bold text**
+- Third item with ***bold italics***
+- Fourth item with **bold** and **bold again** and **bold**.
+- Fifth item with **bold** **bold**, to **check** spacing.
+- Sixth item to see if it happens *with* italic.
+
+And an ordered list:
+1. Step one
+2. Step two
+3. Step three
+
+#### Code Example
+Here's a code block:
+` + "```python" + `
+def hello_world():
+    print("Hello, learner!")
+` + "```" + `
+
+## Sección en Español
+¡Bienvenidos a la sección española! Aquí hay algunas frases útiles:
+- Buenos días
+- ¿Cómo estás?
+- Mucho gusto en conocerte
+
+### Práctica
+Vamos a practicar un poco con estas oraciones simples.
+
+## Section Française
+Bienvenue à la section française! Voici quelques phrases utiles:
+- Bonjour tout le monde
+- Comment allez-vous?
+- Enchanté de vous rencontrer
+
+### Pratique
+Pratiquons avec ces phrases simples.
+
+##### Final Notes
+> This is a blockquote to demonstrate more markdown features
+
+###### Technical Details
+You can find more information in the documentation.`,
 	}
 
 	select {
@@ -42,20 +90,21 @@ func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRec
 		return ctx.Err()
 	}
 
-	log.Printf("Storing content for user %s, database %s", job.Job.UserID, job.Job.DatabaseID)
-	if err := p.s3Client.PutContent(ctx, job.Job.UserID, job.ID, content); err != nil {
-		log.Printf("Failed to store content: %v", err)
-		return err
-	}
-	if _, err := workspaces.CreateContent(
+	contentId, err := workspaces.CreateContent(
 		ctx,
 		p.supabaseClient,
 		job.Job.DatabaseID,
 		job.Job.Name,
 		job.Job.LanguageCode,
 		job.Job.CEFRLevel,
-	); err != nil {
+	)
+	if err != nil {
 		log.Printf("Failed to create content: %v", err)
+		return err
+	}
+	log.Printf("Storing content for user %s, database %s", job.Job.UserID, job.Job.DatabaseID)
+	if err := p.s3Client.PutContent(ctx, job.Job.UserID, contentId, content); err != nil {
+		log.Printf("Failed to store content: %v", err)
 		return err
 	}
 
