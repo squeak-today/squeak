@@ -6,6 +6,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
+  BreadcrumbLink,
 } from '@/components/ui/breadcrumb';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -15,7 +16,7 @@ import {
 } from '@/components/ui/resizable';
 import { AppSidebar } from './AppSidebar';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
-import { useLocation } from '@tanstack/react-router';
+import { useLocation, Link } from '@tanstack/react-router';
 import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
 
 interface AppLayoutProps {
@@ -150,7 +151,11 @@ export function AppLayout({
                         <>
                           <BreadcrumbSeparator />
                           <BreadcrumbItem>
-                            <BreadcrumbPage>{effectiveDatabase.name}</BreadcrumbPage>
+                            <BreadcrumbLink asChild>
+                              <Link to="/databases/$databaseId" params={{ databaseId: effectiveDatabase.id }}>
+                                {effectiveDatabase.name}
+                              </Link>
+                            </BreadcrumbLink>
                           </BreadcrumbItem>
                         </>
                       ) : null}
