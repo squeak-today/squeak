@@ -27,13 +27,14 @@ import (
 	_ "github.com/lib/pq"
 
 	"snout/audio"
+	models "snout/models"
 	"snout/producer"
 	"snout/storage"
 	"snout/supabase"
-	models "snout/models"
 
 	"snout/handlers/audiohandler"
 	billing "snout/handlers/billinghandler"
+	"snout/handlers/languagehandler"
 	"snout/handlers/newshandler"
 	"snout/handlers/profilehandler"
 	"snout/handlers/progresshandler"
@@ -97,13 +98,13 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
-//	@Summary		Get type definitions
-//	@Description	Returns type definitions for API documentation (not a real endpoint)
-//	@Tags			types
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	models.TypesResponse
-//	@Router			/types [get]
+// @Summary		Get type definitions
+// @Description	Returns type definitions for API documentation (not a real endpoint)
+// @Tags			types
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	models.TypesResponse
+// @Router			/types [get]
 func typesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, models.TypesResponse{})
 }
@@ -181,10 +182,15 @@ func main() {
 	audioGroup := router.Group("/audio")
 	{
 		audioGroup.GET("", audioHandler.CheckHealth)
-		audioGroup.POST("/translate", audioHandler.Translate)
-		audioGroup.POST("/tts", audioHandler.TextToSpeech)
-		audioGroup.POST("/stt", audioHandler.SpeechToText)
 		audioGroup.GET("/audiobook", audioHandler.GetAudiobook)
+	}
+
+	languageHandler := languagehandler.New(dbClient, audioClient)
+	languageGroup := router.Group("/language")
+	{
+		languageGroup.POST("/translate", languageHandler.Translate)
+		languageGroup.POST("/tts", languageHandler.TextToSpeech)
+		languageGroup.POST("/stt", languageHandler.SpeechToText)
 	}
 
 	progressHandler := progresshandler.New(dbClient)

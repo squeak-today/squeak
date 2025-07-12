@@ -62,90 +62,6 @@ paths:
         - audio
       description: Get audiobook for a news_id
       summary: Get audiobook
-  /audio/stt:
-    post:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.SpeechToTextResponse'
-          description: OK
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.ErrorResponse'
-          description: Bad Request
-      tags:
-        - audio
-      description: Convert speech audio to text
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/models.SpeechToTextRequest'
-        description: Speech to text request
-        required: true
-      summary: Speech to text
-  /audio/translate:
-    post:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.TranslateResponse'
-          description: OK
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.ErrorResponse'
-          description: Bad Request
-      tags:
-        - audio
-      description: Translate text from source language to target language
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/models.TranslateRequest'
-        description: Translation request
-        required: true
-      summary: Translate text
-  /audio/tts:
-    post:
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.TextToSpeechResponse'
-          description: OK
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.ErrorResponse'
-          description: Bad Request
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/models.ErrorResponse'
-          description: Internal Server Error
-      tags:
-        - audio
-      description: Convert text to speech audio
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/models.TextToSpeechRequest'
-        description: Text to speech request
-        required: true
-      summary: Text to speech
   /billing:
     get:
       responses:
@@ -245,6 +161,90 @@ paths:
         - billing
       description: 'Get Billing Account Usage, assumes free plan'
       summary: Get Billing Account Usage
+  /language/stt:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.SpeechToTextResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - language
+      description: Convert speech audio to text
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.SpeechToTextRequest'
+        description: Speech to text request
+        required: true
+      summary: Speech to text
+  /language/translate:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.TranslateResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+      tags:
+        - language
+      description: Translate text from source language to target language
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.TranslateRequest'
+        description: Translation request
+        required: true
+      summary: Translate text
+  /language/tts:
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.TextToSpeechResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - language
+      description: Convert text to speech audio
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/models.TextToSpeechRequest'
+        description: Text to speech request
+        required: true
+      summary: Text to speech
   /news:
     get:
       parameters:
