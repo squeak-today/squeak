@@ -8,18 +8,19 @@ import { TTS_LANGUAGE_CODES, TTS_VOICE_IDS } from '@/lib/lang_codes';
 import { TRANSLATABLE_SELECTOR } from '@/lib/utils';
 
 interface Translation {
-  word: string;
-  languageCode: string;
-  source: string;
+  sourceWord: string;
   sourceSentence: string;
-  translation?: string;
+  translatedWord?: string;
   translatedSentence?: string;
+  
+  sourceLanguage?: string;
+  targetLanguage: string;
   isLoading: boolean;
   isSentenceLoading: boolean;
 }
 
 interface TranslationContextType {
-  showTranslation: (word: string, languageCode: string, source: string, sourceSentence: string) => void;
+  showTranslation: (sourceWord: string, sourceSentence: string, targetLanguage: string) => void;
 }
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
@@ -74,6 +75,8 @@ function TranslationPopup({ translation, onClose, isUpdating }: {
       console.error('Failed to play audio:', error);
     }
   };
+
+  console.log(translation);
   
   return (
     <Card 
@@ -91,24 +94,28 @@ function TranslationPopup({ translation, onClose, isUpdating }: {
             <>
               <div className="flex gap-2">
                 <h3 className="text-2xl font-bold text-foreground break-words">
-                  {translation.translation || 'Translation failed'}
+                  {translation.translatedWord || 'Translation failed'}
                 </h3>
                 <span className="text-xs text-muted-foreground font-mono">
-                  {translation.languageCode.toUpperCase()}
+                  {translation.targetLanguage.toUpperCase()}
                 </span>
               </div>
               <div className="flex gap-2">
                 <p className="text-sm text-muted-foreground">
-                  {translation.word}
+                  {translation.sourceWord}
                 </p>
-                <p className="text-xs text-muted-foreground font-mono">
-                  {translation.source.toUpperCase()}
-                </p>
+                {translation.isLoading ? (
+                  <Skeleton className="h-4 w-6" />
+                ) : (
+                  <p className="text-xs text-muted-foreground font-mono">
+                    {translation.sourceLanguage?.toUpperCase()}
+                  </p>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-5 w-5 p-0 hover:bg-primary/10 flex-shrink-0"
-                  onClick={() => handlePlayAudio(translation.word, translation.source)}
+                  onClick={() => handlePlayAudio(translation.sourceWord, translation.sourceLanguage!)}
                 >
                   <Volume2 className="h-3 w-3 text-muted-foreground" />
                 </Button>
@@ -121,14 +128,18 @@ function TranslationPopup({ translation, onClose, isUpdating }: {
           <div className="space-y-1">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-mono uppercase">
-                  {translation.source.toUpperCase()}
-                </span>
+                {translation.isSentenceLoading ? (
+                  <Skeleton className="h-4 w-6" />
+                ) : (
+                  <span className="text-xs text-muted-foreground font-mono uppercase">
+                    {translation.sourceLanguage?.toUpperCase()}
+                  </span>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
                   className="h-4 w-4 p-0 hover:bg-primary/10 flex-shrink-0"
-                  onClick={() => handlePlayAudio(translation.sourceSentence, translation.source)}
+                  onClick={() => handlePlayAudio(translation.sourceSentence, translation.sourceLanguage!)}
                 >
                   <Volume2 className="h-3 w-3 text-muted-foreground" />
                 </Button>
@@ -141,14 +152,14 @@ function TranslationPopup({ translation, onClose, isUpdating }: {
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground font-mono uppercase">
-                  {translation.languageCode.toUpperCase()}
+                  {translation.targetLanguage.toUpperCase()}
                 </span>
                 {translation.translatedSentence && (
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-4 w-4 p-0 hover:bg-primary/10 flex-shrink-0"
-                    onClick={() => handlePlayAudio(translation.translatedSentence!, translation.languageCode)}
+                    onClick={() => handlePlayAudio(translation.translatedSentence!, translation.targetLanguage)}
                   >
                     <Volume2 className="h-3 w-3 text-muted-foreground" />
                   </Button>
@@ -174,14 +185,13 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
   const [isUpdating, setIsUpdating] = useState(false);
   const { translate } = useLanguageAPI();
 
-  const showTranslation = async (word: string, languageCode: string, source: string, sourceSentence: string) => {
+  const showTranslation = async (sourceWord: string, sourceSentence: string, targetLanguage: string) => {
     setIsUpdating(true);
     
     const newTranslation: Translation = {
-      word,
-      languageCode,
-      source,
+      sourceWord,
       sourceSentence,
+      targetLanguage,
       isLoading: true,
       isSentenceLoading: true
     };
@@ -191,21 +201,22 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     
     try {
       const wordResponse = await translate({
-        sentence: word,
-        source: source,
-        target: languageCode
+        sentence: sourceWord,
+        target: targetLanguage
       });
       
       if (wordResponse.data?.sentence) {
         setCurrentTranslation(prev => prev ? {
           ...prev,
-          translation: wordResponse.data!.sentence,
+          translatedWord: wordResponse.data!.sentence,
+          sourceLanguage: wordResponse.data!.detected_source_language,
           isLoading: false
         } : null);
       } else {
         setCurrentTranslation(prev => prev ? {
           ...prev,
-          translation: undefined,
+          translatedWord: undefined,
+          sourceLanguage: undefined,
           isLoading: false
         } : null);
       }
@@ -213,7 +224,8 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       console.error('Word translation failed:', error);
       setCurrentTranslation(prev => prev ? {
         ...prev,
-        translation: undefined,
+        translatedWord: undefined,
+        sourceLanguage: undefined,
         isLoading: false
       } : null);
     }
@@ -221,20 +233,21 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
     try {
       const sentenceResponse = await translate({
         sentence: sourceSentence,
-        source: source,
-        target: languageCode
+        target: targetLanguage
       });
       
       if (sentenceResponse.data?.sentence) {
         setCurrentTranslation(prev => prev ? {
           ...prev,
           translatedSentence: sentenceResponse.data!.sentence,
+          sourceLanguage: sentenceResponse.data!.detected_source_language,
           isSentenceLoading: false
         } : null);
       } else {
         setCurrentTranslation(prev => prev ? {
           ...prev,
           translatedSentence: undefined,
+          sourceLanguage: undefined,
           isSentenceLoading: false
         } : null);
       }
@@ -243,6 +256,7 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       setCurrentTranslation(prev => prev ? {
         ...prev,
         translatedSentence: undefined,
+        sourceLanguage: undefined,
         isSentenceLoading: false
       } : null);
     }

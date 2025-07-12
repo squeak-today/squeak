@@ -41,7 +41,7 @@ func (h *LanguageHandler) Translate(c *gin.Context) {
 		return
 	}
 
-	translatedText, err := h.AudioClient.Translate(infoBody.Sentence, infoBody.Source, infoBody.Target)
+	translatedText, detectedSourceLanguage, err := h.AudioClient.Translate(infoBody.Sentence, infoBody.Target)
 	if err != nil {
 		log.Printf("Translation failed: %v", err)
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{
@@ -52,6 +52,7 @@ func (h *LanguageHandler) Translate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.TranslateResponse{
 		Sentence: translatedText,
+		DetectedSourceLanguage: detectedSourceLanguage,
 	})
 }
 

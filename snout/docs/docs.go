@@ -2027,17 +2027,12 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "sentence",
-                "source",
                 "target"
             ],
             "properties": {
                 "sentence": {
                     "type": "string",
                     "example": "Hello, how are you?"
-                },
-                "source": {
-                    "type": "string",
-                    "example": "en"
                 },
                 "target": {
                     "type": "string",
@@ -2048,6 +2043,10 @@ const docTemplate = `{
         "models.TranslateResponse": {
             "type": "object",
             "properties": {
+                "detected_source_language": {
+                    "type": "string",
+                    "example": "fr"
+                },
                 "sentence": {
                     "type": "string",
                     "example": "Bonjour, comment allez-vous?"

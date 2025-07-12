@@ -43,7 +43,7 @@ export function ContentInterface({ workspaceId, databaseId, contentId }: Content
 
   const handleWordClick = (word: string, sentence: string) => {
     if (content?.language_code) {
-      showTranslation(word, 'en', content.language_code, sentence);
+      showTranslation(word, sentence, 'en');
     }
   };
 

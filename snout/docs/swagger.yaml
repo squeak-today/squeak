@@ -493,19 +493,18 @@ definitions:
       sentence:
         example: Hello, how are you?
         type: string
-      source:
-        example: en
-        type: string
       target:
         example: fr
         type: string
     required:
     - sentence
-    - source
     - target
     type: object
   models.TranslateResponse:
     properties:
+      detected_source_language:
+        example: fr
+        type: string
       sentence:
         example: Bonjour, comment allez-vous?
         type: string

@@ -983,13 +983,13 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | sentence | string | *Example:* `"Hello, how are you?"` | Yes |
-| source | string | *Example:* `"en"` | Yes |
 | target | string | *Example:* `"fr"` | Yes |
 
 #### models.TranslateResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| detected_source_language | string | *Example:* `"fr"` | No |
 | sentence | string | *Example:* `"Bonjour, comment allez-vous?"` | No |
 
 #### models.TypesResponse

@@ -1989,12 +1989,12 @@ export interface components {
         "models.TranslateRequest": {
             /** @example Hello, how are you? */
             sentence: string;
-            /** @example en */
-            source: string;
             /** @example fr */
             target: string;
         };
         "models.TranslateResponse": {
+            /** @example fr */
+            detected_source_language?: string;
             /** @example Bonjour, comment allez-vous? */
             sentence?: string;
         };

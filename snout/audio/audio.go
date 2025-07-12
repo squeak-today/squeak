@@ -17,6 +17,7 @@ type Client struct {
 type TranslateResponse struct {
 	Data struct {
 		Translations []struct {
+			DetectedSourceLanguage string `json:"detectedSourceLanguage"`
 			TranslatedText string `json:"translatedText"`
 		} `json:"translations"`
 	} `json:"data"`
@@ -46,25 +47,24 @@ func NewClient(apiKey, elevenLabsKey string) *Client {
 	}
 }
 
-func (c *Client) Translate(sentence, source, target string) (string, error) {
+func (c *Client) Translate(sentence, target string) (string, string, error) {
 	query := []string{sentence}
-	translatePayload := map[string]interface{}{
+	translatePayload := map[string]any{
 		"q":      query,
-		"source": source,
 		"target": target,
 		"format": "text",
 	}
 
 	jsonData, err := json.Marshal(translatePayload)
 	if err != nil {
-		return "", fmt.Errorf("translate payload marshalling failed: %v", err)
+		return "", "", fmt.Errorf("translate payload marshalling failed: %v", err)
 	}
 
 	req, err := http.NewRequest("POST",
 		"https://translation.googleapis.com/language/translate/v2?key="+c.apiKey,
 		bytes.NewBuffer(jsonData))
 	if err != nil {
-		return "", fmt.Errorf("failed to create request: %v", err)
+		return "", "", fmt.Errorf("failed to create request: %v", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -72,25 +72,25 @@ func (c *Client) Translate(sentence, source, target string) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("request to GCP failed: %v", err)
+		return "", "", fmt.Errorf("request to GCP failed: %v", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("failed to read response body: %v", err)
+		return "", "", fmt.Errorf("failed to read response body: %v", err)
 	}
 
 	var result TranslateResponse
 	if err := json.Unmarshal(body, &result); err != nil {
-		return "", fmt.Errorf("failed to unmarshal response: %v", err)
+		return "", "", fmt.Errorf("failed to unmarshal response: %v", err)
 	}
 
 	if len(result.Data.Translations) == 0 {
-		return "", fmt.Errorf("no translations returned")
+		return sentence, target, nil
 	}
 
-	return result.Data.Translations[0].TranslatedText, nil
+	return result.Data.Translations[0].TranslatedText, result.Data.Translations[0].DetectedSourceLanguage, nil
 }
 
 func (c *Client) TextToSpeech(text, languageCode, voiceName string, natural bool) (string, error) {
