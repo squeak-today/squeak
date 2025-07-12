@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { evaluate } from '@mdx-js/mdx';
 import * as runtime from 'react/jsx-runtime';
+import { TRANSLATABLE_ATTRIBUTE } from '@/lib/utils';
 
 type LanguageCode = 'es' | 'fr' | 'en';
 
@@ -79,6 +80,7 @@ const InteractiveText = ({
               onClick={() => onWordClick(part.trim(), sentence)}
               className="cursor-pointer border-accent hover:border-b-4 transition-all duration-50 ease-in inline-block"
               style={{ display: 'inline' }}
+              {...{[TRANSLATABLE_ATTRIBUTE]: "true"}}
             >
               {part}
             </span>

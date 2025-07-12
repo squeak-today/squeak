@@ -95,132 +95,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/audio/stt": {
-            "post": {
-                "description": "Convert speech audio to text",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "audio"
-                ],
-                "summary": "Speech to text",
-                "parameters": [
-                    {
-                        "description": "Speech to text request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.SpeechToTextRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.SpeechToTextResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/audio/translate": {
-            "post": {
-                "description": "Translate text from source language to target language",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "audio"
-                ],
-                "summary": "Translate text",
-                "parameters": [
-                    {
-                        "description": "Translation request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.TranslateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.TranslateResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/audio/tts": {
-            "post": {
-                "description": "Convert text to speech audio",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "audio"
-                ],
-                "summary": "Text to speech",
-                "parameters": [
-                    {
-                        "description": "Text to speech request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.TextToSpeechRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.TextToSpeechResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/billing": {
             "get": {
                 "description": "Check Billing Account",
@@ -360,6 +234,132 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/language/stt": {
+            "post": {
+                "description": "Convert speech audio to text",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "language"
+                ],
+                "summary": "Speech to text",
+                "parameters": [
+                    {
+                        "description": "Speech to text request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SpeechToTextRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.SpeechToTextResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/language/translate": {
+            "post": {
+                "description": "Translate text from source language to target language",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "language"
+                ],
+                "summary": "Translate text",
+                "parameters": [
+                    {
+                        "description": "Translation request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TranslateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TranslateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/language/tts": {
+            "post": {
+                "description": "Convert text to speech audio",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "language"
+                ],
+                "summary": "Text to speech",
+                "parameters": [
+                    {
+                        "description": "Text to speech request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TextToSpeechRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TextToSpeechResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -2027,17 +2027,12 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "sentence",
-                "source",
                 "target"
             ],
             "properties": {
                 "sentence": {
                     "type": "string",
                     "example": "Hello, how are you?"
-                },
-                "source": {
-                    "type": "string",
-                    "example": "en"
                 },
                 "target": {
                     "type": "string",
@@ -2048,6 +2043,10 @@ const docTemplate = `{
         "models.TranslateResponse": {
             "type": "object",
             "properties": {
+                "detected_source_language": {
+                    "type": "string",
+                    "example": "fr"
+                },
                 "sentence": {
                     "type": "string",
                     "example": "Bonjour, comment allez-vous?"

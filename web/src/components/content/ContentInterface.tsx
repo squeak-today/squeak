@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import type { StoredContent } from '@/hooks/useContentAPI';
 import { MarkdownReader } from '../MarkdownReader';
 import { Skeleton } from '../ui/skeleton';
+import { useTranslation } from '@/context/TranslationContext';
 
 interface ContentInterfaceProps {
   workspaceId: string;
@@ -14,6 +15,7 @@ interface ContentInterfaceProps {
 
 export function ContentInterface({ workspaceId, databaseId, contentId }: ContentInterfaceProps) {
   const { getContent } = useContentAPI();
+  const { showTranslation } = useTranslation();
   const [isLoadingContent, setIsLoadingContent] = useState(true);
   const [contentBody, setContentBody] = useState<StoredContent | null>(null);
   const [content, setContent] = useState<Content | null>(null);
@@ -40,7 +42,9 @@ export function ContentInterface({ workspaceId, databaseId, contentId }: Content
   }, [workspaceId, databaseId, contentId]);
 
   const handleWordClick = (word: string, sentence: string) => {
-    console.log('Word clicked:', { word, sentence });
+    if (content?.language_code) {
+      showTranslation(word, sentence, 'en');
+    }
   };
 
   if (!content || !contentBody) {

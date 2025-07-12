@@ -3,8 +3,8 @@ package workspaces
 import (
 	"context"
 	"fmt"
-	"snout/supabase"
 	"snout/models/workspaces"
+	"snout/supabase"
 	types "snout/whisker_types"
 )
 

@@ -57,79 +57,6 @@ Get audiobook for a news_id
 | 200 | OK | [models.AudiobookResponse](#modelsaudiobookresponse) |
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 
-### /audio/stt
-
-#### POST
-##### Summary
-
-Speech to text
-
-##### Description
-
-Convert speech audio to text
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Speech to text request | Yes | [models.SpeechToTextRequest](#modelsspeechtotextrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.SpeechToTextResponse](#modelsspeechtotextresponse) |
-| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
-
-### /audio/translate
-
-#### POST
-##### Summary
-
-Translate text
-
-##### Description
-
-Translate text from source language to target language
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Translation request | Yes | [models.TranslateRequest](#modelstranslaterequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.TranslateResponse](#modelstranslateresponse) |
-| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
-
-### /audio/tts
-
-#### POST
-##### Summary
-
-Text to speech
-
-##### Description
-
-Convert text to speech audio
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ------ |
-| request | body | Text to speech request | Yes | [models.TextToSpeechRequest](#modelstexttospeechrequest) |
-
-##### Responses
-
-| Code | Description | Schema |
-| ---- | ----------- | ------ |
-| 200 | OK | [models.TextToSpeechResponse](#modelstexttospeechresponse) |
-| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
-| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
-
 ---
 ### /billing
 
@@ -220,6 +147,80 @@ Get Billing Account Usage, assumes free plan
 | ---- | ----------- | ------ |
 | 200 | OK | [models.BillingAccountUsageResponse](#modelsbillingaccountusageresponse) |
 | 401 | Unauthorized | [models.ErrorResponse](#modelserrorresponse) |
+
+---
+### /language/stt
+
+#### POST
+##### Summary
+
+Speech to text
+
+##### Description
+
+Convert speech audio to text
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Speech to text request | Yes | [models.SpeechToTextRequest](#modelsspeechtotextrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.SpeechToTextResponse](#modelsspeechtotextresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+### /language/translate
+
+#### POST
+##### Summary
+
+Translate text
+
+##### Description
+
+Translate text from source language to target language
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Translation request | Yes | [models.TranslateRequest](#modelstranslaterequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.TranslateResponse](#modelstranslateresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+
+### /language/tts
+
+#### POST
+##### Summary
+
+Text to speech
+
+##### Description
+
+Convert text to speech audio
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| request | body | Text to speech request | Yes | [models.TextToSpeechRequest](#modelstexttospeechrequest) |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [models.TextToSpeechResponse](#modelstexttospeechresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
 ---
 ### /news
@@ -982,13 +983,13 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | sentence | string | *Example:* `"Hello, how are you?"` | Yes |
-| source | string | *Example:* `"en"` | Yes |
 | target | string | *Example:* `"fr"` | Yes |
 
 #### models.TranslateResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| detected_source_language | string | *Example:* `"fr"` | No |
 | sentence | string | *Example:* `"Bonjour, comment allez-vous?"` | No |
 
 #### models.TypesResponse

@@ -32,6 +32,6 @@ type GetIncompleteJobsResponse struct {
 }
 
 type GetContentResponse struct {
-	Content      Content  `json:"content" binding:"required"`
-	PresignedURL string `json:"presigned_url" binding:"required"`
+	Content      Content `json:"content" binding:"required"`
+	PresignedURL string  `json:"presigned_url" binding:"required"`
 }

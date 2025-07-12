@@ -493,19 +493,18 @@ definitions:
       sentence:
         example: Hello, how are you?
         type: string
-      source:
-        example: en
-        type: string
       target:
         example: fr
         type: string
     required:
     - sentence
-    - source
     - target
     type: object
   models.TranslateResponse:
     properties:
+      detected_source_language:
+        example: fr
+        type: string
       sentence:
         example: Bonjour, comment allez-vous?
         type: string
@@ -917,88 +916,6 @@ paths:
       summary: Get audiobook
       tags:
       - audio
-  /audio/stt:
-    post:
-      consumes:
-      - application/json
-      description: Convert speech audio to text
-      parameters:
-      - description: Speech to text request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.SpeechToTextRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.SpeechToTextResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Speech to text
-      tags:
-      - audio
-  /audio/translate:
-    post:
-      consumes:
-      - application/json
-      description: Translate text from source language to target language
-      parameters:
-      - description: Translation request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.TranslateRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.TranslateResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Translate text
-      tags:
-      - audio
-  /audio/tts:
-    post:
-      consumes:
-      - application/json
-      description: Convert text to speech audio
-      parameters:
-      - description: Text to speech request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.TextToSpeechRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.TextToSpeechResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Text to speech
-      tags:
-      - audio
   /billing:
     get:
       consumes:
@@ -1094,6 +1011,88 @@ paths:
       summary: Get Billing Account Usage
       tags:
       - billing
+  /language/stt:
+    post:
+      consumes:
+      - application/json
+      description: Convert speech audio to text
+      parameters:
+      - description: Speech to text request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SpeechToTextRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SpeechToTextResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Speech to text
+      tags:
+      - language
+  /language/translate:
+    post:
+      consumes:
+      - application/json
+      description: Translate text from source language to target language
+      parameters:
+      - description: Translation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.TranslateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TranslateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Translate text
+      tags:
+      - language
+  /language/tts:
+    post:
+      consumes:
+      - application/json
+      description: Convert text to speech audio
+      parameters:
+      - description: Text to speech request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.TextToSpeechRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TextToSpeechResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Text to speech
+      tags:
+      - language
   /news:
     get:
       consumes:
