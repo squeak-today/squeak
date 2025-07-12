@@ -39,6 +39,20 @@ func (h *WorkspacesHandler) CheckDatabaseUserOwnership(c *gin.Context, userId st
 	return true
 }
 
+func (h *WorkspacesHandler) CheckContentInDatabase(c *gin.Context, databaseId string, contentId string) bool {
+	exists, err := workspaces.CheckContentInDatabase(h.DBClient, databaseId, contentId)
+	if err != nil {
+		log.Printf("Error checking content database: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check content database"})
+		return false
+	}
+	if !exists {
+		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Content not found in database"})
+		return false
+	}
+	return true
+}
+
 func (h *WorkspacesHandler) CheckDatabaseType(c *gin.Context, dbType workspaces_models.DatabaseType, databaseId string) bool {
 	var table string
 	switch dbType {

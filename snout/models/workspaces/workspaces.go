@@ -1,5 +1,20 @@
 package workspaces
 
+type SoftDeleteStatus string
+
+const (
+	SoftDeleteStatusNo         SoftDeleteStatus = "no"
+	SoftDeleteStatusSoftDelete SoftDeleteStatus = "soft_delete"
+	SoftDeleteStatusHardDelete SoftDeleteStatus = "hard_delete"
+)
+
+type DeleteType string
+
+const (
+	DeleteTypeSoftDelete DeleteType = "soft_delete"
+	DeleteTypeHardDelete DeleteType = "hard_delete"
+)
+
 type Workspace struct {
 	ID   string `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
 	Name string `json:"name" binding:"required" example:"My Workspace"`

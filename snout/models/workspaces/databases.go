@@ -17,3 +17,5 @@ type QueryDatabaseResponse struct {
 	Database
 	ContentRows []Content `json:"content"`
 }
+
+type DeleteDatabaseResponse struct{}

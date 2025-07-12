@@ -51,7 +51,7 @@ func (h *LanguageHandler) Translate(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.TranslateResponse{
-		Sentence: translatedText,
+		Sentence:               translatedText,
 		DetectedSourceLanguage: detectedSourceLanguage,
 	})
 }

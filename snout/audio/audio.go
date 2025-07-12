@@ -18,7 +18,7 @@ type TranslateResponse struct {
 	Data struct {
 		Translations []struct {
 			DetectedSourceLanguage string `json:"detectedSourceLanguage"`
-			TranslatedText string `json:"translatedText"`
+			TranslatedText         string `json:"translatedText"`
 		} `json:"translations"`
 	} `json:"data"`
 }

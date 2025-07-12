@@ -94,3 +94,67 @@ func (h *WorkspacesHandler) QueryDatabase(c *gin.Context) {
 		return
 	}
 }
+
+// @Summary		Delete database
+// @Description	Delete database
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Param			workspace_id	path		string	true	"Workspace ID"
+// @Param			database_id		path		string	true	"Database ID"
+// @Success		200				{object}	workspaces_models.DeleteDatabaseResponse
+// @Failure		400				{object}	models.ErrorResponse
+// @Failure		500				{object}	models.ErrorResponse
+// @Router			/workspaces/{workspace_id}/databases/{database_id} [delete]
+func (h *WorkspacesHandler) DeleteDatabase(c *gin.Context) {
+	userId := h.GetUserIDFromToken(c)
+	workspaceId := c.Param("workspace_id")
+	databaseId := c.Param("database_id")
+
+	if !h.CheckWorkspaceUserOwnership(c, userId, workspaceId) {
+		return
+	}
+
+	if !h.CheckDatabaseUserOwnership(c, userId, workspaceId, databaseId) {
+		return
+	}
+
+	err := workspaces.SetDatabaseSoftDelete(h.DBClient, userId, databaseId, workspaces_models.SoftDeleteStatusSoftDelete)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete database"})
+		return
+	}
+}
+
+// @Summary		Hard delete database
+// @Description	Hard delete database
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Param			workspace_id	path		string	true	"Workspace ID"
+// @Param			database_id		path		string	true	"Database ID"
+// @Success		200				{object}	workspaces_models.DeleteDatabaseResponse
+// @Failure		400				{object}	models.ErrorResponse
+// @Failure		500				{object}	models.ErrorResponse
+// @Router			/workspaces/{workspace_id}/databases/{database_id}/hard-delete [delete]
+func (h *WorkspacesHandler) HardDeleteDatabase(c *gin.Context) {
+	userId := h.GetUserIDFromToken(c)
+	workspaceId := c.Param("workspace_id")
+	databaseId := c.Param("database_id")
+
+	if !h.CheckWorkspaceUserOwnership(c, userId, workspaceId) {
+		return
+	}
+
+	if !h.CheckDatabaseUserOwnership(c, userId, workspaceId, databaseId) {
+		return
+	}
+
+	err := workspaces.SetDatabaseSoftDelete(h.DBClient, userId, databaseId, workspaces_models.SoftDeleteStatusHardDelete)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete database"})
+		return
+	}
+
+	c.JSON(http.StatusOK, workspaces_models.DeleteDatabaseResponse{})
+}
