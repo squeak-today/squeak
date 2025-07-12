@@ -1273,7 +1273,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/workspaces.GetContentBodyResponse"
+                            "$ref": "#/definitions/workspaces.GetContentResponse"
                         }
                     },
                     "400": {
@@ -2431,12 +2431,16 @@ const docTemplate = `{
                 "DatabaseTypeContent"
             ]
         },
-        "workspaces.GetContentBodyResponse": {
+        "workspaces.GetContentResponse": {
             "type": "object",
             "required": [
+                "content",
                 "presigned_url"
             ],
             "properties": {
+                "content": {
+                    "$ref": "#/definitions/workspaces.Content"
+                },
                 "presigned_url": {
                     "type": "string"
                 }

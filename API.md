@@ -587,7 +587,7 @@ Get content body
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | OK | [workspaces.GetContentBodyResponse](#workspacesgetcontentbodyresponse) |
+| 200 | OK | [workspaces.GetContentResponse](#workspacesgetcontentresponse) |
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
@@ -1140,10 +1140,11 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | workspaces.DatabaseType | string |  |  |
 
-#### workspaces.GetContentBodyResponse
+#### workspaces.GetContentResponse
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| content | [workspaces.Content](#workspacescontent) |  | Yes |
 | presigned_url | string |  | Yes |
 
 #### workspaces.GetIncompleteJobsResponse

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { DatabasePage } from '@/components/pages/DatabasePage'
 
-export const Route = createFileRoute('/$databaseId')({
+export const Route = createFileRoute('/databases/$databaseId')({
   component: RouteComponent,
 })
 

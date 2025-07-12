@@ -1635,7 +1635,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["workspaces.GetContentBodyResponse"];
+                        "application/json": components["schemas"]["workspaces.GetContentResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -2115,7 +2115,8 @@ export interface components {
         };
         /** @enum {string} */
         "workspaces.DatabaseType": "content";
-        "workspaces.GetContentBodyResponse": {
+        "workspaces.GetContentResponse": {
+            content: components["schemas"]["workspaces.Content"];
             presigned_url: string;
         };
         "workspaces.GetIncompleteJobsResponse": {

@@ -9,36 +9,21 @@ import { type DatabaseRow } from '@/components/database/columns';
 import { CreationButton } from '@/components/database/CreationButton';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
-import { ChevronRight } from 'lucide-react';
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from '@/components/ui/resizable'
-import { ContentPage } from './ContentPage';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { AppSidebar } from '@/components/AppSidebar';
-import { useLocation } from '@tanstack/react-router';
+import { ChevronRight, Expand } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
+import { ContentInterface } from '@/components/content/ContentInterface';
+import { AppLayout } from '@/components/AppLayout';
 
 interface DatabasePageProps {
   databaseId: string;
 }
 
 export function DatabasePage({ databaseId }: DatabasePageProps) {
-  const { workspacesSummary, setSelectedDatabase, setSelectedWorkspace, selectedWorkspace, selectedDatabase, isLoading } = useSidebarMenu();
+  const { selectedWorkspace, selectedDatabase } = useSidebarMenu();
   const { queryDatabase } = useDatabasesAPI();
   const { getIncompleteJobs } = useContentAPI();
-  const location = useLocation();
+  const navigate = useNavigate();
   
-  const [database, setDatabase] = useState<Database | null>(null);
-  const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [loading, setLoading] = useState(true);
   const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
   const [incompleteJobs, setIncompleteJobs] = useState<ContentJob[]>([]);
@@ -48,17 +33,13 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const isNotRootPage = location.pathname !== '/';
-  const showWorkspaceSkeleton = isLoading || (isNotRootPage && !selectedWorkspace);
-  const showDatabaseSkeleton = isLoading || (isNotRootPage && !selectedDatabase);
-
   const fetchIncompleteJobs = async () => {
-    if (!workspace || !database || database.type !== 'content') {
+    if (!selectedWorkspace || !selectedDatabase || selectedDatabase.type !== 'content') {
       return;
     }
 
     try {
-      const { data, error } = await getIncompleteJobs(workspace.id, database.id);
+      const { data, error } = await getIncompleteJobs(selectedWorkspace.id, selectedDatabase.id);
 
       console.log('data', data);
       
@@ -109,32 +90,14 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
   };
 
   useEffect(() => {
-    const loadDatabaseAndWorkspace = async () => {
-      if (!workspacesSummary) {
+    const loadData = async () => {
+      if (!selectedWorkspace || !selectedDatabase) {
         return;
       }
 
       try {
         setLoading(true);
-
-        const foundDatabase = workspacesSummary?.databases.find((db: Database) => db.id === databaseId);
-        if (!foundDatabase) {
-          console.error('Database not found:', databaseId);
-          return;
-        }
-
-        const foundWorkspace = workspacesSummary?.workspaces.find((ws: Workspace) => ws.id === foundDatabase.workspace_id);
-        if (!foundWorkspace) {
-          console.error('Workspace not found for database:', foundDatabase.workspace_id);
-          return;
-        }
-        
-        setDatabase(foundDatabase);
-        setWorkspace(foundWorkspace);
-        setSelectedDatabase(foundDatabase);
-        setSelectedWorkspace(foundWorkspace);
-
-        await refreshData(foundWorkspace, foundDatabase);
+        await refreshData(selectedWorkspace, selectedDatabase);
       } catch (error) {
         console.error('Error loading database:', error);
       } finally {
@@ -144,18 +107,15 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
 
     setDatabaseRows([]);
     setIncompleteJobs([]);
-    setSelectedDatabase(null);
-    setSelectedWorkspace(null);
-    setWorkspace(null);
-    loadDatabaseAndWorkspace();
-  }, [databaseId, workspacesSummary]);
+    loadData();
+  }, [selectedWorkspace, selectedDatabase]);
 
   useEffect(() => {
-    if (!database || !workspace || loading) {
+    if (!selectedDatabase || !selectedWorkspace || loading) {
       return;
     }
 
-    intervalRef.current = setInterval(() => refreshData(workspace, database), 5000);
+    intervalRef.current = setInterval(() => refreshData(selectedWorkspace, selectedDatabase), 5000);
 
     return () => {
       if (intervalRef.current) {
@@ -163,7 +123,7 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
         intervalRef.current = null;
       }
     };
-  }, [database, workspace, loading]);
+  }, [selectedDatabase, selectedWorkspace, loading]);
 
   useEffect(() => {
     return () => {
@@ -173,125 +133,89 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
     };
   }, []);
 
+  const rightPanel = showRightPanel && selectedRow && selectedDatabase ? (
+    <div className="border-l bg-background h-full flex flex-col min-h-[100vh] max-h-[100vh]">
+      <div className="p-4 flex flex-col h-full">
+        <div className="flex justify-start mb-4 flex-shrink-0 gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowRightPanel(false)}
+            className="h-8 w-8 p-0"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate({ 
+              to: '/databases/$databaseId/content/$contentId', 
+              params: { 
+                databaseId: selectedDatabase.id, 
+                contentId: selectedRow.id 
+              } 
+            })}
+            className="h-8 w-8 p-0"
+          >
+            <Expand className="h-4 w-4" />
+          </Button>
+        </div>
+        {selectedDatabase.type === 'content' ? (
+          <div className="flex-1 overflow-y-auto">
+            <ContentInterface 
+              workspaceId={selectedDatabase.workspace_id}
+              databaseId={selectedDatabase.id}
+              contentId={selectedRow.id}
+            />
+          </div>
+        ) : null}
+      </div>
+    </div>
+  ) : null;
+
   return (
     <ProtectedRoute>
-      <div className="h-screen">
-        <SidebarProvider>
-          <AppSidebar />
-          <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel>
-              <div className="flex h-full">
-                <main className="flex-1 w-full flex flex-col">
-                  <div className="px-4 pt-4">
-                    <Breadcrumb>
-                      <BreadcrumbList>
-                        <BreadcrumbItem>
-                          <SidebarTrigger />
-                        </BreadcrumbItem>
-                        
-                        {showWorkspaceSkeleton ? (
-                          <>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                              <Skeleton className="h-4 w-24" />
-                            </BreadcrumbItem>
-                          </>
-                        ) : selectedWorkspace ? (
-                          <>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                              <BreadcrumbPage>{selectedWorkspace.name}</BreadcrumbPage>
-                            </BreadcrumbItem>
-                          </>
-                        ) : null}
-                        
-                        {showDatabaseSkeleton ? (
-                          <>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                              <Skeleton className="h-4 w-32" />
-                            </BreadcrumbItem>
-                          </>
-                        ) : selectedDatabase ? (
-                          <>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                              <BreadcrumbPage>{selectedDatabase.name}</BreadcrumbPage>
-                            </BreadcrumbItem>
-                          </>
-                        ) : null}
-                      </BreadcrumbList>
-                    </Breadcrumb>
-                  </div>
-
-                  <div className="p-6 pr-0 flex-1">
-                    {loading || !database ? (
-                      <Skeleton className="h-8 w-64 mb-6" />
-                    ) : (
-                      <h1 className="text-2xl font-bold mb-6 whitespace-nowrap">{database.name}</h1>
-                    )}
-                    
-                    {loading ? (
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Skeleton className="h-10 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                          <Skeleton className="h-8 w-full" />
-                        </div>
-                      </div>
-                    ) : database ? (
-                      <>
-                        <DatabaseTable 
-                          type={database.type} 
-                          data={databaseRows}
-                          onFetchIncompleteJobs={database.type === 'content' ? fetchIncompleteJobs : undefined}
-                          incompleteJobs={incompleteJobs}
-                          onRowClick={(row) => {
-                            setShowRightPanel(true);
-                            setSelectedRow(row);
-                          }}
-                        />
-                        <CreationButton database={database} />
-                      </>
-                    ) : null}
-                  </div>
-                </main>
+      <AppLayout
+        databaseId={databaseId}
+        showRightPanel={showRightPanel}
+        rightPanel={rightPanel}
+        rightPanelDefaultSize={50}
+        rightPanelMinSize={30}
+        rightPanelMaxSize={70}
+      >
+        <div className="p-6 pr-0 flex-1">
+          {loading || !selectedDatabase ? (
+            <Skeleton className="h-8 w-64 mb-6" />
+          ) : (
+            <h1 className="text-2xl font-bold mb-6 whitespace-nowrap">{selectedDatabase.name}</h1>
+          )}
+          
+          {loading ? (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-8 w-full" />
               </div>
-            </ResizablePanel>
-
-            {showRightPanel && selectedRow && <ResizableHandle />}
-
-            {showRightPanel && selectedRow && (
-              <ResizablePanel defaultSize={50} minSize={30} maxSize={70}>
-                <div className="border-l bg-background h-full flex flex-col min-h-[100vh] max-h-[100vh]">
-                  <div className="p-4 flex flex-col h-full">
-                    <div className="flex justify-start mb-4 flex-shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowRightPanel(false)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    {database?.type === 'content' ? (
-                      <div className="flex-1 overflow-y-auto">
-                        <ContentPage 
-                          workspaceId={database.workspace_id}
-                          databaseId={database.id}
-                          row={selectedRow}
-                        />
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </ResizablePanel>
-            )}
-          </ResizablePanelGroup>
-        </SidebarProvider>
-      </div>
+            </div>
+          ) : selectedDatabase ? (
+            <>
+              <DatabaseTable 
+                type={selectedDatabase.type} 
+                data={databaseRows}
+                onFetchIncompleteJobs={selectedDatabase.type === 'content' ? fetchIncompleteJobs : undefined}
+                incompleteJobs={incompleteJobs}
+                onRowClick={(row) => {
+                  setShowRightPanel(true);
+                  setSelectedRow(row);
+                }}
+              />
+              <CreationButton database={selectedDatabase} />
+            </>
+          ) : null}
+        </div>
+      </AppLayout>
     </ProtectedRoute>
   )
 } 

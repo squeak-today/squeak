@@ -49,7 +49,7 @@ export function AppSidebar() {
 
   const handleDatabaseClick = (database: Database) => {
     console.log('Database clicked:', database.name);
-    navigate({ to: '/$databaseId', params: { databaseId: database.id } });
+    navigate({ to: '/databases/$databaseId', params: { databaseId: database.id } });
   };
 
   const toggleWorkspace = (workspaceId: string) => {

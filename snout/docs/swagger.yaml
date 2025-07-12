@@ -771,11 +771,14 @@ definitions:
     type: string
     x-enum-varnames:
     - DatabaseTypeContent
-  workspaces.GetContentBodyResponse:
+  workspaces.GetContentResponse:
     properties:
+      content:
+        $ref: '#/definitions/workspaces.Content'
       presigned_url:
         type: string
     required:
+    - content
     - presigned_url
     type: object
   workspaces.GetIncompleteJobsResponse:
@@ -1517,7 +1520,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/workspaces.GetContentBodyResponse'
+            $ref: '#/definitions/workspaces.GetContentResponse'
         "400":
           description: Bad Request
           schema:

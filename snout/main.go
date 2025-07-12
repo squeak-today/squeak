@@ -243,7 +243,7 @@ func main() {
 		{
 			contentGroup.POST("/create", workspacesHandler.CreateContent)
 			contentGroup.GET("/jobs", workspacesHandler.GetIncompleteJobs)
-			contentGroup.GET("/:content_id", workspacesHandler.GetContentBody)
+			contentGroup.GET("/:content_id", workspacesHandler.GetContent)
 		}
 	}
 
