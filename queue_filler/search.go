@@ -23,11 +23,11 @@ type TavilyResponse struct {
 }
 
 type NewsSource struct {
-	Topic string `json:"topic"`
-	Title string `json:"title"`
-	URL string `json:"url"`
+	Topic   string `json:"topic"`
+	Title   string `json:"title"`
+	URL     string `json:"url"`
 	Content string `json:"content"`
-	Score int `json:"score"`
+	Score   int    `json:"score"`
 }
 
 // EXAMPLE: webSearch("today investing news", 20)

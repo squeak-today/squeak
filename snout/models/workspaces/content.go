@@ -27,6 +27,8 @@ type CreateContentRequest struct {
 }
 type CreateContentResponse struct{}
 
+type DeleteContentResponse struct{}
+
 type GetIncompleteJobsResponse struct {
 	Jobs []types.ContentJob `json:"jobs"`
 }

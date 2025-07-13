@@ -1,6 +1,7 @@
 package workspaceshandler
 
 import (
+	"log"
 	"net/http"
 
 	"snout/handlers"
@@ -77,6 +78,38 @@ func (h *WorkspacesHandler) CreateWorkspace(c *gin.Context) {
 	c.JSON(http.StatusOK, workspaces_models.CreateWorkspaceResponse{ID: workspaceId})
 }
 
+// @Summary		Delete workspace
+// @Description	Delete workspace
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Param			workspace_id	path		string								true	"Workspace ID"
+// @Param			status			query		workspaces_models.SoftDeleteStatus	false	"Delete status"
+// @Success		200				{object}	workspaces_models.DeleteWorkspaceResponse
+// @Failure		400				{object}	models.ErrorResponse
+// @Failure		500				{object}	models.ErrorResponse
+// @Router			/workspaces/{workspace_id} [delete]
+func (h *WorkspacesHandler) DeleteWorkspace(c *gin.Context) {
+	userId := h.GetUserIDFromToken(c)
+	workspaceId := c.Param("workspace_id")
+	status := workspaces_models.SoftDeleteStatus(c.Query("status"))
+	if status == "" {
+		status = workspaces_models.SoftDeleteStatusSoftDelete
+	}
+
+	if !h.CheckWorkspaceUserOwnership(c, userId, workspaceId) {
+		return
+	}
+
+	err := workspaces.SetWorkspaceSoftDelete(h.DBClient, userId, workspaceId, status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete workspace"})
+		return
+	}
+
+	c.JSON(http.StatusOK, workspaces_models.DeleteWorkspaceResponse{})
+}
+
 // @Summary		Get workspaces
 // @Description	Get workspaces
 // @Tags			workspace
@@ -93,6 +126,29 @@ func (h *WorkspacesHandler) GetWorkspacesSummary(c *gin.Context) {
 	summary, err := workspaces.GetWorkspacesSummary(h.DBClient, userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get workspaces summary"})
+		return
+	}
+
+	c.JSON(http.StatusOK, summary)
+}
+
+// @Summary		Get deleted summary
+// @Description	Get deleted summary of workspaces, databases, and content
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Success		200	{object}	workspaces_models.DeletedSummary
+// @Failure		400	{object}	models.ErrorResponse
+// @Failure		404	{object}	models.ErrorResponse
+// @Failure		500	{object}	models.ErrorResponse
+// @Router			/workspaces/deleted [get]
+func (h *WorkspacesHandler) GetDeletedSummary(c *gin.Context) {
+	userId := h.GetUserIDFromToken(c)
+
+	summary, err := workspaces.GetDeletedSummary(h.DBClient, userId)
+	if err != nil {
+		log.Println("Failed to get deleted summary:", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get deleted summary"})
 		return
 	}
 

@@ -32,11 +32,11 @@ func CreateDatabase(client *supabase.Client, dbType workspaces.DatabaseType, use
 }
 
 func QueryContentDatabase(client *supabase.Client, databaseId string) (workspaces.Database, []workspaces.Content, error) {
-	log.Println("Querying content database:", databaseId)
 	var database workspaces.Database
 	err := client.Db.QueryRow(`
 		SELECT id, name, workspace_id FROM content_databases
 		WHERE id = $1
+		AND soft_delete = 'no'
 	`, databaseId).Scan(&database.ID, &database.Name, &database.WorkspaceID)
 	if err != nil {
 		return workspaces.Database{}, nil, err
@@ -47,6 +47,7 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 	rows, err := client.Db.Query(`
 		SELECT id, name, database_id, cefr_level, language_code, created_at FROM content
 		WHERE database_id = $1
+		AND soft_delete = 'no'
 	`, databaseId)
 	if err != nil {
 		return workspaces.Database{}, nil, err
@@ -70,4 +71,34 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 		contents = append(contents, content)
 	}
 	return database, contents, nil
+}
+
+func SetDatabaseSoftDelete(client *supabase.Client, userId string, id string, status workspaces.SoftDeleteStatus) error {
+	result, err := client.Db.Exec(`
+		UPDATE content_databases
+		SET soft_delete = $3
+		WHERE id = $1
+		AND user_id = $2
+	`, id, userId, status)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("no rows were deleted")
+	}
+
+	_, err = client.Db.Exec(`
+		UPDATE content
+		SET soft_delete = $2
+		WHERE database_id = $1
+	`, id, status)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

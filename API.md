@@ -565,7 +565,87 @@ Get workspaces
 | 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
+### /workspaces/{workspace_id}
+
+#### DELETE
+##### Summary
+
+Delete workspace
+
+##### Description
+
+Delete workspace
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+| status | query | Delete status | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.DeleteWorkspaceResponse](#workspacesdeleteworkspaceresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
+### /workspaces/{workspace_id}/databases/{database_id}
+
+#### DELETE
+##### Summary
+
+Delete database
+
+##### Description
+
+Delete database
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+| database_id | path | Database ID | Yes | string |
+| status | query | Delete status | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.DeleteDatabaseResponse](#workspacesdeletedatabaseresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
 ### /workspaces/{workspace_id}/databases/{database_id}/content/{content_id}
+
+#### DELETE
+##### Summary
+
+Delete content
+
+##### Description
+
+Delete content
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ------ |
+| workspace_id | path | Workspace ID | Yes | string |
+| database_id | path | Database ID | Yes | string |
+| content_id | path | Content ID | Yes | string |
+| status | query | Delete status | No | string |
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.DeleteContentResponse](#workspacesdeletecontentresponse) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
 #### GET
 ##### Summary
@@ -724,6 +804,26 @@ Create workspace
 | ---- | ----------- | ------ |
 | 200 | OK | [workspaces.CreateWorkspaceResponse](#workspacescreateworkspaceresponse) |
 | 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
+
+### /workspaces/deleted
+
+#### GET
+##### Summary
+
+Get deleted summary
+
+##### Description
+
+Get deleted summary of workspaces, databases, and content
+
+##### Responses
+
+| Code | Description | Schema |
+| ---- | ----------- | ------ |
+| 200 | OK | [workspaces.DeletedSummary](#workspacesdeletedsummary) |
+| 400 | Bad Request | [models.ErrorResponse](#modelserrorresponse) |
+| 404 | Not Found | [models.ErrorResponse](#modelserrorresponse) |
 | 500 | Internal Server Error | [models.ErrorResponse](#modelserrorresponse) |
 
 ### /workspaces/summary
@@ -996,6 +1096,7 @@ Get workspaces
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
+| soft_delete_status | [workspaces.SoftDeleteStatus](#workspacessoftdeletestatus) |  | No |
 | stored_content | [whisker_types.StoredContent](#whisker_typesstoredcontent) |  | No |
 
 #### models.UpsertProfileRequest
@@ -1141,6 +1242,32 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | workspaces.DatabaseType | string |  |  |
 
+#### workspaces.DeleteContentResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| workspaces.DeleteContentResponse | object |  |  |
+
+#### workspaces.DeleteDatabaseResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| workspaces.DeleteDatabaseResponse | object |  |  |
+
+#### workspaces.DeleteWorkspaceResponse
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| workspaces.DeleteWorkspaceResponse | object |  |  |
+
+#### workspaces.DeletedSummary
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| contents | [ [workspaces.Content](#workspacescontent) ] |  | Yes |
+| databases | [ [workspaces.Database](#workspacesdatabase) ] |  | Yes |
+| workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | Yes |
+
 #### workspaces.GetContentResponse
 
 | Name | Type | Description | Required |
@@ -1175,6 +1302,12 @@ Get workspaces
 | name | string | *Example:* `"My Database"` | Yes |
 | type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
 | workspace_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
+
+#### workspaces.SoftDeleteStatus
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| workspaces.SoftDeleteStatus | string |  |  |
 
 #### workspaces.Workspace
 

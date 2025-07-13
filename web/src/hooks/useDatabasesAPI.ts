@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
 import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import type { components } from '@/lib/clients/types';
-import type { DatabaseType } from './useWorkspacesAPI';
+import type { SoftDeleteStatus, DatabaseType } from './useWorkspacesAPI';
 
 export type CreateDatabaseRequest = components["schemas"]["workspaces.CreateDatabaseRequest"];
 export type CreateDatabaseResponse = components["schemas"]["workspaces.CreateDatabaseResponse"];
+export type DeleteDatabaseResponse = components["schemas"]["workspaces.DeleteDatabaseResponse"];
 
 export type Content = components["schemas"]["workspaces.Content"];
 
@@ -21,6 +22,15 @@ export function useDatabasesAPI() {
     })
   }, [client, requireAuthWithErrors])
 
+  const deleteDatabase = useCallback(async (workspaceId: string, databaseId: string, status: SoftDeleteStatus) => {
+    return requireAuthWithErrors(async () => {
+      const { data, error } = await client!.DELETE('/workspaces/{workspace_id}/databases/{database_id}', { 
+        params: { path: { workspace_id: workspaceId, database_id: databaseId }, query: { status: status } }
+      });
+      return { data: data as DeleteDatabaseResponse, error: error as components["schemas"]["models.ErrorResponse"] | null };
+    })
+  }, [client, requireAuthWithErrors])
+
   const queryDatabase = useCallback(async (workspaceId: string, databaseId: string, type: DatabaseType) => {
     return requireAuthWithErrors(async () => {
       const { data, error } = await client!.POST('/workspaces/{workspace_id}/databases/{database_id}/query', { 
@@ -34,5 +44,5 @@ export function useDatabasesAPI() {
     })
   }, [client, requireAuthWithErrors])
 
-  return { isAuthenticated, createDatabase, queryDatabase }
+  return { isAuthenticated, createDatabase, deleteDatabase, queryDatabase }
 }

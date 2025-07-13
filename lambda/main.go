@@ -234,9 +234,9 @@ func handler(ctx context.Context, sqsEvent events.SQSEvent) error {
 		}
 	}
 
-    return nil
+	return nil
 }
 
 func main() {
-    lambda.Start(handler)
+	lambda.Start(handler)
 }

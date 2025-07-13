@@ -32,7 +32,7 @@ func (p *ContentProcessor) Process(ctx context.Context, job *types.ContentJobRec
 	}
 
 	content := types.StoredContent{
-		Name:     job.Job.Name,
+		Name: job.Job.Name,
 		Markdown: `# Welcome to the Language Learning Demo
 
 ## English Section

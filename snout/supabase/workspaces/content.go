@@ -34,6 +34,7 @@ func GetContent(ctx context.Context, client *supabase.Client, id string) (worksp
 		SELECT id, database_id, name, language_code, cefr_level, created_at
 		FROM content
 		WHERE id = $1
+		AND soft_delete = 'no'
 	`, id).Scan(&content.ID, &content.DatabaseID, &content.Name, &content.LanguageCode, &content.CEFRLevel, &content.CreatedAt)
 	if err != nil {
 		return workspaces.Content{}, err
@@ -98,4 +99,23 @@ func GetIncompleteJobs(client *supabase.Client, userId string, databaseId string
 		jobs = append(jobs, job)
 	}
 	return jobs, nil
+}
+
+func SetContentSoftDelete(client *supabase.Client, id string, status workspaces.SoftDeleteStatus) error {
+	result, err := client.Db.Exec(`
+		UPDATE content
+		SET soft_delete = $2
+		WHERE id = $1
+	`, id, status)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("no rows were deleted")
+	}
+	return nil
 }

@@ -41,6 +41,10 @@ func (h *WorkspacesHandler) GetContent(c *gin.Context) {
 		return
 	}
 
+	if !h.CheckContentInDatabase(c, databaseId, contentId) {
+		return
+	}
+
 	content, err := workspaces.GetContent(context.Background(), h.DBClient, contentId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to get content"})
@@ -58,6 +62,61 @@ func (h *WorkspacesHandler) GetContent(c *gin.Context) {
 		Content:      content,
 		PresignedURL: presignedURL,
 	})
+}
+
+// @Summary		Delete content
+// @Description	Delete content
+// @Tags			workspace
+// @Accept			json
+// @Produce		json
+// @Param			workspace_id	path		string								true	"Workspace ID"
+// @Param			database_id		path		string								true	"Database ID"
+// @Param			content_id		path		string								true	"Content ID"
+// @Param			status			query		workspaces_models.SoftDeleteStatus	false	"Delete status"
+// @Success		200				{object}	workspaces_models.DeleteContentResponse
+// @Failure		400				{object}	models.ErrorResponse
+// @Failure		404				{object}	models.ErrorResponse
+// @Failure		500				{object}	models.ErrorResponse
+// @Router			/workspaces/{workspace_id}/databases/{database_id}/content/{content_id} [delete]
+func (h *WorkspacesHandler) DeleteContent(c *gin.Context) {
+	userId := h.GetUserIDFromToken(c)
+	workspaceId := c.Param("workspace_id")
+	databaseId := c.Param("database_id")
+	contentId := c.Param("content_id")
+	status := workspaces_models.SoftDeleteStatus(c.Query("status"))
+	if status == "" {
+		status = workspaces_models.SoftDeleteStatusSoftDelete
+	}
+
+	if !h.CheckWorkspaceUserOwnership(c, userId, workspaceId) {
+		return
+	}
+
+	if !h.CheckDatabaseUserOwnership(c, userId, workspaceId, databaseId) {
+		return
+	}
+
+	if !h.CheckContentInDatabase(c, databaseId, contentId) {
+		return
+	}
+
+	// For recovery operations, check if parent hierarchy allows it
+	if status == workspaces_models.SoftDeleteStatusNo {
+		if !h.CheckWorkspaceNotDeleted(c, userId, workspaceId) {
+			return
+		}
+		if !h.CheckDatabaseNotDeleted(c, userId, databaseId) {
+			return
+		}
+	}
+
+	err := workspaces.SetContentSoftDelete(h.DBClient, contentId, status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete content"})
+		return
+	}
+
+	c.JSON(http.StatusOK, workspaces_models.DeleteContentResponse{})
 }
 
 // @Summary		Get incomplete jobs

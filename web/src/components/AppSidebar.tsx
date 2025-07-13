@@ -19,19 +19,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
 import { useAuth } from '@/context/AuthContext';
-import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database as DatabaseIcon } from 'lucide-react';
+import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database as DatabaseIcon, Trash, MoreHorizontal } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { type DatabaseType, type Workspace, type Database, useWorkspacesAPI } from '@/hooks/useWorkspacesAPI';
+import { type DatabaseType, type Workspace, type Database, useWorkspacesAPI, type SoftDeleteStatus, type DeletedSummary } from '@/hooks/useWorkspacesAPI';
 import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 import { useNavigate } from '@tanstack/react-router';
+import { TrashTable } from '@/components/database/TrashTable';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function AppSidebar() {
   const { workspacesSummary, refetchWorkspaces } = useSidebarMenu();
-  const { createWorkspace } = useWorkspacesAPI();
+  const { createWorkspace, deleteWorkspace, getDeletedSummary } = useWorkspacesAPI();
   const { createDatabase } = useDatabasesAPI();
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -40,6 +47,9 @@ export function AppSidebar() {
   const [workspaceName, setWorkspaceName] = useState('');
   const [addingDatabaseToWorkspace, setAddingDatabaseToWorkspace] = useState<string | null>(null);
   const [databaseName, setDatabaseName] = useState('');
+  const [deletedSummary, setDeletedSummary] = useState<DeletedSummary | null>(null);
+  const [isTrashOpen, setIsTrashOpen] = useState(false);
+  const [isLoadingTrash, setIsLoadingTrash] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const databaseInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,6 +79,19 @@ export function AppSidebar() {
       await logout();
     } catch (error) {
       console.error('Error logging out:', error);
+    }
+  };
+
+  const handleDeleteWorkspace = async (workspace: Workspace) => {
+    try {
+      const { error } = await deleteWorkspace(workspace.id, "soft_delete" as SoftDeleteStatus);
+      if (error) {
+        console.error('Failed to delete workspace:', error);
+      } else {
+        await refetchWorkspaces();
+      }
+    } catch (error) {
+      console.error('Error deleting workspace:', error);
     }
   };
 
@@ -162,6 +185,37 @@ export function AppSidebar() {
     }
   };
 
+  const fetchDeletedSummary = async () => {
+    if (isLoadingTrash) return;
+    
+    setIsLoadingTrash(true);
+    try {
+      const { data, error } = await getDeletedSummary();
+      if (error) {
+        console.error('Failed to fetch deleted summary:', error);
+      } else if (data) {
+        setDeletedSummary(data);
+      }
+    } catch (error) {
+      console.error('Error fetching deleted summary:', error);
+    } finally {
+      setIsLoadingTrash(false);
+    }
+  };
+
+  const handleTrashOpenChange = (open: boolean) => {
+    setIsTrashOpen(open);
+    if (open) {
+      console.log('Fetching deleted summary');
+      fetchDeletedSummary();
+    }
+  };
+
+  const handleTrashRefresh = async () => {
+    await fetchDeletedSummary();
+    await refetchWorkspaces();
+  };
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -232,15 +286,41 @@ export function AppSidebar() {
                           </div>
                           <span>{workspace.name}</span>
                         </SidebarMenuButton>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleStartAddDatabase(workspace as Workspace);
-                          }}
-                          className="absolute right-2 opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200 hover:bg-sidebar-accent rounded p-1"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
+                        <div className="absolute right-2 opacity-0 group-hover/workspace:opacity-100 transition-opacity duration-200 flex items-center gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStartAddDatabase(workspace as Workspace);
+                            }}
+                            className="hover:bg-sidebar-accent rounded p-1"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                                className="hover:bg-sidebar-accent rounded p-1"
+                              >
+                                <MoreHorizontal className="w-4 h-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem 
+                                variant="destructive" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteWorkspace(workspace);
+                                }}
+                              >
+                                <Trash className="h-4 w-4" />
+                                Move to Trash
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
                       <CollapsibleContent className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-left-1 data-[state=open]:slide-in-from-left-1 duration-200">
                         <SidebarMenuSub>
@@ -306,7 +386,38 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Popover open={isTrashOpen} onOpenChange={handleTrashOpenChange}>
+              <PopoverTrigger asChild>
+                <SidebarMenuButton>
+                  <Trash className="w-4 h-4" />
+                  <span>Trash</span>
+                </SidebarMenuButton>
+              </PopoverTrigger>
+              <PopoverContent className="w-[600px] p-4">
+                {isLoadingTrash ? (
+                  <div className="flex flex-col gap-4 py-8">
+                    <Skeleton className="h-8" />
+                    <Skeleton className="h-8" />
+                    <Skeleton className="h-8" />
+                  </div>
+                ) : deletedSummary ? (
+                  <TrashTable 
+                    deletedSummary={deletedSummary} 
+                    onRefresh={handleTrashRefresh}
+                  />
+                ) : (
+                  <div className="text-center py-8 text-sm text-muted-foreground">
+                    Failed to load trash
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 } 

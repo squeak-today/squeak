@@ -3,6 +3,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ContentInterface } from '@/components/content/ContentInterface';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { AppLayout } from '@/components/AppLayout';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useContentAPI } from '@/hooks/useContentAPI';
+import { Trash } from 'lucide-react';
+import { useNavigate } from '@tanstack/react-router';
+import { type SoftDeleteStatus } from '@/hooks/useWorkspacesAPI';
 
 interface ContentPageProps {
   databaseId: string;
@@ -11,11 +16,35 @@ interface ContentPageProps {
 
 export function ContentPage({ databaseId, contentId }: ContentPageProps) {
   const { selectedWorkspace, selectedDatabase } = useSidebarMenu();
+  const { deleteContent } = useContentAPI();
+  const navigate = useNavigate();
+
+  const handleDeleteContent = async () => {
+    if (!selectedWorkspace) return;
+    
+    try {
+      const { error } = await deleteContent(selectedWorkspace.id, databaseId, contentId, "soft_delete" as SoftDeleteStatus);
+      if (error) {
+        console.error('Failed to delete content:', error);
+      } else {
+        navigate({ to: '/databases/$databaseId', params: { databaseId } });
+      }
+    } catch (error) {
+      console.error('Error deleting content:', error);
+    }
+  };
+
+  const actionMenu = (
+    <DropdownMenuItem variant="destructive" onClick={handleDeleteContent}>
+      <Trash className="h-4 w-4" />
+      Move to Trash
+    </DropdownMenuItem>
+  );
   
   if (!selectedWorkspace || !selectedDatabase) {
     return (
       <ProtectedRoute>
-        <AppLayout databaseId={databaseId}>
+        <AppLayout databaseId={databaseId} actionMenu={actionMenu}>
           <div className="p-6">
             <div className="space-y-4">
               <Skeleton className="h-12 w-64" />
@@ -33,7 +62,7 @@ export function ContentPage({ databaseId, contentId }: ContentPageProps) {
 
   return (
     <ProtectedRoute>
-      <AppLayout databaseId={databaseId}>
+      <AppLayout databaseId={databaseId} actionMenu={actionMenu}>
         <div className="p-6">
           <ContentInterface 
             workspaceId={selectedWorkspace.id}

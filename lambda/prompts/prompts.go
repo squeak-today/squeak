@@ -13,7 +13,6 @@ var cefrPrompts = map[string]string{
 	"C2": "must employ very complex vocabulary, nuanced expressions, detailed phrasing, and very complex ideas. Target 1400-1900 words.",
 }
 
-
 func CreateStoryPrompt(language string, cefr string, topic string) string {
 	var sb strings.Builder
 	sb.WriteString("You are an LLM designed to write " + language + " fiction stories. ")
@@ -27,7 +26,7 @@ func CreateStoryPrompt(language string, cefr string, topic string) string {
 
 func CreateNewsArticlePrompt(language string, cefr string, query string, web_results string) string {
 	languageUpper := strings.ToUpper(language)
-	
+
 	var sb strings.Builder
 	sb.WriteString("You are an LLM designed to write " + languageUpper + " news articles. ")
 	sb.WriteString("You will be given the results of am internet search query for \"" + query + "\". ")

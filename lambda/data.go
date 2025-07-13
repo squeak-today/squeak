@@ -70,14 +70,14 @@ func uploadStoryS3(bucket string, key string, content []byte) error {
 	client := s3.NewFromConfig(cfg)
 	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(bucket),
-		Key: aws.String(key),
-		Body: strings.NewReader(string(content)),
+		Key:    aws.String(key),
+		Body:   strings.NewReader(string(content)),
 	})
 
 	if err != nil {
-        log.Println("failed to upload story: %w", err)
+		log.Println("failed to upload story: %w", err)
 		return err
-    }
+	}
 	log.Printf("Story uploaded to S3 bucket '%s' with key '%s'", bucket, key)
 	return nil
 }

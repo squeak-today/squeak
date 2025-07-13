@@ -6,8 +6,8 @@ type TranslateRequest struct {
 }
 
 type TranslateResponse struct {
-	Sentence string `json:"sentence" required:"true" example:"Bonjour, comment allez-vous?"`
-	DetectedSourceLanguage   string `json:"detected_source_language" required:"true" example:"fr"`
+	Sentence               string `json:"sentence" required:"true" example:"Bonjour, comment allez-vous?"`
+	DetectedSourceLanguage string `json:"detected_source_language" required:"true" example:"fr"`
 }
 
 type TextToSpeechRequest struct {
