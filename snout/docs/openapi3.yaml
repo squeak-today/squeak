@@ -695,6 +695,37 @@ paths:
         description: Body
         required: true
       summary: Create workspace
+  /workspaces/deleted:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.DeletedSummary'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: 'Get deleted summary of workspaces, databases, and content'
+      summary: Get deleted summary
   /workspaces/summary:
     get:
       responses:
@@ -726,6 +757,47 @@ paths:
         - workspace
       description: Get workspaces
       summary: Get workspaces
+  '/workspaces/{workspace_id}':
+    delete:
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Delete status
+          in: query
+          name: status
+          schema:
+            enum:
+              - 'no'
+              - soft_delete
+              - hard_delete
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.DeleteWorkspaceResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Delete workspace
+      summary: Delete workspace
   '/workspaces/{workspace_id}/databases/create':
     post:
       parameters:
@@ -765,6 +837,53 @@ paths:
         description: Body
         required: true
       summary: Create database
+  '/workspaces/{workspace_id}/databases/{database_id}':
+    delete:
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Database ID
+          in: path
+          name: database_id
+          required: true
+          schema:
+            type: string
+        - description: Delete status
+          in: query
+          name: status
+          schema:
+            enum:
+              - 'no'
+              - soft_delete
+              - hard_delete
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.DeleteDatabaseResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Delete database
+      summary: Delete database
   '/workspaces/{workspace_id}/databases/{database_id}/content/create':
     post:
       parameters:
@@ -861,6 +980,64 @@ paths:
       description: Get incomplete jobs
       summary: Get incomplete jobs
   '/workspaces/{workspace_id}/databases/{database_id}/content/{content_id}':
+    delete:
+      parameters:
+        - description: Workspace ID
+          in: path
+          name: workspace_id
+          required: true
+          schema:
+            type: string
+        - description: Database ID
+          in: path
+          name: database_id
+          required: true
+          schema:
+            type: string
+        - description: Content ID
+          in: path
+          name: content_id
+          required: true
+          schema:
+            type: string
+        - description: Delete status
+          in: query
+          name: status
+          schema:
+            enum:
+              - 'no'
+              - soft_delete
+              - hard_delete
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/workspaces.DeleteContentResponse'
+          description: OK
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Bad Request
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Not Found
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/models.ErrorResponse'
+          description: Internal Server Error
+      tags:
+        - workspace
+      description: Delete content
+      summary: Delete content
     get:
       parameters:
         - description: Workspace ID
@@ -1468,6 +1645,8 @@ components:
       type: object
     models.TypesResponse:
       properties:
+        soft_delete_status:
+          $ref: '#/components/schemas/workspaces.SoftDeleteStatus'
         stored_content:
           $ref: '#/components/schemas/whisker_types.StoredContent'
       type: object
@@ -1727,6 +1906,31 @@ components:
       type: string
       x-enum-varnames:
         - DatabaseTypeContent
+    workspaces.DeleteContentResponse:
+      type: object
+    workspaces.DeleteDatabaseResponse:
+      type: object
+    workspaces.DeleteWorkspaceResponse:
+      type: object
+    workspaces.DeletedSummary:
+      properties:
+        contents:
+          items:
+            $ref: '#/components/schemas/workspaces.Content'
+          type: array
+        databases:
+          items:
+            $ref: '#/components/schemas/workspaces.Database'
+          type: array
+        workspaces:
+          items:
+            $ref: '#/components/schemas/workspaces.Workspace'
+          type: array
+      required:
+        - contents
+        - databases
+        - workspaces
+      type: object
     workspaces.GetContentResponse:
       properties:
         content:
@@ -1787,6 +1991,16 @@ components:
         - type
         - workspace_id
       type: object
+    workspaces.SoftDeleteStatus:
+      enum:
+        - 'no'
+        - soft_delete
+        - hard_delete
+      type: string
+      x-enum-varnames:
+        - SoftDeleteStatusNo
+        - SoftDeleteStatusSoftDelete
+        - SoftDeleteStatusHardDelete
     workspaces.Workspace:
       properties:
         id:

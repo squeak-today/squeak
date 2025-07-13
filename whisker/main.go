@@ -15,10 +15,10 @@ import (
 
 	"snout/supabase"
 
+	"snout/storage"
 	"whisker/api"
 	"whisker/consumer"
 	"whisker/processor"
-	"snout/storage"
 	"whisker/worker"
 )
 

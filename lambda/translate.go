@@ -1,13 +1,13 @@
 package main
 
 import (
-	"os"
-	"errors"
-	"encoding/json"
 	"bytes"
-	"net/http"
+	"encoding/json"
+	"errors"
 	"io"
 	"log"
+	"net/http"
+	"os"
 	"strings"
 
 	"fmt"
@@ -17,7 +17,7 @@ var GCP_API_BATCH_SIZE = 128
 
 type StoryDictionary struct {
 	Translations struct {
-		Words map[string]string `json:"words"`
+		Words     map[string]string `json:"words"`
 		Sentences map[string]string `json:"sentences"`
 	} `json:"translations"`
 }
@@ -41,7 +41,9 @@ func batchTranslate(source []string, language string) (map[string]string, error)
 	dict := make(map[string]string)
 
 	googleAPIKey := os.Getenv("GOOGLE_API_KEY")
-	if googleAPIKey == "" { return dict, errors.New("ERR: GOOGLE_API_KEY environment variable not set") }
+	if googleAPIKey == "" {
+		return dict, errors.New("ERR: GOOGLE_API_KEY environment variable not set")
+	}
 
 	// o(n*m)???
 	var new_source []string
@@ -54,31 +56,39 @@ func batchTranslate(source []string, language string) (map[string]string, error)
 	}
 
 	pointer := 0
-	for (pointer < len(new_source)) {
-		end_pointer := min(pointer + GCP_API_BATCH_SIZE, len(new_source))
+	for pointer < len(new_source) {
+		end_pointer := min(pointer+GCP_API_BATCH_SIZE, len(new_source))
 
 		translatePayload := map[string]interface{}{
-			"q": new_source[pointer:end_pointer],
+			"q":      new_source[pointer:end_pointer],
 			"source": language,
 			"target": "en",
 			"format": "text",
 		}
 
 		jsonData, err := json.Marshal(translatePayload)
-		if err != nil { return dict, err }
+		if err != nil {
+			return dict, err
+		}
 
-		req, err := http.NewRequest("POST", "https://translation.googleapis.com/language/translate/v2?key=" + googleAPIKey, bytes.NewBuffer(jsonData))
-		if err != nil { return dict, err }
+		req, err := http.NewRequest("POST", "https://translation.googleapis.com/language/translate/v2?key="+googleAPIKey, bytes.NewBuffer(jsonData))
+		if err != nil {
+			return dict, err
+		}
 
 		req.Header.Set("Content-Type", "application/json")
 
 		client := &http.Client{}
 		resp, err := client.Do(req)
-		if err != nil { return dict, err }
+		if err != nil {
+			return dict, err
+		}
 		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
-		if err != nil { return dict, err }
+		if err != nil {
+			return dict, err
+		}
 
 		var result TranslateResponse
 		if err := json.Unmarshal(body, &result); err != nil {
@@ -88,7 +98,7 @@ func batchTranslate(source []string, language string) (map[string]string, error)
 
 		if len(result.Data.Translations) > 0 {
 			for i := range len(result.Data.Translations) {
-				dict[new_source[pointer + i]] = result.Data.Translations[i].TranslatedText
+				dict[new_source[pointer+i]] = result.Data.Translations[i].TranslatedText
 			}
 		} else {
 			log.Println("No translations found in the response")
@@ -96,7 +106,7 @@ func batchTranslate(source []string, language string) (map[string]string, error)
 		}
 		pointer = end_pointer
 	}
-	
+
 	return dict, nil
 }
 

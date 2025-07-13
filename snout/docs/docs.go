@@ -1016,6 +1016,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/workspaces/deleted": {
+            "get": {
+                "description": "Get deleted summary of workspaces, databases, and content",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Get deleted summary",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.DeletedSummary"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/workspaces/summary": {
             "get": {
                 "description": "Get workspaces",
@@ -1044,6 +1085,61 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace_id}": {
+            "delete": {
+                "description": "Delete workspace",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Delete workspace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "no",
+                            "soft_delete",
+                            "hard_delete"
+                        ],
+                        "type": "string",
+                        "description": "Delete status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.DeleteWorkspaceResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/models.ErrorResponse"
                         }
@@ -1093,6 +1189,68 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/workspaces.CreateDatabaseResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/workspaces/{workspace_id}/databases/{database_id}": {
+            "delete": {
+                "description": "Delete database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Delete database",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Database ID",
+                        "name": "database_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "no",
+                            "soft_delete",
+                            "hard_delete"
+                        ],
+                        "type": "string",
+                        "description": "Delete status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.DeleteDatabaseResponse"
                         }
                     },
                     "400": {
@@ -1274,6 +1432,79 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/workspaces.GetContentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete content",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "workspace"
+                ],
+                "summary": "Delete content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Workspace ID",
+                        "name": "workspace_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Database ID",
+                        "name": "database_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content ID",
+                        "name": "content_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "no",
+                            "soft_delete",
+                            "hard_delete"
+                        ],
+                        "type": "string",
+                        "description": "Delete status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/workspaces.DeleteContentResponse"
                         }
                     },
                     "400": {
@@ -2056,6 +2287,9 @@ const docTemplate = `{
         "models.TypesResponse": {
             "type": "object",
             "properties": {
+                "soft_delete_status": {
+                    "$ref": "#/definitions/workspaces.SoftDeleteStatus"
+                },
                 "stored_content": {
                     "$ref": "#/definitions/whisker_types.StoredContent"
                 }
@@ -2430,6 +2664,43 @@ const docTemplate = `{
                 "DatabaseTypeContent"
             ]
         },
+        "workspaces.DeleteContentResponse": {
+            "type": "object"
+        },
+        "workspaces.DeleteDatabaseResponse": {
+            "type": "object"
+        },
+        "workspaces.DeleteWorkspaceResponse": {
+            "type": "object"
+        },
+        "workspaces.DeletedSummary": {
+            "type": "object",
+            "required": [
+                "contents",
+                "databases",
+                "workspaces"
+            ],
+            "properties": {
+                "contents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspaces.Content"
+                    }
+                },
+                "databases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspaces.Database"
+                    }
+                },
+                "workspaces": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/workspaces.Workspace"
+                    }
+                }
+            }
+        },
         "workspaces.GetContentResponse": {
             "type": "object",
             "required": [
@@ -2522,6 +2793,19 @@ const docTemplate = `{
                     "example": "xxxx-xxxx-xxxx-xxxx"
                 }
             }
+        },
+        "workspaces.SoftDeleteStatus": {
+            "type": "string",
+            "enum": [
+                "no",
+                "soft_delete",
+                "hard_delete"
+            ],
+            "x-enum-varnames": [
+                "SoftDeleteStatusNo",
+                "SoftDeleteStatusSoftDelete",
+                "SoftDeleteStatusHardDelete"
+            ]
         },
         "workspaces.Workspace": {
             "type": "object",

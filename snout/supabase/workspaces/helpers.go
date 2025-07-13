@@ -76,3 +76,35 @@ func CheckDatabaseType(client *supabase.Client, table string, databaseId string)
 	}
 	return exists, nil
 }
+
+func CheckWorkspaceNotDeleted(client *supabase.Client, userId string, workspaceId string) (bool, error) {
+	var valid bool
+	err := client.Db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1 FROM workspaces 
+			WHERE id = $1 
+			AND user_id = $2 
+			AND soft_delete = $3
+		)
+	`, workspaceId, userId, workspaces_models.SoftDeleteStatusNo).Scan(&valid)
+	if err != nil {
+		return false, err
+	}
+	return valid, nil
+}
+
+func CheckDatabaseNotDeleted(client *supabase.Client, userId string, databaseId string) (bool, error) {
+	var valid bool
+	err := client.Db.QueryRow(`
+		SELECT EXISTS (
+			SELECT 1 FROM content_databases 
+			WHERE id = $1 
+			AND user_id = $2 
+			AND soft_delete = $3
+		)
+	`, databaseId, userId, workspaces_models.SoftDeleteStatusNo).Scan(&valid)
+	if err != nil {
+		return false, err
+	}
+	return valid, nil
+}

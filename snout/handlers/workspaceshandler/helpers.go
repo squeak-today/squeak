@@ -75,3 +75,31 @@ func (h *WorkspacesHandler) CheckDatabaseType(c *gin.Context, dbType workspaces_
 	}
 	return true
 }
+
+func (h *WorkspacesHandler) CheckWorkspaceNotDeleted(c *gin.Context, userId string, workspaceId string) bool {
+	isValid, err := workspaces.CheckWorkspaceNotDeleted(h.DBClient, userId, workspaceId)
+	if err != nil {
+		log.Printf("Error checking workspace status: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check workspace status"})
+		return false
+	}
+	if !isValid {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Cannot recover: parent workspace is deleted"})
+		return false
+	}
+	return true
+}
+
+func (h *WorkspacesHandler) CheckDatabaseNotDeleted(c *gin.Context, userId string, databaseId string) bool {
+	isValid, err := workspaces.CheckDatabaseNotDeleted(h.DBClient, userId, databaseId)
+	if err != nil {
+		log.Printf("Error checking database status: %v", err)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check database status"})
+		return false
+	}
+	if !isValid {
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Cannot recover: parent database is deleted"})
+		return false
+	}
+	return true
+}

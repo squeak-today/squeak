@@ -143,7 +143,7 @@ func main() {
 
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", AllowOrigin)
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, DELETE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization,Stripe-Signature")
 		c.Writer.Header().Set("Access-Control-Max-Age", "3600")
 
@@ -235,14 +235,15 @@ func main() {
 	{
 		workspacesGroup.GET("", workspacesHandler.GetWorkspaces)
 		workspacesGroup.POST("/create", workspacesHandler.CreateWorkspace)
+		workspacesGroup.DELETE("/:workspace_id", workspacesHandler.DeleteWorkspace)
 		workspacesGroup.GET("/summary", workspacesHandler.GetWorkspacesSummary)
+		workspacesGroup.GET("/deleted", workspacesHandler.GetDeletedSummary)
 
 		// /workspaces/{}/databases
 		databasesGroup := workspacesGroup.Group("/:workspace_id/databases")
 		{
 			databasesGroup.POST("/create", workspacesHandler.CreateDatabase)
 			databasesGroup.DELETE("/:database_id", workspacesHandler.DeleteDatabase)
-			databasesGroup.DELETE("/:database_id/hard-delete", workspacesHandler.HardDeleteDatabase)
 			databasesGroup.POST("/:database_id/query", workspacesHandler.QueryDatabase)
 		}
 
@@ -253,7 +254,6 @@ func main() {
 			contentGroup.GET("/jobs", workspacesHandler.GetIncompleteJobs)
 			contentGroup.GET("/:content_id", workspacesHandler.GetContent)
 			contentGroup.DELETE("/:content_id", workspacesHandler.DeleteContent)
-			contentGroup.DELETE("/:content_id/hard-delete", workspacesHandler.HardDeleteContent)
 		}
 	}
 

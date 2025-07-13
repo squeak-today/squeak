@@ -91,21 +91,13 @@ func SetDatabaseSoftDelete(client *supabase.Client, userId string, id string, st
 		return fmt.Errorf("no rows were deleted")
 	}
 
-	result, err = client.Db.Exec(`
+	_, err = client.Db.Exec(`
 		UPDATE content
-		SET soft_delete = $3
+		SET soft_delete = $2
 		WHERE database_id = $1
-		AND user_id = $2
-	`, id, userId, status)
+	`, id, status)
 	if err != nil {
 		return err
-	}
-	rowsAffected, err = result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rowsAffected == 0 {
-		return fmt.Errorf("no rows were deleted")
 	}
 
 	return nil

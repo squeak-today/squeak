@@ -511,6 +511,8 @@ definitions:
     type: object
   models.TypesResponse:
     properties:
+      soft_delete_status:
+        $ref: '#/definitions/workspaces.SoftDeleteStatus'
       stored_content:
         $ref: '#/definitions/whisker_types.StoredContent'
     type: object
@@ -770,6 +772,31 @@ definitions:
     type: string
     x-enum-varnames:
     - DatabaseTypeContent
+  workspaces.DeleteContentResponse:
+    type: object
+  workspaces.DeleteDatabaseResponse:
+    type: object
+  workspaces.DeleteWorkspaceResponse:
+    type: object
+  workspaces.DeletedSummary:
+    properties:
+      contents:
+        items:
+          $ref: '#/definitions/workspaces.Content'
+        type: array
+      databases:
+        items:
+          $ref: '#/definitions/workspaces.Database'
+        type: array
+      workspaces:
+        items:
+          $ref: '#/definitions/workspaces.Workspace'
+        type: array
+    required:
+    - contents
+    - databases
+    - workspaces
+    type: object
   workspaces.GetContentResponse:
     properties:
       content:
@@ -830,6 +857,16 @@ definitions:
     - type
     - workspace_id
     type: object
+  workspaces.SoftDeleteStatus:
+    enum:
+    - "no"
+    - soft_delete
+    - hard_delete
+    type: string
+    x-enum-varnames:
+    - SoftDeleteStatusNo
+    - SoftDeleteStatusSoftDelete
+    - SoftDeleteStatusHardDelete
   workspaces.Workspace:
     properties:
       id:
@@ -1492,7 +1529,136 @@ paths:
       summary: Get workspaces
       tags:
       - workspace
+  /workspaces/{workspace_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete workspace
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Delete status
+        enum:
+        - "no"
+        - soft_delete
+        - hard_delete
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.DeleteWorkspaceResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete workspace
+      tags:
+      - workspace
+  /workspaces/{workspace_id}/databases/{database_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete database
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Database ID
+        in: path
+        name: database_id
+        required: true
+        type: string
+      - description: Delete status
+        enum:
+        - "no"
+        - soft_delete
+        - hard_delete
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.DeleteDatabaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete database
+      tags:
+      - workspace
   /workspaces/{workspace_id}/databases/{database_id}/content/{content_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete content
+      parameters:
+      - description: Workspace ID
+        in: path
+        name: workspace_id
+        required: true
+        type: string
+      - description: Database ID
+        in: path
+        name: database_id
+        required: true
+        type: string
+      - description: Content ID
+        in: path
+        name: content_id
+        required: true
+        type: string
+      - description: Delete status
+        enum:
+        - "no"
+        - soft_delete
+        - hard_delete
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.DeleteContentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete content
+      tags:
+      - workspace
     get:
       consumes:
       - application/json
@@ -1720,6 +1886,33 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: Create workspace
+      tags:
+      - workspace
+  /workspaces/deleted:
+    get:
+      consumes:
+      - application/json
+      description: Get deleted summary of workspaces, databases, and content
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/workspaces.DeletedSummary'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get deleted summary
       tags:
       - workspace
   /workspaces/summary:

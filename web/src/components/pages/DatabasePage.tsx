@@ -1,6 +1,6 @@
 import { useSidebarMenu } from '@/context/SidebarMenuContext'
 import { useEffect, useState, useRef } from 'react';
-import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
+import { type Database, type SoftDeleteStatus, type Workspace } from '@/hooks/useWorkspacesAPI';
 import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 import { useContentAPI, type ContentJob } from '@/hooks/useContentAPI';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,20 +9,44 @@ import { type DatabaseRow } from '@/components/database/columns';
 import { CreationButton } from '@/components/database/CreationButton';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Expand } from 'lucide-react';
+import { ChevronRight, Expand, Trash } from 'lucide-react';
 import { useNavigate } from '@tanstack/react-router';
 import { ContentInterface } from '@/components/content/ContentInterface';
 import { AppLayout } from '@/components/AppLayout';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 
 interface DatabasePageProps {
   databaseId: string;
 }
 
 export function DatabasePage({ databaseId }: DatabasePageProps) {
-  const { selectedWorkspace, selectedDatabase } = useSidebarMenu();
-  const { queryDatabase } = useDatabasesAPI();
+  const { selectedWorkspace, selectedDatabase, refetchWorkspaces } = useSidebarMenu();
+  const { queryDatabase, deleteDatabase } = useDatabasesAPI();
   const { getIncompleteJobs } = useContentAPI();
   const navigate = useNavigate();
+
+  const handleDeleteDatabase = async () => {
+    if (!selectedWorkspace || !selectedDatabase) return;
+    
+    try {
+      const { error } = await deleteDatabase(selectedWorkspace.id, selectedDatabase.id, "soft_delete" as SoftDeleteStatus);
+      if (error) {
+        console.error('Failed to delete database:', error);
+      } else {
+        await refetchWorkspaces();
+        navigate({ to: '/' });
+      }
+    } catch (error) {
+      console.error('Error deleting database:', error);
+    }
+  };
+
+  const actionMenu = (
+    <DropdownMenuItem variant="destructive" onClick={handleDeleteDatabase}>
+      <Trash className="h-4 w-4" />
+      Move to Trash
+    </DropdownMenuItem>
+  );
   
   const [loading, setLoading] = useState(true);
   const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
@@ -182,6 +206,7 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
         rightPanelDefaultSize={50}
         rightPanelMinSize={30}
         rightPanelMaxSize={70}
+        actionMenu={actionMenu}
       >
         <div className="p-6 pr-0 flex-1">
           {loading || !selectedDatabase ? (

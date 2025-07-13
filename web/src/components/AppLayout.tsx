@@ -14,9 +14,16 @@ import {
   ResizablePanel,
   ResizableHandle,
 } from '@/components/ui/resizable';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { MoreHorizontal } from 'lucide-react';
 import { AppSidebar } from './AppSidebar';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
-import { useLocation, Link } from '@tanstack/react-router';
+import { useLocation, Link, useNavigate } from '@tanstack/react-router';
 import { type Database, type Workspace } from '@/hooks/useWorkspacesAPI';
 
 interface AppLayoutProps {
@@ -29,6 +36,7 @@ interface AppLayoutProps {
   rightPanelMaxSize?: number;
   databaseId?: string;
   workspaceId?: string;
+  actionMenu?: React.ReactNode;
 }
 
 export function AppLayout({ 
@@ -40,10 +48,12 @@ export function AppLayout({
   rightPanelMinSize = 30,
   rightPanelMaxSize = 70,
   databaseId,
-  workspaceId
+  workspaceId,
+  actionMenu
 }: AppLayoutProps) {
   const { selectedWorkspace, selectedDatabase, isLoading, workspacesSummary, setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
   const location = useLocation();
+  const navigate = useNavigate();
   
   const [localDatabase, setLocalDatabase] = useState<Database | null>(null);
   const [localWorkspace, setLocalWorkspace] = useState<Workspace | null>(null);
@@ -65,6 +75,7 @@ export function AppLayout({
           foundDatabase = workspacesSummary.databases.find((db: Database) => db.id === databaseId) || null;
           if (!foundDatabase) {
             console.error('Database not found:', databaseId);
+            navigate({ to: '/' });
             return;
           }
           foundWorkspace = workspacesSummary.workspaces.find((ws: Workspace) => ws.id === foundDatabase!.workspace_id) || null;
@@ -118,11 +129,12 @@ export function AppLayout({
             <div className="flex h-full">
               <main className="flex-1 w-full flex flex-col">
                 <div className="px-4 pt-4">
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <SidebarTrigger />
-                      </BreadcrumbItem>
+                  <div className="flex items-center justify-between">
+                    <Breadcrumb>
+                      <BreadcrumbList>
+                        <BreadcrumbItem>
+                          <SidebarTrigger />
+                        </BreadcrumbItem>
                       
                       {showWorkspaceSkeleton ? (
                         <>
@@ -168,8 +180,22 @@ export function AppLayout({
                           </BreadcrumbItem>
                         </>
                       )}
-                    </BreadcrumbList>
-                  </Breadcrumb>
+                      </BreadcrumbList>
+                    </Breadcrumb>
+                    
+                    {actionMenu && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {actionMenu}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
                 </div>
                 {children}
               </main>

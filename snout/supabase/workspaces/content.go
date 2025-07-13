@@ -101,13 +101,12 @@ func GetIncompleteJobs(client *supabase.Client, userId string, databaseId string
 	return jobs, nil
 }
 
-func SetContentSoftDelete(client *supabase.Client, userId string, id string, status workspaces.SoftDeleteStatus) error {
+func SetContentSoftDelete(client *supabase.Client, id string, status workspaces.SoftDeleteStatus) error {
 	result, err := client.Db.Exec(`
 		UPDATE content
 		SET soft_delete = $2
 		WHERE id = $1
-		AND user_id = $2
-	`, id, userId)
+	`, id, status)
 	if err != nil {
 		return err
 	}

@@ -1324,6 +1324,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workspaces/deleted": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get deleted summary
+         * @description Get deleted summary of workspaces, databases, and content
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["workspaces.DeletedSummary"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/workspaces/summary": {
         parameters: {
             query?: never;
@@ -1390,6 +1456,69 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/workspaces/{workspace_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete workspace
+         * @description Delete workspace
+         */
+        delete: {
+            parameters: {
+                query?: {
+                    /** @description Delete status */
+                    status?: "no" | "soft_delete" | "hard_delete";
+                };
+                header?: never;
+                path: {
+                    /** @description Workspace ID */
+                    workspace_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["workspaces.DeleteWorkspaceResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/workspaces/{workspace_id}/databases/create": {
         parameters: {
             query?: never;
@@ -1450,6 +1579,71 @@ export interface paths {
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/workspaces/{workspace_id}/databases/{database_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete database
+         * @description Delete database
+         */
+        delete: {
+            parameters: {
+                query?: {
+                    /** @description Delete status */
+                    status?: "no" | "soft_delete" | "hard_delete";
+                };
+                header?: never;
+                path: {
+                    /** @description Workspace ID */
+                    workspace_id: string;
+                    /** @description Database ID */
+                    database_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["workspaces.DeleteDatabaseResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -1669,7 +1863,67 @@ export interface paths {
         };
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Delete content
+         * @description Delete content
+         */
+        delete: {
+            parameters: {
+                query?: {
+                    /** @description Delete status */
+                    status?: "no" | "soft_delete" | "hard_delete";
+                };
+                header?: never;
+                path: {
+                    /** @description Workspace ID */
+                    workspace_id: string;
+                    /** @description Database ID */
+                    database_id: string;
+                    /** @description Content ID */
+                    content_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["workspaces.DeleteContentResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["models.ErrorResponse"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -1999,6 +2253,7 @@ export interface components {
             sentence?: string;
         };
         "models.TypesResponse": {
+            soft_delete_status?: components["schemas"]["workspaces.SoftDeleteStatus"];
             stored_content?: components["schemas"]["whisker_types.StoredContent"];
         };
         "models.UpsertProfileRequest": {
@@ -2115,6 +2370,14 @@ export interface components {
         };
         /** @enum {string} */
         "workspaces.DatabaseType": "content";
+        "workspaces.DeleteContentResponse": Record<string, never>;
+        "workspaces.DeleteDatabaseResponse": Record<string, never>;
+        "workspaces.DeleteWorkspaceResponse": Record<string, never>;
+        "workspaces.DeletedSummary": {
+            contents: components["schemas"]["workspaces.Content"][];
+            databases: components["schemas"]["workspaces.Database"][];
+            workspaces: components["schemas"]["workspaces.Workspace"][];
+        };
         "workspaces.GetContentResponse": {
             content: components["schemas"]["workspaces.Content"];
             presigned_url: string;
@@ -2140,6 +2403,8 @@ export interface components {
             /** @example xxxx-xxxx-xxxx-xxxx */
             workspace_id: string;
         };
+        /** @enum {string} */
+        "workspaces.SoftDeleteStatus": "no" | "soft_delete" | "hard_delete";
         "workspaces.Workspace": {
             /** @example xxxx-xxxx-xxxx-xxxx */
             id: string;
