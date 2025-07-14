@@ -1,7 +1,6 @@
 package workspaces
 
 import (
-	"fmt"
 	workspaces_models "snout/models/workspaces"
 	"snout/supabase"
 )
@@ -51,26 +50,6 @@ func CheckContentInDatabase(client *supabase.Client, databaseId string, contentI
 			)
 		)
 	`, contentId, databaseId, workspaces_models.SoftDeleteStatusNo, workspaces_models.SoftDeleteStatusSoftDelete).Scan(&exists)
-	if err != nil {
-		return false, err
-	}
-	return exists, nil
-}
-
-// PLEASE ENSURE THAT THE TABLE IS NOT USER PROVIDED
-// VALIDATE THE INPUT
-func CheckDatabaseType(client *supabase.Client, table string, databaseId string) (bool, error) {
-	var exists bool
-	query := fmt.Sprintf(`
-		SELECT EXISTS (
-			SELECT 1 FROM %s WHERE id = $1
-			AND (
-				soft_delete = $2 OR
-				soft_delete = $3
-			)
-		)
-	`, table)
-	err := client.Db.QueryRow(query, databaseId, workspaces_models.SoftDeleteStatusNo, workspaces_models.SoftDeleteStatusSoftDelete).Scan(&exists)
 	if err != nil {
 		return false, err
 	}

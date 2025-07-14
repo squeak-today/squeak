@@ -79,23 +79,12 @@ export function CreationButton({ database }: CreationButtonProps) {
     }
   };
 
-  let buttonText: string | null = null;
-  switch (database.type) {
-    case "content":
-      buttonText = "+ Create Content";
-      break;
-    default:
-      buttonText = null;
-  }
-
-  if (!buttonText) return null;
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <div className="mt-2">
           <Button variant="ghost" size="sm">
-            {buttonText}
+            + Create Content
           </Button>
         </div>
       </DialogTrigger>

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	models "snout/models"
-	workspaces_models "snout/models/workspaces"
 	"snout/supabase/workspaces"
 
 	"github.com/gin-gonic/gin"
@@ -48,29 +47,6 @@ func (h *WorkspacesHandler) CheckContentInDatabase(c *gin.Context, databaseId st
 	}
 	if !exists {
 		c.JSON(http.StatusForbidden, models.ErrorResponse{Error: "Content not found in database"})
-		return false
-	}
-	return true
-}
-
-func (h *WorkspacesHandler) CheckDatabaseType(c *gin.Context, dbType workspaces_models.DatabaseType, databaseId string) bool {
-	var table string
-	switch dbType {
-	case workspaces_models.DatabaseTypeContent:
-		table = "content_databases"
-	default:
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Unsupported database type"})
-		return false
-	}
-
-	exists, err := workspaces.CheckDatabaseType(h.DBClient, table, databaseId)
-	if err != nil {
-		log.Printf("Error checking database type: %v", err)
-		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to check database type"})
-		return false
-	}
-	if !exists {
-		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Wrong database type"})
 		return false
 	}
 	return true

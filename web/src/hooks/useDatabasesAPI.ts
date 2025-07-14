@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useAuthenticatedAPI } from './useAuthenticatedAPI';
 import type { components } from '@/lib/clients/types';
-import type { SoftDeleteStatus, DatabaseType } from './useWorkspacesAPI';
+import type { SoftDeleteStatus } from './useWorkspacesAPI';
 
 export type CreateDatabaseRequest = components["schemas"]["workspaces.CreateDatabaseRequest"];
 export type CreateDatabaseResponse = components["schemas"]["workspaces.CreateDatabaseResponse"];
@@ -31,11 +31,10 @@ export function useDatabasesAPI() {
     })
   }, [client, requireAuthWithErrors])
 
-  const queryDatabase = useCallback(async (workspaceId: string, databaseId: string, type: DatabaseType) => {
+  const queryDatabase = useCallback(async (workspaceId: string, databaseId: string) => {
     return requireAuthWithErrors(async () => {
-      const { data, error } = await client!.POST('/workspaces/{workspace_id}/databases/{database_id}/query', { 
-        params: { path: { workspace_id: workspaceId, database_id: databaseId } },
-        body: { type: type }
+      const { data, error } = await client!.GET('/workspaces/{workspace_id}/databases/{database_id}/query', { 
+        params: { path: { workspace_id: workspaceId, database_id: databaseId } }
       });
       return { 
         data: data as components["schemas"]["workspaces.QueryDatabaseResponse"],

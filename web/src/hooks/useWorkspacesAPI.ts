@@ -6,7 +6,6 @@ export type SoftDeleteStatus = components["schemas"]["workspaces.SoftDeleteStatu
 export type Workspace = components["schemas"]["workspaces.Workspace"];
 export type Database = components["schemas"]["workspaces.Database"];
 export type WorkspacesSummary = components["schemas"]["workspaces.WorkspacesSummary"];
-export type DatabaseType = components["schemas"]["workspaces.DatabaseType"];
 export type DeletedSummary = components["schemas"]["workspaces.DeletedSummary"];
 
 export function useWorkspacesAPI() {

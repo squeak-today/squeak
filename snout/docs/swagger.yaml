@@ -713,13 +713,8 @@ definitions:
       name:
         example: My Database
         type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/workspaces.DatabaseType'
-        example: content
     required:
     - name
-    - type
     type: object
   workspaces.CreateDatabaseResponse:
     properties:
@@ -753,25 +748,14 @@ definitions:
       name:
         example: My Database
         type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/workspaces.DatabaseType'
-        example: content
       workspace_id:
         example: xxxx-xxxx-xxxx-xxxx
         type: string
     required:
     - id
     - name
-    - type
     - workspace_id
     type: object
-  workspaces.DatabaseType:
-    enum:
-    - content
-    type: string
-    x-enum-varnames:
-    - DatabaseTypeContent
   workspaces.DeleteContentResponse:
     type: object
   workspaces.DeleteDatabaseResponse:
@@ -823,15 +807,6 @@ definitions:
     required:
     - workspaces
     type: object
-  workspaces.QueryDatabaseRequest:
-    properties:
-      type:
-        allOf:
-        - $ref: '#/definitions/workspaces.DatabaseType'
-        example: content
-    required:
-    - type
-    type: object
   workspaces.QueryDatabaseResponse:
     properties:
       content:
@@ -844,17 +819,12 @@ definitions:
       name:
         example: My Database
         type: string
-      type:
-        allOf:
-        - $ref: '#/definitions/workspaces.DatabaseType'
-        example: content
       workspace_id:
         example: xxxx-xxxx-xxxx-xxxx
         type: string
     required:
     - id
     - name
-    - type
     - workspace_id
     type: object
   workspaces.SoftDeleteStatus:
@@ -1784,7 +1754,7 @@ paths:
       tags:
       - workspace
   /workspaces/{workspace_id}/databases/{database_id}/query:
-    post:
+    get:
       consumes:
       - application/json
       description: Query database
@@ -1799,12 +1769,6 @@ paths:
         name: database_id
         required: true
         type: string
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/workspaces.QueryDatabaseRequest'
       produces:
       - application/json
       responses:

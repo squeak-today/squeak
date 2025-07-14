@@ -1,9 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table"
-import { type DatabaseType } from '@/hooks/useWorkspacesAPI';
 import { type Content } from '@/hooks/useDatabasesAPI';
 import { LanguagePill, CEFRPill } from '@/components/ui/pills';
-
-export type DatabaseRow = Content;
 
 export const contentColumns: ColumnDef<Content>[] = [
   {
@@ -44,11 +41,3 @@ export const contentColumns: ColumnDef<Content>[] = [
     size: 150,
   }
 ]
-
-export const databaseTypeToColumns: Record<DatabaseType, ColumnDef<any>[]> = {
-  content: contentColumns,
-}
-
-export function getColumnsForDatabaseType(type: DatabaseType): ColumnDef<any>[] {
-  return databaseTypeToColumns[type] || [];
-} 

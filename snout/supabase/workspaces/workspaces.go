@@ -89,8 +89,6 @@ func GetWorkspacesSummary(client *supabase.Client, userId string) (models.Worksp
 		if err != nil {
 			return models.WorkspacesSummary{}, err
 		}
-		database.Type = models.DatabaseTypeContent
-		database.ContentDatabase = &models.ContentDatabase{}
 		databases = append(databases, database)
 	}
 
@@ -144,8 +142,6 @@ func GetDeletedSummary(client *supabase.Client, userId string) (models.DeletedSu
 		if err != nil {
 			return models.DeletedSummary{}, err
 		}
-		database.Type = models.DatabaseTypeContent
-		database.ContentDatabase = &models.ContentDatabase{}
 		databases = append(databases, database)
 
 		contentRows, err := client.Db.Query(`
