@@ -30,7 +30,7 @@ import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database as DatabaseIc
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { type DatabaseType, type Workspace, type Database, useWorkspacesAPI, type SoftDeleteStatus, type DeletedSummary } from '@/hooks/useWorkspacesAPI';
+import { type Workspace, type Database, useWorkspacesAPI, type SoftDeleteStatus, type DeletedSummary } from '@/hooks/useWorkspacesAPI';
 import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 import { useNavigate } from '@tanstack/react-router';
 import { TrashTable } from '@/components/database/TrashTable';
@@ -146,8 +146,8 @@ export function AppSidebar() {
     }
   }, [addingDatabaseToWorkspace]);
 
-  const handleDatabaseAdd = async (name: string, workspace: Workspace, type: DatabaseType) => {
-    const { error } = await createDatabase(workspace.id, { name: name, type: type });
+  const handleDatabaseAdd = async (name: string, workspace: Workspace) => {
+    const { error } = await createDatabase(workspace.id, { name: name });
     if (error) {
       console.error('Error creating database:', error);
     }
@@ -171,7 +171,7 @@ export function AppSidebar() {
 
   const handleDatabaseInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, workspace: Workspace) => {
     if (e.key === 'Enter') {
-      handleDatabaseAdd(databaseName, workspace, "content" as DatabaseType);
+      handleDatabaseAdd(databaseName, workspace);
     } else if (e.key === 'Escape') {
       handleCancelAddDatabase();
     }
@@ -179,7 +179,7 @@ export function AppSidebar() {
 
   const handleDatabaseInputBlur = (workspace: Workspace) => {
     if (databaseName.trim()) {
-      handleDatabaseAdd(databaseName, workspace, "content" as DatabaseType);
+      handleDatabaseAdd(databaseName, workspace);
     } else {
       handleCancelAddDatabase();
     }

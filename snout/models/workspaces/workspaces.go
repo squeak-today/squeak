@@ -13,20 +13,10 @@ type Workspace struct {
 	Name string `json:"name" binding:"required" example:"My Workspace"`
 }
 
-type DatabaseType string
-
-const (
-	DatabaseTypeContent DatabaseType = "content"
-)
-
-type ContentDatabase struct{}
-
 type Database struct {
-	ID          string       `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
-	WorkspaceID string       `json:"workspace_id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
-	Name        string       `json:"name" binding:"required" example:"My Database"`
-	Type        DatabaseType `json:"type" binding:"required" example:"content"`
-	*ContentDatabase
+	ID          string `json:"id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
+	WorkspaceID string `json:"workspace_id" binding:"required" example:"xxxx-xxxx-xxxx-xxxx"`
+	Name        string `json:"name" binding:"required" example:"My Database"`
 }
 
 type WorkspacesSummary struct {

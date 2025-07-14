@@ -22,13 +22,8 @@ func CreateContentDatabase(client *supabase.Client, userId string, workspaceId s
 	return id, nil
 }
 
-func CreateDatabase(client *supabase.Client, dbType workspaces.DatabaseType, userId string, workspaceId string, name string) (string, error) {
-	switch dbType {
-	case workspaces.DatabaseTypeContent:
-		return CreateContentDatabase(client, userId, workspaceId, name)
-	default:
-		return "", fmt.Errorf("unsupported database type for creation: %s", dbType)
-	}
+func CreateDatabase(client *supabase.Client, userId string, workspaceId string, name string) (string, error) {
+	return CreateContentDatabase(client, userId, workspaceId, name)
 }
 
 func QueryContentDatabase(client *supabase.Client, databaseId string) (workspaces.Database, []workspaces.Content, error) {
@@ -41,8 +36,6 @@ func QueryContentDatabase(client *supabase.Client, databaseId string) (workspace
 	if err != nil {
 		return workspaces.Database{}, nil, err
 	}
-	database.Type = workspaces.DatabaseTypeContent
-	database.ContentDatabase = &workspaces.ContentDatabase{}
 
 	rows, err := client.Db.Query(`
 		SELECT id, name, database_id, cefr_level, language_code, created_at FROM content

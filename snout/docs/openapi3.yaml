@@ -1088,7 +1088,7 @@ paths:
       description: Get content body
       summary: Get content body
   '/workspaces/{workspace_id}/databases/{database_id}/query':
-    post:
+    get:
       parameters:
         - description: Workspace ID
           in: path
@@ -1124,13 +1124,6 @@ paths:
       tags:
         - workspace
       description: Query database
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/workspaces.QueryDatabaseRequest'
-        description: Body
-        required: true
       summary: Query database
 components:
   schemas:
@@ -1847,13 +1840,8 @@ components:
         name:
           example: My Database
           type: string
-        type:
-          allOf:
-            - $ref: '#/components/schemas/workspaces.DatabaseType'
-          example: content
       required:
         - name
-        - type
       type: object
     workspaces.CreateDatabaseResponse:
       properties:
@@ -1887,25 +1875,14 @@ components:
         name:
           example: My Database
           type: string
-        type:
-          allOf:
-            - $ref: '#/components/schemas/workspaces.DatabaseType'
-          example: content
         workspace_id:
           example: xxxx-xxxx-xxxx-xxxx
           type: string
       required:
         - id
         - name
-        - type
         - workspace_id
       type: object
-    workspaces.DatabaseType:
-      enum:
-        - content
-      type: string
-      x-enum-varnames:
-        - DatabaseTypeContent
     workspaces.DeleteContentResponse:
       type: object
     workspaces.DeleteDatabaseResponse:
@@ -1957,15 +1934,6 @@ components:
       required:
         - workspaces
       type: object
-    workspaces.QueryDatabaseRequest:
-      properties:
-        type:
-          allOf:
-            - $ref: '#/components/schemas/workspaces.DatabaseType'
-          example: content
-      required:
-        - type
-      type: object
     workspaces.QueryDatabaseResponse:
       properties:
         content:
@@ -1978,17 +1946,12 @@ components:
         name:
           example: My Database
           type: string
-        type:
-          allOf:
-            - $ref: '#/components/schemas/workspaces.DatabaseType'
-          example: content
         workspace_id:
           example: xxxx-xxxx-xxxx-xxxx
           type: string
       required:
         - id
         - name
-        - type
         - workspace_id
       type: object
     workspaces.SoftDeleteStatus:

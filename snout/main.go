@@ -244,7 +244,7 @@ func main() {
 		{
 			databasesGroup.POST("/create", workspacesHandler.CreateDatabase)
 			databasesGroup.DELETE("/:database_id", workspacesHandler.DeleteDatabase)
-			databasesGroup.POST("/:database_id/query", workspacesHandler.QueryDatabase)
+			databasesGroup.GET("/:database_id/query", workspacesHandler.QueryDatabase)
 		}
 
 		// /workspaces/{}/databases/{}/content

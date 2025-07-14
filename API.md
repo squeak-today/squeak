@@ -730,7 +730,7 @@ Get incomplete jobs
 
 ### /workspaces/{workspace_id}/databases/{database_id}/query
 
-#### POST
+#### GET
 ##### Summary
 
 Query database
@@ -745,7 +745,6 @@ Query database
 | ---- | ---------- | ----------- | -------- | ------ |
 | workspace_id | path | Workspace ID | Yes | string |
 | database_id | path | Database ID | Yes | string |
-| body | body | Body | Yes | [workspaces.QueryDatabaseRequest](#workspacesquerydatabaserequest) |
 
 ##### Responses
 
@@ -1207,7 +1206,6 @@ Get workspaces
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
 | name | string | *Example:* `"My Database"` | Yes |
-| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
 
 #### workspaces.CreateDatabaseResponse
 
@@ -1233,14 +1231,7 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
 | name | string | *Example:* `"My Database"` | Yes |
-| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
 | workspace_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
-
-#### workspaces.DatabaseType
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| workspaces.DatabaseType | string |  |  |
 
 #### workspaces.DeleteContentResponse
 
@@ -1287,12 +1278,6 @@ Get workspaces
 | ---- | ---- | ----------- | -------- |
 | workspaces | [ [workspaces.Workspace](#workspacesworkspace) ] |  | Yes |
 
-#### workspaces.QueryDatabaseRequest
-
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
-
 #### workspaces.QueryDatabaseResponse
 
 | Name | Type | Description | Required |
@@ -1300,7 +1285,6 @@ Get workspaces
 | content | [ [workspaces.Content](#workspacescontent) ] |  | No |
 | id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
 | name | string | *Example:* `"My Database"` | Yes |
-| type | [workspaces.DatabaseType](#workspacesdatabasetype) | *Example:* `"content"` | Yes |
 | workspace_id | string | *Example:* `"xxxx-xxxx-xxxx-xxxx"` | Yes |
 
 #### workspaces.SoftDeleteStatus

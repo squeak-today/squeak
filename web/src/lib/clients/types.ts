@@ -1936,13 +1936,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
         /**
          * Query database
          * @description Query database
          */
-        post: {
+        get: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -1954,12 +1952,7 @@ export interface paths {
                 };
                 cookie?: never;
             };
-            /** @description Body */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["workspaces.QueryDatabaseRequest"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -1990,6 +1983,8 @@ export interface paths {
                 };
             };
         };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2343,8 +2338,6 @@ export interface components {
         "workspaces.CreateDatabaseRequest": {
             /** @example My Database */
             name: string;
-            /** @example content */
-            type: components["schemas"]["workspaces.DatabaseType"];
         };
         "workspaces.CreateDatabaseResponse": {
             /** @example xxxx-xxxx-xxxx-xxxx */
@@ -2363,13 +2356,9 @@ export interface components {
             id: string;
             /** @example My Database */
             name: string;
-            /** @example content */
-            type: components["schemas"]["workspaces.DatabaseType"];
             /** @example xxxx-xxxx-xxxx-xxxx */
             workspace_id: string;
         };
-        /** @enum {string} */
-        "workspaces.DatabaseType": "content";
         "workspaces.DeleteContentResponse": Record<string, never>;
         "workspaces.DeleteDatabaseResponse": Record<string, never>;
         "workspaces.DeleteWorkspaceResponse": Record<string, never>;
@@ -2388,18 +2377,12 @@ export interface components {
         "workspaces.GetWorkspacesResponse": {
             workspaces: components["schemas"]["workspaces.Workspace"][];
         };
-        "workspaces.QueryDatabaseRequest": {
-            /** @example content */
-            type: components["schemas"]["workspaces.DatabaseType"];
-        };
         "workspaces.QueryDatabaseResponse": {
             content?: components["schemas"]["workspaces.Content"][];
             /** @example xxxx-xxxx-xxxx-xxxx */
             id: string;
             /** @example My Database */
             name: string;
-            /** @example content */
-            type: components["schemas"]["workspaces.DatabaseType"];
             /** @example xxxx-xxxx-xxxx-xxxx */
             workspace_id: string;
         };

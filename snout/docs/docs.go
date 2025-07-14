@@ -1529,7 +1529,7 @@ const docTemplate = `{
             }
         },
         "/workspaces/{workspace_id}/databases/{database_id}/query": {
-            "post": {
+            "get": {
                 "description": "Query database",
                 "consumes": [
                     "application/json"
@@ -1555,15 +1555,6 @@ const docTemplate = `{
                         "name": "database_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/workspaces.QueryDatabaseRequest"
-                        }
                     }
                 ],
                 "responses": {
@@ -2570,21 +2561,12 @@ const docTemplate = `{
         "workspaces.CreateDatabaseRequest": {
             "type": "object",
             "required": [
-                "name",
-                "type"
+                "name"
             ],
             "properties": {
                 "name": {
                     "type": "string",
                     "example": "My Database"
-                },
-                "type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/workspaces.DatabaseType"
-                        }
-                    ],
-                    "example": "content"
                 }
             }
         },
@@ -2629,7 +2611,6 @@ const docTemplate = `{
             "required": [
                 "id",
                 "name",
-                "type",
                 "workspace_id"
             ],
             "properties": {
@@ -2641,28 +2622,11 @@ const docTemplate = `{
                     "type": "string",
                     "example": "My Database"
                 },
-                "type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/workspaces.DatabaseType"
-                        }
-                    ],
-                    "example": "content"
-                },
                 "workspace_id": {
                     "type": "string",
                     "example": "xxxx-xxxx-xxxx-xxxx"
                 }
             }
-        },
-        "workspaces.DatabaseType": {
-            "type": "string",
-            "enum": [
-                "content"
-            ],
-            "x-enum-varnames": [
-                "DatabaseTypeContent"
-            ]
         },
         "workspaces.DeleteContentResponse": {
             "type": "object"
@@ -2741,28 +2705,11 @@ const docTemplate = `{
                 }
             }
         },
-        "workspaces.QueryDatabaseRequest": {
-            "type": "object",
-            "required": [
-                "type"
-            ],
-            "properties": {
-                "type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/workspaces.DatabaseType"
-                        }
-                    ],
-                    "example": "content"
-                }
-            }
-        },
         "workspaces.QueryDatabaseResponse": {
             "type": "object",
             "required": [
                 "id",
                 "name",
-                "type",
                 "workspace_id"
             ],
             "properties": {
@@ -2779,14 +2726,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "My Database"
-                },
-                "type": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/workspaces.DatabaseType"
-                        }
-                    ],
-                    "example": "content"
                 },
                 "workspace_id": {
                     "type": "string",

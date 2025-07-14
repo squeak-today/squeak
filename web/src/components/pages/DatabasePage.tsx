@@ -1,11 +1,10 @@
 import { useSidebarMenu } from '@/context/SidebarMenuContext'
 import { useEffect, useState, useRef } from 'react';
 import { type Database, type SoftDeleteStatus, type Workspace } from '@/hooks/useWorkspacesAPI';
-import { useDatabasesAPI } from '@/hooks/useDatabasesAPI';
+import { type Content, useDatabasesAPI } from '@/hooks/useDatabasesAPI';
 import { useContentAPI, type ContentJob } from '@/hooks/useContentAPI';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DatabaseTable } from '@/components/database/DatabaseTable';
-import { type DatabaseRow } from '@/components/database/columns';
 import { CreationButton } from '@/components/database/CreationButton';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
@@ -49,16 +48,16 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
   );
   
   const [loading, setLoading] = useState(true);
-  const [databaseRows, setDatabaseRows] = useState<DatabaseRow[]>([]);
+  const [databaseRows, setDatabaseRows] = useState<Content[]>([]);
   const [incompleteJobs, setIncompleteJobs] = useState<ContentJob[]>([]);
   
-  const [selectedRow, setSelectedRow] = useState<DatabaseRow | null>(null);
+  const [selectedRow, setSelectedRow] = useState<Content | null>(null);
   const [showRightPanel, setShowRightPanel] = useState(false);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchIncompleteJobs = async () => {
-    if (!selectedWorkspace || !selectedDatabase || selectedDatabase.type !== 'content') {
+    if (!selectedWorkspace || !selectedDatabase) {
       return;
     }
 
@@ -85,8 +84,7 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
     try {
       const { data: queryResult, error: queryError } = await queryDatabase(
         workspace.id, 
-        database.id, 
-        database.type
+        database.id
       );
       
       if (queryError) {
@@ -107,10 +105,7 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
     }
 
     await fetchDatabaseRows(workspace, database);
-    
-    if (database.type === 'content') {
-      await fetchIncompleteJobs();
-    }
+    await fetchIncompleteJobs();
   };
 
   useEffect(() => {
@@ -184,15 +179,13 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
             <Expand className="h-4 w-4" />
           </Button>
         </div>
-        {selectedDatabase.type === 'content' ? (
-          <div className="flex-1 overflow-y-auto">
-            <ContentInterface 
-              workspaceId={selectedDatabase.workspace_id}
-              databaseId={selectedDatabase.id}
-              contentId={selectedRow.id}
-            />
-          </div>
-        ) : null}
+        <div className="flex-1 overflow-y-auto">
+          <ContentInterface 
+            workspaceId={selectedDatabase.workspace_id}
+            databaseId={selectedDatabase.id}
+            contentId={selectedRow.id}
+          />
+        </div>
       </div>
     </div>
   ) : null;
@@ -227,9 +220,8 @@ export function DatabasePage({ databaseId }: DatabasePageProps) {
           ) : selectedDatabase ? (
             <>
               <DatabaseTable 
-                type={selectedDatabase.type} 
                 data={databaseRows}
-                onFetchIncompleteJobs={selectedDatabase.type === 'content' ? fetchIncompleteJobs : undefined}
+                onFetchIncompleteJobs={fetchIncompleteJobs}
                 incompleteJobs={incompleteJobs}
                 onRowClick={(row) => {
                   setShowRightPanel(true);

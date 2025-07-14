@@ -26,28 +26,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { type DatabaseType } from '@/hooks/useWorkspacesAPI';
-import { getColumnsForDatabaseType, type DatabaseRow } from './columns';
+import { contentColumns } from './columns';
 import { type ContentJob } from '@/hooks/useContentAPI';
 import { UploadsTable } from './UploadsTable';
+import { type Content } from '@/hooks/useDatabasesAPI';
 
 interface DatabaseTableProps {
-  type: DatabaseType;
-  data: DatabaseRow[];
+  data: Content[];
   onFetchIncompleteJobs?: () => Promise<void>;
   incompleteJobs?: ContentJob[];
   incompleteJobsLoading?: boolean;
-  onRowClick: (row: DatabaseRow) => void;
+  onRowClick: (row: Content) => void;
 }
 
 export function DatabaseTable({ 
-  type, 
   data, 
   onFetchIncompleteJobs, 
   incompleteJobs = [], 
   onRowClick,
 }: DatabaseTableProps) {
-  const columns = getColumnsForDatabaseType(type);
+  const columns = contentColumns;
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "created_at", desc: true }
@@ -90,7 +88,7 @@ export function DatabaseTable({
           }
           className="max-w-sm min-w-sm"
         />
-        {type === "content" && onFetchIncompleteJobs && (
+        {onFetchIncompleteJobs && (
           <Popover open={popoverOpen} onOpenChange={handlePopoverOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline">
@@ -133,7 +131,7 @@ export function DatabaseTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                onClick={() => onRowClick(row.original as DatabaseRow)}
+                onClick={() => onRowClick(row.original as Content)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell 
