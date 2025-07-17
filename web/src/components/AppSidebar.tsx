@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/popover';
 import { useSidebarMenu } from '@/context/SidebarMenuContext';
 import { useAuth } from '@/context/AuthContext';
-import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database as DatabaseIcon, Trash, MoreHorizontal } from 'lucide-react';
+import { Folder, ChevronRight, LogOut, ChevronDown, Plus, Database as DatabaseIcon, Trash, MoreHorizontal, Book } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
@@ -60,6 +60,10 @@ export function AppSidebar() {
   const handleDatabaseClick = (database: Database) => {
     console.log('Database clicked:', database.name);
     navigate({ to: '/databases/$databaseId', params: { databaseId: database.id } });
+  };
+
+  const handleLibraryClick = () => {
+    navigate({ to: '/library' });
   };
 
   const toggleWorkspace = (workspaceId: string) => {
@@ -256,6 +260,18 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={handleLibraryClick}>
+                  <Book className="w-4 h-4" />
+                  <span>Library</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
           <SidebarGroupContent>

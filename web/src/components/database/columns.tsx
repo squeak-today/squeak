@@ -1,6 +1,7 @@
 import { type ColumnDef } from "@tanstack/react-table"
 import { type Content } from '@/hooks/useDatabasesAPI';
 import { LanguagePill, CEFRPill } from '@/components/ui/pills';
+import { formatDate } from '@/lib/utils';
 
 export const contentColumns: ColumnDef<Content>[] = [
   {
@@ -31,10 +32,9 @@ export const contentColumns: ColumnDef<Content>[] = [
     accessorKey: "created_at",
     header: "Created At",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
       return (
         <span className="text-sm text-muted-foreground">
-          {date.toLocaleDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {formatDate(row.getValue("created_at"))}
         </span>
       );
     },

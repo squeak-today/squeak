@@ -36,6 +36,7 @@ interface AppLayoutProps {
   rightPanelMaxSize?: number;
   databaseId?: string;
   workspaceId?: string;
+  showBreadcrumb?: boolean;
   actionMenu?: React.ReactNode;
 }
 
@@ -49,6 +50,7 @@ export function AppLayout({
   rightPanelMaxSize = 70,
   databaseId,
   workspaceId,
+  showBreadcrumb = true,
   actionMenu
 }: AppLayoutProps) {
   const { selectedWorkspace, selectedDatabase, isLoading, workspacesSummary, setSelectedDatabase, setSelectedWorkspace } = useSidebarMenu();
@@ -135,54 +137,57 @@ export function AppLayout({
                         <BreadcrumbItem>
                           <SidebarTrigger />
                         </BreadcrumbItem>
-                      
-                      {showWorkspaceSkeleton ? (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <Skeleton className="h-4 w-24" />
-                          </BreadcrumbItem>
-                        </>
-                      ) : effectiveWorkspace ? (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <BreadcrumbPage>{effectiveWorkspace.name}</BreadcrumbPage>
-                          </BreadcrumbItem>
-                        </>
-                      ) : null}
-                      
-                      {showDatabaseSkeleton ? (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <Skeleton className="h-4 w-32" />
-                          </BreadcrumbItem>
-                        </>
-                      ) : effectiveDatabase ? (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <BreadcrumbLink asChild>
-                              <Link to="/databases/$databaseId" params={{ databaseId: effectiveDatabase.id }}>
-                                {effectiveDatabase.name}
-                              </Link>
-                            </BreadcrumbLink>
-                          </BreadcrumbItem>
-                        </>
-                      ) : null}
+                        {showBreadcrumb && (
+                          <>
+                            {showWorkspaceSkeleton ? (
+                              <>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                  <Skeleton className="h-4 w-24" />
+                                </BreadcrumbItem>
+                              </>
+                            ) : effectiveWorkspace ? (
+                              <>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                  <BreadcrumbPage>{effectiveWorkspace.name}</BreadcrumbPage>
+                                </BreadcrumbItem>
+                              </>
+                            ) : null}
+                            
+                            {showDatabaseSkeleton ? (
+                              <>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                  <Skeleton className="h-4 w-32" />
+                                </BreadcrumbItem>
+                              </>
+                            ) : effectiveDatabase ? (
+                              <>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                  <BreadcrumbLink asChild>
+                                    <Link to="/databases/$databaseId" params={{ databaseId: effectiveDatabase.id }}>
+                                      {effectiveDatabase.name}
+                                    </Link>
+                                  </BreadcrumbLink>
+                                </BreadcrumbItem>
+                              </>
+                            ) : null}
 
-                      {locationLabel && (
-                        <>
-                          <BreadcrumbSeparator />
-                          <BreadcrumbItem>
-                            <BreadcrumbPage>{locationLabel}</BreadcrumbPage>
-                          </BreadcrumbItem>
-                        </>
-                      )}
+                            {locationLabel && (
+                              <>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                  <BreadcrumbPage>{locationLabel}</BreadcrumbPage>
+                                </BreadcrumbItem>
+                              </>
+                            )}
+                          </>
+                        )}
                       </BreadcrumbList>
                     </Breadcrumb>
-                    
+                        
                     {actionMenu && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
